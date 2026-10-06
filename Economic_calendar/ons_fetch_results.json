@@ -1,0 +1,838 @@
+{
+  "source": "ONS",
+  "generated_at_utc": "2026-10-06T10:47:24.900887+00:00",
+  "total_metrics": 75,
+  "successful_metrics": 72,
+  "failed_metrics": 3,
+  "family_results": {
+    "CPI": {
+      "success": true,
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "release_uri": "/releases/consumerpriceinflationukseptember2026",
+      "error": null
+    },
+    "PPI": {
+      "success": true,
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Producer price inflation, UK: September 2026 including services, July to September 2026",
+      "release_uri": "/releases/producerpriceinflationukseptember2026includingservicesjulytoseptember2026",
+      "error": null
+    },
+    "LABOUR_MARKET": {
+      "success": true,
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T06:00:00+00:00",
+      "release_title": "UK Labour Market: October 2026",
+      "release_uri": "/releases/uklabourmarketoctober2026",
+      "error": null
+    },
+    "PAYE_RTI": {
+      "success": true,
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T06:00:00+00:00",
+      "release_title": "Earnings and employment from Pay As You Earn Real Time Information, UK: October 2026",
+      "release_uri": "/releases/earningsandemploymentfrompayasyouearnrealtimeinformationukoctober2026",
+      "error": null
+    },
+    "GDP_QUARTERLY": {
+      "success": true,
+      "next_release": "2026-12-22",
+      "next_release_at": "2026-12-22T07:00:00+00:00",
+      "release_title": "GDP quarterly national accounts, UK: July to September 2026",
+      "release_uri": "/releases/gdpquarterlynationalaccountsukjulytoseptember2026",
+      "error": null
+    },
+    "GDP_MONTHLY": {
+      "success": true,
+      "next_release": "2026-10-15",
+      "next_release_at": "2026-10-15T06:00:00+00:00",
+      "release_title": "GDP monthly estimate, UK: August 2026",
+      "release_uri": "/releases/gdpmonthlyestimateukaugust2026",
+      "error": null
+    },
+    "INDUSTRIAL_PRODUCTION": {
+      "success": true,
+      "next_release": "2026-10-15",
+      "next_release_at": "2026-10-15T06:00:00+00:00",
+      "release_title": "Index of Production, UK: August 2026",
+      "release_uri": "/releases/indexofproductionukaugust2026",
+      "error": null
+    },
+    "RETAIL_SALES": {
+      "success": true,
+      "next_release": "2026-10-23",
+      "next_release_at": "2026-10-23T06:00:00+00:00",
+      "release_title": "Retail sales, Great Britain: September 2026",
+      "release_uri": "/releases/retailsalesgreatbritainseptember2026",
+      "error": null
+    },
+    "CONSUMER_TRENDS": {
+      "success": true,
+      "next_release": "2026-12-22",
+      "next_release_at": "2026-12-22T09:30:00+00:00",
+      "release_title": "Consumer trends, UK: July to September 2026",
+      "release_uri": "/releases/consumertrendsukjulytoseptember2026",
+      "error": null
+    },
+    "BUSINESS_INVESTMENT": {
+      "success": true,
+      "next_release": "2026-11-12",
+      "next_release_at": "2026-11-12T09:30:00+00:00",
+      "release_title": "Business Investment in the UK: July to September 2026 provisional results",
+      "release_uri": "/releases/businessinvestmentintheukjulytoseptember2026provisionalresults",
+      "error": null
+    }
+  },
+  "metrics": [
+    {
+      "metric_id": "uk-cpi-yoy",
+      "series_id": "D7G7",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-cpih-yoy",
+      "series_id": "L550",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-alcohol-cpi-yoy",
+      "series_id": "D7G9",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-clothing-cpi-yoy",
+      "series_id": "D7GA",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-furniture-cpi-yoy",
+      "series_id": "D7GC",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-health-cpi-yoy",
+      "series_id": "D7GD",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-transport-cpi-yoy",
+      "series_id": "D7GE",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-communication-cpi-yoy",
+      "series_id": "D7GF",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-recreation-cpi-yoy",
+      "series_id": "D7GG",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-education-cpi-yoy",
+      "series_id": "D7GH",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-restaurants-hotels-cpi-yoy",
+      "series_id": "D7GI",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-miscellaneous-cpi-yoy",
+      "series_id": "D7GJ",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-alcohol-cpih-yoy",
+      "series_id": "L55Q",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-clothing-cpih-yoy",
+      "series_id": "L55R",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-furniture-cpih-yoy",
+      "series_id": "L55T",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-health-cpih-yoy",
+      "series_id": "L55U",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-transport-cpih-yoy",
+      "series_id": "L55V",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-communication-cpih-yoy",
+      "series_id": "L55W",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-recreation-cpih-yoy",
+      "series_id": "L55X",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-education-cpih-yoy",
+      "series_id": "L55Y",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-restaurants-hotels-cpih-yoy",
+      "series_id": "L55Z",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-miscellaneous-cpih-yoy",
+      "series_id": "L562",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-core-cpi-yoy",
+      "series_id": "DKO8",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-cpi-mom",
+      "series_id": "D7OE",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-core-cpi-mom",
+      "series_id": "DKC6",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-services-cpi-yoy",
+      "series_id": "D7NN",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-services-cpi-mom",
+      "series_id": "D7MV",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-goods-cpi-yoy",
+      "series_id": "D7NM",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-goods-cpi-mom",
+      "series_id": "D7MU",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-food-cpi-yoy",
+      "series_id": "D7G8",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-energy-cpi-yoy",
+      "series_id": "D7GT",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-housing-cpi-yoy",
+      "series_id": "D7GB",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-rpi-yoy",
+      "series_id": "CZBH",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-cpih-mom",
+      "series_id": "L59C",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-core-cpih-yoy",
+      "series_id": "L5LQ",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-food-cpih-yoy",
+      "series_id": "L55P",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-food-cpih-mom",
+      "series_id": "L59D",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-housing-cpih-yoy",
+      "series_id": "L55S",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-housing-cpih-mom",
+      "series_id": "L5PG",
+      "release_family": "CPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Consumer price inflation, UK: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-ppi-output-yoy",
+      "series_id": "GB7S",
+      "release_family": "PPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Producer price inflation, UK: September 2026 including services, July to September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-ppi-input-yoy",
+      "series_id": "GHIP",
+      "release_family": "PPI",
+      "next_release": "2026-10-21",
+      "next_release_at": "2026-10-21T06:00:00+00:00",
+      "release_title": "Producer price inflation, UK: September 2026 including services, July to September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-awe-regular-yoy",
+      "series_id": "KAI9",
+      "release_family": "AWE",
+      "next_release": null,
+      "release_title": null,
+      "success": false,
+      "error": "Family result missing"
+    },
+    {
+      "metric_id": "uk-paye-median-pay-mom",
+      "series_id": "PAYE_MEDIAN_PAY",
+      "release_family": "PAYE_RTI",
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T06:00:00+00:00",
+      "release_title": "Earnings and employment from Pay As You Earn Real Time Information, UK: October 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-awe-regular-mom",
+      "series_id": "KAI7",
+      "release_family": "AWE",
+      "next_release": null,
+      "release_title": null,
+      "success": false,
+      "error": "Family result missing"
+    },
+    {
+      "metric_id": "uk-unemployment",
+      "series_id": "MGSX",
+      "release_family": "LABOUR_MARKET",
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T06:00:00+00:00",
+      "release_title": "UK Labour Market: October 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-employment-level",
+      "series_id": "MGRZ",
+      "release_family": "LABOUR_MARKET",
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T06:00:00+00:00",
+      "release_title": "UK Labour Market: October 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-awe-total-yoy",
+      "series_id": "KAC3",
+      "release_family": "AWE",
+      "next_release": null,
+      "release_title": null,
+      "success": false,
+      "error": "Family result missing"
+    },
+    {
+      "metric_id": "uk-vacancies",
+      "series_id": "AP2Y",
+      "release_family": "LABOUR_MARKET",
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T06:00:00+00:00",
+      "release_title": "UK Labour Market: October 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-payrolled-employees-level",
+      "series_id": "PAYE_EMP_LEVEL",
+      "release_family": "PAYE_RTI",
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T06:00:00+00:00",
+      "release_title": "Earnings and employment from Pay As You Earn Real Time Information, UK: October 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-employment-change",
+      "series_id": "PAYE_EMP_CHANGE",
+      "release_family": "PAYE_RTI",
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T06:00:00+00:00",
+      "release_title": "Earnings and employment from Pay As You Earn Real Time Information, UK: October 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-employment-rate",
+      "series_id": "MGSR",
+      "release_family": "LABOUR_MARKET",
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T06:00:00+00:00",
+      "release_title": "UK Labour Market: October 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-inactivity-rate",
+      "series_id": "I46G",
+      "release_family": "LABOUR_MARKET",
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T06:00:00+00:00",
+      "release_title": "UK Labour Market: October 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-gdp-yoy",
+      "series_id": "IHYR",
+      "release_family": "GDP_QUARTERLY",
+      "next_release": "2026-12-22",
+      "next_release_at": "2026-12-22T07:00:00+00:00",
+      "release_title": "GDP quarterly national accounts, UK: July to September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-gdp-qoq",
+      "series_id": "IHYQ",
+      "release_family": "GDP_QUARTERLY",
+      "next_release": "2026-12-22",
+      "next_release_at": "2026-12-22T07:00:00+00:00",
+      "release_title": "GDP quarterly national accounts, UK: July to September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-gdp-mom",
+      "series_id": "ECYX",
+      "release_family": "GDP_MONTHLY",
+      "next_release": "2026-10-15",
+      "next_release_at": "2026-10-15T06:00:00+00:00",
+      "release_title": "GDP monthly estimate, UK: August 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-gdp-3m-yoy",
+      "series_id": "ED9T",
+      "release_family": "GDP_MONTHLY",
+      "next_release": "2026-10-15",
+      "next_release_at": "2026-10-15T06:00:00+00:00",
+      "release_title": "GDP monthly estimate, UK: August 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-household-consumption-level",
+      "series_id": "ABJR",
+      "release_family": "CONSUMER_TRENDS",
+      "next_release": "2026-12-22",
+      "next_release_at": "2026-12-22T09:30:00+00:00",
+      "release_title": "Consumer trends, UK: July to September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-net-trade-qoq",
+      "series_id": "ZZ5U",
+      "release_family": "GDP_QUARTERLY",
+      "next_release": "2026-12-22",
+      "next_release_at": "2026-12-22T07:00:00+00:00",
+      "release_title": "GDP quarterly national accounts, UK: July to September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-net-trade-yoy",
+      "series_id": "ZZ6D",
+      "release_family": "GDP_QUARTERLY",
+      "next_release": "2026-12-22",
+      "next_release_at": "2026-12-22T07:00:00+00:00",
+      "release_title": "GDP quarterly national accounts, UK: July to September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-industrial-production",
+      "series_id": "K222",
+      "release_family": "INDUSTRIAL_PRODUCTION",
+      "next_release": "2026-10-15",
+      "next_release_at": "2026-10-15T06:00:00+00:00",
+      "release_title": "Index of Production, UK: August 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-retail-sales",
+      "series_id": "J5EK",
+      "release_family": "RETAIL_SALES",
+      "next_release": "2026-10-23",
+      "next_release_at": "2026-10-23T06:00:00+00:00",
+      "release_title": "Retail sales, Great Britain: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-retail-sales-mom",
+      "series_id": "J5EC",
+      "release_family": "RETAIL_SALES",
+      "next_release": "2026-10-23",
+      "next_release_at": "2026-10-23T06:00:00+00:00",
+      "release_title": "Retail sales, Great Britain: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-retail-sales-total-ex-fuel",
+      "series_id": "J5EC",
+      "release_family": "RETAIL_SALES",
+      "next_release": "2026-10-23",
+      "next_release_at": "2026-10-23T06:00:00+00:00",
+      "release_title": "Retail sales, Great Britain: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-retail-food-stores",
+      "series_id": "EAPT",
+      "release_family": "RETAIL_SALES",
+      "next_release": "2026-10-23",
+      "next_release_at": "2026-10-23T06:00:00+00:00",
+      "release_title": "Retail sales, Great Britain: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-retail-non-food-stores",
+      "series_id": "EAPV",
+      "release_family": "RETAIL_SALES",
+      "next_release": "2026-10-23",
+      "next_release_at": "2026-10-23T06:00:00+00:00",
+      "release_title": "Retail sales, Great Britain: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-retail-nonstore",
+      "series_id": "J5DZ",
+      "release_family": "RETAIL_SALES",
+      "next_release": "2026-10-23",
+      "next_release_at": "2026-10-23T06:00:00+00:00",
+      "release_title": "Retail sales, Great Britain: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-retail-automotive-fuel",
+      "series_id": "J05A",
+      "release_family": "RETAIL_SALES",
+      "next_release": "2026-10-23",
+      "next_release_at": "2026-10-23T06:00:00+00:00",
+      "release_title": "Retail sales, Great Britain: September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-household-consumption-qoq",
+      "series_id": "A24M",
+      "release_family": "CONSUMER_TRENDS",
+      "next_release": "2026-12-22",
+      "next_release_at": "2026-12-22T09:30:00+00:00",
+      "release_title": "Consumer trends, UK: July to September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-household-consumption-yoy",
+      "series_id": "ZZ65",
+      "release_family": "CONSUMER_TRENDS",
+      "next_release": "2026-12-22",
+      "next_release_at": "2026-12-22T09:30:00+00:00",
+      "release_title": "Consumer trends, UK: July to September 2026",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-gfcf-level",
+      "series_id": "NPQT",
+      "release_family": "BUSINESS_INVESTMENT",
+      "next_release": "2026-11-12",
+      "next_release_at": "2026-11-12T09:30:00+00:00",
+      "release_title": "Business Investment in the UK: July to September 2026 provisional results",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-gfcf-yoy",
+      "series_id": "KG7T",
+      "release_family": "BUSINESS_INVESTMENT",
+      "next_release": "2026-11-12",
+      "next_release_at": "2026-11-12T09:30:00+00:00",
+      "release_title": "Business Investment in the UK: July to September 2026 provisional results",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-gfcf-qoq",
+      "series_id": "KG7Q",
+      "release_family": "BUSINESS_INVESTMENT",
+      "next_release": "2026-11-12",
+      "next_release_at": "2026-11-12T09:30:00+00:00",
+      "release_title": "Business Investment in the UK: July to September 2026 provisional results",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-business-investment-qoq",
+      "series_id": "KG7P",
+      "release_family": "BUSINESS_INVESTMENT",
+      "next_release": "2026-11-12",
+      "next_release_at": "2026-11-12T09:30:00+00:00",
+      "release_title": "Business Investment in the UK: July to September 2026 provisional results",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-business-investment-yoy",
+      "series_id": "KG7S",
+      "release_family": "BUSINESS_INVESTMENT",
+      "next_release": "2026-11-12",
+      "next_release_at": "2026-11-12T09:30:00+00:00",
+      "release_title": "Business Investment in the UK: July to September 2026 provisional results",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "uk-government-consumption-level",
+      "series_id": "NMRY",
+      "release_family": "GDP_QUARTERLY",
+      "next_release": "2026-12-22",
+      "next_release_at": "2026-12-22T07:00:00+00:00",
+      "release_title": "GDP quarterly national accounts, UK: July to September 2026",
+      "success": true,
+      "error": null
+    }
+  ]
+}

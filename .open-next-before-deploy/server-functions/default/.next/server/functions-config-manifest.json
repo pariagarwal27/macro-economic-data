@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "functions": {
+    "/api/data-freshness": {},
+    "/api/calendar": {},
+    "/api/desk-matrix": {},
+    "/api/desk-smoothed": {},
+    "/api/metrics": {},
+    "/api/countries/[region]": {},
+    "/api/metrics/[id]": {},
+    "/api/us-inflation": {},
+    "/api/dashboard/[region]": {},
+    "/api/inflation/[region]": {},
+    "/api/economic-calendar": {}
+  }
+}

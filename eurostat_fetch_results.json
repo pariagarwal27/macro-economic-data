@@ -1,0 +1,617 @@
+{
+  "source": "Eurostat",
+  "calendar_source": "Eurostat official release calendar (iCalendar); date-only events use 11:00 Europe/Luxembourg for the scheduled first release",
+  "generated_at_utc": "2026-10-06T10:05:33.354434+00:00",
+  "total_metrics": 47,
+  "successful_metrics": 47,
+  "failed_metrics": 0,
+  "family_results": {
+    "HICP": {
+      "success": true,
+      "next_release": "2026-10-16",
+      "next_release_at": "2026-10-16T11:00:00+02:00",
+      "release_title": "Inflation (HICP)",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "error": null
+    },
+    "PPI": {
+      "success": true,
+      "next_release": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00+02:00",
+      "release_title": "Industrial producer prices, external & total",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "error": null
+    },
+    "UNEMPLOYMENT": {
+      "success": true,
+      "next_release": "2026-10-30",
+      "next_release_at": "2026-10-30T11:00:00+01:00",
+      "release_title": "Unemployment",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "error": null
+    },
+    "GDP_EMPLOYMENT": {
+      "success": true,
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T11:00:00+02:00",
+      "release_title": "GDP main aggregates and employment - update",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "error": null
+    },
+    "INDUSTRIAL_PRODUCTION": {
+      "success": true,
+      "next_release": "2026-10-15",
+      "next_release_at": "2026-10-15T11:00:00+02:00",
+      "release_title": "Industrial production",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "error": null
+    },
+    "RETAIL_TRADE": {
+      "success": true,
+      "next_release": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00+02:00",
+      "release_title": "Retail trade",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "error": null
+    },
+    "ECONOMIC_SENTIMENT": {
+      "success": true,
+      "next_release": "2026-10-22",
+      "next_release_at": "2026-10-22T11:00:00+02:00",
+      "release_title": "Economic Sentiment Indicator & Business and Consumer Survey results",
+      "release_url": "https://economy-finance.ec.europa.eu/economic-forecast-and-surveys/business-and-consumer-surveys/latest-business-and-consumer-surveys_en",
+      "error": null
+    },
+    "JOB_VACANCY": {
+      "success": true,
+      "next_release": "2026-12-16",
+      "next_release_at": "2026-12-16T11:00:00+01:00",
+      "release_title": "Job vacancy",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "error": null
+    },
+    "LABOUR_COST_INDEX": {
+      "success": true,
+      "next_release": "2026-12-17",
+      "next_release_at": "2026-12-17T11:00:00+01:00",
+      "release_title": "Labour cost index",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "error": null
+    },
+    "LFS_MAIN_INDICATORS": {
+      "success": true,
+      "next_release": "2026-12-11",
+      "next_release_at": "2026-12-11T11:00:00+01:00",
+      "release_title": "EU Labour Force Survey: LFS main indicators",
+      "release_url": "https://ec.europa.eu/eurostat/documents/1978984//6048829/LFS_release_announcement.pdf/d0e85313-1429-4ab0-9ce8-9179e4f31ab3",
+      "error": null
+    },
+    "SECTOR_ACCOUNTS": {
+      "success": true,
+      "next_release": "2026-10-28",
+      "next_release_at": "2026-10-28T11:00:00+01:00",
+      "release_title": "Second release sector accounts (households)",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "error": null
+    }
+  },
+  "metrics": [
+    {
+      "metric_id": "ea-hicp-yoy",
+      "eurostat_id": "prc_hicp_minr",
+      "release_family": "HICP",
+      "next_release": "2026-10-16",
+      "next_release_at": "2026-10-16T11:00:00+02:00",
+      "release_title": "Inflation (HICP)",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-core-hicp-yoy",
+      "eurostat_id": "prc_hicp_minr_core",
+      "release_family": "HICP",
+      "next_release": "2026-10-16",
+      "next_release_at": "2026-10-16T11:00:00+02:00",
+      "release_title": "Inflation (HICP)",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-hicp-mom",
+      "eurostat_id": "prc_hicp_mmor",
+      "release_family": "HICP",
+      "next_release": "2026-10-16",
+      "next_release_at": "2026-10-16T11:00:00+02:00",
+      "release_title": "Inflation (HICP)",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-core-hicp-mom",
+      "eurostat_id": "prc_hicp_mmor_core",
+      "release_family": "HICP",
+      "next_release": "2026-10-16",
+      "next_release_at": "2026-10-16T11:00:00+02:00",
+      "release_title": "Inflation (HICP)",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-services-hicp-yoy",
+      "eurostat_id": "prc_hicp_minr_serv",
+      "release_family": "HICP",
+      "next_release": "2026-10-16",
+      "next_release_at": "2026-10-16T11:00:00+02:00",
+      "release_title": "Inflation (HICP)",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-services-hicp-mom",
+      "eurostat_id": "prc_hicp_mmor_serv",
+      "release_family": "HICP",
+      "next_release": "2026-10-16",
+      "next_release_at": "2026-10-16T11:00:00+02:00",
+      "release_title": "Inflation (HICP)",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-goods-hicp-yoy",
+      "eurostat_id": "prc_hicp_minr_goods",
+      "release_family": "HICP",
+      "next_release": "2026-10-16",
+      "next_release_at": "2026-10-16T11:00:00+02:00",
+      "release_title": "Inflation (HICP)",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-food-hicp-yoy",
+      "eurostat_id": "prc_hicp_minr_food",
+      "release_family": "HICP",
+      "next_release": "2026-10-16",
+      "next_release_at": "2026-10-16T11:00:00+02:00",
+      "release_title": "Inflation (HICP)",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-energy-hicp-yoy",
+      "eurostat_id": "prc_hicp_minr_nrg",
+      "release_family": "HICP",
+      "next_release": "2026-10-16",
+      "next_release_at": "2026-10-16T11:00:00+02:00",
+      "release_title": "Inflation (HICP)",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "de-cpi-yoy",
+      "eurostat_id": "prc_hicp_minr_DE",
+      "release_family": "HICP",
+      "next_release": "2026-10-16",
+      "next_release_at": "2026-10-16T11:00:00+02:00",
+      "release_title": "Inflation (HICP)",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "fr-cpi-yoy",
+      "eurostat_id": "prc_hicp_minr_FR",
+      "release_family": "HICP",
+      "next_release": "2026-10-16",
+      "next_release_at": "2026-10-16T11:00:00+02:00",
+      "release_title": "Inflation (HICP)",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "it-cpi-yoy",
+      "eurostat_id": "prc_hicp_minr_IT",
+      "release_family": "HICP",
+      "next_release": "2026-10-16",
+      "next_release_at": "2026-10-16T11:00:00+02:00",
+      "release_title": "Inflation (HICP)",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "es-cpi-yoy",
+      "eurostat_id": "prc_hicp_minr_ES",
+      "release_family": "HICP",
+      "next_release": "2026-10-16",
+      "next_release_at": "2026-10-16T11:00:00+02:00",
+      "release_title": "Inflation (HICP)",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-ppi-yoy",
+      "eurostat_id": "sts_inpp_m",
+      "release_family": "PPI",
+      "next_release": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00+02:00",
+      "release_title": "Industrial producer prices, external & total",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-unemployed-persons",
+      "eurostat_id": "ei_lmhu_m",
+      "release_family": "UNEMPLOYMENT",
+      "next_release": "2026-10-30",
+      "next_release_at": "2026-10-30T11:00:00+01:00",
+      "release_title": "Unemployment",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-gdp-yoy",
+      "eurostat_id": "ea_gdp_real",
+      "release_family": "GDP_EMPLOYMENT",
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T11:00:00+02:00",
+      "release_title": "GDP main aggregates and employment - update",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-gdp-qoq",
+      "eurostat_id": "ea_gdp_real",
+      "release_family": "GDP_EMPLOYMENT",
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T11:00:00+02:00",
+      "release_title": "GDP main aggregates and employment - update",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-industrial-production",
+      "eurostat_id": "sts_inpr_m",
+      "release_family": "INDUSTRIAL_PRODUCTION",
+      "next_release": "2026-10-15",
+      "next_release_at": "2026-10-15T11:00:00+02:00",
+      "release_title": "Industrial production",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-retail-sales",
+      "eurostat_id": "ei_isrr_m",
+      "release_family": "RETAIL_TRADE",
+      "next_release": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00+02:00",
+      "release_title": "Retail trade",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-esi",
+      "eurostat_id": "ei_bssi_esi",
+      "release_family": "ECONOMIC_SENTIMENT",
+      "next_release": "2026-10-22",
+      "next_release_at": "2026-10-22T11:00:00+02:00",
+      "release_title": "Economic Sentiment Indicator & Business and Consumer Survey results",
+      "release_url": "https://economy-finance.ec.europa.eu/economic-forecast-and-surveys/business-and-consumer-surveys/latest-business-and-consumer-surveys_en",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-business-confidence",
+      "eurostat_id": "ei_bssi_ici",
+      "release_family": "ECONOMIC_SENTIMENT",
+      "next_release": "2026-10-22",
+      "next_release_at": "2026-10-22T11:00:00+02:00",
+      "release_title": "Economic Sentiment Indicator & Business and Consumer Survey results",
+      "release_url": "https://economy-finance.ec.europa.eu/economic-forecast-and-surveys/business-and-consumer-surveys/latest-business-and-consumer-surveys_en",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-unemployment",
+      "eurostat_id": "une_rt_m",
+      "release_family": "UNEMPLOYMENT",
+      "next_release": "2026-10-30",
+      "next_release_at": "2026-10-30T11:00:00+01:00",
+      "release_title": "Unemployment",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-employment-yoy",
+      "eurostat_id": "lfsi_emp_q_ea",
+      "release_family": "LFS_MAIN_INDICATORS",
+      "next_release": "2026-12-11",
+      "next_release_at": "2026-12-11T11:00:00+01:00",
+      "release_title": "EU Labour Force Survey: LFS main indicators",
+      "release_url": "https://ec.europa.eu/eurostat/documents/1978984//6048829/LFS_release_announcement.pdf/d0e85313-1429-4ab0-9ce8-9179e4f31ab3",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-employment-qoq",
+      "eurostat_id": "lfsi_emp_q_ea",
+      "release_family": "LFS_MAIN_INDICATORS",
+      "next_release": "2026-12-11",
+      "next_release_at": "2026-12-11T11:00:00+01:00",
+      "release_title": "EU Labour Force Survey: LFS main indicators",
+      "release_url": "https://ec.europa.eu/eurostat/documents/1978984//6048829/LFS_release_announcement.pdf/d0e85313-1429-4ab0-9ce8-9179e4f31ab3",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-youth-unemployment",
+      "eurostat_id": "une_rt_m_youth",
+      "release_family": "UNEMPLOYMENT",
+      "next_release": "2026-10-30",
+      "next_release_at": "2026-10-30T11:00:00+01:00",
+      "release_title": "Unemployment",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-youth-unemployed-persons",
+      "eurostat_id": "une_rt_m_youth",
+      "release_family": "UNEMPLOYMENT",
+      "next_release": "2026-10-30",
+      "next_release_at": "2026-10-30T11:00:00+01:00",
+      "release_title": "Unemployment",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-employment-rate",
+      "eurostat_id": "lfsi_emp_q_ea",
+      "release_family": "LFS_MAIN_INDICATORS",
+      "next_release": "2026-12-11",
+      "next_release_at": "2026-12-11T11:00:00+01:00",
+      "release_title": "EU Labour Force Survey: LFS main indicators",
+      "release_url": "https://ec.europa.eu/eurostat/documents/1978984//6048829/LFS_release_announcement.pdf/d0e85313-1429-4ab0-9ce8-9179e4f31ab3",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-inactive-population",
+      "eurostat_id": "ea_inactive_population",
+      "release_family": "LFS_MAIN_INDICATORS",
+      "next_release": "2026-12-11",
+      "next_release_at": "2026-12-11T11:00:00+01:00",
+      "release_title": "EU Labour Force Survey: LFS main indicators",
+      "release_url": "https://ec.europa.eu/eurostat/documents/1978984//6048829/LFS_release_announcement.pdf/d0e85313-1429-4ab0-9ce8-9179e4f31ab3",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-inactivity-change",
+      "eurostat_id": "ea_inactive_population",
+      "release_family": "LFS_MAIN_INDICATORS",
+      "next_release": "2026-12-11",
+      "next_release_at": "2026-12-11T11:00:00+01:00",
+      "release_title": "EU Labour Force Survey: LFS main indicators",
+      "release_url": "https://ec.europa.eu/eurostat/documents/1978984//6048829/LFS_release_announcement.pdf/d0e85313-1429-4ab0-9ce8-9179e4f31ab3",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-vacant-posts",
+      "eurostat_id": "ea_vacant_posts",
+      "release_family": "JOB_VACANCY",
+      "next_release": "2026-12-16",
+      "next_release_at": "2026-12-16T11:00:00+01:00",
+      "release_title": "Job vacancy",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-vacancy-change",
+      "eurostat_id": "ea_vacant_posts",
+      "release_family": "JOB_VACANCY",
+      "next_release": "2026-12-16",
+      "next_release_at": "2026-12-16T11:00:00+01:00",
+      "release_title": "Job vacancy",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-long-term-unemployment",
+      "eurostat_id": "ea_long_term_unemployment",
+      "release_family": "UNEMPLOYMENT",
+      "next_release": "2026-10-30",
+      "next_release_at": "2026-10-30T11:00:00+01:00",
+      "release_title": "Unemployment",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-employment-change",
+      "eurostat_id": "lfsi_emp_q_ea",
+      "release_family": "LFS_MAIN_INDICATORS",
+      "next_release": "2026-12-11",
+      "next_release_at": "2026-12-11T11:00:00+01:00",
+      "release_title": "EU Labour Force Survey: LFS main indicators",
+      "release_url": "https://ec.europa.eu/eurostat/documents/1978984//6048829/LFS_release_announcement.pdf/d0e85313-1429-4ab0-9ce8-9179e4f31ab3",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-wage-growth",
+      "eurostat_id": "lc_lci_wage_yoy",
+      "release_family": "LABOUR_COST_INDEX",
+      "next_release": "2026-12-17",
+      "next_release_at": "2026-12-17T11:00:00+01:00",
+      "release_title": "Labour cost index",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-wage-growth-qoq",
+      "eurostat_id": "lc_lci_wage_qoq",
+      "release_family": "LABOUR_COST_INDEX",
+      "next_release": "2026-12-17",
+      "next_release_at": "2026-12-17T11:00:00+01:00",
+      "release_title": "Labour cost index",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-retail-sales-mom",
+      "eurostat_id": "ei_isrr_mom",
+      "release_family": "RETAIL_TRADE",
+      "next_release": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00+02:00",
+      "release_title": "Retail trade",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-household-consumption",
+      "eurostat_id": null,
+      "release_family": "GDP_EMPLOYMENT",
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T11:00:00+02:00",
+      "release_title": "GDP main aggregates and employment - update",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-gfcf",
+      "eurostat_id": null,
+      "release_family": "GDP_EMPLOYMENT",
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T11:00:00+02:00",
+      "release_title": "GDP main aggregates and employment - update",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-government-consumption",
+      "eurostat_id": null,
+      "release_family": "GDP_EMPLOYMENT",
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T11:00:00+02:00",
+      "release_title": "GDP main aggregates and employment - update",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-exports",
+      "eurostat_id": null,
+      "release_family": "GDP_EMPLOYMENT",
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T11:00:00+02:00",
+      "release_title": "GDP main aggregates and employment - update",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-imports",
+      "eurostat_id": null,
+      "release_family": "GDP_EMPLOYMENT",
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T11:00:00+02:00",
+      "release_title": "GDP main aggregates and employment - update",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-inactivity",
+      "eurostat_id": null,
+      "release_family": "LFS_MAIN_INDICATORS",
+      "next_release": "2026-12-11",
+      "next_release_at": "2026-12-11T11:00:00+01:00",
+      "release_title": "EU Labour Force Survey: LFS main indicators",
+      "release_url": "https://ec.europa.eu/eurostat/documents/1978984//6048829/LFS_release_announcement.pdf/d0e85313-1429-4ab0-9ce8-9179e4f31ab3",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-job-vacancies",
+      "eurostat_id": null,
+      "release_family": "JOB_VACANCY",
+      "next_release": "2026-12-16",
+      "next_release_at": "2026-12-16T11:00:00+01:00",
+      "release_title": "Job vacancy",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-retail-food-drinks-tobacco",
+      "eurostat_id": "ea_retail_food_drinks_tobacco",
+      "release_family": "RETAIL_TRADE",
+      "next_release": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00+02:00",
+      "release_title": "Retail trade",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-retail-non-food-ex-fuel",
+      "eurostat_id": "ea_retail_non_food_ex_fuel",
+      "release_family": "RETAIL_TRADE",
+      "next_release": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00+02:00",
+      "release_title": "Retail trade",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-retail-automotive-fuel",
+      "eurostat_id": "ea_retail_automotive_fuel",
+      "release_family": "RETAIL_TRADE",
+      "next_release": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00+02:00",
+      "release_title": "Retail trade",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    },
+    {
+      "metric_id": "ea-retail-sales-total-ex-motor-vehicles",
+      "eurostat_id": "ea_retail_sales_total_ex_motor_vehicles",
+      "release_family": "RETAIL_TRADE",
+      "next_release": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00+02:00",
+      "release_title": "Retail trade",
+      "release_url": "https://ec.europa.eu/eurostat/news/release-calendar",
+      "success": true,
+      "error": null
+    }
+  ]
+}

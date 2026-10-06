@@ -1,0 +1,158 @@
+{
+  "pages": {
+    "/_not-found/page": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/chunks/app/_not-found/page-6b5bcf49959cac3c.js"
+    ],
+    "/layout": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/css/e551c9965618f7f3.css",
+      "static/chunks/619-ba102abea3e3d0e4.js",
+      "static/chunks/app/layout-b1a74ee40b1e299a.js"
+    ],
+    "/api/calendar/route": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/chunks/app/api/calendar/route-305e0791b6885fdd.js"
+    ],
+    "/api/desk-matrix/route": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/chunks/app/api/desk-matrix/route-305e0791b6885fdd.js"
+    ],
+    "/api/desk-smoothed/route": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/chunks/app/api/desk-smoothed/route-305e0791b6885fdd.js"
+    ],
+    "/api/metrics/[id]/route": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/chunks/app/api/metrics/[id]/route-305e0791b6885fdd.js"
+    ],
+    "/api/data-freshness/route": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/chunks/app/api/data-freshness/route-305e0791b6885fdd.js"
+    ],
+    "/api/dashboard/[region]/route": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/chunks/app/api/dashboard/[region]/route-305e0791b6885fdd.js"
+    ],
+    "/api/countries/[region]/route": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/chunks/app/api/countries/[region]/route-305e0791b6885fdd.js"
+    ],
+    "/api/economic-calendar/route": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/chunks/app/api/economic-calendar/route-305e0791b6885fdd.js"
+    ],
+    "/api/us-inflation/route": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/chunks/app/api/us-inflation/route-305e0791b6885fdd.js"
+    ],
+    "/api/metrics/route": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/chunks/app/api/metrics/route-305e0791b6885fdd.js"
+    ],
+    "/api/inflation/[region]/route": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/chunks/app/api/inflation/[region]/route-305e0791b6885fdd.js"
+    ],
+    "/country/[region]/inflation/[kind]/page": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/chunks/619-ba102abea3e3d0e4.js",
+      "static/chunks/app/country/[region]/inflation/[kind]/page-745a9dab4b6de89f.js"
+    ],
+    "/desk/page": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/chunks/619-ba102abea3e3d0e4.js",
+      "static/chunks/app/desk/page-19526d7e5c603ecc.js"
+    ],
+    "/country/[region]/page": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/chunks/619-ba102abea3e3d0e4.js",
+      "static/chunks/668-7e98077901b6310e.js",
+      "static/chunks/783-f62833613ca1dd2b.js",
+      "static/chunks/app/country/[region]/page-ae1451823e5227f8.js"
+    ],
+    "/page": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/chunks/619-ba102abea3e3d0e4.js",
+      "static/chunks/82-2a4b34d2f857b641.js",
+      "static/chunks/app/page-69f6e3304aa55b85.js"
+    ],
+    "/calendar/page": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/chunks/619-ba102abea3e3d0e4.js",
+      "static/chunks/app/calendar/page-789c2b16c48fb3d7.js"
+    ],
+    "/metrics/[id]/page": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/chunks/619-ba102abea3e3d0e4.js",
+      "static/chunks/668-7e98077901b6310e.js",
+      "static/chunks/82-2a4b34d2f857b641.js",
+      "static/chunks/app/metrics/[id]/page-b350dba3d256d558.js"
+    ],
+    "/us-inflation/page": [
+      "static/chunks/webpack-f730f3442971980f.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/493-3a7ee7f79f79ae9a.js",
+      "static/chunks/main-app-2485d44c61afe487.js",
+      "static/chunks/619-ba102abea3e3d0e4.js",
+      "static/chunks/app/us-inflation/page-4c75ff24f8b820ae.js"
+    ]
+  }
+}

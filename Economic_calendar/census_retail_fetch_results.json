@@ -1,0 +1,110 @@
+{
+  "source": "US Census Bureau",
+  "source_family": "Monthly Retail Trade",
+  "fetched_at": "2026-10-06T03:46:53",
+  "family_release_dates": {
+    "US_RETAIL_SALES": "2026-10-15"
+  },
+  "metrics": [
+    {
+      "metric_id": "us-retail-sales",
+      "metric": "US Retail Sales — Total",
+      "census_id": "44X72",
+      "family": "US_RETAIL_SALES",
+      "next_release_date": "2026-10-15",
+      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | October 15, 2026 | 8:30 AM | September 2026 | A202610150830 | A202609"
+    },
+    {
+      "metric_id": "us-retail-sales-ex-auto",
+      "metric": "US Retail Sales — Total ex Autos",
+      "census_id": "44X72",
+      "family": "US_RETAIL_SALES",
+      "next_release_date": "2026-10-15",
+      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | October 15, 2026 | 8:30 AM | September 2026 | A202610150830 | A202609"
+    },
+    {
+      "metric_id": "us-retail-motor-vehicles",
+      "metric": "US Retail Sales — Motor Vehicles",
+      "census_id": "441",
+      "family": "US_RETAIL_SALES",
+      "next_release_date": "2026-10-15",
+      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | October 15, 2026 | 8:30 AM | September 2026 | A202610150830 | A202609"
+    },
+    {
+      "metric_id": "us-retail-gasoline",
+      "metric": "US Retail Sales — Gasoline Stations",
+      "census_id": "447",
+      "family": "US_RETAIL_SALES",
+      "next_release_date": "2026-10-15",
+      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | October 15, 2026 | 8:30 AM | September 2026 | A202610150830 | A202609"
+    },
+    {
+      "metric_id": "us-retail-food-beverage",
+      "metric": "US Retail Sales — Food & Beverage",
+      "census_id": "445",
+      "family": "US_RETAIL_SALES",
+      "next_release_date": "2026-10-15",
+      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | October 15, 2026 | 8:30 AM | September 2026 | A202610150830 | A202609"
+    },
+    {
+      "metric_id": "us-retail-general-merchandise",
+      "metric": "US Retail Sales — General Merchandise",
+      "census_id": "452",
+      "family": "US_RETAIL_SALES",
+      "next_release_date": "2026-10-15",
+      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | October 15, 2026 | 8:30 AM | September 2026 | A202610150830 | A202609"
+    },
+    {
+      "metric_id": "us-retail-nonstore",
+      "metric": "US Retail Sales — Nonstore",
+      "census_id": "454",
+      "family": "US_RETAIL_SALES",
+      "next_release_date": "2026-10-15",
+      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | October 15, 2026 | 8:30 AM | September 2026 | A202610150830 | A202609"
+    },
+    {
+      "metric_id": "us-retail-food-services",
+      "metric": "US Retail Sales — Food Services",
+      "census_id": "722",
+      "family": "US_RETAIL_SALES",
+      "next_release_date": "2026-10-15",
+      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | October 15, 2026 | 8:30 AM | September 2026 | A202610150830 | A202609"
+    },
+    {
+      "metric_id": "us-retail-sales-total",
+      "metric": "US Retail Sales — Total",
+      "census_id": "44X72",
+      "family": "US_RETAIL_SALES",
+      "next_release_date": "2026-10-15",
+      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | October 15, 2026 | 8:30 AM | September 2026 | A202610150830 | A202609"
+    },
+    {
+      "metric_id": "us-retail-total-ex-auto-gas",
+      "metric": "US Retail Sales — Total ex Autos & Gas",
+      "census_id": "44W72",
+      "family": "US_RETAIL_SALES",
+      "next_release_date": "2026-10-15",
+      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | October 15, 2026 | 8:30 AM | September 2026 | A202610150830 | A202609"
+    }
+  ]
+}

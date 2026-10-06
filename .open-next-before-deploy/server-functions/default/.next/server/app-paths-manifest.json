@@ -1,0 +1,22 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/api/calendar/route": "app/api/calendar/route.js",
+  "/api/desk-matrix/route": "app/api/desk-matrix/route.js",
+  "/api/desk-smoothed/route": "app/api/desk-smoothed/route.js",
+  "/api/metrics/[id]/route": "app/api/metrics/[id]/route.js",
+  "/api/data-freshness/route": "app/api/data-freshness/route.js",
+  "/api/dashboard/[region]/route": "app/api/dashboard/[region]/route.js",
+  "/api/countries/[region]/route": "app/api/countries/[region]/route.js",
+  "/api/economic-calendar/route": "app/api/economic-calendar/route.js",
+  "/api/us-inflation/route": "app/api/us-inflation/route.js",
+  "/api/metrics/route": "app/api/metrics/route.js",
+  "/api/inflation/[region]/route": "app/api/inflation/[region]/route.js",
+  "/country/[region]/inflation/[kind]/page": "app/country/[region]/inflation/[kind]/page.js",
+  "/desk/page": "app/desk/page.js",
+  "/country/[region]/page": "app/country/[region]/page.js",
+  "/page": "app/page.js",
+  "/calendar/page": "app/calendar/page.js",
+  "/metrics/[id]/page": "app/metrics/[id]/page.js",
+  "/us-inflation/page": "app/us-inflation/page.js"
+}

@@ -1,0 +1,251 @@
+{
+  "source": "Federal Reserve System",
+  "calendar_source": "Federal Reserve Bank of New York Economic Indicators Calendar",
+  "fetched_at": "2026-10-06T03:47:14",
+  "family_release_dates": {
+    "SCE": "2026-10-06",
+    "PHILLY_SPF": "2026-11-17"
+  },
+  "metrics": [
+    {
+      "metric_id": "us-nyfed-sce-inflation-exp-1y",
+      "metric": "NY Fed SCE Inflation Expectations (1-Year)",
+      "source_id": "SCE_INFLATION_1Y",
+      "family": "SCE",
+      "next_release_date": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00-04:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-oct26.html",
+      "official_evidence": "October 06, 2026 — Survey of Consumer Expectations"
+    },
+    {
+      "metric_id": "us-nyfed-sce-inflation-exp-3y",
+      "metric": "NY Fed SCE Inflation Expectations (3-Year)",
+      "source_id": "SCE_INFLATION_3Y",
+      "family": "SCE",
+      "next_release_date": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00-04:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-oct26.html",
+      "official_evidence": "October 06, 2026 — Survey of Consumer Expectations"
+    },
+    {
+      "metric_id": "us-nyfed-sce-inflation-exp-5y",
+      "metric": "NY Fed SCE Inflation Expectations (5-Year)",
+      "source_id": "SCE_INFLATION_5Y",
+      "family": "SCE",
+      "next_release_date": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00-04:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-oct26.html",
+      "official_evidence": "October 06, 2026 — Survey of Consumer Expectations"
+    },
+    {
+      "metric_id": "us-nyfed-sce-1y",
+      "metric": "NY Fed SCE Inflation Expectations 1-Year",
+      "source_id": null,
+      "family": "SCE",
+      "next_release_date": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00-04:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-oct26.html",
+      "official_evidence": "October 06, 2026 — Survey of Consumer Expectations"
+    },
+    {
+      "metric_id": "us-nyfed-sce-3y",
+      "metric": "NY Fed SCE Inflation Expectations 3-Year",
+      "source_id": null,
+      "family": "SCE",
+      "next_release_date": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00-04:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-oct26.html",
+      "official_evidence": "October 06, 2026 — Survey of Consumer Expectations"
+    },
+    {
+      "metric_id": "us-nyfed-sce-5y",
+      "metric": "NY Fed SCE Inflation Expectations 5-Year",
+      "source_id": null,
+      "family": "SCE",
+      "next_release_date": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00-04:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-oct26.html",
+      "official_evidence": "October 06, 2026 — Survey of Consumer Expectations"
+    },
+    {
+      "metric_id": "us-nyfed-sce-1y-uncertainty",
+      "metric": "NY Fed SCE Inflation Uncertainty 1-Year",
+      "source_id": null,
+      "family": "SCE",
+      "next_release_date": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00-04:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-oct26.html",
+      "official_evidence": "October 06, 2026 — Survey of Consumer Expectations"
+    },
+    {
+      "metric_id": "us-nyfed-sce-labor-earnings-1y",
+      "metric": "NY Fed SCE Earnings Growth Expectations (1-Year)",
+      "source_id": "SCE_LABOR_EARNINGS_1Y",
+      "family": "SCE",
+      "next_release_date": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00-04:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-oct26.html",
+      "official_evidence": "October 06, 2026 — Survey of Consumer Expectations"
+    },
+    {
+      "metric_id": "us-nyfed-sce-labor-job-separation-1y",
+      "metric": "NY Fed SCE Job Separation Probability (1-Year)",
+      "source_id": "SCE_LABOR_JOB_SEPARATION_1Y",
+      "family": "SCE",
+      "next_release_date": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00-04:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-oct26.html",
+      "official_evidence": "October 06, 2026 — Survey of Consumer Expectations"
+    },
+    {
+      "metric_id": "us-nyfed-sce-labor-job-finding-1y",
+      "metric": "NY Fed SCE Job Finding Probability (1-Year)",
+      "source_id": "SCE_LABOR_JOB_FINDING_1Y",
+      "family": "SCE",
+      "next_release_date": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00-04:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-oct26.html",
+      "official_evidence": "October 06, 2026 — Survey of Consumer Expectations"
+    },
+    {
+      "metric_id": "us-nyfed-sce-labor-unemployment-1y",
+      "metric": "NY Fed SCE Unemployment Expectations (1-Year)",
+      "source_id": "SCE_LABOR_UNEMPLOYMENT_1Y",
+      "family": "SCE",
+      "next_release_date": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00-04:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-oct26.html",
+      "official_evidence": "October 06, 2026 — Survey of Consumer Expectations"
+    },
+    {
+      "metric_id": "us-nyfed-sce-finance-income-1y",
+      "metric": "NY Fed SCE Household Income Growth Expectations (1-Year)",
+      "source_id": "SCE_FINANCE_INCOME_1Y",
+      "family": "SCE",
+      "next_release_date": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00-04:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-oct26.html",
+      "official_evidence": "October 06, 2026 — Survey of Consumer Expectations"
+    },
+    {
+      "metric_id": "us-nyfed-sce-finance-spending-1y",
+      "metric": "NY Fed SCE Household Spending Growth Expectations (1-Year)",
+      "source_id": "SCE_FINANCE_SPENDING_1Y",
+      "family": "SCE",
+      "next_release_date": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00-04:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-oct26.html",
+      "official_evidence": "October 06, 2026 — Survey of Consumer Expectations"
+    },
+    {
+      "metric_id": "us-nyfed-sce-finance-tax-1y",
+      "metric": "NY Fed SCE Tax Change Expectations (1-Year)",
+      "source_id": "SCE_FINANCE_TAX_1Y",
+      "family": "SCE",
+      "next_release_date": "2026-10-06",
+      "next_release_at": "2026-10-06T11:00:00-04:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-oct26.html",
+      "official_evidence": "October 06, 2026 — Survey of Consumer Expectations"
+    },
+    {
+      "metric_id": "us-philly-spf-cpi-1y",
+      "metric": "Philadelphia Fed SPF CPI 1-Year",
+      "source_id": null,
+      "family": "PHILLY_SPF",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T10:00:00-05:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-nov26.html",
+      "official_evidence": "November 17, 2026 — Survey of Professional Forecasters"
+    },
+    {
+      "metric_id": "us-philly-spf-core-cpi-1y",
+      "metric": "Philadelphia Fed SPF Core CPI 1-Year",
+      "source_id": null,
+      "family": "PHILLY_SPF",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T10:00:00-05:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-nov26.html",
+      "official_evidence": "November 17, 2026 — Survey of Professional Forecasters"
+    },
+    {
+      "metric_id": "us-philly-spf-pce-1y",
+      "metric": "Philadelphia Fed SPF PCE 1-Year",
+      "source_id": null,
+      "family": "PHILLY_SPF",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T10:00:00-05:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-nov26.html",
+      "official_evidence": "November 17, 2026 — Survey of Professional Forecasters"
+    },
+    {
+      "metric_id": "us-philly-spf-core-pce-1y",
+      "metric": "Philadelphia Fed SPF Core PCE 1-Year",
+      "source_id": null,
+      "family": "PHILLY_SPF",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T10:00:00-05:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-nov26.html",
+      "official_evidence": "November 17, 2026 — Survey of Professional Forecasters"
+    },
+    {
+      "metric_id": "us-philly-spf-cpi-5y",
+      "metric": "Philadelphia Fed SPF CPI 5-Year",
+      "source_id": null,
+      "family": "PHILLY_SPF",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T10:00:00-05:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-nov26.html",
+      "official_evidence": "November 17, 2026 — Survey of Professional Forecasters"
+    },
+    {
+      "metric_id": "us-philly-spf-pce-5y",
+      "metric": "Philadelphia Fed SPF PCE 5-Year",
+      "source_id": null,
+      "family": "PHILLY_SPF",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T10:00:00-05:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-nov26.html",
+      "official_evidence": "November 17, 2026 — Survey of Professional Forecasters"
+    },
+    {
+      "metric_id": "us-philly-spf-cpi-10y",
+      "metric": "Philadelphia Fed SPF CPI 10-Year",
+      "source_id": null,
+      "family": "PHILLY_SPF",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T10:00:00-05:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-nov26.html",
+      "official_evidence": "November 17, 2026 — Survey of Professional Forecasters"
+    },
+    {
+      "metric_id": "us-philly-spf-pce-10y",
+      "metric": "Philadelphia Fed SPF PCE 10-Year",
+      "source_id": null,
+      "family": "PHILLY_SPF",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T10:00:00-05:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-nov26.html",
+      "official_evidence": "November 17, 2026 — Survey of Professional Forecasters"
+    },
+    {
+      "metric_id": "us-philly-spf-5y5y-cpi",
+      "metric": "Philadelphia Fed SPF 5Y5Y Forward CPI",
+      "source_id": null,
+      "family": "PHILLY_SPF",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T10:00:00-05:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-nov26.html",
+      "official_evidence": "November 17, 2026 — Survey of Professional Forecasters"
+    },
+    {
+      "metric_id": "us-philly-spf-5y5y-pce",
+      "metric": "Philadelphia Fed SPF 5Y5Y Forward PCE",
+      "source_id": null,
+      "family": "PHILLY_SPF",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T10:00:00-05:00",
+      "official_source": "https://www.newyorkfed.org/research/calendars/i-nov26.html",
+      "official_evidence": "November 17, 2026 — Survey of Professional Forecasters"
+    }
+  ]
+}

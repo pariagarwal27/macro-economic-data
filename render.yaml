@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: macro-economy-tracker
+    env: docker
+    plan: starter
+    disk:
+      name: macro-data
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000

@@ -1,0 +1,22 @@
+{
+  "/_not-found/page": "/_not-found",
+  "/favicon.ico/route": "/favicon.ico",
+  "/api/calendar/route": "/api/calendar",
+  "/api/desk-matrix/route": "/api/desk-matrix",
+  "/api/desk-smoothed/route": "/api/desk-smoothed",
+  "/api/metrics/[id]/route": "/api/metrics/[id]",
+  "/api/data-freshness/route": "/api/data-freshness",
+  "/api/dashboard/[region]/route": "/api/dashboard/[region]",
+  "/api/countries/[region]/route": "/api/countries/[region]",
+  "/api/economic-calendar/route": "/api/economic-calendar",
+  "/api/us-inflation/route": "/api/us-inflation",
+  "/api/metrics/route": "/api/metrics",
+  "/api/inflation/[region]/route": "/api/inflation/[region]",
+  "/country/[region]/inflation/[kind]/page": "/country/[region]/inflation/[kind]",
+  "/desk/page": "/desk",
+  "/country/[region]/page": "/country/[region]",
+  "/page": "/",
+  "/calendar/page": "/calendar",
+  "/metrics/[id]/page": "/metrics/[id]",
+  "/us-inflation/page": "/us-inflation"
+}
