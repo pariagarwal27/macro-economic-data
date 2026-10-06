@@ -41,10 +41,11 @@ yarn-error.log*
 next-env.d.ts
 
 # local database
-/data
-*.db
-*.db-*
-# The release calendar DB is the deployed schedule source and is intentionally tracked.
+*.db-journal
+*.db-wal
+*.db-shm
+# Track the pre-populated database files
+!data/macro.db
 !Economic_calendar/economic_calendar.db
 !Economic_calendar/master_calendar.json
 !Economic_calendar/all_calendar_results.json

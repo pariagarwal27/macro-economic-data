@@ -37,8 +37,8 @@ COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 COPY --from=builder /app/next.config.ts ./next.config.ts
 
-# Create data directory for SQLite and copy calendar folder
-RUN mkdir -p /app/data
+# Copy database directories
+COPY --from=builder /app/data ./data
 COPY --from=builder /app/Economic_calendar ./Economic_calendar
 
 EXPOSE 3000
