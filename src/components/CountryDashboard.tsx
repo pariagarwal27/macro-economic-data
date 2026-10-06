@@ -5365,7 +5365,11 @@ const specs =
   <div
     className="cards-grid"
     style={{
-      gridTemplateColumns: `repeat(${specs.length}, minmax(0, 1fr))`,
+      gridTemplateColumns:
+        specs.length <= 4
+          ? `repeat(${specs.length}, minmax(240px, 1fr))`
+          : `repeat(auto-fill, minmax(260px, 1fr))`,
+      gap: "12px",
     }}
   >
     {specs.map((spec) => (

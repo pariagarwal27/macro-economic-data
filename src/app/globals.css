@@ -145,9 +145,11 @@ button{
 }
 
 .macro-content{
-  max-width:1540px;
-  margin:0 auto;
+  width:100%;
+  max-width:100%;
+  margin:0;
   padding:18px 24px 10px;
+  box-sizing:border-box;
 }
 
 .country-heading{
@@ -689,17 +691,19 @@ button{
    ========================================================= */
 
 .macro-footer{
-  max-width:1540px;
-  margin:7px auto 15px;
+  width:calc(100% - 48px);
+  max-width:100%;
+  margin:14px 24px 20px;
   border:1px solid var(--line);
   background:rgba(255,255,255,.55);
-  border-radius:8px;
-  padding:7px 12px;
+  border-radius:10px;
+  padding:10px 16px;
   display:flex;
   justify-content:space-between;
-  gap:12px;
+  gap:14px;
   color:#4f6687;
-  font-size:9px;
+  font-size:11px;
+  box-sizing:border-box;
 }
 
 
@@ -4039,13 +4043,15 @@ html[data-theme="dark"] .loading-strip{
    ========================================================= */
 
 .macro-dashboard-layout{
-  max-width:1540px;
-  margin:0 auto;
+  width:100%;
+  max-width:100%;
+  margin:0;
   padding:0 24px;
   display:grid;
   grid-template-columns:320px minmax(0,1fr);
-  gap:14px;
+  gap:18px;
   align-items:start;
+  box-sizing:border-box;
 }
 
 .macro-dashboard-layout > .macro-content{
@@ -4119,7 +4125,7 @@ html[data-theme="dark"] .loading-strip{
 
 .economic-calendar-tabs{
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:1fr 1fr 1fr;
   gap:5px;
   padding:7px;
   background:var(--panel-2);
@@ -4188,8 +4194,12 @@ html[data-theme="dark"] .loading-strip{
   font-size:10px;
   font-weight:800;
   padding-top:2px;
-  white-space:nowrap;
+  white-space:normal;
 }
+
+.economic-calendar-time svg{flex-shrink:0;}
+.economic-calendar-event-name a{color:inherit;text-decoration:none;}
+.economic-calendar-event-name a:hover{text-decoration:underline;}
 
 .economic-calendar-event-main{
   min-width:0;
@@ -5380,65 +5390,70 @@ html[data-theme="dark"] .loading-strip{
 /* ---------- Overall page rhythm ---------- */
 
 .macro-page{
+  width:100%;
+  min-height:100vh;
   background:
     radial-gradient(circle at 78% 6%, rgba(66,165,255,.045), transparent 28%),
     var(--paper);
 }
 
 .macro-dashboard-layout{
-  max-width:1600px;
-  padding:0 18px 18px;
-  gap:16px;
+  width:100%;
+  max-width:100%;
+  padding:0 24px 24px;
+  display:grid;
+  grid-template-columns:320px minmax(0,1fr);
+  gap:20px;
+  box-sizing:border-box;
 }
 
 .macro-dashboard-layout > .macro-content{
-  padding:16px 0 12px;
+  width:100%;
+  max-width:none;
+  margin:0;
+  padding:14px 0 12px;
+  min-width:0;
 }
 
 .macro-calendar-sidebar{
   top:68px;
   height:calc(100vh - 82px);
-  padding-top:16px;
+  padding-top:14px;
+  min-width:0;
 }
 
 /* ---------- Country header ---------- */
 
 .country-heading{
   min-height:58px;
-  margin:2px 0 14px;
+  margin:2px 0 18px;
   padding:0 2px;
 }
 
 .country-flag{
-  font-size:34px;
+  font-size:38px;
 }
 
 .country-heading h1{
-  font-size:30px;
-  font-weight:750;
+  font-size:32px;
+  font-weight:800;
   letter-spacing:-.8px;
 }
 
 .country-heading p{
-  font-size:12px;
+  font-size:14px;
   margin-top:4px;
 }
 
 /* ---------- Macro sections ---------- */
 
-/*
- * The old layout used a permanent left-hand label column.
- * The refined layout makes every macro category a self-contained
- * horizontal module, matching the visual language of the
- * Inflation Expectations section.
- */
 .macro-band{
   position:relative;
   display:block;
-  margin:12px 0;
-  padding:14px;
+  margin:16px 0;
+  padding:18px 20px;
   border:1px solid var(--line);
-  border-radius:16px;
+  border-radius:18px;
   overflow:visible;
   background:var(--panel);
   box-shadow:0 8px 28px rgba(0,0,0,.12);
@@ -5446,23 +5461,23 @@ html[data-theme="dark"] .loading-strip{
 
 .inflation-band{
   background:
-    linear-gradient(180deg, rgba(255,82,96,.055), transparent 38%),
+    linear-gradient(180deg, rgba(255,82,96,.06), transparent 38%),
     var(--panel);
-  border-color:color-mix(in srgb, #ff6470 24%, var(--line));
+  border-color:color-mix(in srgb, #ff6470 28%, var(--line));
 }
 
 .growth-band{
   background:
-    linear-gradient(180deg, rgba(40,211,148,.055), transparent 38%),
+    linear-gradient(180deg, rgba(40,211,148,.06), transparent 38%),
     var(--panel);
-  border-color:color-mix(in srgb, #28d394 22%, var(--line));
+  border-color:color-mix(in srgb, #28d394 26%, var(--line));
 }
 
 .jobs-band{
   background:
-    linear-gradient(180deg, rgba(66,165,255,.055), transparent 38%),
+    linear-gradient(180deg, rgba(66,165,255,.06), transparent 38%),
     var(--panel);
-  border-color:color-mix(in srgb, #42a5ff 22%, var(--line));
+  border-color:color-mix(in srgb, #42a5ff 26%, var(--line));
 }
 
 .band-label{
@@ -5470,19 +5485,19 @@ html[data-theme="dark"] .loading-strip{
   flex-direction:row;
   align-items:center;
   justify-content:flex-start;
-  gap:10px;
-  min-height:32px;
-  padding:0 2px 12px;
+  gap:12px;
+  min-height:36px;
+  padding:0 2px 14px;
 }
 
 .band-icon{
-  width:30px;
-  height:30px;
+  width:34px;
+  height:34px;
   display:grid;
   place-items:center;
-  flex:0 0 30px;
+  flex:0 0 34px;
   margin:0;
-  border-radius:9px;
+  border-radius:10px;
   background:var(--panel-3);
   color:var(--accent);
   font-size:18px;
@@ -5490,22 +5505,22 @@ html[data-theme="dark"] .loading-strip{
 
 .inflation-band .band-icon{
   color:#ff7c86;
-  background:rgba(255,100,112,.10);
+  background:rgba(255,100,112,.12);
 }
 
 .growth-band .band-icon{
   color:var(--up);
-  background:rgba(40,211,148,.10);
+  background:rgba(40,211,148,.12);
 }
 
 .jobs-band .band-icon{
   color:var(--accent);
-  background:rgba(66,165,255,.10);
+  background:rgba(66,165,255,.12);
 }
 
 .band-label h2{
   margin:0;
-  font-size:20px;
+  font-size:22px;
   line-height:1;
   font-weight:800;
   letter-spacing:-.35px;
@@ -5514,23 +5529,24 @@ html[data-theme="dark"] .loading-strip{
 .band-label p{
   margin:0;
   color:var(--muted);
-  font-size:11px;
-  line-height:1.25;
+  font-size:13px;
+  line-height:1.3;
   flex:1 1 auto;
   min-width:0;
 }
 
 .band-label strong{
   margin-left:auto;
-  font-size:12px;
+  font-size:13px;
   font-family:var(--font-mono);
   color:var(--ink);
+  font-weight:700;
 }
 
 .band-label span{
-  margin-left:-6px;
+  margin-left:-4px;
   color:var(--muted);
-  font-size:10px;
+  font-size:12px;
 }
 
 .macro-band-content{
@@ -5542,9 +5558,9 @@ html[data-theme="dark"] .loading-strip{
 
 .cards-grid{
   display:grid !important;
-  grid-template-columns:repeat(auto-fit, minmax(132px, 1fr)) !important;
+  grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)) !important;
   grid-auto-flow:row;
-  gap:8px;
+  gap:12px;
   width:100%;
   min-width:0;
   overflow:visible;
@@ -5552,9 +5568,9 @@ html[data-theme="dark"] .loading-strip{
 
 .macro-card{
   min-width:0;
-  min-height:198px;
-  padding:11px;
-  border-radius:11px;
+  min-height:210px;
+  padding:14px 15px;
+  border-radius:14px;
   background:var(--panel-2);
   border:1px solid var(--line);
   box-shadow:none;
@@ -5569,84 +5585,138 @@ html[data-theme="dark"] .loading-strip{
   transform:translateY(-2px);
   background:var(--panel-3);
   border-color:var(--line-strong);
-  box-shadow:0 10px 24px rgba(0,0,0,.20);
+  box-shadow:0 12px 28px rgba(0,0,0,.22);
 }
 
 .macro-card-head{
-  min-height:39px;
-  gap:6px;
+  min-height:42px;
+  gap:8px;
 }
 
 .eyebrow{
-  font-size:8px;
-  letter-spacing:.11em;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.10em;
+  text-transform:uppercase;
+  color:var(--muted);
 }
 
 .macro-card h3{
-  font-size:12px;
-  line-height:1.2;
+  font-size:14px;
+  line-height:1.25;
   margin:4px 0 0;
-  font-weight:750;
+  font-weight:800;
+  color:var(--ink);
 }
 
 .macro-badge{
-  font-size:7px;
-  padding:3px 5px;
-  border-radius:5px;
+  font-size:9px;
+  font-weight:800;
+  padding:4px 7px;
+  border-radius:6px;
+  letter-spacing:.04em;
+  text-transform:uppercase;
 }
 
 .macro-values{
-  gap:5px;
-  margin-top:7px;
+  gap:8px;
+  margin-top:10px;
 }
 
 .rate-box{
-  padding:6px 5px;
-  border-radius:7px;
+  padding:8px 8px;
+  border-radius:9px;
 }
 
 .rate-box span{
-  font-size:8px;
+  font-size:10px;
+  font-weight:600;
+  color:var(--muted);
 }
 
 .rate-box strong{
-  font-size:13px;
+  font-size:17px;
+  font-weight:800;
+  font-family:var(--font-mono);
+  margin-top:2px;
 }
 
 .macro-spark{
-  height:62px;
-  margin:4px 0 1px;
+  height:68px;
+  margin:6px 0 2px;
 }
 
 .macro-spark .spark-chart{
-  height:62px;
+  height:68px;
 }
 
 .release-line{
-  margin-top:2px;
-  font-size:8px;
+  margin-top:4px;
+  font-size:10px;
+  color:var(--muted);
 }
 
 .detail-button{
-  margin-top:7px;
-  min-height:27px;
-  border-radius:7px;
-  padding:5px 6px;
-  font-size:8px;
+  margin-top:10px;
+  min-height:30px;
+  border-radius:8px;
+  padding:6px 8px;
+  font-size:10px;
+  font-weight:700;
 }
 
 /* ---------- Inflation Expectations module ---------- */
 
 .inflation-expectations-section{
-  margin:14px 0 0;
-  padding:14px 0 0;
+  margin:18px 0 0;
+  padding:16px 0 0;
   border-top:1px solid var(--line);
   background:transparent;
 }
 
 .inflation-expectations-header{
-  margin:0 2px 11px;
+  margin:0 2px 14px;
   gap:12px;
+}
+
+.inflation-expectations-title h3{
+  font-size:20px;
+  font-weight:800;
+}
+
+.inflation-expectations-title p{
+  font-size:13px;
+  color:var(--muted);
+}
+
+.expectation-category-grid{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)) !important;
+  gap:12px;
+}
+
+.expectation-category-card{
+  padding:14px 16px;
+  border-radius:13px;
+  min-height:125px;
+}
+
+.expectation-card-content h4{
+  font-size:15px;
+  font-weight:800;
+  margin:2px 0 4px;
+}
+
+.expectation-card-content p{
+  font-size:12px;
+  line-height:1.35;
+  color:var(--muted);
+  margin:0 0 10px;
+}
+
+.expectation-card-content strong{
+  font-size:12px;
+  font-weight:700;
 }
 
 .inflation-expectations-title{
