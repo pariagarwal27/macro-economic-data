@@ -91,11 +91,11 @@ function formatValue(value: number | null) {
 }
 
 function statusLabel(status: CalendarEvent["status"]) {
-  if (status === "released") return "RELEASED";
-  if (status === "pending") return "PENDING";
-  if (status === "upcoming") return "UPCOMING";
-  if (status === "unscheduled") return "NO DATE";
-  return "PAST";
+  if (status === "released") return "Released";
+  if (status === "pending") return "Pending";
+  if (status === "upcoming") return "Upcoming";
+  if (status === "unscheduled") return "No date";
+  return "Past";
 }
 
 function formatLastUpdated(timestamp: string) {
@@ -191,6 +191,7 @@ export function EconomicCalendarSidebar() {
           </div>
 
           <h2>Releases</h2>
+          <p className="economic-calendar-subtitle">Official data. At a glance.</p>
         </div>
 
         <button
@@ -210,7 +211,7 @@ export function EconomicCalendarSidebar() {
           className={tab === "today" ? "active" : ""}
           onClick={() => setTab("today")}
         >
-          Today&apos;s Releases
+          Today
         </button>
 
         <button
@@ -221,7 +222,7 @@ export function EconomicCalendarSidebar() {
           This Week
         </button>
         <button type="button" className={tab === "all" ? "active" : ""} onClick={() => setTab("all")}>
-          All Metrics
+          All releases
         </button>
       </div>
 
@@ -265,7 +266,7 @@ export function EconomicCalendarSidebar() {
       ) : tab === "all" ? (
         <div className="economic-calendar-list">
           <div className="economic-calendar-date-heading">All {payload?.coverage.totalMetrics ?? 0} metrics · UK time</div>
-          {payload && <div className="economic-calendar-empty">{payload.coverage.exactTime} exact times · {payload.coverage.deadline} publication deadlines · {payload.coverage.dateOnly} dates without an announced time</div>}
+          {payload && <div className="economic-calendar-coverage">{payload.coverage.exactTime} confirmed times · {payload.coverage.dateOnly} date-only releases</div>}
           {payload?.allEvents.map(event => (
             <div key={event.metricId}>
               <div className="economic-calendar-date-heading">{event.scheduledDate ? formatDay(event.scheduledDate) : event.scheduleType === "daily" ? "Daily data · no fixed release" : "Next date unavailable"}</div>
@@ -305,7 +306,7 @@ export function EconomicCalendarSidebar() {
 
       {payload?.lastUpdated && (
         <div className="economic-calendar-footer">
-          Calendar data updated{" "}
+          <span className="economic-calendar-footer-label">Last synced</span>{" "}
           {formatLastUpdated(payload.lastUpdated)}
           <div>UK time (BST/GMT). “By” and “Before” indicate publication deadlines. Unannounced times are not estimated.</div>
         </div>
@@ -393,7 +394,7 @@ function CalendarEventRow({
           <span className="economic-calendar-status-dot" />
         )}
 
-        {event.scheduleType === "daily" ? "DAILY" : event.scheduleType === "source-error" ? "SOURCE ERROR" : statusLabel(event.status)}
+        {event.scheduleType === "daily" ? "Daily" : event.scheduleType === "source-error" ? "Source error" : statusLabel(event.status)}
       </div>
     </div>
   );
