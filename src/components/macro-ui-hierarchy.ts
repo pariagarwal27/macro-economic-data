@@ -1,5 +1,6 @@
 export type Region = "US" | "UK" | "EA";
-export type MacroCategory = "inflation" | "growth" | "jobs";
+export type MacroCategory = "prices" | "activity" | "labour" | "monetary" | "expectations" | "external";
+type SourceMacroCategory = "inflation" | "growth" | "jobs";
 
 export type UiNode = {
   id: string;
@@ -30,7 +31,7 @@ const n = (id: string, label: string, metricId?: string, children?: UiNode[]): U
   id, label, ...(metricId ? { metricId } : {}), ...(children?.length ? { children } : {}),
 });
 
-export const DASHBOARD: Record<Region, Record<MacroCategory, IndicatorSpec[]>> = {
+const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec[]>> = {
   US: {
   inflation: [
  {
@@ -1034,6 +1035,71 @@ export const DASHBOARD: Record<Region, Record<MacroCategory, IndicatorSpec[]>> =
     ],
   },
 };
+
+// Reclassify the existing country cards without adding or changing any
+// indicator, component, series ID, or source definition.
+const MACRO_CATEGORY_ORDER: MacroCategory[] = [
+  "prices",
+  "activity",
+  "labour",
+  "monetary",
+  "expectations",
+  "external",
+];
+
+const CATEGORY_SPEC_IDS: Record<Region, Record<MacroCategory, string[]>> = {
+  US: {
+    prices: ["us-cpi-card", "us-core-cpi-card", "us-pce-card", "us-core-pce-card"],
+    activity: ["us-gdp-card", "us-retail-sales-card", "us-pmi-card", "us-pce-growth-card", "us-investment-card", "us-government-card"],
+    labour: ["us-unemployment-card", "us-payrolls-card", "us-participation-card", "us-jolts-card", "us-wages-card", "us-claims-card"],
+    monetary: [],
+    expectations: ["us-inflation-expectations-consumer", "us-inflation-expectations-wage", "us-inflation-expectations-business", "us-inflation-expectations-market", "us-inflation-expectations-model"],
+    external: ["us-net-exports-card"],
+  },
+  UK: {
+    prices: ["uk-cpi-card", "uk-cpih-card", "uk-core-card", "uk-goods-card", "uk-services-card", "uk-food-card", "uk-housing-card"],
+    activity: ["uk-gdp-card", "uk-gdp-monthly-card", "uk-retail-sales-card", "uk-pmi-card", "uk-household-card", "uk-capital-card", "uk-government-card"],
+    labour: ["uk-unemployment-card", "uk-employment-card", "uk-inactivity-card", "uk-vacancies-card", "uk-wages-card", "uk-payrolled-card"],
+    monetary: [],
+    expectations: ["uk-inflation-expectations-consumer", "uk-inflation-expectations-business", "uk-inflation-expectations-wage", "uk-inflation-expectations-market", "uk-inflation-expectations-professional"],
+    external: ["uk-net-trade-card"],
+  },
+  EA: {
+    prices: ["ea-hicp-card", "ea-core-card", "ea-food-card", "ea-energy-card", "ea-neig-card", "ea-services-card"],
+    activity: ["ea-gdp-card", "ea-retail-sales-card", "ea-pmi-card", "ea-household-card", "ea-capital-card", "ea-government-card"],
+    labour: ["ea-unemployment-card", "ea-youth-card", "ea-employment-card", "ea-inactivity-card", "ea-vacancies-card", "ea-wages-card", "ea-inflation-expectations-wage"],
+    monetary: [],
+    expectations: ["ea-inflation-expectations-consumer", "ea-inflation-expectations-business", "ea-inflation-expectations-market", "ea-inflation-expectations-professional"],
+    external: ["ea-exports-card", "ea-imports-card"],
+  },
+};
+
+export const DASHBOARD: Record<Region, Record<MacroCategory, IndicatorSpec[]>> = (() => {
+  const grouped = {} as Record<Region, Record<MacroCategory, IndicatorSpec[]>>;
+
+  for (const region of ["US", "UK", "EA"] as const) {
+    const remaining = new Map(
+      Object.values(SOURCE_DASHBOARD[region]).flat().map((spec) => [spec.id, spec])
+    );
+    const categories = {} as Record<MacroCategory, IndicatorSpec[]>;
+
+    for (const category of MACRO_CATEGORY_ORDER) {
+      categories[category] = CATEGORY_SPEC_IDS[region][category].map((id) => {
+        const spec = remaining.get(id);
+        if (!spec) throw new Error(`Unknown or repeated ${region} dashboard card: ${id}`);
+        remaining.delete(id);
+        return spec;
+      });
+    }
+
+    if (remaining.size) {
+      throw new Error(`Unmapped ${region} dashboard cards: ${[...remaining.keys()].join(", ")}`);
+    }
+    grouped[region] = categories;
+  }
+
+  return grouped;
+})();
 
 export const REGION_LABEL: Record<Region, string> = {
   US: "United States",

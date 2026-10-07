@@ -5480,6 +5480,21 @@ html[data-theme="dark"] .loading-strip{
   border-color:color-mix(in srgb, #42a5ff 26%, var(--line));
 }
 
+.expectations-band{
+  background:var(--panel);
+  border-color:color-mix(in srgb, #a98aff 25%, var(--line));
+}
+
+.monetary-band{
+  background:var(--panel);
+  border-color:color-mix(in srgb, #46b6bf 25%, var(--line));
+}
+
+.external-band{
+  background:var(--panel);
+  border-color:color-mix(in srgb, #d1a75b 25%, var(--line));
+}
+
 .band-label{
   display:flex;
   flex-direction:row;
@@ -5517,6 +5532,10 @@ html[data-theme="dark"] .loading-strip{
   color:var(--accent);
   background:rgba(66,165,255,.12);
 }
+
+.expectations-band .band-icon{color:#b39aff;background:rgba(179,154,255,.12);}
+.monetary-band .band-icon{color:#57c4cb;background:rgba(87,196,203,.12);}
+.external-band .band-icon{color:#d5b169;background:rgba(213,177,105,.12);}
 
 .band-label h2{
   margin:0;
@@ -6178,6 +6197,9 @@ html[data-theme="dark"]{
 .inflation-band{--band-color:#d57886;background:var(--panel);}
 .growth-band{--band-color:#389b78;background:var(--panel);}
 .jobs-band{--band-color:#548bc2;background:var(--panel);}
+.expectations-band{--band-color:#9b80d5;background:var(--panel);}
+.monetary-band{--band-color:#48aab0;background:var(--panel);}
+.external-band{--band-color:#b89450;background:var(--panel);}
 .band-label{padding:8px 6px 8px 10px;align-items:flex-start;}
 .band-label h2{font-size:18px;letter-spacing:-.025em;}
 .band-label p{font-size:11px;line-height:1.5;}

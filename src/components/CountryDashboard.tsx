@@ -3038,6 +3038,7 @@ function IndicatorCard({
   spec,
   metric,
   componentMetrics,
+  groupLabel,
   highlighted = false,
   onOpen,
 }: {
@@ -3047,6 +3048,7 @@ function IndicatorCard({
     string,
     DetailPayload | undefined
   >;
+  groupLabel?: string;
   highlighted?: boolean;
   onOpen: () => void;
 }) {
@@ -3074,7 +3076,7 @@ function IndicatorCard({
       <div className="macro-card-head">
         <div className="min-w-0">
           <div className="eyebrow">
-            {m?.region} · {m?.category}
+            {m?.region} · {groupLabel ?? m?.category}
           </div>
 
           <h3>{displayMetricTitle(spec, metric)}</h3>
@@ -5111,26 +5113,44 @@ useEffect(() => {
       tone: string;
     }
   > = {
-    inflation: {
-      title: "Inflation",
+    prices: {
+      title: "Prices & Inflation",
       description:
-        "Price levels and inflation indicators",
+        "Target measures, consumer prices and cost pressures",
       icon: "▥",
       tone: "inflation-band",
     },
-    growth: {
-      title: "Growth",
+    activity: {
+      title: "Economic Activity & Demand",
       description:
         "Output, spending and economic activity",
       icon: "▥",
       tone: "growth-band",
     },
-    jobs: {
-      title: "Jobs",
+    labour: {
+      title: "Labour Market, Wages & Productivity",
       description:
-        "Labour market and employment",
+        "Employment, pay, labour slack and productivity",
       icon: "●●",
       tone: "jobs-band",
+    },
+    monetary: {
+      title: "Monetary & Financial Conditions",
+      description: "Policy rates, credit, yields and financial transmission",
+      icon: "◉",
+      tone: "monetary-band",
+    },
+    expectations: {
+      title: "Expectations & Outlook",
+      description: "Households, businesses, forecasters and market measures",
+      icon: "◌",
+      tone: "expectations-band",
+    },
+    external: {
+      title: "External, Housing & Fiscal Context",
+      description: "Trade, external demand and related macro context",
+      icon: "↗",
+      tone: "external-band",
     },
   };
 
@@ -5275,9 +5295,12 @@ useEffect(() => {
 
         {(
           [
-            "inflation",
-            "growth",
-            "jobs",
+            "prices",
+            "activity",
+            "labour",
+            "monetary",
+            "expectations",
+            "external",
           ] as MacroCategory[]
         ).map((category) => {
           const meta =
@@ -5286,7 +5309,7 @@ useEffect(() => {
           const allSpecs = specsByCategory[category];
 
 const specs =
-  category === "inflation"
+  category === "prices"
     ? r === "US"
       ? allSpecs.filter((spec) =>
           US_INFLATION_PRIMARY_IDS.has(spec.id)
@@ -5320,6 +5343,10 @@ const specs =
                 Number(specContainsMetric(a, recentReleaseMetricId))
               )
             : specs;
+
+          // Keep the full taxonomy in the configuration, but do not render
+          // empty sections where this project has no existing metric cards.
+          if (orderedSpecs.length === 0) return null;
 
           return (
             <section
@@ -5366,6 +5393,7 @@ const specs =
           metrics[spec.metricId]
         }
         componentMetrics={metrics}
+        groupLabel={meta.title}
         highlighted={highlightedMetricId != null && specContainsMetric(spec, highlightedMetricId)}
         onOpen={() =>
           setSelected(spec)
@@ -5374,7 +5402,7 @@ const specs =
     ))}
   </div>
 
-  {category === "inflation" && (
+  {category === "expectations" && (
   <InflationExpectationSection
     region={r}
     metrics={metrics}
