@@ -1,5 +1,6 @@
 "use client";
 import {
+  Area,
   CartesianGrid,
   Line,
   LineChart,
@@ -9,7 +10,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CalendarDays, ChevronDown, ChevronRight, X } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
@@ -62,7 +63,33 @@ type DetailPayload = {
   }>;
 };
 
-const YEAR = new Date().getUTCFullYear();
+type ReleaseNotice = {
+  kind: "reminder" | "released";
+  metricId: string;
+  metricName: string;
+  region: string;
+  stage?: "2m" | "1m";
+  secondsRemaining?: number;
+  actual?: number | null;
+};
+
+type DashboardToast = ReleaseNotice & { id: string };
+
+function specContainsMetric(spec: IndicatorSpec, metricId: string): boolean {
+  if ([spec.metricId, spec.yoyMetricId, spec.momMetricId, ...(spec.chartMetricIds ?? [])].includes(metricId)) return true;
+  const contains = (nodes: UiNode[] = []): boolean => nodes.some((node) => node.metricId === metricId || contains(node.children));
+  return contains(spec.components);
+}
+
+const YEAR = 2026;
+function chartStartYear(frequency?: string) {
+  return frequency === "quarterly" ? YEAR - 1 : YEAR;
+}
+
+function isInChartYearRange(date: string, frequency?: string) {
+  return Number(date.slice(0, 4)) >= chartStartYear(frequency);
+}
+
 const US_INFLATION_PRIMARY_IDS = new Set([
   "us-cpi-card",
   "us-core-cpi-card",
@@ -330,7 +357,7 @@ function Spark({
 }) {
   const points = [...data]
   .filter((p) =>
-    p.date.startsWith(String(YEAR))
+    isInChartYearRange(p.date, frequency)
   )
   .sort((a, b) =>
     a.date.localeCompare(b.date)
@@ -347,27 +374,8 @@ function Spark({
     return <div className="spark-chart-empty">No data</div>;
   }
 
-  const formatDate = (date: string) => {
-  const d = new Date(
-    `${date}T00:00:00Z`
-  );
-
-  if (frequency === "quarterly") {
-    const quarter =
-      Math.floor(d.getUTCMonth() / 3) + 1;
-
-    return `Q${quarter} ${d.getUTCFullYear()}`;
-  }
-
-  return new Intl.DateTimeFormat(
-    "en-US",
-    {
-      month: "short",
-      year: "numeric",
-      timeZone: "UTC",
-    }
-  ).format(d);
-};
+  const formatDate = (date: string) =>
+    formatChartDate(date, frequency, true);
 
   const formatValue = (value: number) => {
     if (Math.abs(value) >= 1000) {
@@ -406,7 +414,7 @@ function Spark({
 
           <XAxis
   dataKey="date"
-  tickFormatter={formatChartDate}
+  tickFormatter={(value) => formatChartDate(value, frequency)}
   tickLine={false}
   axisLine={true}
   tickMargin={10}
@@ -443,7 +451,7 @@ function Spark({
             type="monotone"
             dataKey="value"
             name="Value"
-            stroke="#1769e0"
+            stroke="var(--country-series)"
             strokeWidth={2.5}
             dot={{
               r: 4,
@@ -461,10 +469,19 @@ function Spark({
 
 
 
-function formatChartDate(value: unknown) {
+function formatChartDate(
+  value: unknown,
+  frequency?: string,
+  fullDate = false
+) {
   const raw = String(value ?? "").trim();
 
   if (!raw) return "—";
+
+  const quarter = raw.match(/^(\d{4})[- ]Q([1-4])$/i);
+  if (quarter) return `Q${quarter[2]} ${quarter[1]}`;
+
+  if (/^\d{4}$/.test(raw)) return raw;
 
   // Handle normal ISO calendar dates.
   const isoDate = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
@@ -472,6 +489,19 @@ function formatChartDate(value: unknown) {
     const date = new Date(`${isoDate[1]}-${isoDate[2]}-${isoDate[3]}T00:00:00Z`);
 
     if (!Number.isNaN(date.getTime())) {
+      if (frequency === "quarterly") {
+        return `Q${Math.floor(date.getUTCMonth() / 3) + 1} ${date.getUTCFullYear()}`;
+      }
+      if (frequency === "annual") return String(date.getUTCFullYear());
+      if (frequency === "weekly") {
+        return new Intl.DateTimeFormat("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          ...(fullDate ? { year: "numeric" as const } : {}),
+          timeZone: "UTC",
+        }).format(date);
+      }
+
       return new Intl.DateTimeFormat("en-US", {
         month: "short",
         year: "numeric",
@@ -486,18 +516,15 @@ function formatChartDate(value: unknown) {
     const date = new Date(`${isoMonth[1]}-${isoMonth[2]}-01T00:00:00Z`);
 
     if (!Number.isNaN(date.getTime())) {
+      if (frequency === "quarterly") {
+        return `Q${Math.floor(date.getUTCMonth() / 3) + 1} ${date.getUTCFullYear()}`;
+      }
       return new Intl.DateTimeFormat("en-US", {
         month: "short",
         year: "numeric",
         timeZone: "UTC",
       }).format(date);
     }
-  }
-
-  // Handle common quarterly labels without constructing an invalid Date.
-  const quarter = raw.match(/^(\d{4})[- ]Q([1-4])$/i);
-  if (quarter) {
-    return `Q${quarter[2]} ${quarter[1]}`;
   }
 
   // Never pass an invalid Date into Intl.DateTimeFormat.
@@ -604,7 +631,7 @@ function RateChart({
   if (isUSNetExports) {
     const data = sortedRootHistory
       .filter((point) =>
-        point.date.startsWith(String(YEAR))
+        isInChartYearRange(point.date, root?.meta.frequency)
       )
       .map((point) => ({
         date: point.date.slice(0, 10),
@@ -661,7 +688,7 @@ function RateChart({
 
             <XAxis
   dataKey="date"
-  tickFormatter={formatChartDate}
+  tickFormatter={(value) => formatChartDate(value, root?.meta.frequency)}
   tickLine={false}
   axisLine={true}
   tickMargin={10}
@@ -688,7 +715,9 @@ function RateChart({
             <Tooltip
               labelFormatter={(label) =>
                 `Date: ${formatChartDate(
-                  String(label)
+                  String(label),
+                  root?.meta.frequency,
+                  true
                 )}`
               }
               formatter={(value) => [
@@ -710,7 +739,7 @@ function RateChart({
               type="monotone"
               dataKey="value"
               name="Net Exports"
-              stroke="#1769e0"
+              stroke="var(--country-series)"
               strokeWidth={2.5}
               dot={{ r: 3.5 }}
               activeDot={{ r: 6 }}
@@ -736,15 +765,21 @@ function RateChart({
    * Latest / Prior KPI cards above it.
    */
   const kpis = getMetricKpis(root);
-  const isLatestPriorMetric =
+  const isPayrollLevel = root?.meta.id === "us-payrolls-level";
+  const isLatestPriorMetric = isPayrollLevel || (
     kpis.leftLabel === "Latest" &&
     kpis.rightLabel === "Prior" &&
-    kpis.showRight;
+    kpis.showRight);
 
   if (isLatestPriorMetric) {
+    const highFrequency = root?.meta.frequency === "daily" || root?.meta.frequency === "hourly";
+    const todayKey = new Date().toISOString().slice(0, 10);
+    const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
     const data = sortedRootHistory
       .filter((point) =>
-        point.date.startsWith(String(YEAR))
+        highFrequency
+          ? point.date.slice(0, 10) >= cutoff && point.date.slice(0, 10) <= todayKey
+        : isInChartYearRange(point.date, root?.meta.frequency)
       )
       .map((point) => ({
         date: point.date.slice(0, 10),
@@ -802,7 +837,7 @@ function RateChart({
 
             <XAxis
   dataKey="date"
-  tickFormatter={formatChartDate}
+  tickFormatter={(value) => formatChartDate(value, root?.meta.frequency)}
   tickLine={false}
   axisLine={true}
   tickMargin={10}
@@ -832,7 +867,9 @@ function RateChart({
             <Tooltip
               labelFormatter={(label) =>
                 `Date: ${formatChartDate(
-                  String(label)
+                  String(label),
+                  root?.meta.frequency,
+                  true
                 )}`
               }
               formatter={(value) => [
@@ -861,7 +898,7 @@ function RateChart({
                 root?.meta.name ??
                 "Value"
               }
-              stroke="#1769e0"
+              stroke="var(--country-series)"
               strokeWidth={2.5}
               dot={{ r: 3.5 }}
               activeDot={{ r: 6 }}
@@ -920,7 +957,7 @@ function RateChart({
     yoyHistory.forEach((point) => {
       const date = point.date.slice(0, 10);
 
-      if (date.startsWith(String(YEAR))) {
+      if (isInChartYearRange(date, spec.yoyMetricId ? allMetrics[spec.yoyMetricId]?.meta.frequency : root?.meta.frequency)) {
         chartDates.add(date);
       }
     });
@@ -930,7 +967,7 @@ function RateChart({
     momHistory.forEach((point) => {
       const date = point.date.slice(0, 10);
 
-      if (date.startsWith(String(YEAR))) {
+      if (isInChartYearRange(date, spec.momMetricId ? allMetrics[spec.momMetricId]?.meta.frequency : root?.meta.frequency)) {
         chartDates.add(date);
       }
     });
@@ -940,7 +977,7 @@ function RateChart({
     sortedRootHistory.forEach((point) => {
       const date = point.date.slice(0, 10);
 
-      if (date.startsWith(String(YEAR))) {
+      if (isInChartYearRange(date, root?.meta.frequency)) {
         chartDates.add(date);
       }
     });
@@ -1049,21 +1086,8 @@ function RateChart({
     }`;
   };
 
-  const formatTooltipDate = (date: string) => {
-  const d = new Date(`${date.slice(0, 10)}T00:00:00Z`);
-
-  if (Number.isNaN(d.getTime())) {
-    return date;
-  }
-
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    year: "numeric",
-    timeZone: "UTC",
-  })
-    .format(d)
-    .replace(" ", " '");
-};
+  const formatTooltipDate = (date: string) =>
+    formatChartDate(date, root?.meta.frequency, true);
 
   const renderChart = (
   series: "yoy" | "mom",
@@ -1126,7 +1150,7 @@ function RateChart({
 
           <XAxis
             dataKey="date"
-            tickFormatter={formatChartDate}
+            tickFormatter={(value) => formatChartDate(value, root?.meta.frequency)}
             tickLine={false}
             axisLine={{
               stroke: "var(--muted)",
@@ -1226,14 +1250,14 @@ function RateChart({
       renderChart(
         "yoy",
         `YoY · ${YEAR}`,
-        "#1769e0"
+        "var(--country-series)"
       )}
 
     {hasSecondData &&
       renderChart(
         "mom",
         `${secondLabel} · ${YEAR}`,
-        "#22c78b"
+        "var(--country-series)"
       )}
   </div>
 );
@@ -1304,9 +1328,7 @@ function MiniRateChart({
    */
   if (isUSNetExportsMetric(root)) {
     const data = sortedRootHistory
-      .filter((point) =>
-        point.date.startsWith(String(YEAR))
-      )
+      .filter((point) => isInChartYearRange(point.date, root?.meta.frequency))
       .map((point) => ({
         date: point.date.slice(0, 10),
         value: Number(point.value),
@@ -1321,6 +1343,7 @@ function MiniRateChart({
 
     return (
       <div
+        className="macro-mini-chart"
         style={{
           width: "100%",
           height: 76,
@@ -1333,27 +1356,31 @@ function MiniRateChart({
           height="100%"
         >
           <LineChart
-  data={data}
-  margin={{
-    top: 8,
-    right: 24,
-    left: 8,
-    bottom: 48,
-  }}
->
+            data={data}
+            margin={{ top: 5, right: 5, left: 5, bottom: 3 }}
+          >
+            <defs>
+              <linearGradient id={`mini-fill-${spec.id}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--country-series)" stopOpacity={0.24} />
+                <stop offset="100%" stopColor="var(--country-series)" stopOpacity={0.01} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid vertical={false} stroke="var(--line)" strokeDasharray="2 5" />
             <YAxis
               hide
               domain={["auto", "auto"]}
             />
+            <Area type="monotone" dataKey="value" stroke="none" fill={`url(#mini-fill-${spec.id})`} isAnimationActive={false} />
 
             <Line
               type="monotone"
               dataKey="value"
               name="Net Exports"
-              stroke="#1769e0"
-              strokeWidth={2.5}
-              dot={false}
-              activeDot={{ r: 3 }}
+              stroke="var(--country-series)"
+              strokeWidth={2.6}
+              strokeLinecap="round"
+              dot={(point) => point.index === data.length - 1 ? <circle cx={point.cx} cy={point.cy} r={3} fill="var(--country-series)" stroke="var(--panel)" strokeWidth={2} /> : null}
+              activeDot={{ r: 3.5, fill: "var(--country-series)", stroke: "var(--panel)", strokeWidth: 2 }}
               connectNulls={false}
               isAnimationActive={false}
             />
@@ -1369,7 +1396,9 @@ function MiniRateChart({
               }}
               labelFormatter={(label) =>
                 `Date: ${formatChartDate(
-                  String(label)
+                  String(label),
+                  root?.meta.frequency,
+                  true
                 )}`
               }
               formatter={(value) => [
@@ -1391,20 +1420,21 @@ function MiniRateChart({
    * artificial YoY + MoM series from the raw level.
    */
   const kpis = getMetricKpis(root);
-  const isLatestPriorMetric =
+  const isPayrollLevel = root?.meta.id === "us-payrolls-level";
+  const isLatestPriorMetric = isPayrollLevel || (
     kpis.leftLabel === "Latest" &&
     kpis.rightLabel === "Prior" &&
-    kpis.showRight;
+    kpis.showRight);
 
   if (isLatestPriorMetric) {
     const data = sortedRootHistory
-      .filter((point) =>
-        point.date.startsWith(String(YEAR))
-      )
-      .map((point) => ({
+      .map((point, index, history) => ({
         date: point.date.slice(0, 10),
-        value: Number(point.value),
+        value: isPayrollLevel
+          ? index > 0 ? Number(point.value) - Number(history[index - 1].value) : NaN
+          : Number(point.value),
       }))
+      .filter((point) => isInChartYearRange(point.date, root?.meta.frequency))
       .filter((point) =>
         Number.isFinite(point.value)
       );
@@ -1413,13 +1443,12 @@ function MiniRateChart({
       return null;
     }
 
-    const chartLabel =
-      root?.meta.shortName ??
-      root?.meta.name ??
-      "Value";
+    const chartLabel = isPayrollLevel ? "Monthly payroll change" :
+      root?.meta.shortName ?? root?.meta.name ?? "Value";
 
     return (
       <div
+        className="macro-mini-chart"
         style={{
           width: "100%",
           height: 76,
@@ -1434,25 +1463,34 @@ function MiniRateChart({
           <LineChart
             data={data}
             margin={{
-              top: 2,
-              right: 2,
-              left: 2,
-              bottom: 2,
+              top: 5,
+              right: 5,
+              left: 5,
+              bottom: 3,
             }}
           >
+            <defs>
+              <linearGradient id={`mini-fill-${spec.id}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--country-series)" stopOpacity={0.24} />
+                <stop offset="100%" stopColor="var(--country-series)" stopOpacity={0.01} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid vertical={false} stroke="var(--line)" strokeDasharray="2 5" />
             <YAxis
               hide
               domain={["auto", "auto"]}
             />
+            <Area type="monotone" dataKey="value" stroke="none" fill={`url(#mini-fill-${spec.id})`} isAnimationActive={false} />
 
             <Line
               type="monotone"
               dataKey="value"
               name={chartLabel}
-              stroke="#1769e0"
-              strokeWidth={2}
-              dot={false}
-              activeDot={{ r: 3 }}
+              stroke="var(--country-series)"
+              strokeWidth={2.6}
+              strokeLinecap="round"
+              dot={(point) => point.index === data.length - 1 ? <circle cx={point.cx} cy={point.cy} r={3} fill="var(--country-series)" stroke="var(--panel)" strokeWidth={2} /> : null}
+              activeDot={{ r: 3.5, fill: "var(--country-series)", stroke: "var(--panel)", strokeWidth: 2 }}
               connectNulls={false}
               isAnimationActive={false}
             />
@@ -1468,14 +1506,15 @@ function MiniRateChart({
               }}
               labelFormatter={(label) =>
                 formatChartDate(
-                  String(label)
+                  String(label),
+                  root?.meta.frequency,
+                  true
                 )
               }
               formatter={(value) => [
-                formatMetricValue(
-                  Number(value),
-                  root
-                ),
+                isPayrollLevel
+                  ? formatAbsoluteChangeValue(Number(value), root)
+                  : formatMetricValue(Number(value), root),
                 chartLabel,
               ]}
             />
@@ -1527,7 +1566,7 @@ function MiniRateChart({
     yoyHistory.forEach((point) => {
       const date = point.date.slice(0, 10);
 
-      if (date.startsWith(String(YEAR))) {
+      if (isInChartYearRange(date, spec.yoyMetricId ? allMetrics[spec.yoyMetricId]?.meta.frequency : root?.meta.frequency)) {
         chartDates.add(date);
       }
     });
@@ -1537,7 +1576,7 @@ function MiniRateChart({
     momHistory.forEach((point) => {
       const date = point.date.slice(0, 10);
 
-      if (date.startsWith(String(YEAR))) {
+      if (isInChartYearRange(date, spec.momMetricId ? allMetrics[spec.momMetricId]?.meta.frequency : root?.meta.frequency)) {
         chartDates.add(date);
       }
     });
@@ -1547,7 +1586,7 @@ function MiniRateChart({
     sortedRootHistory.forEach((point) => {
       const date = point.date.slice(0, 10);
 
-      if (date.startsWith(String(YEAR))) {
+      if (isInChartYearRange(date, root?.meta.frequency)) {
         chartDates.add(date);
       }
     });
@@ -1647,50 +1686,8 @@ function MiniRateChart({
     }`;
   };
 
-  const formatTooltipDate = (date: string) => {
-  const raw = String(date ?? "").trim();
-
-  if (!raw) {
-    return "—";
-  }
-
-  // Quarterly data
-  if (root?.meta.frequency === "quarterly") {
-    const quarterMatch = raw.match(
-      /^(\d{4})[- ]Q([1-4])$/i
-    );
-
-    if (quarterMatch) {
-      return `Q${quarterMatch[2]} ${quarterMatch[1]}`;
-    }
-
-    const d = new Date(
-      `${raw.slice(0, 10)}T00:00:00Z`
-    );
-
-    if (!Number.isNaN(d.getTime())) {
-      const quarter =
-        Math.floor(d.getUTCMonth() / 3) + 1;
-
-      return `Q${quarter} ${d.getUTCFullYear()}`;
-    }
-  }
-
-  // Monthly / normal date data
-  const d = new Date(
-    `${raw.slice(0, 10)}T00:00:00Z`
-  );
-
-  if (Number.isNaN(d.getTime())) {
-    return raw;
-  }
-
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(d);
-};
+  const formatTooltipDate = (date: string) =>
+    formatChartDate(date, root?.meta.frequency, true);
 
   const renderMiniChart = (
     series: "yoy" | "mom",
@@ -1698,6 +1695,7 @@ function MiniRateChart({
     stroke: string
   ) => (
     <div
+      className="macro-spark-series"
       style={{
         minWidth: 0,
         height: "100%",
@@ -1705,18 +1703,12 @@ function MiniRateChart({
         flexDirection: "column",
       }}
     >
-      <div
-        style={{
-          fontSize: 8,
-          lineHeight: 1,
-          color: "var(--muted)",
-          marginBottom: 2,
-        }}
-      >
+      <div className="macro-spark-label">
         {label}
       </div>
 
       <div
+        className="macro-spark-plot"
         style={{
           flex: 1,
           minHeight: 0,
@@ -1729,16 +1721,24 @@ function MiniRateChart({
           <LineChart
             data={data}
             margin={{
-              top: 2,
-              right: 2,
-              left: 2,
-              bottom: 2,
+              top: 5,
+              right: 5,
+              left: 5,
+              bottom: 3,
             }}
           >
+            <defs>
+              <linearGradient id={`mini-fill-${spec.id}-${series}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--country-series)" stopOpacity={0.23} />
+                <stop offset="100%" stopColor="var(--country-series)" stopOpacity={0.01} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid vertical={false} stroke="var(--line)" strokeDasharray="2 5" />
             <YAxis
               hide
               domain={["auto", "auto"]}
             />
+            <Area type="monotone" dataKey={series} stroke="none" fill={`url(#mini-fill-${spec.id}-${series})`} isAnimationActive={false} />
             <XAxis
   dataKey="date"
   hide
@@ -1749,9 +1749,10 @@ function MiniRateChart({
               dataKey={series}
               name={label}
               stroke={stroke}
-              strokeWidth={2}
-              dot={false}
-              activeDot={{ r: 3 }}
+              strokeWidth={2.6}
+              strokeLinecap="round"
+              dot={(point) => point.index === data.length - 1 ? <circle cx={point.cx} cy={point.cy} r={3} fill="var(--country-series)" stroke="var(--panel)" strokeWidth={2} /> : null}
+              activeDot={{ r: 3.5, fill: "var(--country-series)", stroke: "var(--panel)", strokeWidth: 2 }}
               connectNulls={false}
               isAnimationActive={false}
             />
@@ -1789,6 +1790,7 @@ function MiniRateChart({
 
   return (
     <div
+      className="macro-mini-chart"
       style={{
         width: "100%",
         height: 76,
@@ -1806,14 +1808,14 @@ function MiniRateChart({
         renderMiniChart(
           "yoy",
           "YoY",
-          "#39a0ff"
+          "var(--country-series)"
         )}
 
       {hasSecondData &&
         renderMiniChart(
           "mom",
           secondLabel,
-          "#22c78b"
+          "var(--country-series)"
         )}
     </div>
   );
@@ -1987,6 +1989,14 @@ if (UK_GROWTH_NET_TRADE_PP_IDS.has(id ?? "")) {
   }
 
   return value.toLocaleString("en-US");
+}
+
+function formatAbsoluteChangeValue(value: number | null | undefined, metric: DetailPayload | undefined) {
+  if (value == null || !Number.isFinite(value)) return "—";
+  const unit = metric?.meta.unit?.toLowerCase() ?? "";
+  const sign = value > 0 ? "+" : "";
+  if (unit.includes("thousand")) return `${sign}${Math.round(value)}K`;
+  return `${sign}${value.toLocaleString("en-US", { maximumFractionDigits: 1 })}`;
 }
 
 const percentagePointIds = new Set([
@@ -2723,6 +2733,22 @@ function getCardKpis(
 
   const id = metric.meta.id;
 
+  // The US payroll front card emphasizes the month-over-month employment
+  // change; the detail view keeps its existing published level comparison.
+  if (id === "us-payrolls-level" && surface === "front") {
+    const history = normalizeHistory(metric.history ?? []);
+    const latest = history.at(-1)?.value;
+    const prior = history.at(-2)?.value;
+    return {
+      mode: "absolute-change" as const,
+      leftLabel: "Monthly Change",
+      leftValue: latest != null && prior != null ? latest - prior : null,
+      rightLabel: "",
+      rightValue: null,
+      showRight: false,
+    };
+  }
+
   // US Unemployment: front card shows only the latest rate; the opened
   // card shows YoY/MoM percentage-point changes.
   if (id === "us-unemployment") {
@@ -3005,6 +3031,7 @@ function IndicatorCard({
   spec,
   metric,
   componentMetrics,
+  highlighted = false,
   onOpen,
 }: {
   spec: IndicatorSpec;
@@ -3013,6 +3040,7 @@ function IndicatorCard({
     string,
     DetailPayload | undefined
   >;
+  highlighted?: boolean;
   onOpen: () => void;
 }) {
   const m = metric?.meta;
@@ -3032,7 +3060,8 @@ function IndicatorCard({
 
   return (
     <article
-      className="macro-card group"
+      className={clsx("macro-card group", highlighted && "is-release-highlighted")}
+      data-released-highlight={highlighted ? "true" : undefined}
       onClick={onOpen}
     >
       <div className="macro-card-head">
@@ -3053,7 +3082,7 @@ function IndicatorCard({
 
           <strong
             className={
-              cardKpis.mode === "normal"
+              cardKpis.mode === "normal" || cardKpis.mode === "absolute-change"
                 ? changeColor(
                     cardKpis.leftValue,
                     invert
@@ -3069,6 +3098,8 @@ function IndicatorCard({
               ) : (
                 pct(cardKpis.leftValue)
               )
+            ) : cardKpis.mode === "absolute-change" ? (
+              formatAbsoluteChangeValue(cardKpis.leftValue, metric)
             ) : (
               formatMetricValue(
                 cardKpis.leftValue,
@@ -3084,7 +3115,7 @@ function IndicatorCard({
 
             <strong
               className={
-                cardKpis.mode === "normal"
+                cardKpis.mode === "normal" || cardKpis.mode === "absolute-change"
                   ? changeColor(
                       cardKpis.rightValue,
                       invert
@@ -3100,6 +3131,8 @@ function IndicatorCard({
                 ) : (
                   pct(cardKpis.rightValue)
                 )
+              ) : cardKpis.mode === "absolute-change" ? (
+                formatAbsoluteChangeValue(cardKpis.rightValue, metric)
               ) : (
                 formatMetricValue(
                   cardKpis.rightValue,
@@ -3440,6 +3473,7 @@ function expectationSeries(
     id,
     label: componentLabel,
     horizon: expectationHorizon(id, componentLabel),
+    frequency: metric?.frequency,
     data,
   };
 }
@@ -4228,60 +4262,6 @@ function ComponentDetailDrawer({
                 latestPeriod={latestPeriodDate}
               />
             )}
-
-            <section
-              className="drawer-info"
-              style={{
-                width: "100%",
-                minWidth: 0,
-                margin: "0 0 18px",
-                padding: 16,
-                boxSizing: "border-box",
-                background: "var(--panel)",
-                border: "1px solid var(--line)",
-                borderRadius: 14,
-              }}
-            >
-              <h3 style={{ margin: "0 0 14px", color: "var(--text)" }}>
-                Release Information
-              </h3>
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                  gap: 10,
-                }}
-              >
-                <div style={{ padding: "10px 12px", borderRadius: 10, background: "var(--panel-2, var(--panel))", border: "1px solid var(--line)" }}>
-                  <span style={{ display: "block", fontSize: 11, color: "var(--muted)" }}>Last Updated</span>
-                  <b style={{ display: "block", marginTop: 3, color: "var(--text)" }}>
-                    {metric.displayReleasedAt ? formatObsDate(metric.displayReleasedAt) : "—"}
-                  </b>
-                </div>
-
-                <div style={{ padding: "10px 12px", borderRadius: 10, background: "var(--panel-2, var(--panel))", border: "1px solid var(--line)" }}>
-                  <span style={{ display: "block", fontSize: 11, color: "var(--muted)" }}>Latest period</span>
-                  <b style={{ display: "block", marginTop: 3, color: "var(--text)" }}>
-                    {latestPeriodDate ? formatObsDate(latestPeriodDate) : "—"}
-                  </b>
-                </div>
-
-                <div style={{ padding: "10px 12px", borderRadius: 10, background: "var(--panel-2, var(--panel))", border: "1px solid var(--line)" }}>
-                  <span style={{ display: "block", fontSize: 11, color: "var(--muted)" }}>Publication</span>
-                  <b style={{ display: "block", marginTop: 3, color: "var(--text)", overflowWrap: "anywhere" }}>
-                    {metric.meta.releaseName || "—"}
-                  </b>
-                </div>
-
-                <div style={{ padding: "10px 12px", borderRadius: 10, background: "var(--panel-2, var(--panel))", border: "1px solid var(--line)" }}>
-                  <span style={{ display: "block", fontSize: 11, color: "var(--muted)" }}>Official source</span>
-                  <b style={{ display: "block", marginTop: 3, color: "var(--text)" }}>
-                    {metric.meta.source?.toUpperCase() ?? "—"}
-                  </b>
-                </div>
-              </div>
-            </section>
           </div>
         </div>
       </aside>
@@ -4866,60 +4846,6 @@ function DetailDrawer({
               />
             )}
 
-            <section
-              className="drawer-info"
-              style={{
-                width: "100%",
-                minWidth: 0,
-                margin: "0 0 18px",
-                padding: 16,
-                boxSizing: "border-box",
-                background: "var(--panel)",
-                border: "1px solid var(--line)",
-                borderRadius: 14,
-              }}
-            >
-              <h3 style={{ margin: "0 0 14px", color: "var(--text)" }}>
-                Release Information
-              </h3>
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                  gap: 10,
-                }}
-              >
-                <div style={{ padding: "10px 12px", borderRadius: 10, background: "var(--panel-2, var(--panel))", border: "1px solid var(--line)" }}>
-                  <span style={{ display: "block", fontSize: 11, color: "var(--muted)" }}>Last Updated</span>
-                  <b style={{ display: "block", marginTop: 3, color: "var(--text)" }}>
-                    {root?.displayReleasedAt ? formatObsDate(root.displayReleasedAt) : "—"}
-                  </b>
-                </div>
-
-                <div style={{ padding: "10px 12px", borderRadius: 10, background: "var(--panel-2, var(--panel))", border: "1px solid var(--line)" }}>
-                  <span style={{ display: "block", fontSize: 11, color: "var(--muted)" }}>Latest period</span>
-                  <b style={{ display: "block", marginTop: 3, color: "var(--text)" }}>
-                    {latestPeriodDate ? formatObsDate(latestPeriodDate) : "—"}
-                  </b>
-                </div>
-
-                <div style={{ padding: "10px 12px", borderRadius: 10, background: "var(--panel-2, var(--panel))", border: "1px solid var(--line)" }}>
-                  <span style={{ display: "block", fontSize: 11, color: "var(--muted)" }}>Publication</span>
-                  <b style={{ display: "block", marginTop: 3, color: "var(--text)", overflowWrap: "anywhere" }}>
-                    {root?.meta.releaseName || "—"}
-                  </b>
-                </div>
-
-                <div style={{ padding: "10px 12px", borderRadius: 10, background: "var(--panel-2, var(--panel))", border: "1px solid var(--line)" }}>
-                  <span style={{ display: "block", fontSize: 11, color: "var(--muted)" }}>Official source</span>
-                  <b style={{ display: "block", marginTop: 3, color: "var(--text)" }}>
-                    {root?.meta.source?.toUpperCase() ?? "—"}
-                  </b>
-                </div>
-              </div>
-            </section>
-
             {!isExpectation && allNodes.length > 0 && (
               <section
                 className="drawer-components"
@@ -5020,6 +4946,7 @@ useEffect(() => {
 
   setTheme(initialTheme);
   document.documentElement.dataset.theme = initialTheme;
+  window.localStorage.setItem("macrohub-theme", initialTheme);
 }, []);
 
   const toggleTheme = () => {
@@ -5047,8 +4974,37 @@ useEffect(() => {
 
   const [error, setError] = useState("");
   const [savedSnapshot, setSavedSnapshot] = useState(false);
+  const [recentReleaseMetricId, setRecentReleaseMetricId] = useState<string | null>(null);
+  const [highlightedMetricId, setHighlightedMetricId] = useState<string | null>(null);
+  const [releaseToasts, setReleaseToasts] = useState<DashboardToast[]>([]);
+  const highlightTimer = useRef<number | null>(null);
 
   const specsByCategory = DASHBOARD[r];
+
+  useEffect(() => {
+    const onReleaseNotice = (event: Event) => {
+      const notice = (event as CustomEvent<ReleaseNotice>).detail;
+      if (!notice) return;
+      const id = `${notice.kind}:${notice.metricId}:${notice.stage ?? "released"}:${Date.now()}`;
+      setReleaseToasts((current) => [...current.slice(-2), { ...notice, id }]);
+      window.setTimeout(() => {
+        setReleaseToasts((current) => current.filter((toast) => toast.id !== id));
+      }, notice.kind === "released" ? 9000 : 6500);
+
+      if (notice.kind !== "released" || notice.region !== r) return;
+      setRecentReleaseMetricId(notice.metricId);
+      setHighlightedMetricId(notice.metricId);
+      if (highlightTimer.current) window.clearTimeout(highlightTimer.current);
+      highlightTimer.current = window.setTimeout(() => {
+        setHighlightedMetricId((current) => current === notice.metricId ? null : current);
+      }, 15_000);
+    };
+    window.addEventListener("macrohub:release-notice", onReleaseNotice);
+    return () => {
+      window.removeEventListener("macrohub:release-notice", onReleaseNotice);
+      if (highlightTimer.current) window.clearTimeout(highlightTimer.current);
+    };
+  }, [r]);
 
   useEffect(() => {
   if (!specsByCategory) return;
@@ -5157,7 +5113,7 @@ useEffect(() => {
   };
 
   return (
-    <div className="macro-page">
+    <div className="macro-page" data-region={r.toLowerCase()}>
       <header className="macro-topbar">
         <div className="brand">
           <div className="brand-mark">
@@ -5182,6 +5138,7 @@ useEffect(() => {
             <a
               key={code}
               href={`/country/${code.toLowerCase()}`}
+              data-country={code.toLowerCase()}
               className={clsx(
                 "country-pill",
                 code === r && "active"
@@ -5335,6 +5292,13 @@ const specs =
         })
     : allSpecs;
 
+          const orderedSpecs = recentReleaseMetricId
+            ? [...specs].sort((a, b) =>
+                Number(specContainsMetric(b, recentReleaseMetricId)) -
+                Number(specContainsMetric(a, recentReleaseMetricId))
+              )
+            : specs;
+
           return (
             <section
               key={category}
@@ -5355,7 +5319,7 @@ const specs =
                 </p>
 
                 <strong>
-                  {specs.length}
+                  {orderedSpecs.length}
                 </strong>
 
                 <span>indicators</span>
@@ -5366,13 +5330,13 @@ const specs =
     className="cards-grid"
     style={{
       gridTemplateColumns:
-        specs.length <= 4
-          ? `repeat(${specs.length}, minmax(240px, 1fr))`
+        orderedSpecs.length <= 4
+          ? `repeat(${orderedSpecs.length}, minmax(240px, 1fr))`
           : `repeat(auto-fill, minmax(260px, 1fr))`,
       gap: "12px",
     }}
   >
-    {specs.map((spec) => (
+    {orderedSpecs.map((spec) => (
       <IndicatorCard
         key={spec.id}
         spec={spec}
@@ -5380,6 +5344,7 @@ const specs =
           metrics[spec.metricId]
         }
         componentMetrics={metrics}
+        highlighted={highlightedMetricId != null && specContainsMetric(spec, highlightedMetricId)}
         onOpen={() =>
           setSelected(spec)
         }
@@ -5406,6 +5371,33 @@ const specs =
         )}
         </main>
       </div>
+
+      {releaseToasts.length > 0 && (
+        <div className="release-notification-stack" aria-live="polite" aria-atomic="false">
+          {releaseToasts.map((toast) => {
+            const label = toast.region === "EA" ? "Euro Area" : toast.region;
+            const actualMetric = metrics[toast.metricId];
+            const actualValue = toast.actual == null
+              ? "—"
+              : actualMetric
+                ? formatMetricValue(toast.actual, actualMetric)
+                : new Intl.NumberFormat("en", { maximumFractionDigits: 3 }).format(toast.actual);
+            return (
+              <div key={toast.id} className={`release-notification ${toast.kind}`} role="status">
+                <span className="release-notification-mark" aria-hidden="true">{toast.kind === "released" ? "✓" : "◷"}</span>
+                <div>
+                  <strong>{toast.kind === "released" ? "Data released and updated" : "Release approaching"}</strong>
+                  <p>
+                    {toast.kind === "released"
+                      ? <>{toast.metricName} · {label} — new value <b>{actualValue}</b></>
+                      : <>{toast.metricName} · {label} is due {toast.stage === "2m" ? "in about 2 minutes" : (toast.secondsRemaining ?? 60) > 30 ? "in about 1 minute" : `in ${toast.secondsRemaining ?? 1} seconds`}</>}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       <footer className="macro-footer">
         <span>

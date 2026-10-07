@@ -1,0 +1,398 @@
+{
+  "us-cpi-other-services": {
+    "success": false,
+    "metric_id": "us-cpi-other-services",
+    "series_id": "CUSR0000SAS367",
+    "source": "BLS",
+    "release_family": "BLS CPI",
+    "next_release": null,
+    "error": "This metric is not released by BEA. Use its original source calendar."
+  },
+  "us-pce": {
+    "success": true,
+    "metric_id": "us-pce",
+    "series_id": "T20804:1",
+    "source": "BEA",
+    "release_family": "Personal Income and Outlays",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-core-pce": {
+    "success": true,
+    "metric_id": "us-core-pce",
+    "series_id": "T20804:25",
+    "source": "BEA",
+    "release_family": "Personal Income and Outlays",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-pce-goods": {
+    "success": true,
+    "metric_id": "us-pce-goods",
+    "series_id": "T20804:2",
+    "source": "BEA",
+    "release_family": "Personal Income and Outlays",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-pce-durable-goods": {
+    "success": true,
+    "metric_id": "us-pce-durable-goods",
+    "series_id": "T20804:3",
+    "source": "BEA",
+    "release_family": "Personal Income and Outlays",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-pce-furnishings": {
+    "success": true,
+    "metric_id": "us-pce-furnishings",
+    "series_id": "T20804:5",
+    "source": "BEA",
+    "release_family": "Personal Income and Outlays",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-pce-clothing": {
+    "success": true,
+    "metric_id": "us-pce-clothing",
+    "series_id": "T20804:10",
+    "source": "BEA",
+    "release_family": "Personal Income and Outlays",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-pce-food": {
+    "success": true,
+    "metric_id": "us-pce-food",
+    "series_id": "T20804:9",
+    "source": "BEA",
+    "release_family": "Personal Income and Outlays",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-pce-energy": {
+    "success": true,
+    "metric_id": "us-pce-energy",
+    "series_id": "T20804:11",
+    "source": "BEA",
+    "release_family": "Personal Income and Outlays",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-pce-services": {
+    "success": true,
+    "metric_id": "us-pce-services",
+    "series_id": "T20804:13",
+    "source": "BEA",
+    "release_family": "Personal Income and Outlays",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-pce-household-services": {
+    "success": true,
+    "metric_id": "us-pce-household-services",
+    "series_id": "T20804:14",
+    "source": "BEA",
+    "release_family": "Personal Income and Outlays",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-pce-healthcare": {
+    "success": true,
+    "metric_id": "us-pce-healthcare",
+    "series_id": "T20804:16",
+    "source": "BEA",
+    "release_family": "Personal Income and Outlays",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-pce-food-services": {
+    "success": true,
+    "metric_id": "us-pce-food-services",
+    "series_id": "T20804:19",
+    "source": "BEA",
+    "release_family": "Personal Income and Outlays",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-pce-housing": {
+    "success": true,
+    "metric_id": "us-pce-housing",
+    "series_id": "T20804:29",
+    "source": "BEA",
+    "release_family": "Personal Income and Outlays",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-core-pce-mom": {
+    "success": true,
+    "metric_id": "us-core-pce-mom",
+    "series_id": "T20804:25",
+    "source": "BEA",
+    "release_family": "Personal Income and Outlays",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-personal-spending": {
+    "success": true,
+    "metric_id": "us-personal-spending",
+    "series_id": "T20600:1",
+    "source": "BEA",
+    "release_family": "Personal Income and Outlays",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-unit-labor-cost": {
+    "success": false,
+    "metric_id": "us-unit-labor-cost",
+    "series_id": "ULCNFB",
+    "source": "BLS",
+    "release_family": "BLS Productivity",
+    "next_release": null,
+    "error": "This metric is not released by BEA. Use its original source calendar."
+  },
+  "us-real-pce-growth": {
+    "success": true,
+    "metric_id": "us-real-pce-growth",
+    "series_id": "T10106:2",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-gdp-real": {
+    "success": true,
+    "metric_id": "us-gdp-real",
+    "series_id": "T10101:1",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-pce-goods": {
+    "success": true,
+    "metric_id": "us-real-pce-goods",
+    "series_id": "T10106:3",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-pce-durable-goods": {
+    "success": true,
+    "metric_id": "us-real-pce-durable-goods",
+    "series_id": "T10106:4",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-pce-nondurable-goods": {
+    "success": true,
+    "metric_id": "us-real-pce-nondurable-goods",
+    "series_id": "T10106:5",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-pce-services": {
+    "success": true,
+    "metric_id": "us-real-pce-services",
+    "series_id": "T10106:6",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-private-investment": {
+    "success": true,
+    "metric_id": "us-real-private-investment",
+    "series_id": "T10106:7",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-fixed-investment": {
+    "success": true,
+    "metric_id": "us-real-fixed-investment",
+    "series_id": "T10106:8",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-nonresidential-investment": {
+    "success": true,
+    "metric_id": "us-real-nonresidential-investment",
+    "series_id": "T10106:9",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-structures": {
+    "success": true,
+    "metric_id": "us-real-structures",
+    "series_id": "T10106:10",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-equipment": {
+    "success": true,
+    "metric_id": "us-real-equipment",
+    "series_id": "T10106:11",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-ipp": {
+    "success": true,
+    "metric_id": "us-real-ipp",
+    "series_id": "T10106:12",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-residential-investment": {
+    "success": true,
+    "metric_id": "us-real-residential-investment",
+    "series_id": "T10106:13",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-inventories": {
+    "success": true,
+    "metric_id": "us-real-inventories",
+    "series_id": "T10106:14",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-net-exports": {
+    "success": true,
+    "metric_id": "us-real-net-exports",
+    "series_id": "T10106:15",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-exports": {
+    "success": true,
+    "metric_id": "us-real-exports",
+    "series_id": "T10106:16",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-export-goods": {
+    "success": true,
+    "metric_id": "us-real-export-goods",
+    "series_id": "T10106:17",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-export-services": {
+    "success": true,
+    "metric_id": "us-real-export-services",
+    "series_id": "T10106:18",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-imports": {
+    "success": true,
+    "metric_id": "us-real-imports",
+    "series_id": "T10106:19",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-import-goods": {
+    "success": true,
+    "metric_id": "us-real-import-goods",
+    "series_id": "T10106:20",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-import-services": {
+    "success": true,
+    "metric_id": "us-real-import-services",
+    "series_id": "T10106:21",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-government": {
+    "success": true,
+    "metric_id": "us-real-government",
+    "series_id": "T10106:22",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-federal-government": {
+    "success": true,
+    "metric_id": "us-real-federal-government",
+    "series_id": "T10106:23",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-defense": {
+    "success": true,
+    "metric_id": "us-real-defense",
+    "series_id": "T10106:24",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-nondefense": {
+    "success": true,
+    "metric_id": "us-real-nondefense",
+    "series_id": "T10106:25",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "us-real-state-local": {
+    "success": true,
+    "metric_id": "us-real-state-local",
+    "series_id": "T10106:26",
+    "source": "BEA",
+    "release_family": "GDP / NIPA",
+    "next_release": "2026-10-29",
+    "next_release_at": "2026-10-29T08:30:00-04:00"
+  },
+  "ea-inflation-comp-5y5y": {
+    "success": false,
+    "metric_id": "ea-inflation-comp-5y5y",
+    "series_id": "EA_INFL_COMP_5Y5Y",
+    "source": "Other",
+    "release_family": "Not BEA",
+    "next_release": null,
+    "error": "This metric is not released by BEA. Use its original source calendar."
+  }
+}

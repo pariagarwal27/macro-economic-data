@@ -179,9 +179,12 @@ function periodToDate(period: string): string | null {
 export async function fetchEurostatPreset(seriesId: string): Promise<RawPoint[]> {
   switch (seriesId) {
     case "ea_inactive_population":
-      return fetchEurostatSeries("lfsi_act_q", {
-        geo: "EA21", sex: "T", age: "Y15-74", unit: "THS_PER", s_adj: "SA",
-        indic_em: "INAC",
+      return fetchEurostatSeries("lfsq_igan", {
+        geo: "EA21",
+        sex: "T",
+        age: "Y15-74",
+        citizen: "TOTAL",
+        unit: "THS_PER",
       });
     case "ea_long_term_unemployment":
       return fetchEurostatSeries("une_ltu_q", {
@@ -330,7 +333,7 @@ case "ea_retail_sales_total_ex_motor_vehicles":
       });
     case "ei_isrr_m":
       return fetchEurostatSeries("ei_isrr_m", {
-        geo: "EA20",
+        geo: "EA21",
         unit: "RT12-CA",
         nace_r2: "G47",
         indic_bt: "VOL_SLS",
@@ -400,6 +403,7 @@ case "jvs_q_nace2": {
 }
     case "lfsi_emp_q_ea":
       return fetchEurostatSeries("lfsi_emp_q", {
+        freq: "Q",
         geo: "EA21",
         sex: "T",
         age: "Y15-74",
@@ -484,7 +488,7 @@ case "jvs_q_nace2": {
       });
 
     case "ea-youth-unemployed-persons":
-      return fetchEurostatSeries("une_nb_m", {
+      return fetchEurostatSeries("une_rt_m", {
         geo: "EA21",
         sex: "T",
         age: "Y_LT25",

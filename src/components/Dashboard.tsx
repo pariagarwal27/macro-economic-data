@@ -147,6 +147,8 @@ export function Dashboard() {
           {REGIONS.map((r) => (
             <button
               key={r}
+              data-country={r === "ALL" ? undefined : r.toLowerCase()}
+              aria-pressed={region === r}
               onClick={() => {
                 setRegion(r);
                 load(r, category);
@@ -166,6 +168,7 @@ export function Dashboard() {
           {CATEGORIES.map((c) => (
             <button
               key={c}
+              aria-pressed={category === c}
               onClick={() => {
                 setCategory(c);
                 load(region, c);

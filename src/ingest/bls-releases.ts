@@ -20,16 +20,15 @@ export async function fetchBlsEmpsitRelease(): Promise<{
   const html = await res.text();
   const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
 
-  const period =
-    text.match(/Results\s*-\s*(\d{4})\s*M(\d{2})/i) ??
-    text.match(/\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+(20\d{2})\b/i);
-
-  let date: string | null = null;
-  if (period && period[0].includes("M")) {
-    date = `${period[1]}-${period[2]}-01`;
-  } else if (period) {
-    date = monthYearToDate(period[1], period[2]);
-  }
+  const codedPeriod = text.match(/Results\s*-\s*(\d{4})\s*M(\d{2})/i);
+  const namedPeriod = text.match(
+    /\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+(20\d{2})\b/i
+  );
+  const date = codedPeriod
+    ? `${codedPeriod[1]}-${codedPeriod[2]}-01`
+    : namedPeriod
+      ? monthYearToDate(namedPeriod[1], namedPeriod[2])
+      : null;
 
   const nfpMatch =
     text.match(

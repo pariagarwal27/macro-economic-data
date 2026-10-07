@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/desk/layout,_N_T_/desk/page,_N_T_/desk"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/a0d135bd69a999492cb39fdf30ab7645fc797db961cc30ff8371f66aae70aebc/$/desk",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/desk/page"
+    },
+    "isFallback": false
+  }
+}

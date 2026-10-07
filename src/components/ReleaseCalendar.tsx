@@ -76,15 +76,12 @@ function Stars({ n }: { n: number }) {
 }
 
 function RegionBadge({ region }: { region: string }) {
-  const colors: Record<string, string> = {
-    US: "bg-blue-50 text-blue-800 border-blue-200",
-    UK: "bg-purple-50 text-purple-800 border-purple-200",
-    EA: "bg-amber-50 text-amber-900 border-amber-200",
-  };
+  const colors: Record<string, string> = { US: "", UK: "", EA: "" };
   return (
     <span
+      data-country={region.toLowerCase()}
       className={clsx(
-        "inline-flex min-w-[2rem] justify-center rounded border px-1.5 py-0.5 text-[10px] font-bold uppercase",
+        "country-badge inline-flex min-w-[2rem] justify-center rounded border px-1.5 py-0.5 text-[10px] font-bold uppercase",
         colors[region] ?? "bg-[var(--line)]/40 text-[var(--muted)] border-[var(--line)]"
       )}
     >
@@ -240,7 +237,7 @@ export function ReleaseCalendar() {
     meta.dataThrough.slice(0, 10) < meta.windowDays[meta.windowDays.length - 1];
 
   return (
-    <div className="mx-auto max-w-[1600px] px-4 pb-16 pt-8 sm:px-6">
+    <div className="release-page mx-auto max-w-[1600px] px-4 pb-16 pt-8 sm:px-6">
       <Link href="/" className="text-sm text-[var(--accent-ink)] hover:underline">
         ← Dashboard
       </Link>
@@ -288,6 +285,8 @@ export function ReleaseCalendar() {
             <button
               key={r}
               onClick={() => setRegion(r)}
+              data-country={r === "ALL" ? undefined : r.toLowerCase()}
+              aria-pressed={region === r}
               className={clsx(
                 "rounded-full px-4 py-2 text-sm font-medium transition",
                 region === r
@@ -304,6 +303,7 @@ export function ReleaseCalendar() {
             <button
               key={k.id}
               onClick={() => setKind(k.id)}
+              aria-pressed={kind === k.id}
               className={clsx(
                 "rounded-full px-3 py-2 text-sm font-medium transition",
                 kind === k.id
@@ -320,6 +320,7 @@ export function ReleaseCalendar() {
             <button
               key={v}
               onClick={() => setView(v)}
+              aria-pressed={view === v}
               className={clsx(
                 "rounded-md px-4 py-1.5 text-sm font-medium capitalize transition",
                 view === v ? "bg-[var(--ink)] text-[var(--paper)]" : "text-[var(--muted)]"

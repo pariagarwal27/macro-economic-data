@@ -13,7 +13,9 @@
   "observability": {
     "enabled": true
   },
-  "triggers": { "crons": ["* * * * *"] },
+  "triggers": {
+    "crons": ["* * * * *"]
+  },
   "d1_databases": [
     {
       "binding": "DB",

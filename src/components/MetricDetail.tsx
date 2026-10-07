@@ -104,7 +104,7 @@ export function MetricDetail({ id }: { id: string }) {
     latest && prior ? latest.value - prior.value : null;
   const surpriseTone_ =
     surprise != null ? surpriseTone(surprise, meta.id, meta.unit) : "neutral";
-  const year = new Date().getUTCFullYear().toString();
+  const year = "2026";
   const currentYear = history.filter((p) => p.date.startsWith(year));
   const high = currentYear.length ? Math.max(...currentYear.map((p) => p.value)) : null;
   const low = currentYear.length ? Math.min(...currentYear.map((p) => p.value)) : null;
@@ -112,7 +112,7 @@ export function MetricDetail({ id }: { id: string }) {
   const hierarchy = tree ? findPath(tree, meta.id) : null;
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+    <div className="metric-detail-page mx-auto max-w-5xl px-4 py-8 sm:px-6" data-region={meta.region.toLowerCase()}>
       <Link href="/" className="text-sm text-[var(--accent-ink)] hover:underline">
         ← All metrics
       </Link>
@@ -222,11 +222,11 @@ export function MetricDetail({ id }: { id: string }) {
       </section>
 
       <section className="mt-6 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 sm:p-6">
-        <h2 className="font-[family-name:var(--font-display)] text-xl">Historical series</h2>
+        <h2 className="font-[family-name:var(--font-display)] text-xl">{meta.frequency === "quarterly" ? "2025–2026 series" : "2026 series"}</h2>
         <p className="mb-4 text-xs text-[var(--muted)]">
-          Full backfill through earliest available observation · {meta.frequency}
+          Published observations for {meta.frequency === "quarterly" ? "2025–2026" : "2026"} · {meta.frequency}
         </p>
-        <SeriesChart data={history} unit={meta.unit} />
+        <SeriesChart data={history} unit={meta.unit} frequency={meta.frequency} />
       </section>
 
       <section className="mt-6 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 sm:p-6">

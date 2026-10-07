@@ -203,6 +203,8 @@ export const DASHBOARD: Record<Region, Record<MacroCategory, IndicatorSpec[]>> =
     "us-5y5y-forward",
     "us-breakeven-5y",
     "us-breakeven-10y",
+    "us-breakeven-1y",
+    "us-breakeven-2y",
   ],
 },
 
@@ -556,6 +558,8 @@ export const DASHBOARD: Record<Region, Record<MacroCategory, IndicatorSpec[]>> =
   chartMetricIds: [
     "uk-inflation-comp-1y",
     "uk-inflation-comp-5y5y",
+    "uk-inflation-comp-5y",
+    "uk-inflation-comp-10y",
   ],
 },
 
@@ -888,6 +892,8 @@ export const DASHBOARD: Record<Region, Record<MacroCategory, IndicatorSpec[]>> =
   chartMetricIds: [
     "ea-inflation-comp-1y",
     "ea-inflation-comp-2y",
+    "ea-inflation-comp-5y",
+    "ea-inflation-comp-10y",
     "ea-inflation-comp-5y5y",
   ],
 },

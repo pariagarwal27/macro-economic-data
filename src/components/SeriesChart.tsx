@@ -13,14 +13,24 @@ import {
 export function SeriesChart({
   data,
   unit,
+  frequency,
 }: {
   data: Array<{ date: string; value: number }>;
   unit: string;
+  frequency?: string;
 }) {
+  const startYear = frequency === "quarterly" ? 2025 : 2026;
+  const visibleData = data.filter((point) => {
+    const year = Number(point.date.slice(0, 4));
+    return year >= startYear && year <= 2026;
+  });
+  if (!visibleData.length) {
+    return <div className="series-chart-empty">No observations available for the selected chart window.</div>;
+  }
   return (
-    <div className="h-72 w-full">
+    <div className="series-chart h-72 w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
+        <LineChart data={visibleData} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
           <CartesianGrid stroke="rgba(28,36,41,0.08)" vertical={false} />
           <XAxis
             dataKey="date"
@@ -52,7 +62,7 @@ export function SeriesChart({
           <Line
             type="monotone"
             dataKey="value"
-            stroke="#0d7c6f"
+            stroke="var(--country-series, var(--accent))"
             strokeWidth={2}
             dot={false}
             isAnimationActive={false}

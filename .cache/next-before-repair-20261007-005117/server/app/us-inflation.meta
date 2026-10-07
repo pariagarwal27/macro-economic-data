@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/us-inflation/layout,_N_T_/us-inflation/page,_N_T_/us-inflation"
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/4194d1fb4917de12fe21fda6c665a282e2d745e83edd62283614107454afe30d/$/us-inflation",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/us-inflation/page"
+    },
+    "isFallback": false
+  }
+}

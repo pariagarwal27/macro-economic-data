@@ -6,6 +6,7 @@ import {
   type UiNode,
 } from "@/components/macro-ui-hierarchy";
 import { getSeriesHistories } from "@/data/dashboard";
+import { METRICS } from "@/catalog/metrics";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -58,9 +59,16 @@ export async function GET(
       spec.chartMetricIds ?? []
     );
 
-    const ids = [...new Set([...rootIds, ...componentIds, ...chartIds])];
+    const continuousIds = METRICS
+      .filter((metric) => metric.region === r && (metric.frequency === "daily" || metric.frequency === "hourly"))
+      .map((metric) => metric.id);
+    const ids = [...new Set([...rootIds, ...componentIds, ...chartIds, ...continuousIds])];
 
     const result = await getSeriesHistories(ids, 60);
+    const hourlyIds = METRICS
+      .filter((metric) => metric.region === r && metric.frequency === "hourly")
+      .map((metric) => metric.id);
+    if (hourlyIds.length) Object.assign(result, await getSeriesHistories(hourlyIds, 800));
 
     return NextResponse.json(result, {
       headers: {

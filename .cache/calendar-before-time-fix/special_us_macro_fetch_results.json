@@ -1,0 +1,409 @@
+{
+  "fetched_at": "2026-10-06T03:47:43",
+  "metrics": [
+    {
+      "metric_id": "us-cleveland-median-cpi",
+      "metric": "Cleveland Fed Median CPI YoY",
+      "family": "CLEVELAND_CPI",
+      "next_release_date": "2026-10-14",
+      "next_release_at": "2026-10-14T08:30:00-04:00",
+      "release_status": "official_date",
+      "official_source": "https://www.bls.gov/schedule/news_release/cpi.htm",
+      "official_evidence": "BLS Consumer Price Index release schedule: 2026-10-14"
+    },
+    {
+      "metric_id": "us-cleveland-trimmed-cpi",
+      "metric": "Cleveland Fed 16% Trimmed-Mean CPI",
+      "family": "CLEVELAND_CPI",
+      "next_release_date": "2026-10-14",
+      "next_release_at": "2026-10-14T08:30:00-04:00",
+      "release_status": "official_date",
+      "official_source": "https://www.bls.gov/schedule/news_release/cpi.htm",
+      "official_evidence": "BLS Consumer Price Index release schedule: 2026-10-14"
+    },
+    {
+      "metric_id": "us-cleveland-inflation-exp-1y",
+      "metric": "Cleveland Fed Expected Inflation 1-Year",
+      "family": "CLEVELAND_SOFIE",
+      "next_release_date": null,
+      "next_release_at": null,
+      "release_status": "not_announced",
+      "official_source": "https://www.clevelandfed.org/indicators-and-data/survey-of-firms-inflation-expectations",
+      "official_evidence": "SoFIE is quarterly, but no future official publication date is currently announced on the discoverable Cleveland Fed sources."
+    },
+    {
+      "metric_id": "us-cleveland-inflation-exp-2y",
+      "metric": "Cleveland Fed Expected Inflation 2-Year",
+      "family": "CLEVELAND_SOFIE",
+      "next_release_date": null,
+      "next_release_at": null,
+      "release_status": "not_announced",
+      "official_source": "https://www.clevelandfed.org/indicators-and-data/survey-of-firms-inflation-expectations",
+      "official_evidence": "SoFIE is quarterly, but no future official publication date is currently announced on the discoverable Cleveland Fed sources."
+    },
+    {
+      "metric_id": "us-cleveland-inflation-exp-3y",
+      "metric": "Cleveland Fed Expected Inflation 3-Year",
+      "family": "CLEVELAND_SOFIE",
+      "next_release_date": null,
+      "next_release_at": null,
+      "release_status": "not_announced",
+      "official_source": "https://www.clevelandfed.org/indicators-and-data/survey-of-firms-inflation-expectations",
+      "official_evidence": "SoFIE is quarterly, but no future official publication date is currently announced on the discoverable Cleveland Fed sources."
+    },
+    {
+      "metric_id": "us-cleveland-inflation-exp-5y",
+      "metric": "Cleveland Fed Expected Inflation 5-Year",
+      "family": "CLEVELAND_SOFIE",
+      "next_release_date": null,
+      "next_release_at": null,
+      "release_status": "not_announced",
+      "official_source": "https://www.clevelandfed.org/indicators-and-data/survey-of-firms-inflation-expectations",
+      "official_evidence": "SoFIE is quarterly, but no future official publication date is currently announced on the discoverable Cleveland Fed sources."
+    },
+    {
+      "metric_id": "us-cleveland-inflation-exp-5-10y",
+      "metric": "Cleveland Fed Expected Inflation 5–10 Year",
+      "family": "CLEVELAND_SOFIE",
+      "next_release_date": null,
+      "next_release_at": null,
+      "release_status": "not_announced",
+      "official_source": "https://www.clevelandfed.org/indicators-and-data/survey-of-firms-inflation-expectations",
+      "official_evidence": "SoFIE is quarterly, but no future official publication date is currently announced on the discoverable Cleveland Fed sources."
+    },
+    {
+      "metric_id": "us-cleveland-inflation-exp-10y",
+      "metric": "Cleveland Fed Expected Inflation 10-Year",
+      "family": "CLEVELAND_SOFIE",
+      "next_release_date": null,
+      "next_release_at": null,
+      "release_status": "not_announced",
+      "official_source": "https://www.clevelandfed.org/indicators-and-data/survey-of-firms-inflation-expectations",
+      "official_evidence": "SoFIE is quarterly, but no future official publication date is currently announced on the discoverable Cleveland Fed sources."
+    },
+    {
+      "metric_id": "us-cleveland-inflation-exp-30y",
+      "metric": "Cleveland Fed Expected Inflation 30-Year",
+      "family": "CLEVELAND_SOFIE",
+      "next_release_date": null,
+      "next_release_at": null,
+      "release_status": "not_announced",
+      "official_source": "https://www.clevelandfed.org/indicators-and-data/survey-of-firms-inflation-expectations",
+      "official_evidence": "SoFIE is quarterly, but no future official publication date is currently announced on the discoverable Cleveland Fed sources."
+    },
+    {
+      "metric_id": "us-cleveland-sofie-1y",
+      "metric": "Cleveland Fed SoFIE Expected CPI Inflation 1-Year",
+      "family": "CLEVELAND_SOFIE",
+      "next_release_date": null,
+      "next_release_at": null,
+      "release_status": "not_announced",
+      "official_source": "https://www.clevelandfed.org/indicators-and-data/survey-of-firms-inflation-expectations",
+      "official_evidence": "SoFIE is quarterly, but no future official publication date is currently announced on the discoverable Cleveland Fed sources."
+    },
+    {
+      "metric_id": "us-cleveland-sofie-5y",
+      "metric": "Cleveland Fed SoFIE Expected CPI Inflation 5-Year",
+      "family": "CLEVELAND_SOFIE",
+      "next_release_date": null,
+      "next_release_at": null,
+      "release_status": "not_announced",
+      "official_source": "https://www.clevelandfed.org/indicators-and-data/survey-of-firms-inflation-expectations",
+      "official_evidence": "SoFIE is quarterly, but no future official publication date is currently announced on the discoverable Cleveland Fed sources."
+    },
+    {
+      "metric_id": "us-atlanta-sticky-cpi",
+      "metric": "Atlanta Fed Sticky CPI YoY",
+      "family": "ATLANTA_CPI",
+      "next_release_date": "2026-10-14",
+      "next_release_at": "2026-10-14T08:30:00-04:00",
+      "release_status": "official_date",
+      "official_source": "https://www.bls.gov/schedule/news_release/cpi.htm",
+      "official_evidence": "BLS Consumer Price Index release schedule: 2026-10-14"
+    },
+    {
+      "metric_id": "us-atlanta-core-sticky-cpi",
+      "metric": "Atlanta Fed Core Sticky CPI YoY",
+      "family": "ATLANTA_CPI",
+      "next_release_date": "2026-10-14",
+      "next_release_at": "2026-10-14T08:30:00-04:00",
+      "release_status": "official_date",
+      "official_source": "https://www.bls.gov/schedule/news_release/cpi.htm",
+      "official_evidence": "BLS Consumer Price Index release schedule: 2026-10-14"
+    },
+    {
+      "metric_id": "us-atlanta-flexible-cpi",
+      "metric": "Atlanta Fed Flexible CPI YoY",
+      "family": "ATLANTA_CPI",
+      "next_release_date": "2026-10-14",
+      "next_release_at": "2026-10-14T08:30:00-04:00",
+      "release_status": "official_date",
+      "official_source": "https://www.bls.gov/schedule/news_release/cpi.htm",
+      "official_evidence": "BLS Consumer Price Index release schedule: 2026-10-14"
+    },
+    {
+      "metric_id": "us-atlanta-wage-growth",
+      "metric": "Atlanta Fed Wage Growth Tracker",
+      "family": "ATLANTA_WAGE",
+      "next_release_date": null,
+      "next_release_at": null,
+      "release_status": "not_announced",
+      "official_source": "https://www.atlantafed.org/research-and-data/data/wage-growth-tracker",
+      "official_evidence": "Atlanta Fed says the Wage Growth Tracker is usually updated by the second Friday of the month; exact timing depends on Census CPS microdata availability."
+    },
+    {
+      "metric_id": "us-gdpnow",
+      "metric": "Atlanta Fed GDPNow",
+      "family": "ATLANTA_GDPNOW",
+      "next_release_date": "2026-10-06",
+      "next_release_at": null,
+      "release_status": "official_date",
+      "official_source": "https://www.atlantafed.org/research-and-data/data/gdpnow",
+      "official_evidence": "Atlanta Fed GDPNow: next update 2026-10-06"
+    },
+    {
+      "metric_id": "us-atlanta-bie-1y",
+      "metric": "Atlanta Fed Business Inflation Expectations 1-Year",
+      "family": "ATLANTA_BIE",
+      "next_release_date": "2026-10-21",
+      "next_release_at": null,
+      "release_status": "official_date",
+      "official_source": "https://www.atlantafed.org/research-and-data/surveys/business-inflation-expectations",
+      "official_evidence": "Atlanta Fed BIE Survey Release Dates section: 2026-10-21"
+    },
+    {
+      "metric_id": "us-atlanta-bie-unit-cost-1y",
+      "metric": "Atlanta Fed BIE Expected Unit-Cost Growth 1-Year",
+      "family": "ATLANTA_BIE",
+      "next_release_date": "2026-10-21",
+      "next_release_at": null,
+      "release_status": "official_date",
+      "official_source": "https://www.atlantafed.org/research-and-data/surveys/business-inflation-expectations",
+      "official_evidence": "Atlanta Fed BIE Survey Release Dates section: 2026-10-21"
+    },
+    {
+      "metric_id": "us-umich-inflation-exp-1y",
+      "metric": "UMich Expected Inflation 1-Year",
+      "family": "UMICH_CONSUMERS",
+      "next_release_date": "2026-10-09",
+      "next_release_at": null,
+      "release_status": "official_date",
+      "official_source": "https://www.sca.isr.umich.edu/",
+      "official_evidence": "University of Michigan Surveys of Consumers: next data release 2026-10-09"
+    },
+    {
+      "metric_id": "us-umich-inflation-exp-5y",
+      "metric": "UMich Expected Inflation 5-Year",
+      "family": "UMICH_CONSUMERS",
+      "next_release_date": "2026-10-09",
+      "next_release_at": null,
+      "release_status": "official_date",
+      "official_source": "https://www.sca.isr.umich.edu/",
+      "official_evidence": "University of Michigan Surveys of Consumers: next data release 2026-10-09"
+    },
+    {
+      "metric_id": "us-umich-sentiment",
+      "metric": "University of Michigan Consumer Sentiment",
+      "family": "UMICH_CONSUMERS",
+      "next_release_date": "2026-10-09",
+      "next_release_at": null,
+      "release_status": "official_date",
+      "official_source": "https://www.sca.isr.umich.edu/",
+      "official_evidence": "University of Michigan Surveys of Consumers: next data release 2026-10-09"
+    },
+    {
+      "metric_id": "us-breakeven-1y",
+      "metric": "1-Year Breakeven Inflation Rate",
+      "family": "FED_BREAKEVENS",
+      "next_release_date": null,
+      "next_release_at": null,
+      "release_status": "daily_series",
+      "official_source": "https://www.federalreserve.gov/releases/h15/",
+      "official_evidence": "Federal Reserve H.15 market rates are daily market-data series; no discrete future release date."
+    },
+    {
+      "metric_id": "us-breakeven-2y",
+      "metric": "2-Year Breakeven Inflation Rate",
+      "family": "FED_BREAKEVENS",
+      "next_release_date": null,
+      "next_release_at": null,
+      "release_status": "daily_series",
+      "official_source": "https://www.federalreserve.gov/releases/h15/",
+      "official_evidence": "Federal Reserve H.15 market rates are daily market-data series; no discrete future release date."
+    },
+    {
+      "metric_id": "us-breakeven-5y",
+      "metric": "5-Year Breakeven Inflation Rate",
+      "family": "FED_BREAKEVENS",
+      "next_release_date": null,
+      "next_release_at": null,
+      "release_status": "daily_series",
+      "official_source": "https://www.federalreserve.gov/releases/h15/",
+      "official_evidence": "Federal Reserve H.15 market rates are daily market-data series; no discrete future release date."
+    },
+    {
+      "metric_id": "us-breakeven-10y",
+      "metric": "10-Year Breakeven Inflation Rate",
+      "family": "FED_BREAKEVENS",
+      "next_release_date": null,
+      "next_release_at": null,
+      "release_status": "daily_series",
+      "official_source": "https://www.federalreserve.gov/releases/h15/",
+      "official_evidence": "Federal Reserve H.15 market rates are daily market-data series; no discrete future release date."
+    },
+    {
+      "metric_id": "us-breakeven-5y5y",
+      "metric": "5Y5Y Forward Inflation Expectation",
+      "family": "FED_BREAKEVENS",
+      "next_release_date": null,
+      "next_release_at": null,
+      "release_status": "daily_series",
+      "official_source": "https://www.federalreserve.gov/releases/h15/",
+      "official_evidence": "Federal Reserve H.15 market rates are daily market-data series; no discrete future release date."
+    },
+    {
+      "metric_id": "us-industrial-production",
+      "metric": "Industrial Production YoY",
+      "family": "FED_G17",
+      "next_release_date": "2026-10-06",
+      "next_release_at": "2026-10-06T09:15:00-04:00",
+      "release_status": "official_date",
+      "official_source": "https://www.federalreserve.gov/newsevents/2026-october.htm",
+      "official_evidence": "Federal Reserve Board G.17 calendar entry: 2026-10-06"
+    },
+    {
+      "metric_id": "us-capacity-utilization",
+      "metric": "Capacity Utilization",
+      "family": "FED_G17",
+      "next_release_date": "2026-10-06",
+      "next_release_at": "2026-10-06T09:15:00-04:00",
+      "release_status": "official_date",
+      "official_source": "https://www.federalreserve.gov/newsevents/2026-october.htm",
+      "official_evidence": "Federal Reserve Board G.17 calendar entry: 2026-10-06"
+    },
+    {
+      "metric_id": "us-dallas-business-activity",
+      "metric": "Dallas Fed Business Activity Index",
+      "family": "DALLAS_BUSINESS_ACTIVITY",
+      "next_release_date": "2026-10-26",
+      "next_release_at": null,
+      "release_status": "official_date",
+      "official_source": "https://www.dallasfed.org/research/surveys/tmos",
+      "official_evidence": "Dallas Fed Texas Manufacturing Outlook Survey next release date: 2026-10-26"
+    },
+    {
+      "metric_id": "us-chicago-cfnai",
+      "metric": "Chicago Fed National Activity Index",
+      "family": "CHICAGO_CFNAI",
+      "next_release_date": "2026-10-26",
+      "next_release_at": "2026-10-26T08:30:00-04:00",
+      "release_status": "official_date",
+      "official_source": "https://www.chicagofed.org/research/data/data-release-calendar",
+      "official_evidence": "Chicago Fed CFNAI release calendar: 2026-10-26"
+    },
+    {
+      "metric_id": "us-adp-employment-change",
+      "metric": "ADP Nonfarm Private Employment Change",
+      "family": "ADP_NER",
+      "next_release_date": null,
+      "next_release_at": null,
+      "release_status": "not_announced",
+      "official_source": "https://adpemploymentreport.com/",
+      "official_evidence": "No future monthly ADP National Employment Report date parsed from the official calendar."
+    },
+    {
+      "metric_id": "us-adp-employment-level",
+      "metric": "ADP Nonfarm Private Employment Level",
+      "family": "ADP_NER",
+      "next_release_date": null,
+      "next_release_at": null,
+      "release_status": "not_announced",
+      "official_source": "https://adpemploymentreport.com/",
+      "official_evidence": "No future monthly ADP National Employment Report date parsed from the official calendar."
+    },
+    {
+      "metric_id": "us-initial-jobless-claims",
+      "metric": "Initial Jobless Claims",
+      "family": "JOBLESS_CLAIMS",
+      "next_release_date": "2026-10-08",
+      "next_release_at": "2026-10-08T08:30:00-04:00",
+      "release_status": "weekly_cadence",
+      "official_source": "https://oui.doleta.gov/unemploy/claims.asp",
+      "official_evidence": "U.S. Department of Labor weekly Unemployment Insurance claims cadence; next Thursday: 2026-10-08"
+    },
+    {
+      "metric_id": "us-continuing-jobless-claims",
+      "metric": "Continuing Jobless Claims",
+      "family": "JOBLESS_CLAIMS",
+      "next_release_date": "2026-10-08",
+      "next_release_at": "2026-10-08T08:30:00-04:00",
+      "release_status": "weekly_cadence",
+      "official_source": "https://oui.doleta.gov/unemploy/claims.asp",
+      "official_evidence": "U.S. Department of Labor weekly Unemployment Insurance claims cadence; next Thursday: 2026-10-08"
+    },
+    {
+      "metric_id": "uk-oecd-cli",
+      "metric": "UK OECD Composite Leading Indicator",
+      "family": "OECD_CLI_BCI",
+      "next_release_date": "2026-10-07",
+      "next_release_at": null,
+      "release_status": "official_date",
+      "official_source": "https://www.oecd.org/en/data/datasets/oecd-composite-leading-indicators-clis.html",
+      "official_evidence": "OECD CLI/BCI dataset update date: 2026-10-07"
+    },
+    {
+      "metric_id": "uk-business-confidence",
+      "metric": "UK Business Confidence",
+      "family": "OECD_CLI_BCI",
+      "next_release_date": "2026-10-07",
+      "next_release_at": null,
+      "release_status": "official_date",
+      "official_source": "https://www.oecd.org/en/data/datasets/oecd-composite-leading-indicators-clis.html",
+      "official_evidence": "OECD CLI/BCI dataset update date: 2026-10-07"
+    },
+    {
+      "metric_id": "de-unemployment-rate",
+      "metric": "Germany Unemployment Rate",
+      "family": "OECD_UNEMPLOYMENT",
+      "next_release_date": "2026-10-06",
+      "next_release_at": null,
+      "release_status": "official_date",
+      "official_source": "https://www.oecd.org/en/data/insights/statistical-releases/release-dates-for-oecd-statistics-news-releases.html",
+      "official_evidence": "OECD unemployment-rate release calendar: 2026-10-06"
+    }
+  ],
+  "family_release_dates": {
+    "CLEVELAND_CPI": "2026-10-14",
+    "CLEVELAND_SOFIE": null,
+    "ATLANTA_CPI": "2026-10-14",
+    "ATLANTA_WAGE": null,
+    "ATLANTA_GDPNOW": "2026-10-06",
+    "ATLANTA_BIE": "2026-10-21",
+    "UMICH_CONSUMERS": "2026-10-09",
+    "FED_G17": "2026-10-06",
+    "FED_BREAKEVENS": null,
+    "DALLAS_BUSINESS_ACTIVITY": "2026-10-26",
+    "CHICAGO_CFNAI": "2026-10-26",
+    "ADP_NER": null,
+    "JOBLESS_CLAIMS": "2026-10-08",
+    "OECD_CLI_BCI": "2026-10-07",
+    "OECD_UNEMPLOYMENT": "2026-10-06"
+  },
+  "family_status": {
+    "CLEVELAND_CPI": "official_date",
+    "CLEVELAND_SOFIE": "not_announced",
+    "ATLANTA_CPI": "official_date",
+    "ATLANTA_WAGE": "not_announced",
+    "ATLANTA_GDPNOW": "official_date",
+    "ATLANTA_BIE": "official_date",
+    "UMICH_CONSUMERS": "official_date",
+    "FED_G17": "official_date",
+    "FED_BREAKEVENS": "daily_series",
+    "DALLAS_BUSINESS_ACTIVITY": "official_date",
+    "CHICAGO_CFNAI": "official_date",
+    "ADP_NER": "not_announced",
+    "JOBLESS_CLAIMS": "weekly_cadence",
+    "OECD_CLI_BCI": "official_date",
+    "OECD_UNEMPLOYMENT": "official_date"
+  }
+}

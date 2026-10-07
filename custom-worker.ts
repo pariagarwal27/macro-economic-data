@@ -15,9 +15,10 @@ export default {
     catch { response = new Response(null, { status: 500 }); }
     if (response.ok) {
       response = new Response(response.body, response);
-      // Bound repeated history reads on the free D1 plan. Ingestion itself
-      // still runs each minute; displayed data can lag by up to 30 minutes.
-      response.headers.set("Cache-Control", "public, max-age=1800");
+      // Bound repeated history reads on the free D1 plan while keeping daily
+      // series and their calendar listing fresh during the trading day.
+      const refreshableData = url.pathname.startsWith("/api/dashboard/") || url.pathname === "/api/economic-calendar";
+      response.headers.set("Cache-Control", `public, max-age=${refreshableData ? 300 : 1800}`);
       response.headers.set("X-Macro-Data", "live");
       ctx.waitUntil(cache.put(key, response.clone()));
       return response;

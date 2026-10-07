@@ -66,11 +66,14 @@ function isDue(row: ScheduledCalendarRow, now: Date) {
 function safetyIntervalMs(metric: MetricDef) {
   if (getD1Database()) {
     // A rolling sweep still works after the supplied calendar's dates expire.
+    if (metric.frequency === "daily" || metric.frequency === "hourly") return 60 * 60_000;
     return metric.frequency === "annual" ? 24 * 60 * 60_000 : 6 * 60 * 60_000;
   }
   switch (metric.frequency) {
     case "daily":
-      return 6 * 60 * 60 * 1000;
+      return 60 * 60 * 1000;
+    case "hourly":
+      return 15 * 60 * 1000;
     case "weekly":
       return 12 * 60 * 60 * 1000;
     case "monthly":
@@ -97,7 +100,7 @@ export function isSafetyDue(
 ) {
   // A valid official calendar date takes precedence. Safety polling is only
   // for metrics whose provider has not published a future schedule.
-  if (calendarRow?.nextReleaseDate) {
+  if (calendarRow?.nextReleaseDate && metric.frequency !== "daily" && metric.frequency !== "hourly") {
     const scheduled = Date.parse(calendarRow.nextReleaseAt ?? `${calendarRow.nextReleaseDate.slice(0, 10)}T23:59:59Z`);
     if (Number.isFinite(scheduled) && nowMs - scheduled <= 3 * 24 * 60 * 60_000) return false;
   }

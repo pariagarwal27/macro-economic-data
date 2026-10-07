@@ -1,0 +1,545 @@
+{
+  "us-cpi": {
+    "success": true,
+    "metric_id": "us-cpi",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-cpi-mom": {
+    "success": true,
+    "metric_id": "us-cpi-mom",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-cpi-core": {
+    "success": true,
+    "metric_id": "us-cpi-core",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-core-goods-cpi-yoy": {
+    "success": true,
+    "metric_id": "us-core-goods-cpi-yoy",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-core-goods-cpi-mom": {
+    "success": true,
+    "metric_id": "us-core-goods-cpi-mom",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-services-cpi-yoy": {
+    "success": true,
+    "metric_id": "us-services-cpi-yoy",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-services-cpi-mom": {
+    "success": true,
+    "metric_id": "us-services-cpi-mom",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-cpi-nsa": {
+    "success": true,
+    "metric_id": "us-cpi-nsa",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-cpi-core-nsa": {
+    "success": true,
+    "metric_id": "us-cpi-core-nsa",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-cpi-food": {
+    "success": true,
+    "metric_id": "us-cpi-food",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-cpi-energy": {
+    "success": true,
+    "metric_id": "us-cpi-energy",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-cpi-apparel": {
+    "success": true,
+    "metric_id": "us-cpi-apparel",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-cpi-new-vehicles": {
+    "success": true,
+    "metric_id": "us-cpi-new-vehicles",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-cpi-used-cars": {
+    "success": true,
+    "metric_id": "us-cpi-used-cars",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-cpi-medical-commodities": {
+    "success": true,
+    "metric_id": "us-cpi-medical-commodities",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-cpi-recreation-commodities": {
+    "success": true,
+    "metric_id": "us-cpi-recreation-commodities",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-cpi-education-commodities": {
+    "success": true,
+    "metric_id": "us-cpi-education-commodities",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-unit-labor-cost": {
+    "success": true,
+    "metric_id": "us-unit-labor-cost",
+    "release_family": "Productivity and Costs",
+    "release_id": 47,
+    "release_name": "Productivity and Costs",
+    "next_release": "2026-11-05",
+    "next_release_at": "2026-11-05T08:30:00-05:00"
+  },
+  "us-cpi-other-goods": {
+    "success": true,
+    "metric_id": "us-cpi-other-goods",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-cpi-shelter": {
+    "success": true,
+    "metric_id": "us-cpi-shelter",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-cpi-medical-services": {
+    "success": true,
+    "metric_id": "us-cpi-medical-services",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-cpi-recreation-services": {
+    "success": true,
+    "metric_id": "us-cpi-recreation-services",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-cpi-transport-services": {
+    "success": true,
+    "metric_id": "us-cpi-transport-services",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-cpi-education-services": {
+    "success": true,
+    "metric_id": "us-cpi-education-services",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-cpi-other-services": {
+    "success": true,
+    "metric_id": "us-cpi-other-services",
+    "release_family": "CPI",
+    "release_id": 10,
+    "release_name": "Consumer Price Index",
+    "next_release": "2026-10-14",
+    "next_release_at": "2026-10-14T08:30:00-04:00"
+  },
+  "us-ppi-final-demand": {
+    "success": true,
+    "metric_id": "us-ppi-final-demand",
+    "release_family": "PPI",
+    "release_id": 46,
+    "release_name": "Producer Price Index",
+    "next_release": "2026-10-15",
+    "next_release_at": "2026-10-15T08:30:00-04:00"
+  },
+  "us-ppi-core": {
+    "success": true,
+    "metric_id": "us-ppi-core",
+    "release_family": "PPI",
+    "release_id": 46,
+    "release_name": "Producer Price Index",
+    "next_release": "2026-10-15",
+    "next_release_at": "2026-10-15T08:30:00-04:00"
+  },
+  "us-ahe": {
+    "success": true,
+    "metric_id": "us-ahe",
+    "release_family": "Employment Situation",
+    "release_id": 50,
+    "release_name": "Employment Situation",
+    "next_release": "2026-11-06",
+    "next_release_at": "2026-11-06T08:30:00-05:00"
+  },
+  "us-ahe-mom": {
+    "success": true,
+    "metric_id": "us-ahe-mom",
+    "release_family": "Employment Situation",
+    "release_id": 50,
+    "release_name": "Employment Situation",
+    "next_release": "2026-11-06",
+    "next_release_at": "2026-11-06T08:30:00-05:00"
+  },
+  "us-nfp": {
+    "success": true,
+    "metric_id": "us-nfp",
+    "release_family": "Employment Situation",
+    "release_id": 50,
+    "release_name": "Employment Situation",
+    "next_release": "2026-11-06",
+    "next_release_at": "2026-11-06T08:30:00-05:00"
+  },
+  "us-payrolls-level": {
+    "success": true,
+    "metric_id": "us-payrolls-level",
+    "release_family": "Employment Situation",
+    "release_id": 50,
+    "release_name": "Employment Situation",
+    "next_release": "2026-11-06",
+    "next_release_at": "2026-11-06T08:30:00-05:00"
+  },
+  "us-unemployment": {
+    "success": true,
+    "metric_id": "us-unemployment",
+    "release_family": "Employment Situation",
+    "release_id": 50,
+    "release_name": "Employment Situation",
+    "next_release": "2026-11-06",
+    "next_release_at": "2026-11-06T08:30:00-05:00"
+  },
+  "us-u6": {
+    "success": true,
+    "metric_id": "us-u6",
+    "release_family": "Employment Situation",
+    "release_id": 50,
+    "release_name": "Employment Situation",
+    "next_release": "2026-11-06",
+    "next_release_at": "2026-11-06T08:30:00-05:00"
+  },
+  "us-participation": {
+    "success": true,
+    "metric_id": "us-participation",
+    "release_family": "Employment Situation",
+    "release_id": 50,
+    "release_name": "Employment Situation",
+    "next_release": "2026-11-06",
+    "next_release_at": "2026-11-06T08:30:00-05:00"
+  },
+  "us-employment-population": {
+    "success": true,
+    "metric_id": "us-employment-population",
+    "release_family": "Employment Situation",
+    "release_id": 50,
+    "release_name": "Employment Situation",
+    "next_release": "2026-11-06",
+    "next_release_at": "2026-11-06T08:30:00-05:00"
+  },
+  "us-unemployed-persons": {
+    "success": true,
+    "metric_id": "us-unemployed-persons",
+    "release_family": "Employment Situation",
+    "release_id": 50,
+    "release_name": "Employment Situation",
+    "next_release": "2026-11-06",
+    "next_release_at": "2026-11-06T08:30:00-05:00"
+  },
+  "us-long-term-unemployed": {
+    "success": true,
+    "metric_id": "us-long-term-unemployed",
+    "release_family": "Employment Situation",
+    "release_id": 50,
+    "release_name": "Employment Situation",
+    "next_release": "2026-11-06",
+    "next_release_at": "2026-11-06T08:30:00-05:00"
+  },
+  "us-private-payrolls": {
+    "success": true,
+    "metric_id": "us-private-payrolls",
+    "release_family": "Employment Situation",
+    "release_id": 50,
+    "release_name": "Employment Situation",
+    "next_release": "2026-11-06",
+    "next_release_at": "2026-11-06T08:30:00-05:00"
+  },
+  "us-government-payrolls": {
+    "success": true,
+    "metric_id": "us-government-payrolls",
+    "release_family": "Employment Situation",
+    "release_id": 50,
+    "release_name": "Employment Situation",
+    "next_release": "2026-11-06",
+    "next_release_at": "2026-11-06T08:30:00-05:00"
+  },
+  "us-civilian-labor-force": {
+    "success": true,
+    "metric_id": "us-civilian-labor-force",
+    "release_family": "Employment Situation",
+    "release_id": 50,
+    "release_name": "Employment Situation",
+    "next_release": "2026-11-06",
+    "next_release_at": "2026-11-06T08:30:00-05:00"
+  },
+  "us-not-in-labor-force": {
+    "success": true,
+    "metric_id": "us-not-in-labor-force",
+    "release_family": "Employment Situation",
+    "release_id": 50,
+    "release_name": "Employment Situation",
+    "next_release": "2026-11-06",
+    "next_release_at": "2026-11-06T08:30:00-05:00"
+  },
+  "us-average-weekly-earnings": {
+    "success": true,
+    "metric_id": "us-average-weekly-earnings",
+    "release_family": "Employment Situation",
+    "release_id": 50,
+    "release_name": "Employment Situation",
+    "next_release": "2026-11-06",
+    "next_release_at": "2026-11-06T08:30:00-05:00"
+  },
+  "us-jolts-openings": {
+    "success": true,
+    "metric_id": "us-jolts-openings",
+    "release_family": "JOLTS",
+    "release_id": 192,
+    "release_name": "Job Openings and Labor Turnover Survey",
+    "next_release": "2026-11-03",
+    "next_release_at": "2026-11-03T10:00:00-05:00"
+  },
+  "us-jolts-quits": {
+    "success": true,
+    "metric_id": "us-jolts-quits",
+    "release_family": "JOLTS",
+    "release_id": 192,
+    "release_name": "Job Openings and Labor Turnover Survey",
+    "next_release": "2026-11-03",
+    "next_release_at": "2026-11-03T10:00:00-05:00"
+  },
+  "us-jolts-hires": {
+    "success": true,
+    "metric_id": "us-jolts-hires",
+    "release_family": "JOLTS",
+    "release_id": 192,
+    "release_name": "Job Openings and Labor Turnover Survey",
+    "next_release": "2026-11-03",
+    "next_release_at": "2026-11-03T10:00:00-05:00"
+  },
+  "us-jolts-layoffs": {
+    "success": true,
+    "metric_id": "us-jolts-layoffs",
+    "release_family": "JOLTS",
+    "release_id": 192,
+    "release_name": "Job Openings and Labor Turnover Survey",
+    "next_release": "2026-11-03",
+    "next_release_at": "2026-11-03T10:00:00-05:00"
+  },
+  "us-jolts-hires-level": {
+    "success": true,
+    "metric_id": "us-jolts-hires-level",
+    "release_family": "JOLTS",
+    "release_id": 192,
+    "release_name": "Job Openings and Labor Turnover Survey",
+    "next_release": "2026-11-03",
+    "next_release_at": "2026-11-03T10:00:00-05:00"
+  },
+  "us-jolts-quits-level": {
+    "success": true,
+    "metric_id": "us-jolts-quits-level",
+    "release_family": "JOLTS",
+    "release_id": 192,
+    "release_name": "Job Openings and Labor Turnover Survey",
+    "next_release": "2026-11-03",
+    "next_release_at": "2026-11-03T10:00:00-05:00"
+  },
+  "us-jolts-layoffs-level": {
+    "success": true,
+    "metric_id": "us-jolts-layoffs-level",
+    "release_family": "JOLTS",
+    "release_id": 192,
+    "release_name": "Job Openings and Labor Turnover Survey",
+    "next_release": "2026-11-03",
+    "next_release_at": "2026-11-03T10:00:00-05:00"
+  },
+  "us-jolts-total-separations": {
+    "success": true,
+    "metric_id": "us-jolts-total-separations",
+    "release_family": "JOLTS",
+    "release_id": 192,
+    "release_name": "Job Openings and Labor Turnover Survey",
+    "next_release": "2026-11-03",
+    "next_release_at": "2026-11-03T10:00:00-05:00"
+  },
+  "us-avg-workweek": {
+    "success": true,
+    "metric_id": "us-avg-workweek",
+    "release_family": "Employment Situation",
+    "release_id": 50,
+    "release_name": "Employment Situation",
+    "next_release": "2026-11-06",
+    "next_release_at": "2026-11-06T08:30:00-05:00"
+  },
+  "us-mfg-employment": {
+    "success": true,
+    "metric_id": "us-mfg-employment",
+    "release_family": "Employment Situation",
+    "release_id": 50,
+    "release_name": "Employment Situation",
+    "next_release": "2026-11-06",
+    "next_release_at": "2026-11-06T08:30:00-05:00"
+  },
+  "us-temp-help": {
+    "success": true,
+    "metric_id": "us-temp-help",
+    "release_family": "Employment Situation",
+    "release_id": 50,
+    "release_name": "Employment Situation",
+    "next_release": "2026-11-06",
+    "next_release_at": "2026-11-06T08:30:00-05:00"
+  },
+  "us-eci-total": {
+    "success": true,
+    "metric_id": "us-eci-total",
+    "release_family": "Employment Cost Index",
+    "release_id": 11,
+    "release_name": "Employment Cost Index",
+    "next_release": "2026-10-30",
+    "next_release_at": "2026-10-30T08:30:00-04:00"
+  },
+  "us-eci-wages": {
+    "success": true,
+    "metric_id": "us-eci-wages",
+    "release_family": "Employment Cost Index",
+    "release_id": 11,
+    "release_name": "Employment Cost Index",
+    "next_release": "2026-10-30",
+    "next_release_at": "2026-10-30T08:30:00-04:00"
+  },
+  "us-housing-starts": {
+    "success": true,
+    "metric_id": "us-housing-starts",
+    "release_family": "New Residential Construction",
+    "release_id": 27,
+    "release_name": "New Residential Construction",
+    "next_release": "2026-10-20",
+    "next_release_at": "2026-10-20T08:30:00-04:00"
+  },
+  "us-building-permits": {
+    "success": true,
+    "metric_id": "us-building-permits",
+    "release_family": "New Residential Construction",
+    "release_id": 27,
+    "release_name": "New Residential Construction",
+    "next_release": "2026-10-20",
+    "next_release_at": "2026-10-20T08:30:00-04:00"
+  },
+  "us-durable-goods": {
+    "success": false,
+    "release_family": "Advance Report on Durable Goods",
+    "next_release": null,
+    "error": "Release family not found in FRED"
+  },
+  "us-import-prices": {
+    "success": true,
+    "metric_id": "us-import-prices",
+    "release_family": "U.S. Import and Export Price Indexes",
+    "release_id": 188,
+    "release_name": "U.S. Import and Export Price Indexes",
+    "next_release": "2026-10-16",
+    "next_release_at": "2026-10-16T08:30:00-04:00"
+  },
+  "us-manufacturers-new-orders": {
+    "success": false,
+    "release_family": "Manufacturers' Shipments, Inventories, and Orders",
+    "next_release": null,
+    "error": "Release family not found in FRED"
+  },
+  "us-empire-state": {
+    "success": true,
+    "metric_id": "us-empire-state",
+    "release_family": "Empire State Manufacturing Survey",
+    "release_id": 321,
+    "release_name": "Empire State Manufacturing Survey",
+    "next_release": "2026-10-15",
+    "next_release_at": "2026-10-15T08:30:00-04:00"
+  }
+}

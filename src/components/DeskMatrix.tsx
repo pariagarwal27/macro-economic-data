@@ -68,9 +68,9 @@ type SmoothedResponse = {
 };
 
 const REGION_STYLE: Record<string, string> = {
-  US: "text-blue-800",
-  UK: "text-purple-800",
-  EA: "text-amber-900",
+  US: "text-[var(--country-us)]",
+  UK: "text-[var(--country-uk)]",
+  EA: "text-[var(--country-ea)]",
 };
 
 function MatrixCellView({ cell, unit }: { cell: MatrixCell; unit: string }) {
@@ -262,7 +262,7 @@ export function DeskMatrix() {
   const loading = view === "monthly" ? !data && !error : !smoothed && !error;
 
   return (
-    <div className="mx-auto max-w-[1800px] px-4 pb-16 pt-8 sm:px-6">
+    <div className="desk-page mx-auto max-w-[1800px] px-4 pb-16 pt-8 sm:px-6">
       <Link href="/" className="text-sm text-[var(--accent-ink)] hover:underline">
         ← Dashboard
       </Link>
@@ -288,6 +288,7 @@ export function DeskMatrix() {
             <button
               key={id}
               type="button"
+              aria-pressed={view === id}
               onClick={() => setView(id)}
               className={clsx(
                 "rounded-md px-4 py-2 text-sm font-medium transition",
@@ -431,6 +432,7 @@ export function DeskMatrix() {
                           <td className="sticky left-0 z-10 border-r border-[var(--line)] bg-[var(--panel)] px-3 py-2">
                             <div className="flex items-baseline gap-2">
                               <span
+                                data-country={row.region.toLowerCase()}
                                 className={clsx(
                                   "text-[10px] font-bold uppercase",
                                   REGION_STYLE[row.region]

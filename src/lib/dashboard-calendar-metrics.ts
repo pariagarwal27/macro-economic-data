@@ -1,7 +1,7 @@
 import { METRICS } from '@/catalog/metrics';
 import { DASHBOARD } from '@/components/macro-ui-hierarchy';
 
-/** Only the series displayed on dashboard cards, across all three countries. */
+/** Dashboard series plus every daily/hourly metric, which publishes continuously. */
 export function getDashboardCalendarMetrics() {
   const displayed = new Set<string>();
   const titles = new Map<string, string>();
@@ -13,7 +13,7 @@ export function getDashboardCalendarMetrics() {
       if (spec.title) titles.set(spec.metricId, spec.title);
     }
   }
-  return METRICS.filter(metric => displayed.has(metric.id)).map(metric => ({
+  return METRICS.filter(metric => displayed.has(metric.id) || metric.frequency === "daily" || metric.frequency === "hourly").map(metric => ({
     ...metric, name: titles.get(metric.id) ?? metric.name,
   }));
 }

@@ -1,0 +1,220 @@
+{
+  "source": "Bank of England / official publisher pages only",
+  "generated_at": "2026-10-06T10:46:51.030512+00:00",
+  "rule": "next_release is populated only when an official source explicitly publishes the future release/publication date; no dates are calculated or inferred",
+  "total_metrics": 20,
+  "successful": 9,
+  "not_scheduled": 4,
+  "not_announced": 2,
+  "not_found": 5,
+  "family_dates": {
+    "IAS": "2026-12-11",
+    "DMP": "2026-10-30",
+    "AGENTS": null,
+    "CITI_YOUGOV": null,
+    "MAPS": null,
+    "INFLATION_COMPENSATION": null
+  },
+  "results": [
+    {
+      "metric": "uk-inflation-exp-1y",
+      "id": "IAS_Q2A",
+      "family": "IAS",
+      "next_release": "2026-12-11",
+      "next_release_at": "2026-12-11T09:30:00+00:00",
+      "status": "success",
+      "official_source": "https://www.bankofengland.co.uk/inflation-attitudes-survey/2026/november-2026",
+      "official_evidence": "Published on 11 December 2026 This Bank of England/ Savanta Inflation Attitudes Survey will be published on 11 December 2026."
+    },
+    {
+      "metric": "uk-inflation-exp-5y",
+      "id": "IAS_Q2C",
+      "family": "IAS",
+      "next_release": "2026-12-11",
+      "next_release_at": "2026-12-11T09:30:00+00:00",
+      "status": "success",
+      "official_source": "https://www.bankofengland.co.uk/inflation-attitudes-survey/2026/november-2026",
+      "official_evidence": "Published on 11 December 2026 This Bank of England/ Savanta Inflation Attitudes Survey will be published on 11 December 2026."
+    },
+    {
+      "metric": "uk-dmp-wage-growth-3m",
+      "id": "DMP_WAGE_REALISED_3M",
+      "family": "DMP",
+      "next_release": "2026-10-30",
+      "next_release_at": "2026-10-30T09:30:00+00:00",
+      "status": "success",
+      "official_source": "https://www.bankofengland.co.uk/decision-maker-panel/2026/october-2026",
+      "official_evidence": "Published on 30 October 2026 This monthly Decision Maker Panel data will be published on 30 October 2026."
+    },
+    {
+      "metric": "uk-dmp-wage-exp-1y-3m",
+      "id": "DMP_WAGE_EXPECTED_3M",
+      "family": "DMP",
+      "next_release": "2026-10-30",
+      "next_release_at": "2026-10-30T09:30:00+00:00",
+      "status": "success",
+      "official_source": "https://www.bankofengland.co.uk/decision-maker-panel/2026/october-2026",
+      "official_evidence": "Published on 30 October 2026 This monthly Decision Maker Panel data will be published on 30 October 2026."
+    },
+    {
+      "metric": "uk-dmp-wage-exp-1y",
+      "id": null,
+      "family": "DMP",
+      "next_release": "2026-10-30",
+      "next_release_at": "2026-10-30T09:30:00+00:00",
+      "status": "success",
+      "official_source": "https://www.bankofengland.co.uk/decision-maker-panel/2026/october-2026",
+      "official_evidence": "Published on 30 October 2026 This monthly Decision Maker Panel data will be published on 30 October 2026."
+    },
+    {
+      "metric": "uk-agents-pay-settlement-exp-1y",
+      "id": null,
+      "family": "AGENTS",
+      "next_release": null,
+      "next_release_at": null,
+      "status": "not_found",
+      "official_source": null,
+      "official_evidence": null
+    },
+    {
+      "metric": "uk-inflation-exp-2y",
+      "id": null,
+      "family": "IAS",
+      "next_release": "2026-12-11",
+      "next_release_at": "2026-12-11T09:30:00+00:00",
+      "status": "success",
+      "official_source": "https://www.bankofengland.co.uk/inflation-attitudes-survey/2026/november-2026",
+      "official_evidence": "Published on 11 December 2026 This Bank of England/ Savanta Inflation Attitudes Survey will be published on 11 December 2026."
+    },
+    {
+      "metric": "uk-citi-yougov-inflation-exp-1y",
+      "id": null,
+      "family": "CITI_YOUGOV",
+      "next_release": null,
+      "next_release_at": null,
+      "status": "not_announced",
+      "official_source": null,
+      "official_evidence": null
+    },
+    {
+      "metric": "uk-citi-yougov-inflation-exp-5-10y",
+      "id": null,
+      "family": "CITI_YOUGOV",
+      "next_release": null,
+      "next_release_at": null,
+      "status": "not_announced",
+      "official_source": null,
+      "official_evidence": null
+    },
+    {
+      "metric": "uk-dmp-inflation-exp-1y",
+      "id": null,
+      "family": "DMP",
+      "next_release": "2026-10-30",
+      "next_release_at": "2026-10-30T09:30:00+00:00",
+      "status": "success",
+      "official_source": "https://www.bankofengland.co.uk/decision-maker-panel/2026/october-2026",
+      "official_evidence": "Published on 30 October 2026 This monthly Decision Maker Panel data will be published on 30 October 2026."
+    },
+    {
+      "metric": "uk-dmp-inflation-exp-3y",
+      "id": null,
+      "family": "DMP",
+      "next_release": "2026-10-30",
+      "next_release_at": "2026-10-30T09:30:00+00:00",
+      "status": "success",
+      "official_source": "https://www.bankofengland.co.uk/decision-maker-panel/2026/october-2026",
+      "official_evidence": "Published on 30 October 2026 This monthly Decision Maker Panel data will be published on 30 October 2026."
+    },
+    {
+      "metric": "uk-dmp-own-price-exp-1y",
+      "id": null,
+      "family": "DMP",
+      "next_release": "2026-10-30",
+      "next_release_at": "2026-10-30T09:30:00+00:00",
+      "status": "success",
+      "official_source": "https://www.bankofengland.co.uk/decision-maker-panel/2026/october-2026",
+      "official_evidence": "Published on 30 October 2026 This monthly Decision Maker Panel data will be published on 30 October 2026."
+    },
+    {
+      "metric": "uk-maps-inflation-1y",
+      "id": null,
+      "family": "MAPS",
+      "next_release": null,
+      "next_release_at": null,
+      "status": "not_found",
+      "official_source": null,
+      "official_evidence": null
+    },
+    {
+      "metric": "uk-maps-inflation-2y",
+      "id": null,
+      "family": "MAPS",
+      "next_release": null,
+      "next_release_at": null,
+      "status": "not_found",
+      "official_source": null,
+      "official_evidence": null
+    },
+    {
+      "metric": "uk-maps-inflation-3y",
+      "id": null,
+      "family": "MAPS",
+      "next_release": null,
+      "next_release_at": null,
+      "status": "not_found",
+      "official_source": null,
+      "official_evidence": null
+    },
+    {
+      "metric": "uk-maps-inflation-5y",
+      "id": null,
+      "family": "MAPS",
+      "next_release": null,
+      "next_release_at": null,
+      "status": "not_found",
+      "official_source": null,
+      "official_evidence": null
+    },
+    {
+      "metric": "uk-inflation-comp-1y",
+      "id": null,
+      "family": "INFLATION_COMPENSATION",
+      "next_release": null,
+      "next_release_at": null,
+      "status": "not_scheduled",
+      "official_source": null,
+      "official_evidence": null
+    },
+    {
+      "metric": "uk-inflation-comp-5y",
+      "id": null,
+      "family": "INFLATION_COMPENSATION",
+      "next_release": null,
+      "next_release_at": null,
+      "status": "not_scheduled",
+      "official_source": null,
+      "official_evidence": null
+    },
+    {
+      "metric": "uk-inflation-comp-10y",
+      "id": null,
+      "family": "INFLATION_COMPENSATION",
+      "next_release": null,
+      "next_release_at": null,
+      "status": "not_scheduled",
+      "official_source": null,
+      "official_evidence": null
+    },
+    {
+      "metric": "uk-inflation-comp-5y5y",
+      "id": null,
+      "family": "INFLATION_COMPENSATION",
+      "next_release": null,
+      "next_release_at": null,
+      "status": "not_scheduled",
+      "official_source": null,
+      "official_evidence": null
+    }
+  ]
+}

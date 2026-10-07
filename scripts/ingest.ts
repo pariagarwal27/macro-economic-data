@@ -666,9 +666,12 @@ async function warmLiveCaches(
       ? [
           ...new Set(
             targets
-              .map((metric) => LIVE_MAP[metric.id])
-              .filter((ref) => ref?.provider === "bls")
-              .map((ref) => ref!.seriesId)
+              .map((metric) => {
+                const ref = LIVE_MAP[metric.id];
+                if (ref?.provider === "bls") return ref.seriesId;
+                return metric.source === "bls" ? metric.seriesId : null;
+              })
+              .filter((id): id is string => Boolean(id))
           ),
         ]
       : [];
@@ -687,11 +690,16 @@ async function warmLiveCaches(
     }
   }
 
-  // HTML release pages only as fallback when BLS API returned nothing
-  if (
-    providers.has("bls") &&
-    ![...caches.bls.values()].some((pts) => pts.length > 0)
-  ) {
+  // Also warm the official release-page fallbacks when the API returns a
+  // partial set (for example, after its daily quota is reached midway).
+  // The API remains preferred per series; these pages fill only missing IDs.
+  const needsEmpsitFallback = targets.some((metric) =>
+    ["us-nfp", "us-unemployment"].includes(metric.id)
+  );
+  const needsCpiFallback = targets.some((metric) =>
+    ["us-cpi-mom", "us-cpi-yoy", "us-core-cpi-mom", "us-core-cpi-yoy"].includes(metric.id)
+  );
+  if (providers.has("bls") && needsEmpsitFallback) {
     try {
       caches.empsit = await fetchBlsEmpsitRelease();
 
@@ -702,18 +710,15 @@ async function warmLiveCaches(
       console.warn(`[live] BLS empsit HTML failed:`, err);
     }
 
+  }
+  if (providers.has("bls") && needsCpiFallback) {
     try {
       caches.cpiRelease = await fetchBlsCpiRelease();
-
-      console.log(
-        `[live] BLS CPI release period=${caches.cpiRelease.period}`
-      );
+      console.log(`[live] BLS CPI release period=${caches.cpiRelease.period}`);
     } catch (err) {
       caches.cpiRelease = null;
       console.warn(`[live] BLS CPI HTML failed:`, err);
     }
-  } else if (providers.has("bls")) {
-    console.log(`[live] Skipping BLS HTML scrapes — API data present`);
   }
 
   if (providers.has("adp")) {
@@ -786,6 +791,12 @@ async function loadLiveRaw(
 
   const ref = LIVE_MAP[metric.id];
   if (!ref) {
+    if (metric.source === "bls") {
+      const points = caches.bls.get(metric.seriesId);
+      if (points?.length) {
+        return { points, note: `Live BLS API ${metric.seriesId}` };
+      }
+    }
     // Catalog native official sources
     if (metric.source === "ons") {
       await new Promise((r) => setTimeout(r, 2000));
@@ -798,6 +809,34 @@ async function loadLiveRaw(
       return {
         points: await fetchEurostatPreset(metric.seriesId),
         note: "Live Eurostat",
+      };
+    }
+    if (metric.source === "bea") {
+      if (!process.env.BEA_API_KEY) return null;
+      const [table, line] = metric.seriesId.split(":");
+      if (!table || !line) return null;
+      const frequency = metric.frequency === "monthly" ? "M" : metric.frequency === "annual" ? "A" : "Q";
+      return {
+        points: await fetchBeaNipa(table, line, { frequency }),
+        note: `Live BEA ${metric.seriesId}`,
+      };
+    }
+    if (metric.source === "ecb") {
+      return {
+        points: await fetchEcbBySeriesId(metric.seriesId),
+        note: `Live ECB ${metric.seriesId}`,
+      };
+    }
+    if (metric.source === "boe") {
+      return {
+        points: await fetchBoeBySeriesId(metric.seriesId),
+        note: `Live BoE ${metric.seriesId}`,
+      };
+    }
+    if (metric.source === "nyfed") {
+      return {
+        points: await fetchNyfedSeries(metric.seriesId as NyfedSeriesId),
+        note: `Live NY Fed SCE ${metric.seriesId}`,
       };
     }
     if (metric.source === "atlanta" && metric.seriesId === "BIE_EXPECTED_PRICE_1Y") {
@@ -1345,6 +1384,7 @@ const liveCaches: LiveCaches =
           const live = await loadLiveRaw(metric, liveCaches);
           if (live?.points.length) {
             const headline =
+              metric.id === "us-eci-wages" ||
               live.note.includes("(change)") ||
               live.note.includes("release page") ||
               live.note.includes("PPI bulletin");

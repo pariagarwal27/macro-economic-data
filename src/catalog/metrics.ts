@@ -39,6 +39,7 @@ export interface MetricDef {
   transform: Transform;
   frequency:
   | "daily"
+  | "hourly"
   | "weekly"
   | "monthly"
   | "quarterly"
@@ -760,7 +761,7 @@ export const METRICS: MetricDef[] = [
   source: "ecb",
   seriesId: "SPF_HICP_CURRENT_YEAR",
   transform: "level",
-  frequency: "quarterly",
+  frequency: "annual",
   unit: "percent",
   importance: "critical",
   officialUrl: "https://data.ecb.europa.eu/data/datasets/SPF",
@@ -1014,7 +1015,9 @@ export const METRICS: MetricDef[] = [
     source: "fred",
     seriesId: "GDPNOW",
     transform: "level",
-    frequency: "monthly",
+    // The nowcast is revised several times within a quarter, but the plotted
+    // FRED history is stored as quarterly reference-period observations.
+    frequency: "quarterly",
     unit: "percent",
     importance: "critical",
     officialUrl: `${ATL}/cqer/research/gdpnow`,
@@ -2941,7 +2944,7 @@ export const METRICS: MetricDef[] = [
   releaseName: "Euro Area Labour Force Survey",
 },
   {
-    id: "ea-youth-unemployment",
+  id: "ea-youth-unemployment",
     region: "EA",
     category: "jobs",
     subcategory: "unemployment",
@@ -2959,7 +2962,7 @@ export const METRICS: MetricDef[] = [
     releaseName: "Euro Area Unemployment",
   },
     {
-    id: "ea-youth-unemployed-persons",
+  id: "ea-youth-unemployed-persons",
     region: "EA",
     category: "jobs",
     subcategory: "unemployment",
@@ -2967,7 +2970,7 @@ export const METRICS: MetricDef[] = [
     shortName: "EA Youth Unemployed",
     description: "Euro area unemployed persons under 25.",
     source: "eurostat",
-    seriesId: "une_rt_m_youth",
+    seriesId: "ea-youth-unemployed-persons",
     transform: "level",
     frequency: "monthly",
     unit: "thousands",
@@ -2985,7 +2988,7 @@ export const METRICS: MetricDef[] = [
     shortName: "EA Employment Rate",
     description: "Euro area employment rate, ages 15-74.",
     source: "eurostat",
-    seriesId: "lfsi_emp_q_ea",
+    seriesId: "ea-employment-rate",
     transform: "level",
     frequency: "quarterly",
     unit: "percent",
@@ -3187,7 +3190,7 @@ export const METRICS: MetricDef[] = [
     source: "ecb",
     seriesId: "SPF_HICP_P12M",
     transform: "level",
-    frequency: "monthly",
+    frequency: "quarterly",
     unit: "percent",
     importance: "critical",
     officialUrl: "https://data.ecb.europa.eu/data/datasets/SPF",
@@ -3392,7 +3395,7 @@ export const METRICS: MetricDef[] = [
     source: "ecb",
     seriesId: "SPF_ASSU_LAB_P12M",
     transform: "level",
-    frequency: "quarterly",
+    frequency: "annual",
     unit: "percent",
     importance: "high",
     officialUrl: "https://data.ecb.europa.eu/data/datasets/SPF",
@@ -3838,7 +3841,7 @@ export const METRICS: MetricDef[] = [
     shortName: "1Y Inflation Swap",
     description: "Market-based UK inflation compensation / breakeven measure, one-year horizon.",
     source: "boe", seriesId: "UK_INFL_COMP_1Y",
-    transform: "level", frequency: "daily", unit: "percent", importance: "high",
+    transform: "level", frequency: "monthly", unit: "percent", importance: "high",
     officialUrl: `${BOE}/statistics`, docsUrl: `${BOE}/statistics`, releaseName: "UK Inflation Compensation",
   },
   {
@@ -3868,7 +3871,7 @@ export const METRICS: MetricDef[] = [
     shortName: "5Y5Y Inflation Swap",
     description: "Market-based five-year-forward five-year UK inflation compensation measure.",
     source: "boe", seriesId: "UK_INFL_COMP_5Y5Y",
-    transform: "level", frequency: "daily", unit: "percent", importance: "high",
+    transform: "level", frequency: "monthly", unit: "percent", importance: "high",
     officialUrl: `${BOE}/statistics`, docsUrl: `${BOE}/statistics`, releaseName: "UK Inflation Compensation",
   },
 

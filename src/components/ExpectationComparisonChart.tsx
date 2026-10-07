@@ -19,6 +19,7 @@ type Series = {
   label: string;
   data: Point[];
   horizon?: string;
+  frequency?: string;
 };
 
 type Props = {
@@ -27,16 +28,7 @@ type Props = {
   series: Series[];
 };
 
-const LINE_COLORS = [
-  "#2563eb",
-  "#ef4444",
-  "#a855f7",
-  "#0f766e",
-  "#f59e0b",
-  "#0891b2",
-  "#db2777",
-  "#65a30d",
-];
+const LINE_DASHES = ["", "6 3", "2 3", "8 3 2 3"];
 
 /**
  * Convert any observation date into a calendar-month key.
@@ -131,21 +123,29 @@ export function ExpectationComparisonChart({
    * They now correctly occupy the same X-axis position.
    */
 
-  const currentYear = new Date().getUTCFullYear();
+  const currentYear = 2026;
+  const hasDailySeries = series.some((item) => item.frequency === "daily" || item.frequency === "hourly");
+  const today = new Date();
+  const todayKey = today.toISOString().slice(0, 10);
+  const dayCutoff = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
   const valid = series
     .map((item) => {
       const byMonth = new Map<string, number>();
+      const isDaily = item.frequency === "daily" || item.frequency === "hourly";
 
       for (const point of item.data ?? []) {
-        const month = monthKey(point.date);
+        const date = String(point.date).slice(0, 10);
+        const month = monthKey(date);
         const value = Number(point.value);
 
         if (!month || !Number.isFinite(value)) {
           continue;
         }
 
-        if (!month.startsWith(`${currentYear}-`)) {
+        const pointYear = Number(date.slice(0, 4));
+        const firstYear = item.frequency === "quarterly" ? currentYear - 1 : currentYear;
+        if (isDaily ? date < dayCutoff || date > todayKey : pointYear < firstYear || pointYear > currentYear || !month) {
           continue;
         }
 
@@ -153,7 +153,7 @@ export function ExpectationComparisonChart({
          * If a source contains multiple observations in the same
          * month, keep the latest one encountered.
          */
-        byMonth.set(month, value);
+        byMonth.set(isDaily ? date : month!, value);
       }
 
       return {
@@ -170,8 +170,9 @@ export function ExpectationComparisonChart({
 
   if (!valid.length) {
     return (
-      <div className="rounded-2xl border border-[var(--border)] bg-white p-4">
-        <h4 className="text-sm font-semibold text-[var(--text)]">
+      <div className="expectation-comparison-card rounded-2xl border border-[var(--border)] bg-white p-4">
+        <div className="expectation-comparison-heading mb-3">
+        <h4 className="text-sm font-semibold text-[var(--ink)]">
           {title}
         </h4>
 
@@ -181,8 +182,9 @@ export function ExpectationComparisonChart({
           </p>
         ) : null}
 
-        <div className="mt-8 text-sm text-[var(--muted)]">
-          No current-year observations available.
+        </div>
+        <div className="expectation-comparison-empty">
+          {hasDailySeries ? "No observations in the last 30 days." : `No ${currentYear} observations available.`}
         </div>
       </div>
     );
@@ -248,9 +250,9 @@ export function ExpectationComparisonChart({
   const yMax = maxValue + padding;
 
   return (
-    <div className="rounded-2xl border border-[var(--border)] bg-white p-4">
-      <div className="mb-3">
-        <h4 className="text-base font-semibold text-[var(--text)]">
+    <div className="expectation-comparison-card rounded-2xl border border-[var(--border)] bg-white p-4">
+      <div className="expectation-comparison-heading mb-3">
+        <h4 className="text-base font-semibold text-[var(--ink)]">
           {title}
         </h4>
 
@@ -261,7 +263,7 @@ export function ExpectationComparisonChart({
         ) : null}
       </div>
 
-      <div className="h-80 w-full">
+      <div className="expectation-comparison-plot h-80 w-full">
         <ResponsiveContainer
           width="100%"
           height="100%"
@@ -282,7 +284,7 @@ export function ExpectationComparisonChart({
 
             <XAxis
               dataKey="date"
-              tickFormatter={monthLabel}
+              tickFormatter={hasDailySeries ? dayLabel : monthLabel}
               tick={{
                 fontSize: 10,
                 fill: "#64748b",
@@ -293,7 +295,7 @@ export function ExpectationComparisonChart({
               tickLine={{
                 stroke: "#94a3b8",
               }}
-              minTickGap={18}
+              minTickGap={hasDailySeries ? 28 : 18}
               interval="preserveStartEnd"
               padding={{
                 left: 8,
@@ -321,7 +323,7 @@ export function ExpectationComparisonChart({
 
             <Tooltip
               labelFormatter={(label) =>
-                fullMonthLabel(String(label))
+                hasDailySeries ? fullDayLabel(String(label)) : fullMonthLabel(String(label))
               }
               formatter={(value, name) => [
                 percent(value),
@@ -330,8 +332,7 @@ export function ExpectationComparisonChart({
               contentStyle={{
                 borderRadius: 12,
                 border: "1px solid #dbe3ef",
-                boxShadow:
-                  "0 8px 24px rgba(15,23,42,0.10)",
+                boxShadow: "0 8px 24px rgba(15,23,42,0.10)",
                 fontSize: 12,
               }}
             />
@@ -342,6 +343,7 @@ export function ExpectationComparisonChart({
               wrapperStyle={{
                 fontSize: 11,
                 paddingTop: 8,
+                color: "var(--muted)",
               }}
             />
 
@@ -351,11 +353,8 @@ export function ExpectationComparisonChart({
                 type="linear"
                 dataKey={`s${index}`}
                 name={item.label}
-                stroke={
-                  LINE_COLORS[
-                    index % LINE_COLORS.length
-                  ]
-                }
+                stroke="var(--country-series, var(--accent))"
+                strokeDasharray={LINE_DASHES[index % LINE_DASHES.length]}
                 strokeWidth={2.4}
                 dot={{
                   r: 2.5,
@@ -373,4 +372,14 @@ export function ExpectationComparisonChart({
       </div>
     </div>
   );
+}
+
+function dayLabel(value: string) {
+  const date = new Date(`${value}T00:00:00Z`);
+  return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" }).format(date);
+}
+
+function fullDayLabel(value: string) {
+  const date = new Date(`${value}T00:00:00Z`);
+  return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }).format(date);
 }

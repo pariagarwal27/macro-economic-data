@@ -72,6 +72,7 @@ export function MetricCard({ metric }: { metric: MetricCardData }) {
   return (
     <Link
       href={`/metrics/${metric.id}`}
+      data-country={metric.region.toLowerCase()}
       className="group block rounded-xl border border-[var(--line)] bg-[var(--panel)]/80 p-4 shadow-[0_1px_0_rgba(255,255,255,0.4)_inset] transition hover:-translate-y-0.5 hover:border-[var(--accent)]/40 hover:bg-[var(--panel)]"
     >
       <div className="mb-3 flex items-start justify-between gap-3">

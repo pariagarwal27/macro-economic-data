@@ -1,0 +1,2066 @@
+[
+  {
+    "number": 1,
+    "source": "BLS",
+    "metric_id": "us-cpi",
+    "metric": "CPI — Headline Index"
+  },
+  {
+    "number": 2,
+    "source": "BLS",
+    "metric_id": "us-cpi-mom",
+    "metric": "CPI — Headline MoM"
+  },
+  {
+    "number": 3,
+    "source": "BLS",
+    "metric_id": "us-cpi-core",
+    "metric": "CPI — Core Index"
+  },
+  {
+    "number": 4,
+    "source": "BLS",
+    "metric_id": "us-core-goods-cpi-yoy",
+    "metric": "CPI — Core Goods"
+  },
+  {
+    "number": 5,
+    "source": "BLS",
+    "metric_id": "us-core-goods-cpi-mom",
+    "metric": "CPI — Core Goods MoM"
+  },
+  {
+    "number": 6,
+    "source": "BLS",
+    "metric_id": "us-services-cpi-yoy",
+    "metric": "CPI — Core Services"
+  },
+  {
+    "number": 7,
+    "source": "BLS",
+    "metric_id": "us-services-cpi-mom",
+    "metric": "CPI — Core Services MoM"
+  },
+  {
+    "number": 8,
+    "source": "BLS",
+    "metric_id": "us-cpi-nsa",
+    "metric": "CPI — Headline Index (NSA)"
+  },
+  {
+    "number": 9,
+    "source": "BLS",
+    "metric_id": "us-cpi-core-nsa",
+    "metric": "CPI — Core Index (NSA)"
+  },
+  {
+    "number": 10,
+    "source": "BLS",
+    "metric_id": "us-cpi-food",
+    "metric": "CPI — Food"
+  },
+  {
+    "number": 11,
+    "source": "BLS",
+    "metric_id": "us-cpi-energy",
+    "metric": "CPI — Energy"
+  },
+  {
+    "number": 12,
+    "source": "BLS",
+    "metric_id": "us-cpi-apparel",
+    "metric": "CPI — Apparel"
+  },
+  {
+    "number": 13,
+    "source": "BLS",
+    "metric_id": "us-cpi-new-vehicles",
+    "metric": "CPI — New Vehicles"
+  },
+  {
+    "number": 14,
+    "source": "BLS",
+    "metric_id": "us-cpi-used-cars",
+    "metric": "CPI — Used Cars and Trucks"
+  },
+  {
+    "number": 15,
+    "source": "BLS",
+    "metric_id": "us-cpi-medical-commodities",
+    "metric": "CPI — Medical Care Commodities"
+  },
+  {
+    "number": 16,
+    "source": "BLS",
+    "metric_id": "us-cpi-recreation-commodities",
+    "metric": "CPI — Recreation Commodities"
+  },
+  {
+    "number": 17,
+    "source": "BLS",
+    "metric_id": "us-cpi-education-commodities",
+    "metric": "CPI — Education & Communication Commodities"
+  },
+  {
+    "number": 18,
+    "source": "BLS",
+    "metric_id": "us-cpi-other-goods",
+    "metric": "CPI — Other Goods"
+  },
+  {
+    "number": 19,
+    "source": "BLS",
+    "metric_id": "us-cpi-shelter",
+    "metric": "CPI — Shelter"
+  },
+  {
+    "number": 20,
+    "source": "BLS",
+    "metric_id": "us-cpi-medical-services",
+    "metric": "CPI — Medical Care Services"
+  },
+  {
+    "number": 21,
+    "source": "BLS",
+    "metric_id": "us-cpi-recreation-services",
+    "metric": "CPI — Recreation Services"
+  },
+  {
+    "number": 22,
+    "source": "BLS",
+    "metric_id": "us-cpi-transport-services",
+    "metric": "CPI — Transportation Services"
+  },
+  {
+    "number": 23,
+    "source": "BLS",
+    "metric_id": "us-cpi-education-services",
+    "metric": "CPI — Education & Communication Services"
+  },
+  {
+    "number": 24,
+    "source": "BLS",
+    "metric_id": "us-cpi-other-services",
+    "metric": "CPI — Other Services"
+  },
+  {
+    "number": 25,
+    "source": "BLS",
+    "metric_id": "us-ppi-final-demand",
+    "metric": "PPI Final Demand"
+  },
+  {
+    "number": 26,
+    "source": "BLS",
+    "metric_id": "us-ppi-core",
+    "metric": "Core PPI Final Demand"
+  },
+  {
+    "number": 27,
+    "source": "BLS",
+    "metric_id": "us-ahe",
+    "metric": "Average Hourly Earnings YoY"
+  },
+  {
+    "number": 28,
+    "source": "BLS",
+    "metric_id": "us-ahe-mom",
+    "metric": "Average Hourly Earnings MoM"
+  },
+  {
+    "number": 29,
+    "source": "BLS",
+    "metric_id": "us-nfp",
+    "metric": "Nonfarm Payrolls Change"
+  },
+  {
+    "number": 30,
+    "source": "BLS",
+    "metric_id": "us-payrolls-level",
+    "metric": "Total Nonfarm Payrolls Level"
+  },
+  {
+    "number": 31,
+    "source": "BLS",
+    "metric_id": "us-unemployment",
+    "metric": "Unemployment Rate"
+  },
+  {
+    "number": 32,
+    "source": "BLS",
+    "metric_id": "us-u6",
+    "metric": "U-6 Underemployment Rate"
+  },
+  {
+    "number": 33,
+    "source": "BLS",
+    "metric_id": "us-participation",
+    "metric": "Labor Force Participation Rate"
+  },
+  {
+    "number": 34,
+    "source": "BLS",
+    "metric_id": "us-employment-population",
+    "metric": "Employment-Population Ratio"
+  },
+  {
+    "number": 35,
+    "source": "BLS",
+    "metric_id": "us-jolts-openings",
+    "metric": "JOLTS Job Openings"
+  },
+  {
+    "number": 36,
+    "source": "BLS",
+    "metric_id": "us-jolts-quits",
+    "metric": "JOLTS Quits Rate"
+  },
+  {
+    "number": 37,
+    "source": "BLS",
+    "metric_id": "us-jolts-hires",
+    "metric": "JOLTS Hires Rate"
+  },
+  {
+    "number": 38,
+    "source": "BLS",
+    "metric_id": "us-jolts-layoffs",
+    "metric": "JOLTS Layoffs & Discharges Rate"
+  },
+  {
+    "number": 39,
+    "source": "BLS",
+    "metric_id": "us-unemployed-persons",
+    "metric": "Unemployed Persons"
+  },
+  {
+    "number": 40,
+    "source": "BLS",
+    "metric_id": "us-long-term-unemployed",
+    "metric": "Long-Term Unemployed"
+  },
+  {
+    "number": 41,
+    "source": "BLS",
+    "metric_id": "us-private-payrolls",
+    "metric": "Private Employment"
+  },
+  {
+    "number": 42,
+    "source": "BLS",
+    "metric_id": "us-government-payrolls",
+    "metric": "Government Employment"
+  },
+  {
+    "number": 43,
+    "source": "BLS",
+    "metric_id": "us-civilian-labor-force",
+    "metric": "Civilian Labor Force"
+  },
+  {
+    "number": 44,
+    "source": "BLS",
+    "metric_id": "us-not-in-labor-force",
+    "metric": "Not in Labor Force"
+  },
+  {
+    "number": 45,
+    "source": "BLS",
+    "metric_id": "us-jolts-hires-level",
+    "metric": "JOLTS Hires"
+  },
+  {
+    "number": 46,
+    "source": "BLS",
+    "metric_id": "us-jolts-quits-level",
+    "metric": "JOLTS Quits"
+  },
+  {
+    "number": 47,
+    "source": "BLS",
+    "metric_id": "us-jolts-layoffs-level",
+    "metric": "JOLTS Layoffs and Discharges"
+  },
+  {
+    "number": 48,
+    "source": "BLS",
+    "metric_id": "us-jolts-total-separations",
+    "metric": "JOLTS Total Separations"
+  },
+  {
+    "number": 49,
+    "source": "BLS",
+    "metric_id": "us-average-weekly-earnings",
+    "metric": "Average Weekly Earnings"
+  },
+  {
+    "number": 50,
+    "source": "BEA",
+    "metric_id": "us-pce",
+    "metric": "PCE — Headline Price Index"
+  },
+  {
+    "number": 51,
+    "source": "BEA",
+    "metric_id": "us-core-pce",
+    "metric": "PCE — Core Price Index"
+  },
+  {
+    "number": 52,
+    "source": "BEA",
+    "metric_id": "us-pce-goods",
+    "metric": "PCE — Goods"
+  },
+  {
+    "number": 53,
+    "source": "BEA",
+    "metric_id": "us-pce-durable-goods",
+    "metric": "PCE — Durable Goods"
+  },
+  {
+    "number": 54,
+    "source": "BEA",
+    "metric_id": "us-pce-furnishings",
+    "metric": "PCE — Furnishings & Durable Household Equipment"
+  },
+  {
+    "number": 55,
+    "source": "BEA",
+    "metric_id": "us-pce-clothing",
+    "metric": "PCE — Clothing & Footwear"
+  },
+  {
+    "number": 56,
+    "source": "BEA",
+    "metric_id": "us-pce-food",
+    "metric": "PCE — Food & Beverages"
+  },
+  {
+    "number": 57,
+    "source": "BEA",
+    "metric_id": "us-pce-energy",
+    "metric": "PCE — Gasoline & Other Energy Goods"
+  },
+  {
+    "number": 58,
+    "source": "BEA",
+    "metric_id": "us-pce-services",
+    "metric": "PCE — Services"
+  },
+  {
+    "number": 59,
+    "source": "BEA",
+    "metric_id": "us-pce-household-services",
+    "metric": "PCE — Household Services"
+  },
+  {
+    "number": 60,
+    "source": "BEA",
+    "metric_id": "us-pce-healthcare",
+    "metric": "PCE — Health Care"
+  },
+  {
+    "number": 61,
+    "source": "BEA",
+    "metric_id": "us-pce-food-services",
+    "metric": "PCE — Food Services & Accommodations"
+  },
+  {
+    "number": 62,
+    "source": "BEA",
+    "metric_id": "us-pce-housing",
+    "metric": "PCE — Housing"
+  },
+  {
+    "number": 63,
+    "source": "BEA",
+    "metric_id": "us-core-pce-mom",
+    "metric": "Core PCE Month-over-Month"
+  },
+  {
+    "number": 64,
+    "source": "BEA",
+    "metric_id": "us-gdp-real",
+    "metric": "Real GDP (QoQ SAAR)"
+  },
+  {
+    "number": 65,
+    "source": "BEA",
+    "metric_id": "us-personal-spending",
+    "metric": "Real Personal Consumption MoM"
+  },
+  {
+    "number": 66,
+    "source": "BEA",
+    "metric_id": "us-real-pce-growth",
+    "metric": "Real Personal Consumption Expenditures"
+  },
+  {
+    "number": 67,
+    "source": "BEA",
+    "metric_id": "us-real-pce-goods",
+    "metric": "Real PCE Goods"
+  },
+  {
+    "number": 68,
+    "source": "BEA",
+    "metric_id": "us-real-pce-durable-goods",
+    "metric": "Real PCE Durable Goods"
+  },
+  {
+    "number": 69,
+    "source": "BEA",
+    "metric_id": "us-real-pce-nondurable-goods",
+    "metric": "Real PCE Nondurable Goods"
+  },
+  {
+    "number": 70,
+    "source": "BEA",
+    "metric_id": "us-real-pce-services",
+    "metric": "Real PCE Services"
+  },
+  {
+    "number": 71,
+    "source": "BEA",
+    "metric_id": "us-real-private-investment",
+    "metric": "Real Gross Private Domestic Investment"
+  },
+  {
+    "number": 72,
+    "source": "BEA",
+    "metric_id": "us-real-fixed-investment",
+    "metric": "Real Fixed Investment"
+  },
+  {
+    "number": 73,
+    "source": "BEA",
+    "metric_id": "us-real-nonresidential-investment",
+    "metric": "Real Nonresidential Investment"
+  },
+  {
+    "number": 74,
+    "source": "BEA",
+    "metric_id": "us-real-structures",
+    "metric": "Real Structures Investment"
+  },
+  {
+    "number": 75,
+    "source": "BEA",
+    "metric_id": "us-real-equipment",
+    "metric": "Real Equipment Investment"
+  },
+  {
+    "number": 76,
+    "source": "BEA",
+    "metric_id": "us-real-ipp",
+    "metric": "Real Intellectual Property Products Investment"
+  },
+  {
+    "number": 77,
+    "source": "BEA",
+    "metric_id": "us-real-residential-investment",
+    "metric": "Real Residential Investment"
+  },
+  {
+    "number": 78,
+    "source": "BEA",
+    "metric_id": "us-real-inventories",
+    "metric": "Change in Private Inventories"
+  },
+  {
+    "number": 79,
+    "source": "BEA",
+    "metric_id": "us-real-net-exports",
+    "metric": "Real Net Exports of Goods and Services"
+  },
+  {
+    "number": 80,
+    "source": "BEA",
+    "metric_id": "us-real-exports",
+    "metric": "Real Exports"
+  },
+  {
+    "number": 81,
+    "source": "BEA",
+    "metric_id": "us-real-export-goods",
+    "metric": "Real Exports of Goods"
+  },
+  {
+    "number": 82,
+    "source": "BEA",
+    "metric_id": "us-real-export-services",
+    "metric": "Real Exports of Services"
+  },
+  {
+    "number": 83,
+    "source": "BEA",
+    "metric_id": "us-real-imports",
+    "metric": "Real Imports"
+  },
+  {
+    "number": 84,
+    "source": "BEA",
+    "metric_id": "us-real-import-goods",
+    "metric": "Real Imports of Goods"
+  },
+  {
+    "number": 85,
+    "source": "BEA",
+    "metric_id": "us-real-import-services",
+    "metric": "Real Imports of Services"
+  },
+  {
+    "number": 86,
+    "source": "BEA",
+    "metric_id": "us-real-government",
+    "metric": "Real Government Consumption and Investment"
+  },
+  {
+    "number": 87,
+    "source": "BEA",
+    "metric_id": "us-real-federal-government",
+    "metric": "Real Federal Government"
+  },
+  {
+    "number": 88,
+    "source": "BEA",
+    "metric_id": "us-real-defense",
+    "metric": "Real National Defense"
+  },
+  {
+    "number": 89,
+    "source": "BEA",
+    "metric_id": "us-real-nondefense",
+    "metric": "Real Federal Nondefense"
+  },
+  {
+    "number": 90,
+    "source": "BEA",
+    "metric_id": "us-real-state-local",
+    "metric": "Real State and Local Government"
+  },
+  {
+    "number": 91,
+    "source": "Eurostat",
+    "metric_id": "ea-hicp-yoy",
+    "metric": "Euro Area HICP YoY"
+  },
+  {
+    "number": 92,
+    "source": "Eurostat",
+    "metric_id": "ea-core-hicp-yoy",
+    "metric": "Euro Area Core HICP YoY"
+  },
+  {
+    "number": 93,
+    "source": "Eurostat",
+    "metric_id": "ea-hicp-mom",
+    "metric": "Euro Area HICP MoM"
+  },
+  {
+    "number": 94,
+    "source": "Eurostat",
+    "metric_id": "ea-core-hicp-mom",
+    "metric": "Euro Area Core HICP MoM"
+  },
+  {
+    "number": 95,
+    "source": "Eurostat",
+    "metric_id": "ea-services-hicp-yoy",
+    "metric": "Euro Area Services HICP YoY"
+  },
+  {
+    "number": 96,
+    "source": "Eurostat",
+    "metric_id": "ea-services-hicp-mom",
+    "metric": "Euro Area Services HICP MoM"
+  },
+  {
+    "number": 97,
+    "source": "Eurostat",
+    "metric_id": "ea-goods-hicp-yoy",
+    "metric": "Euro Area Goods HICP YoY"
+  },
+  {
+    "number": 98,
+    "source": "Eurostat",
+    "metric_id": "ea-food-hicp-yoy",
+    "metric": "Euro Area Food HICP YoY"
+  },
+  {
+    "number": 99,
+    "source": "Eurostat",
+    "metric_id": "ea-energy-hicp-yoy",
+    "metric": "Euro Area Energy HICP YoY"
+  },
+  {
+    "number": 100,
+    "source": "Eurostat",
+    "metric_id": "de-cpi-yoy",
+    "metric": "Germany HICP YoY"
+  },
+  {
+    "number": 101,
+    "source": "Eurostat",
+    "metric_id": "fr-cpi-yoy",
+    "metric": "France HICP YoY"
+  },
+  {
+    "number": 102,
+    "source": "Eurostat",
+    "metric_id": "it-cpi-yoy",
+    "metric": "Italy HICP YoY"
+  },
+  {
+    "number": 103,
+    "source": "Eurostat",
+    "metric_id": "es-cpi-yoy",
+    "metric": "Spain HICP YoY"
+  },
+  {
+    "number": 104,
+    "source": "Eurostat",
+    "metric_id": "ea-ppi-yoy",
+    "metric": "Euro Area PPI YoY"
+  },
+  {
+    "number": 105,
+    "source": "Eurostat",
+    "metric_id": "ea-unemployed-persons",
+    "metric": "Euro Area Unemployed Persons"
+  },
+  {
+    "number": 106,
+    "source": "Eurostat",
+    "metric_id": "ea-gdp-yoy",
+    "metric": "Euro Area Real GDP YoY"
+  },
+  {
+    "number": 107,
+    "source": "Eurostat",
+    "metric_id": "ea-gdp-qoq",
+    "metric": "Euro Area Real GDP QoQ"
+  },
+  {
+    "number": 108,
+    "source": "Eurostat",
+    "metric_id": "ea-industrial-production",
+    "metric": "Euro Area Industrial Production YoY"
+  },
+  {
+    "number": 109,
+    "source": "Eurostat",
+    "metric_id": "ea-retail-sales",
+    "metric": "Euro Area Retail Trade YoY"
+  },
+  {
+    "number": 110,
+    "source": "Eurostat",
+    "metric_id": "ea-esi",
+    "metric": "Euro Area Economic Sentiment"
+  },
+  {
+    "number": 111,
+    "source": "Eurostat",
+    "metric_id": "ea-business-confidence",
+    "metric": "Euro Area Industrial Confidence"
+  },
+  {
+    "number": 112,
+    "source": "Eurostat",
+    "metric_id": "ea-unemployment",
+    "metric": "Euro Area Unemployment Rate"
+  },
+  {
+    "number": 113,
+    "source": "Eurostat",
+    "metric_id": "ea-employment-yoy",
+    "metric": "Euro Area Employment YoY"
+  },
+  {
+    "number": 114,
+    "source": "Eurostat",
+    "metric_id": "ea-employment-qoq",
+    "metric": "Euro Area Employment QoQ"
+  },
+  {
+    "number": 115,
+    "source": "Eurostat",
+    "metric_id": "ea-youth-unemployment",
+    "metric": "Euro Area Youth Unemployment Rate"
+  },
+  {
+    "number": 116,
+    "source": "Eurostat",
+    "metric_id": "ea-youth-unemployed-persons",
+    "metric": "Euro Area Youth Unemployed Persons"
+  },
+  {
+    "number": 117,
+    "source": "Eurostat",
+    "metric_id": "ea-employment-rate",
+    "metric": "Euro Area Employment Rate"
+  },
+  {
+    "number": 118,
+    "source": "Eurostat",
+    "metric_id": "ea-inactive-population",
+    "metric": "Euro Area Inactive Population"
+  },
+  {
+    "number": 119,
+    "source": "Eurostat",
+    "metric_id": "ea-inactivity-change",
+    "metric": "Euro Area Inactivity Change"
+  },
+  {
+    "number": 120,
+    "source": "Eurostat",
+    "metric_id": "ea-vacant-posts",
+    "metric": "Euro Area Vacant Posts"
+  },
+  {
+    "number": 121,
+    "source": "Eurostat",
+    "metric_id": "ea-vacancy-change",
+    "metric": "Euro Area Vacancy Change"
+  },
+  {
+    "number": 122,
+    "source": "Eurostat",
+    "metric_id": "ea-long-term-unemployment",
+    "metric": "Euro Area Long-Term Unemployment"
+  },
+  {
+    "number": 123,
+    "source": "Eurostat",
+    "metric_id": "ea-employment-change",
+    "metric": "Euro Area Employment Change"
+  },
+  {
+    "number": 124,
+    "source": "Eurostat",
+    "metric_id": "ea-wage-growth",
+    "metric": "Euro Area Wage Growth YoY"
+  },
+  {
+    "number": 125,
+    "source": "Eurostat",
+    "metric_id": "ea-wage-growth-qoq",
+    "metric": "Euro Area Wage Growth QoQ"
+  },
+  {
+    "number": 126,
+    "source": "Eurostat",
+    "metric_id": "ea-retail-sales-mom",
+    "metric": "Euro Area Retail Trade MoM"
+  },
+  {
+    "number": 127,
+    "source": "Eurostat",
+    "metric_id": "ea-household-consumption",
+    "metric": "Euro Area Household and NPISH Consumption"
+  },
+  {
+    "number": 128,
+    "source": "Eurostat",
+    "metric_id": "ea-gfcf",
+    "metric": "Euro Area Gross Fixed Capital Formation"
+  },
+  {
+    "number": 129,
+    "source": "Eurostat",
+    "metric_id": "ea-government-consumption",
+    "metric": "Euro Area Government Final Consumption"
+  },
+  {
+    "number": 130,
+    "source": "Eurostat",
+    "metric_id": "ea-exports",
+    "metric": "Euro Area Exports"
+  },
+  {
+    "number": 131,
+    "source": "Eurostat",
+    "metric_id": "ea-imports",
+    "metric": "Euro Area Imports"
+  },
+  {
+    "number": 132,
+    "source": "Eurostat",
+    "metric_id": "ea-inactivity",
+    "metric": "Euro Area Inactivity Rate"
+  },
+  {
+    "number": 133,
+    "source": "Eurostat",
+    "metric_id": "ea-job-vacancies",
+    "metric": "Euro Area Job Vacancy Rate"
+  },
+  {
+    "number": 134,
+    "source": "Eurostat",
+    "metric_id": "ea-retail-food-drinks-tobacco",
+    "metric": "Euro Area Retail Sales — Food / Drinks / Tobacco"
+  },
+  {
+    "number": 135,
+    "source": "Eurostat",
+    "metric_id": "ea-retail-non-food-ex-fuel",
+    "metric": "Euro Area Retail Sales — Non-Food ex Fuel"
+  },
+  {
+    "number": 136,
+    "source": "Eurostat",
+    "metric_id": "ea-retail-automotive-fuel",
+    "metric": "Euro Area Retail Sales — Automotive Fuel"
+  },
+  {
+    "number": 137,
+    "source": "Eurostat",
+    "metric_id": "ea-retail-sales-total-ex-motor-vehicles",
+    "metric": "Euro Area Retail Sales — Total ex Motor Vehicles"
+  },
+  {
+    "number": 138,
+    "source": "ONS",
+    "metric_id": "uk-cpi-yoy",
+    "metric": "UK CPI YoY"
+  },
+  {
+    "number": 139,
+    "source": "ONS",
+    "metric_id": "uk-cpih-yoy",
+    "metric": "UK CPIH YoY"
+  },
+  {
+    "number": 140,
+    "source": "ONS",
+    "metric_id": "uk-alcohol-cpi-yoy",
+    "metric": "UK Alcohol & Tobacco CPI YoY"
+  },
+  {
+    "number": 141,
+    "source": "ONS",
+    "metric_id": "uk-clothing-cpi-yoy",
+    "metric": "UK Clothing & Footwear CPI YoY"
+  },
+  {
+    "number": 142,
+    "source": "ONS",
+    "metric_id": "uk-furniture-cpi-yoy",
+    "metric": "UK Furniture & Household Goods CPI YoY"
+  },
+  {
+    "number": 143,
+    "source": "ONS",
+    "metric_id": "uk-health-cpi-yoy",
+    "metric": "UK Health CPI YoY"
+  },
+  {
+    "number": 144,
+    "source": "ONS",
+    "metric_id": "uk-transport-cpi-yoy",
+    "metric": "UK Transport CPI YoY"
+  },
+  {
+    "number": 145,
+    "source": "ONS",
+    "metric_id": "uk-communication-cpi-yoy",
+    "metric": "UK Communication CPI YoY"
+  },
+  {
+    "number": 146,
+    "source": "ONS",
+    "metric_id": "uk-recreation-cpi-yoy",
+    "metric": "UK Recreation & Culture CPI YoY"
+  },
+  {
+    "number": 147,
+    "source": "ONS",
+    "metric_id": "uk-education-cpi-yoy",
+    "metric": "UK Education CPI YoY"
+  },
+  {
+    "number": 148,
+    "source": "ONS",
+    "metric_id": "uk-restaurants-hotels-cpi-yoy",
+    "metric": "UK Restaurants & Hotels CPI YoY"
+  },
+  {
+    "number": 149,
+    "source": "ONS",
+    "metric_id": "uk-miscellaneous-cpi-yoy",
+    "metric": "UK Miscellaneous Goods & Services CPI YoY"
+  },
+  {
+    "number": 150,
+    "source": "ONS",
+    "metric_id": "uk-alcohol-cpih-yoy",
+    "metric": "UK Alcohol & Tobacco CPIH YoY"
+  },
+  {
+    "number": 151,
+    "source": "ONS",
+    "metric_id": "uk-clothing-cpih-yoy",
+    "metric": "UK Clothing & Footwear CPIH YoY"
+  },
+  {
+    "number": 152,
+    "source": "ONS",
+    "metric_id": "uk-furniture-cpih-yoy",
+    "metric": "UK Furniture & Household Goods CPIH YoY"
+  },
+  {
+    "number": 153,
+    "source": "ONS",
+    "metric_id": "uk-health-cpih-yoy",
+    "metric": "UK Health CPIH YoY"
+  },
+  {
+    "number": 154,
+    "source": "ONS",
+    "metric_id": "uk-transport-cpih-yoy",
+    "metric": "UK Transport CPIH YoY"
+  },
+  {
+    "number": 155,
+    "source": "ONS",
+    "metric_id": "uk-communication-cpih-yoy",
+    "metric": "UK Communication CPIH YoY"
+  },
+  {
+    "number": 156,
+    "source": "ONS",
+    "metric_id": "uk-recreation-cpih-yoy",
+    "metric": "UK Recreation & Culture CPIH YoY"
+  },
+  {
+    "number": 157,
+    "source": "ONS",
+    "metric_id": "uk-education-cpih-yoy",
+    "metric": "UK Education CPIH YoY"
+  },
+  {
+    "number": 158,
+    "source": "ONS",
+    "metric_id": "uk-restaurants-hotels-cpih-yoy",
+    "metric": "UK Restaurants & Hotels CPIH YoY"
+  },
+  {
+    "number": 159,
+    "source": "ONS",
+    "metric_id": "uk-miscellaneous-cpih-yoy",
+    "metric": "UK Miscellaneous Goods & Services CPIH YoY"
+  },
+  {
+    "number": 160,
+    "source": "ONS",
+    "metric_id": "uk-core-cpi-yoy",
+    "metric": "UK Core CPI YoY"
+  },
+  {
+    "number": 161,
+    "source": "ONS",
+    "metric_id": "uk-cpi-mom",
+    "metric": "UK CPI MoM"
+  },
+  {
+    "number": 162,
+    "source": "ONS",
+    "metric_id": "uk-core-cpi-mom",
+    "metric": "UK Core CPI MoM"
+  },
+  {
+    "number": 163,
+    "source": "ONS",
+    "metric_id": "uk-services-cpi-yoy",
+    "metric": "UK Services CPI YoY"
+  },
+  {
+    "number": 164,
+    "source": "ONS",
+    "metric_id": "uk-services-cpi-mom",
+    "metric": "UK Services CPI MoM"
+  },
+  {
+    "number": 165,
+    "source": "ONS",
+    "metric_id": "uk-goods-cpi-yoy",
+    "metric": "UK Goods CPI YoY"
+  },
+  {
+    "number": 166,
+    "source": "ONS",
+    "metric_id": "uk-goods-cpi-mom",
+    "metric": "UK Goods CPI MoM"
+  },
+  {
+    "number": 167,
+    "source": "ONS",
+    "metric_id": "uk-food-cpi-yoy",
+    "metric": "UK Food CPI YoY"
+  },
+  {
+    "number": 168,
+    "source": "ONS",
+    "metric_id": "uk-energy-cpi-yoy",
+    "metric": "UK Energy CPI YoY"
+  },
+  {
+    "number": 169,
+    "source": "ONS",
+    "metric_id": "uk-housing-cpi-yoy",
+    "metric": "UK Housing CPI YoY"
+  },
+  {
+    "number": 170,
+    "source": "ONS",
+    "metric_id": "uk-rpi-yoy",
+    "metric": "UK RPI YoY"
+  },
+  {
+    "number": 171,
+    "source": "ONS",
+    "metric_id": "uk-ppi-output-yoy",
+    "metric": "UK Output PPI YoY"
+  },
+  {
+    "number": 172,
+    "source": "ONS",
+    "metric_id": "uk-awe-regular-yoy",
+    "metric": "UK Average Weekly Earnings (Regular Pay) YoY"
+  },
+  {
+    "number": 173,
+    "source": "ONS",
+    "metric_id": "uk-paye-median-pay-mom",
+    "metric": "UK PAYE Median Pay MoM"
+  },
+  {
+    "number": 174,
+    "source": "ONS",
+    "metric_id": "uk-awe-regular-mom",
+    "metric": "UK Average Weekly Earnings (Regular Pay) MoM"
+  },
+  {
+    "number": 175,
+    "source": "ONS",
+    "metric_id": "uk-ppi-input-yoy",
+    "metric": "UK Input PPI YoY"
+  },
+  {
+    "number": 176,
+    "source": "ONS",
+    "metric_id": "uk-gdp-yoy",
+    "metric": "UK GDP YoY"
+  },
+  {
+    "number": 177,
+    "source": "ONS",
+    "metric_id": "uk-gdp-qoq",
+    "metric": "UK Real GDP QoQ"
+  },
+  {
+    "number": 178,
+    "source": "ONS",
+    "metric_id": "uk-net-trade-qoq",
+    "metric": "UK Net Trade Contribution QoQ"
+  },
+  {
+    "number": 179,
+    "source": "ONS",
+    "metric_id": "uk-net-trade-yoy",
+    "metric": "UK Net Trade Contribution YoY"
+  },
+  {
+    "number": 180,
+    "source": "ONS",
+    "metric_id": "uk-gdp-mom",
+    "metric": "UK Monthly GDP MoM"
+  },
+  {
+    "number": 181,
+    "source": "ONS",
+    "metric_id": "uk-gdp-3m-yoy",
+    "metric": "UK Monthly GDP 3m YoY"
+  },
+  {
+    "number": 182,
+    "source": "ONS",
+    "metric_id": "uk-industrial-production",
+    "metric": "UK Industrial Production YoY"
+  },
+  {
+    "number": 183,
+    "source": "ONS",
+    "metric_id": "uk-retail-sales",
+    "metric": "UK Retail Sales Volume YoY"
+  },
+  {
+    "number": 184,
+    "source": "ONS",
+    "metric_id": "uk-unemployment",
+    "metric": "UK Unemployment Rate"
+  },
+  {
+    "number": 185,
+    "source": "ONS",
+    "metric_id": "uk-employment-level",
+    "metric": "UK Employment Level"
+  },
+  {
+    "number": 186,
+    "source": "ONS",
+    "metric_id": "uk-awe-total-yoy",
+    "metric": "UK Average Weekly Earnings (Total Pay) YoY"
+  },
+  {
+    "number": 187,
+    "source": "ONS",
+    "metric_id": "uk-vacancies",
+    "metric": "UK Job Vacancies"
+  },
+  {
+    "number": 188,
+    "source": "ONS",
+    "metric_id": "uk-payrolled-employees-level",
+    "metric": "UK Payrolled Employees"
+  },
+  {
+    "number": 189,
+    "source": "ONS",
+    "metric_id": "uk-employment-change",
+    "metric": "UK Employment Change"
+  },
+  {
+    "number": 190,
+    "source": "ONS",
+    "metric_id": "uk-retail-sales-mom",
+    "metric": "UK Retail Sales Volume MoM"
+  },
+  {
+    "number": 191,
+    "source": "ONS",
+    "metric_id": "uk-cpih-mom",
+    "metric": "UK CPIH MoM"
+  },
+  {
+    "number": 192,
+    "source": "ONS",
+    "metric_id": "uk-core-cpih-yoy",
+    "metric": "UK Core CPIH YoY"
+  },
+  {
+    "number": 193,
+    "source": "ONS",
+    "metric_id": "uk-food-cpih-yoy",
+    "metric": "UK Food CPIH YoY"
+  },
+  {
+    "number": 194,
+    "source": "ONS",
+    "metric_id": "uk-food-cpih-mom",
+    "metric": "UK Food CPIH MoM"
+  },
+  {
+    "number": 195,
+    "source": "ONS",
+    "metric_id": "uk-housing-cpih-yoy",
+    "metric": "UK Housing CPIH YoY"
+  },
+  {
+    "number": 196,
+    "source": "ONS",
+    "metric_id": "uk-housing-cpih-mom",
+    "metric": "UK Housing CPIH MoM"
+  },
+  {
+    "number": 197,
+    "source": "ONS",
+    "metric_id": "uk-household-consumption-qoq",
+    "metric": "UK Household Final Consumption QoQ"
+  },
+  {
+    "number": 198,
+    "source": "ONS",
+    "metric_id": "uk-household-consumption-yoy",
+    "metric": "UK Household Final Consumption YoY"
+  },
+  {
+    "number": 199,
+    "source": "ONS",
+    "metric_id": "uk-gfcf-level",
+    "metric": "UK Real Gross Fixed Capital Formation"
+  },
+  {
+    "number": 200,
+    "source": "ONS",
+    "metric_id": "uk-gfcf-yoy",
+    "metric": "UK Gross Fixed Capital Formation YoY"
+  },
+  {
+    "number": 201,
+    "source": "ONS",
+    "metric_id": "uk-gfcf-qoq",
+    "metric": "UK Gross Fixed Capital Formation QoQ"
+  },
+  {
+    "number": 202,
+    "source": "ONS",
+    "metric_id": "uk-business-investment-qoq",
+    "metric": "UK Business Investment QoQ"
+  },
+  {
+    "number": 203,
+    "source": "ONS",
+    "metric_id": "uk-business-investment-yoy",
+    "metric": "UK Business Investment YoY"
+  },
+  {
+    "number": 204,
+    "source": "ONS",
+    "metric_id": "uk-government-consumption-level",
+    "metric": "UK Government Final Consumption"
+  },
+  {
+    "number": 205,
+    "source": "ONS",
+    "metric_id": "uk-retail-food-stores",
+    "metric": "UK Retail Sales — Food Stores"
+  },
+  {
+    "number": 206,
+    "source": "ONS",
+    "metric_id": "uk-retail-non-food-stores",
+    "metric": "UK Retail Sales — Non-Food Stores"
+  },
+  {
+    "number": 207,
+    "source": "ONS",
+    "metric_id": "uk-retail-nonstore",
+    "metric": "UK Retail Sales — Non-Store"
+  },
+  {
+    "number": 208,
+    "source": "ONS",
+    "metric_id": "uk-retail-automotive-fuel",
+    "metric": "UK Retail Sales — Automotive Fuel"
+  },
+  {
+    "number": 209,
+    "source": "ONS",
+    "metric_id": "uk-retail-sales-total-ex-fuel",
+    "metric": "UK Retail Sales — Total ex Fuel"
+  },
+  {
+    "number": 210,
+    "source": "ONS",
+    "metric_id": "uk-employment-rate",
+    "metric": "UK Employment Rate"
+  },
+  {
+    "number": 211,
+    "source": "ONS",
+    "metric_id": "uk-inactivity-rate",
+    "metric": "UK Economic Inactivity Rate"
+  },
+  {
+    "number": 212,
+    "source": "ECB",
+    "metric_id": "ea-inflation-exp-1y",
+    "metric": "ECB SPF HICP 1-Year Expectation"
+  },
+  {
+    "number": 213,
+    "source": "ECB",
+    "metric_id": "ea-safe-wage-exp-1y",
+    "metric": "EA SAFE Expected Wage Growth 1Y"
+  },
+  {
+    "number": 214,
+    "source": "ECB",
+    "metric_id": "ea-ces-inflation-exp-1y",
+    "metric": "ECB CES Consumer Inflation 1Y"
+  },
+  {
+    "number": 215,
+    "source": "ECB",
+    "metric_id": "ea-core-inflation-exp-1y",
+    "metric": "ECB SPF Core HICP 1-Year"
+  },
+  {
+    "number": 216,
+    "source": "ECB",
+    "metric_id": "ea-spf-wage-exp-1y",
+    "metric": "ECB SPF Wage Growth Assumption 1Y"
+  },
+  {
+    "number": 217,
+    "source": "ECB",
+    "metric_id": "ea-inflation-exp-lt",
+    "metric": "ECB SPF HICP Longer-Term"
+  },
+  {
+    "number": 218,
+    "source": "ECB",
+    "metric_id": "ea-ces-inflation-exp-3y",
+    "metric": "ECB CES Consumer Inflation 3-Year"
+  },
+  {
+    "number": 219,
+    "source": "ECB",
+    "metric_id": "ea-ces-inflation-exp-5y",
+    "metric": "ECB CES Consumer Inflation 5-Year"
+  },
+  {
+    "number": 220,
+    "source": "ECB",
+    "metric_id": "ea-ces-inflation-uncertainty",
+    "metric": "ECB CES Inflation Uncertainty"
+  },
+  {
+    "number": 221,
+    "source": "ECB",
+    "metric_id": "ea-safe-inflation-exp-1y",
+    "metric": "ECB SAFE Business Inflation Expectation 1-Year"
+  },
+  {
+    "number": 222,
+    "source": "ECB",
+    "metric_id": "ea-safe-inflation-exp-3y",
+    "metric": "ECB SAFE Business Inflation Expectation 3-Year"
+  },
+  {
+    "number": 223,
+    "source": "ECB",
+    "metric_id": "ea-safe-inflation-exp-5y",
+    "metric": "ECB SAFE Business Inflation Expectation 5-Year"
+  },
+  {
+    "number": 224,
+    "source": "ECB",
+    "metric_id": "ea-spf-hicp-2y",
+    "metric": "ECB SPF HICP 2-Year"
+  },
+  {
+    "number": 225,
+    "source": "ECB",
+    "metric_id": "ea-spf-hicp-lt",
+    "metric": "ECB SPF HICP Long-Term"
+  },
+  {
+    "number": 226,
+    "source": "ECB",
+    "metric_id": "ea-spf-hicpx-1y",
+    "metric": "ECB SPF Core HICP 1-Year"
+  },
+  {
+    "number": 227,
+    "source": "ECB",
+    "metric_id": "ea-inflation-comp-1y",
+    "metric": "Euro Area 1-Year Inflation Compensation"
+  },
+  {
+    "number": 228,
+    "source": "ECB",
+    "metric_id": "ea-inflation-comp-2y",
+    "metric": "Euro Area 2-Year Inflation Compensation"
+  },
+  {
+    "number": 229,
+    "source": "ECB",
+    "metric_id": "ea-inflation-comp-5y",
+    "metric": "Euro Area 5-Year Inflation Compensation"
+  },
+  {
+    "number": 230,
+    "source": "ECB",
+    "metric_id": "ea-inflation-comp-10y",
+    "metric": "Euro Area 10-Year Inflation Compensation"
+  },
+  {
+    "number": 231,
+    "source": "ECB",
+    "metric_id": "ea-inflation-comp-5y5y",
+    "metric": "Euro Area 5Y5Y Forward Inflation Compensation"
+  },
+  {
+    "number": 232,
+    "source": "BoE",
+    "metric_id": "uk-inflation-exp-1y",
+    "metric": "UK Inflation Expectations 1-Year"
+  },
+  {
+    "number": 233,
+    "source": "BoE",
+    "metric_id": "uk-inflation-exp-5y",
+    "metric": "UK Inflation Expectations 5-Year"
+  },
+  {
+    "number": 234,
+    "source": "BoE",
+    "metric_id": "uk-dmp-wage-growth-3m",
+    "metric": "UK DMP Realised Wage Growth (3m avg)"
+  },
+  {
+    "number": 235,
+    "source": "BoE",
+    "metric_id": "uk-dmp-wage-exp-1y-3m",
+    "metric": "UK DMP Expected Wage Growth 1Y (3m avg)"
+  },
+  {
+    "number": 236,
+    "source": "BoE",
+    "metric_id": "uk-dmp-wage-exp-1y",
+    "metric": "UK DMP Expected Wage Growth 1-Year"
+  },
+  {
+    "number": 237,
+    "source": "BoE",
+    "metric_id": "uk-agents-pay-settlement-exp-1y",
+    "metric": "BoE Agents Expected Pay Settlement 1-Year"
+  },
+  {
+    "number": 238,
+    "source": "BoE",
+    "metric_id": "uk-inflation-exp-2y",
+    "metric": "UK Inflation Expectations 2-Year"
+  },
+  {
+    "number": 239,
+    "source": "BoE",
+    "metric_id": "uk-citi-yougov-inflation-exp-1y",
+    "metric": "Citi/YouGov UK Inflation Expectations 1-Year"
+  },
+  {
+    "number": 240,
+    "source": "BoE",
+    "metric_id": "uk-citi-yougov-inflation-exp-5-10y",
+    "metric": "Citi/YouGov UK Inflation Expectations 5–10-Year"
+  },
+  {
+    "number": 241,
+    "source": "BoE",
+    "metric_id": "uk-dmp-inflation-exp-1y",
+    "metric": "UK DMP CPI Inflation Expectation 1-Year"
+  },
+  {
+    "number": 242,
+    "source": "BoE",
+    "metric_id": "uk-dmp-inflation-exp-3y",
+    "metric": "UK DMP CPI Inflation Expectation 3-Year"
+  },
+  {
+    "number": 243,
+    "source": "BoE",
+    "metric_id": "uk-dmp-own-price-exp-1y",
+    "metric": "UK DMP Own-Price Inflation Expectation 1-Year"
+  },
+  {
+    "number": 244,
+    "source": "BoE",
+    "metric_id": "uk-maps-inflation-1y",
+    "metric": "BoE MaPS CPI Inflation 1-Year"
+  },
+  {
+    "number": 245,
+    "source": "BoE",
+    "metric_id": "uk-maps-inflation-2y",
+    "metric": "BoE MaPS CPI Inflation 2-Year"
+  },
+  {
+    "number": 246,
+    "source": "BoE",
+    "metric_id": "uk-maps-inflation-3y",
+    "metric": "BoE MaPS CPI Inflation 3-Year"
+  },
+  {
+    "number": 247,
+    "source": "BoE",
+    "metric_id": "uk-maps-inflation-5y",
+    "metric": "BoE MaPS CPI Inflation 5-Year"
+  },
+  {
+    "number": 248,
+    "source": "BoE",
+    "metric_id": "uk-inflation-comp-1y",
+    "metric": "UK 1-Year Inflation Swap"
+  },
+  {
+    "number": 249,
+    "source": "BoE",
+    "metric_id": "uk-inflation-comp-5y",
+    "metric": "UK 5-Year Inflation Compensation"
+  },
+  {
+    "number": 250,
+    "source": "BoE",
+    "metric_id": "uk-inflation-comp-10y",
+    "metric": "UK 10-Year Inflation Compensation"
+  },
+  {
+    "number": 251,
+    "source": "BoE",
+    "metric_id": "uk-inflation-comp-5y5y",
+    "metric": "UK 5Y5Y Inflation Swap"
+  },
+  {
+    "number": 252,
+    "source": "NY Fed",
+    "metric_id": "us-nyfed-sce-inflation-exp-1y",
+    "metric": "NY Fed SCE Inflation Expectations (1-Year)"
+  },
+  {
+    "number": 253,
+    "source": "NY Fed",
+    "metric_id": "us-nyfed-sce-inflation-exp-3y",
+    "metric": "NY Fed SCE Inflation Expectations (3-Year)"
+  },
+  {
+    "number": 254,
+    "source": "NY Fed",
+    "metric_id": "us-nyfed-sce-inflation-exp-5y",
+    "metric": "NY Fed SCE Inflation Expectations (5-Year)"
+  },
+  {
+    "number": 255,
+    "source": "NY Fed",
+    "metric_id": "us-nyfed-sce-1y",
+    "metric": "NY Fed SCE Inflation Expectations 1-Year"
+  },
+  {
+    "number": 256,
+    "source": "NY Fed",
+    "metric_id": "us-nyfed-sce-3y",
+    "metric": "NY Fed SCE Inflation Expectations 3-Year"
+  },
+  {
+    "number": 257,
+    "source": "NY Fed",
+    "metric_id": "us-nyfed-sce-5y",
+    "metric": "NY Fed SCE Inflation Expectations 5-Year"
+  },
+  {
+    "number": 258,
+    "source": "NY Fed",
+    "metric_id": "us-nyfed-sce-1y-uncertainty",
+    "metric": "NY Fed SCE Inflation Uncertainty 1-Year"
+  },
+  {
+    "number": 259,
+    "source": "NY Fed",
+    "metric_id": "us-nyfed-sce-labor-earnings-1y",
+    "metric": "NY Fed SCE Earnings Growth Expectations (1-Year)"
+  },
+  {
+    "number": 260,
+    "source": "NY Fed",
+    "metric_id": "us-nyfed-sce-labor-job-separation-1y",
+    "metric": "NY Fed SCE Job Separation Probability (1-Year)"
+  },
+  {
+    "number": 261,
+    "source": "NY Fed",
+    "metric_id": "us-nyfed-sce-labor-job-finding-1y",
+    "metric": "NY Fed SCE Job Finding Probability (1-Year)"
+  },
+  {
+    "number": 262,
+    "source": "NY Fed",
+    "metric_id": "us-nyfed-sce-labor-unemployment-1y",
+    "metric": "NY Fed SCE Unemployment Expectations (1-Year)"
+  },
+  {
+    "number": 263,
+    "source": "NY Fed",
+    "metric_id": "us-nyfed-sce-finance-income-1y",
+    "metric": "NY Fed SCE Household Income Growth Expectations (1-Year)"
+  },
+  {
+    "number": 264,
+    "source": "NY Fed",
+    "metric_id": "us-nyfed-sce-finance-spending-1y",
+    "metric": "NY Fed SCE Household Spending Growth Expectations (1-Year)"
+  },
+  {
+    "number": 265,
+    "source": "NY Fed",
+    "metric_id": "us-nyfed-sce-finance-tax-1y",
+    "metric": "NY Fed SCE Tax Change Expectations (1-Year)"
+  },
+  {
+    "number": 266,
+    "source": "FRED",
+    "metric_id": "us-cleveland-median-cpi",
+    "metric": "Cleveland Fed Median CPI YoY"
+  },
+  {
+    "number": 267,
+    "source": "FRED",
+    "metric_id": "us-cleveland-trimmed-cpi",
+    "metric": "Cleveland Fed 16% Trimmed-Mean CPI"
+  },
+  {
+    "number": 268,
+    "source": "FRED",
+    "metric_id": "us-sticky-cpi",
+    "metric": "Atlanta Fed Sticky CPI YoY"
+  },
+  {
+    "number": 269,
+    "source": "FRED",
+    "metric_id": "us-core-sticky-cpi",
+    "metric": "Atlanta Fed Core Sticky CPI YoY"
+  },
+  {
+    "number": 270,
+    "source": "FRED",
+    "metric_id": "us-flexible-cpi",
+    "metric": "Atlanta Fed Flexible CPI YoY"
+  },
+  {
+    "number": 271,
+    "source": "FRED",
+    "metric_id": "us-umich-inflation-exp-1y",
+    "metric": "UMich Expected Inflation (1-Year)"
+  },
+  {
+    "number": 272,
+    "source": "FRED",
+    "metric_id": "us-cleveland-exp-inf-1y",
+    "metric": "Cleveland Fed Expected Inflation (1-Year)"
+  },
+  {
+    "number": 273,
+    "source": "FRED",
+    "metric_id": "us-cleveland-exp-inf-2y",
+    "metric": "Cleveland Fed Expected Inflation (2-Year)"
+  },
+  {
+    "number": 274,
+    "source": "FRED",
+    "metric_id": "us-cleveland-exp-inf-5y",
+    "metric": "Cleveland Fed Expected Inflation (5-Year)"
+  },
+  {
+    "number": 275,
+    "source": "FRED",
+    "metric_id": "us-cleveland-exp-inf-30y",
+    "metric": "Cleveland Fed Expected Inflation (30-Year)"
+  },
+  {
+    "number": 276,
+    "source": "FRED",
+    "metric_id": "us-umich-sentiment",
+    "metric": "University of Michigan Consumer Sentiment"
+  },
+  {
+    "number": 277,
+    "source": "FRED",
+    "metric_id": "us-breakeven-5y",
+    "metric": "5-Year Breakeven Inflation Rate"
+  },
+  {
+    "number": 278,
+    "source": "FRED",
+    "metric_id": "us-breakeven-10y",
+    "metric": "10-Year Breakeven Inflation Rate"
+  },
+  {
+    "number": 279,
+    "source": "FRED",
+    "metric_id": "us-5y5y-forward",
+    "metric": "5Y5Y Forward Inflation Expectation"
+  },
+  {
+    "number": 280,
+    "source": "FRED",
+    "metric_id": "us-import-prices",
+    "metric": "Import Price Index"
+  },
+  {
+    "number": 281,
+    "source": "FRED",
+    "metric_id": "us-manufacturers-new-orders",
+    "metric": "Manufacturers New Orders MoM"
+  },
+  {
+    "number": 282,
+    "source": "FRED",
+    "metric_id": "us-eci-wages",
+    "metric": "Employment Cost Index — Wages & Salaries"
+  },
+  {
+    "number": 283,
+    "source": "FRED",
+    "metric_id": "us-eci-total",
+    "metric": "Employment Cost Index — Total Compensation"
+  },
+  {
+    "number": 284,
+    "source": "FRED",
+    "metric_id": "us-atlanta-wage",
+    "metric": "Atlanta Fed Wage Growth Tracker"
+  },
+  {
+    "number": 285,
+    "source": "FRED",
+    "metric_id": "us-unit-labor-cost",
+    "metric": "Nonfarm Unit Labor Costs YoY"
+  },
+  {
+    "number": 286,
+    "source": "FRED",
+    "metric_id": "us-gdp-now",
+    "metric": "Atlanta Fed GDPNow"
+  },
+  {
+    "number": 287,
+    "source": "FRED",
+    "metric_id": "us-industrial-production",
+    "metric": "Industrial Production YoY"
+  },
+  {
+    "number": 288,
+    "source": "FRED",
+    "metric_id": "us-capacity-utilization",
+    "metric": "Capacity Utilization"
+  },
+  {
+    "number": 289,
+    "source": "FRED",
+    "metric_id": "us-retail-sales",
+    "metric": "Retail Sales MoM"
+  },
+  {
+    "number": 290,
+    "source": "FRED",
+    "metric_id": "us-retail-sales-ex-auto",
+    "metric": "Retail Sales ex Auto MoM"
+  },
+  {
+    "number": 291,
+    "source": "FRED",
+    "metric_id": "us-durable-goods",
+    "metric": "Durable Goods Orders MoM"
+  },
+  {
+    "number": 292,
+    "source": "FRED",
+    "metric_id": "us-housing-starts",
+    "metric": "Housing Starts"
+  },
+  {
+    "number": 293,
+    "source": "FRED",
+    "metric_id": "us-building-permits",
+    "metric": "Building Permits"
+  },
+  {
+    "number": 294,
+    "source": "FRED",
+    "metric_id": "us-empire-state",
+    "metric": "NY Fed Empire State Manufacturing Index"
+  },
+  {
+    "number": 295,
+    "source": "FRED",
+    "metric_id": "us-dallas-fed-activity",
+    "metric": "Dallas Fed Business Activity Index"
+  },
+  {
+    "number": 296,
+    "source": "FRED",
+    "metric_id": "us-mfg-employment",
+    "metric": "Manufacturing Employment Level"
+  },
+  {
+    "number": 297,
+    "source": "FRED",
+    "metric_id": "us-cfnai",
+    "metric": "Chicago Fed National Activity Index"
+  },
+  {
+    "number": 298,
+    "source": "FRED",
+    "metric_id": "us-adp-change",
+    "metric": "ADP Nonfarm Private Employment Change"
+  },
+  {
+    "number": 299,
+    "source": "FRED",
+    "metric_id": "us-adp-level",
+    "metric": "ADP Nonfarm Private Employment Level"
+  },
+  {
+    "number": 300,
+    "source": "FRED",
+    "metric_id": "us-initial-claims",
+    "metric": "Initial Jobless Claims"
+  },
+  {
+    "number": 301,
+    "source": "FRED",
+    "metric_id": "us-continuing-claims",
+    "metric": "Continuing Jobless Claims"
+  },
+  {
+    "number": 302,
+    "source": "FRED",
+    "metric_id": "us-temp-help",
+    "metric": "Temporary Help Services Employment"
+  },
+  {
+    "number": 303,
+    "source": "FRED",
+    "metric_id": "us-avg-workweek",
+    "metric": "Average Weekly Hours"
+  },
+  {
+    "number": 304,
+    "source": "FRED",
+    "metric_id": "uk-cli",
+    "metric": "UK OECD Composite Leading Indicator"
+  },
+  {
+    "number": 305,
+    "source": "FRED",
+    "metric_id": "uk-business-confidence",
+    "metric": "UK Business Confidence"
+  },
+  {
+    "number": 306,
+    "source": "FRED",
+    "metric_id": "de-unemployment",
+    "metric": "Germany Unemployment Rate"
+  },
+  {
+    "number": 307,
+    "source": "FRED",
+    "metric_id": "us-cleveland-exp-inf-5-10y",
+    "metric": "Cleveland Fed Expected Inflation 5–10 Year"
+  },
+  {
+    "number": 308,
+    "source": "FRED",
+    "metric_id": "us-breakeven-1y",
+    "metric": "1-Year Breakeven Inflation Rate"
+  },
+  {
+    "number": 309,
+    "source": "FRED",
+    "metric_id": "us-breakeven-2y",
+    "metric": "2-Year Breakeven Inflation Rate"
+  },
+  {
+    "number": 310,
+    "source": "FRED",
+    "metric_id": "us-cleveland-exp-inf-3y",
+    "metric": "Cleveland Fed Expected Inflation 3-Year"
+  },
+  {
+    "number": 311,
+    "source": "FRED",
+    "metric_id": "us-cleveland-exp-inf-10y",
+    "metric": "Cleveland Fed Expected Inflation 10-Year"
+  },
+  {
+    "number": 312,
+    "source": "Philadelphia Fed",
+    "metric_id": "us-philly-spf-cpi-1y",
+    "metric": "Philadelphia Fed SPF CPI 1-Year"
+  },
+  {
+    "number": 313,
+    "source": "Philadelphia Fed",
+    "metric_id": "us-philly-spf-core-cpi-1y",
+    "metric": "Philadelphia Fed SPF Core CPI 1-Year"
+  },
+  {
+    "number": 314,
+    "source": "Philadelphia Fed",
+    "metric_id": "us-philly-spf-pce-1y",
+    "metric": "Philadelphia Fed SPF PCE 1-Year"
+  },
+  {
+    "number": 315,
+    "source": "Philadelphia Fed",
+    "metric_id": "us-philly-spf-core-pce-1y",
+    "metric": "Philadelphia Fed SPF Core PCE 1-Year"
+  },
+  {
+    "number": 316,
+    "source": "Philadelphia Fed",
+    "metric_id": "us-philly-spf-cpi-5y",
+    "metric": "Philadelphia Fed SPF CPI 5-Year"
+  },
+  {
+    "number": 317,
+    "source": "Philadelphia Fed",
+    "metric_id": "us-philly-spf-pce-5y",
+    "metric": "Philadelphia Fed SPF PCE 5-Year"
+  },
+  {
+    "number": 318,
+    "source": "Philadelphia Fed",
+    "metric_id": "us-philly-spf-cpi-10y",
+    "metric": "Philadelphia Fed SPF CPI 10-Year"
+  },
+  {
+    "number": 319,
+    "source": "Philadelphia Fed",
+    "metric_id": "us-philly-spf-pce-10y",
+    "metric": "Philadelphia Fed SPF PCE 10-Year"
+  },
+  {
+    "number": 320,
+    "source": "Philadelphia Fed",
+    "metric_id": "us-philly-spf-5y5y-cpi",
+    "metric": "Philadelphia Fed SPF 5Y5Y Forward CPI"
+  },
+  {
+    "number": 321,
+    "source": "Philadelphia Fed",
+    "metric_id": "us-philly-spf-5y5y-pce",
+    "metric": "Philadelphia Fed SPF 5Y5Y Forward PCE"
+  },
+  {
+    "number": 322,
+    "source": "PMI Scrape",
+    "metric_id": "us-ism-manufacturing-pmi",
+    "metric": "US ISM Manufacturing PMI"
+  },
+  {
+    "number": 323,
+    "source": "PMI Scrape",
+    "metric_id": "us-ism-services-pmi",
+    "metric": "US ISM Services PMI"
+  },
+  {
+    "number": 324,
+    "source": "PMI Scrape",
+    "metric_id": "us-sp-global-manufacturing-pmi",
+    "metric": "US S&P Global Manufacturing PMI"
+  },
+  {
+    "number": 325,
+    "source": "PMI Scrape",
+    "metric_id": "us-sp-global-services-pmi",
+    "metric": "US S&P Global Services PMI"
+  },
+  {
+    "number": 326,
+    "source": "PMI Scrape",
+    "metric_id": "uk-sp-global-manufacturing-pmi",
+    "metric": "UK S&P Global Manufacturing PMI"
+  },
+  {
+    "number": 327,
+    "source": "PMI Scrape",
+    "metric_id": "uk-sp-global-services-pmi",
+    "metric": "UK S&P Global Services PMI"
+  },
+  {
+    "number": 328,
+    "source": "PMI Scrape",
+    "metric_id": "uk-sp-global-composite-pmi",
+    "metric": "UK S&P Global Composite PMI"
+  },
+  {
+    "number": 329,
+    "source": "PMI Scrape",
+    "metric_id": "ea-sp-global-manufacturing-pmi",
+    "metric": "Euro Area S&P Global Manufacturing PMI"
+  },
+  {
+    "number": 330,
+    "source": "PMI Scrape",
+    "metric_id": "ea-sp-global-services-pmi",
+    "metric": "Euro Area S&P Global Services PMI"
+  },
+  {
+    "number": 331,
+    "source": "PMI Scrape",
+    "metric_id": "ea-sp-global-composite-pmi",
+    "metric": "Euro Area S&P Global Composite PMI"
+  },
+  {
+    "number": 332,
+    "source": "Census",
+    "metric_id": "us-retail-motor-vehicles",
+    "metric": "US Retail Sales — Motor Vehicles"
+  },
+  {
+    "number": 333,
+    "source": "Census",
+    "metric_id": "us-retail-gasoline",
+    "metric": "US Retail Sales — Gasoline Stations"
+  },
+  {
+    "number": 334,
+    "source": "Census",
+    "metric_id": "us-retail-food-beverage",
+    "metric": "US Retail Sales — Food & Beverage"
+  },
+  {
+    "number": 335,
+    "source": "Census",
+    "metric_id": "us-retail-general-merchandise",
+    "metric": "US Retail Sales — General Merchandise"
+  },
+  {
+    "number": 336,
+    "source": "Census",
+    "metric_id": "us-retail-nonstore",
+    "metric": "US Retail Sales — Nonstore"
+  },
+  {
+    "number": 337,
+    "source": "Census",
+    "metric_id": "us-retail-food-services",
+    "metric": "US Retail Sales — Food Services"
+  },
+  {
+    "number": 338,
+    "source": "Census",
+    "metric_id": "us-retail-sales-total",
+    "metric": "US Retail Sales — Total"
+  },
+  {
+    "number": 339,
+    "source": "Census",
+    "metric_id": "us-retail-total-ex-auto-gas",
+    "metric": "US Retail Sales — Total ex Autos & Gas"
+  },
+  {
+    "number": 340,
+    "source": "Atlanta Fed",
+    "metric_id": "us-atlanta-bie-1y",
+    "metric": "Atlanta Fed Business Inflation Expectations 1-Year"
+  },
+  {
+    "number": 341,
+    "source": "Atlanta Fed",
+    "metric_id": "us-atlanta-bie-unit-cost-1y",
+    "metric": "Atlanta Fed BIE Expected Unit-Cost Growth 1-Year"
+  },
+  {
+    "number": 342,
+    "source": "Cleveland Fed / SoFIE",
+    "metric_id": "us-cleveland-sofie-1y",
+    "metric": "Cleveland Fed SoFIE Expected CPI Inflation (1-Year)"
+  },
+  {
+    "number": 343,
+    "source": "Cleveland Fed / SoFIE",
+    "metric_id": "us-cleveland-sofie-5y",
+    "metric": "Cleveland Fed SoFIE Expected CPI Inflation (5-Year)"
+  },
+  {
+    "number": 344,
+    "source": "University of Michigan",
+    "metric_id": "us-umich-inflation-exp-5y",
+    "metric": "UMich Expected Inflation (5-Year)"
+  }
+]

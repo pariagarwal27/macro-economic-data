@@ -706,11 +706,16 @@ async function warmLiveCaches(targets: MetricDef[] = METRICS, options?: { skipFe
     }
   }
 
-  // HTML release pages only as fallback when BLS API returned nothing
-  if (
-    providers.has("bls") &&
-    ![...caches.bls.values()].some((pts) => pts.length > 0)
-  ) {
+  // Also warm the official release-page fallbacks when the API returns a
+  // partial set (for example, after its daily quota is reached midway).
+  // The API remains preferred per series; these pages fill only missing IDs.
+  const needsEmpsitFallback = targets.some((metric) =>
+    ["us-nfp", "us-unemployment"].includes(metric.id)
+  );
+  const needsCpiFallback = targets.some((metric) =>
+    ["us-cpi-mom", "us-cpi-yoy", "us-core-cpi-mom", "us-core-cpi-yoy"].includes(metric.id)
+  );
+  if (providers.has("bls") && needsEmpsitFallback) {
     try {
       caches.empsit = await fetchBlsEmpsitRelease();
 
@@ -721,18 +726,15 @@ async function warmLiveCaches(targets: MetricDef[] = METRICS, options?: { skipFe
       console.warn(`[live] BLS empsit HTML failed:`, err);
     }
 
+  }
+  if (providers.has("bls") && needsCpiFallback) {
     try {
       caches.cpiRelease = await fetchBlsCpiRelease();
-
-      console.log(
-        `[live] BLS CPI release period=${caches.cpiRelease.period}`
-      );
+      console.log(`[live] BLS CPI release period=${caches.cpiRelease.period}`);
     } catch (err) {
       caches.cpiRelease = null;
       console.warn(`[live] BLS CPI HTML failed:`, err);
     }
-  } else if (providers.has("bls")) {
-    console.log(`[live] Skipping BLS HTML scrapes — API data present`);
   }
 
   if (providers.has("adp")) {
@@ -1040,6 +1042,24 @@ async function loadLiveRaw(
         note: "Live Eurostat",
       };
     }
+    if (metric.source === "ecb") {
+      return {
+        points: await fetchEcbBySeriesId(metric.seriesId),
+        note: `Live ECB ${metric.seriesId}`,
+      };
+    }
+    if (metric.source === "boe") {
+      return {
+        points: await fetchBoeBySeriesId(metric.seriesId),
+        note: `Live BoE ${metric.seriesId}`,
+      };
+    }
+    if (metric.source === "nyfed") {
+      return {
+        points: await fetchNyfedSeries(metric.seriesId as NyfedSeriesId),
+        note: `Live NY Fed SCE ${metric.seriesId}`,
+      };
+    }
     if (metric.source === "atlanta") {
       if (metric.seriesId === "BIE_EXPECTED_PRICE_1Y") {
         return {
@@ -1225,6 +1245,7 @@ export async function fetchOfficialLatestFromPipeline(metricId: string) {
   if (!live?.points?.length) return null;
 
   const treatAsLevel =
+    metric.id === "us-eci-wages" ||
     live.note.includes("(change)") ||
     live.note.includes("release page") ||
     live.note.includes("PPI bulletin");
@@ -1680,6 +1701,7 @@ export async function runIngest(
           const live = await loadLiveRaw(metric, liveCaches);
           if (live?.points.length) {
             const headline =
+              metric.id === "us-eci-wages" ||
               live.note.includes("(change)") ||
               live.note.includes("release page") ||
               live.note.includes("PPI bulletin");

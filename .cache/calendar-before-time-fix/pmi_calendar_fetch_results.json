@@ -1,0 +1,105 @@
+{
+  "generated_at_utc": "2026-10-06T10:47:45.940159+00:00",
+  "metrics": [
+    {
+      "metric_id": "us-ism-manufacturing-pmi",
+      "metric": "ISM Manufacturing PMI",
+      "source": "ISM",
+      "next_release": null,
+      "next_release_at": null,
+      "status": "not_found",
+      "official_source": "https://www.ismworld.org/supply-management-news-and-reports/reports/rob-report-calendar/",
+      "official_evidence": "No future matching release was found on the official calendar."
+    },
+    {
+      "metric_id": "us-ism-services-pmi",
+      "metric": "ISM Services PMI",
+      "source": "ISM",
+      "next_release": null,
+      "next_release_at": null,
+      "status": "not_found",
+      "official_source": "https://www.ismworld.org/supply-management-news-and-reports/reports/rob-report-calendar/",
+      "official_evidence": "No future matching release was found on the official calendar."
+    },
+    {
+      "metric_id": "us-sp-global-manufacturing-pmi",
+      "metric": "S&P Global US Manufacturing PMI",
+      "source": "SP",
+      "next_release": "2026-11-02",
+      "next_release_at": "2026-11-02T00:30:00+00:00",
+      "status": "official_date",
+      "official_source": "https://pmi.spglobal.com/Public/Release/ReleaseDates?language=en",
+      "official_evidence": "S&P Global official PMI calendar: 2026-11-02 00:30 UTC — S&P Global Indonesia Manufacturing PMI 00:30 UTC S&P Global Japan Manufacturing PMI 00:30 UTC S&P Global Malaysia Manufacturing PMI 00:30 UTC S&P Global Myanmar Manufacturing PMI 00:30 UTC S&P Global South Korea Manufacturing PMI 00:30 UTC S&P Global Taiwan Manufacturing PMI 00:30 UTC S&P Global Thailand Manufacturing PMI 00:30 UTC S&P Global Vietnam Manufacturing PMI 01:01 UTC AIB Ireland Manufacturing PMI 01:45 UTC RatingDog China General Manufacturing PMI 05:00 UTC HSBC India Manufacturing PMI 05:15 UTC HBL Pakistan Manufacturing PMI 06:00 UTC Nevi Netherlands Manufacturing PMI 06:00 UTC S&P Global Russia Manufacturing PMI 07:00 UTC Freedom Holding Corp. Kazakhstan Manufacturing PMI 07:00 UTC BCR Romania Manufacturing PMI 07:00 UTC Istanbul Chamber of Industry Türkiye Manufacturing PMI 08:00 UTC S&P Global Poland Manufacturing PMI 08:15 UTC S&P Global Spain Manufacturing PMI 08:30 UTC S&P Global Czechia Manufacturing PMI 08:45 UTC S&P Global Italy Manufacturing PMI 08:45 UTC Stanbic IBTC Bank Nigeria PMI 08:50 UTC S&P Global France Manufacturing PMI 08:55 UTC S&P Global Germany Manufacturing PMI 09:00 UTC S&P Global Eurozone Manufacturing PMI 09:00 UTC S&P Global Greece Manufacturing PMI 09:30 UTC S&P Global UK Manufacturing PMI 14:30 UTC S&P Global Canada Manufacturing PMI 14:45 UTC S&P Global US Manufacturing PMI 16:00 UTC JPMorgan Global Manufacturing PMI 16:00 UTC S&P Global PMI Commodity Price & Supply Indicators"
+    },
+    {
+      "metric_id": "us-sp-global-services-pmi",
+      "metric": "S&P Global US Services PMI",
+      "source": "SP",
+      "next_release": "2026-11-04",
+      "next_release_at": "2026-11-04T00:30:00+00:00",
+      "status": "official_date",
+      "official_source": "https://pmi.spglobal.com/Public/Release/ReleaseDates?language=en",
+      "official_evidence": "S&P Global official PMI calendar: 2026-11-04 00:30 UTC — S&P Global Hong Kong SAR PMI 00:30 UTC S&P Global Singapore PMI 01:01 UTC AIB Ireland Services PMI 01:45 UTC S&P Global Asia Sector PMI 01:45 UTC RatingDog China General Services PMI 04:15 UTC S&P Global United Arab Emirates PMI 05:00 UTC HSBC India Services PMI 06:00 UTC Standard Bank Mozambique PMI 06:00 UTC Stanbic Bank Uganda PMI 07:00 UTC Freedom Holding Corp. Kazakhstan Services PMI 07:30 UTC Stanbic Bank Kenya PMI 08:15 UTC S&P Global Spain Services PMI 08:30 UTC Stanbic Bank Zambia PMI 08:45 UTC S&P Global Italy Services PMI 08:50 UTC S&P Global France Services PMI 08:55 UTC S&P Global Germany Services PMI 09:00 UTC S&P Global Eurozone Composite PMI 09:00 UTC S&P Global Ghana PMI 09:00 UTC BLOM Lebanon PMI 09:30 UTC S&P Global Europe Sector PMI 09:30 UTC S&P Global UK Services PMI 14:30 UTC S&P Global Canada Services PMI 14:45 UTC S&P Global US Sector PMI 14:45 UTC S&P Global US Services PMI 16:00 UTC JPMorgan Global Composite PMI 16:00 UTC S&P Global Sector PMI"
+    },
+    {
+      "metric_id": "uk-sp-global-manufacturing-pmi",
+      "metric": "S&P Global UK Manufacturing PMI",
+      "source": "SP",
+      "next_release": "2026-11-02",
+      "next_release_at": "2026-11-02T00:30:00+00:00",
+      "status": "official_date",
+      "official_source": "https://pmi.spglobal.com/Public/Release/ReleaseDates?language=en",
+      "official_evidence": "S&P Global official PMI calendar: 2026-11-02 00:30 UTC — S&P Global Indonesia Manufacturing PMI 00:30 UTC S&P Global Japan Manufacturing PMI 00:30 UTC S&P Global Malaysia Manufacturing PMI 00:30 UTC S&P Global Myanmar Manufacturing PMI 00:30 UTC S&P Global South Korea Manufacturing PMI 00:30 UTC S&P Global Taiwan Manufacturing PMI 00:30 UTC S&P Global Thailand Manufacturing PMI 00:30 UTC S&P Global Vietnam Manufacturing PMI 01:01 UTC AIB Ireland Manufacturing PMI 01:45 UTC RatingDog China General Manufacturing PMI 05:00 UTC HSBC India Manufacturing PMI 05:15 UTC HBL Pakistan Manufacturing PMI 06:00 UTC Nevi Netherlands Manufacturing PMI 06:00 UTC S&P Global Russia Manufacturing PMI 07:00 UTC Freedom Holding Corp. Kazakhstan Manufacturing PMI 07:00 UTC BCR Romania Manufacturing PMI 07:00 UTC Istanbul Chamber of Industry Türkiye Manufacturing PMI 08:00 UTC S&P Global Poland Manufacturing PMI 08:15 UTC S&P Global Spain Manufacturing PMI 08:30 UTC S&P Global Czechia Manufacturing PMI 08:45 UTC S&P Global Italy Manufacturing PMI 08:45 UTC Stanbic IBTC Bank Nigeria PMI 08:50 UTC S&P Global France Manufacturing PMI 08:55 UTC S&P Global Germany Manufacturing PMI 09:00 UTC S&P Global Eurozone Manufacturing PMI 09:00 UTC S&P Global Greece Manufacturing PMI 09:30 UTC S&P Global UK Manufacturing PMI 14:30 UTC S&P Global Canada Manufacturing PMI 14:45 UTC S&P Global US Manufacturing PMI 16:00 UTC JPMorgan Global Manufacturing PMI 16:00 UTC S&P Global PMI Commodity Price & Supply Indicators"
+    },
+    {
+      "metric_id": "uk-sp-global-services-pmi",
+      "metric": "S&P Global UK Services PMI",
+      "source": "SP",
+      "next_release": "2026-11-04",
+      "next_release_at": "2026-11-04T00:30:00+00:00",
+      "status": "official_date",
+      "official_source": "https://pmi.spglobal.com/Public/Release/ReleaseDates?language=en",
+      "official_evidence": "S&P Global official PMI calendar: 2026-11-04 00:30 UTC — S&P Global Hong Kong SAR PMI 00:30 UTC S&P Global Singapore PMI 01:01 UTC AIB Ireland Services PMI 01:45 UTC S&P Global Asia Sector PMI 01:45 UTC RatingDog China General Services PMI 04:15 UTC S&P Global United Arab Emirates PMI 05:00 UTC HSBC India Services PMI 06:00 UTC Standard Bank Mozambique PMI 06:00 UTC Stanbic Bank Uganda PMI 07:00 UTC Freedom Holding Corp. Kazakhstan Services PMI 07:30 UTC Stanbic Bank Kenya PMI 08:15 UTC S&P Global Spain Services PMI 08:30 UTC Stanbic Bank Zambia PMI 08:45 UTC S&P Global Italy Services PMI 08:50 UTC S&P Global France Services PMI 08:55 UTC S&P Global Germany Services PMI 09:00 UTC S&P Global Eurozone Composite PMI 09:00 UTC S&P Global Ghana PMI 09:00 UTC BLOM Lebanon PMI 09:30 UTC S&P Global Europe Sector PMI 09:30 UTC S&P Global UK Services PMI 14:30 UTC S&P Global Canada Services PMI 14:45 UTC S&P Global US Sector PMI 14:45 UTC S&P Global US Services PMI 16:00 UTC JPMorgan Global Composite PMI 16:00 UTC S&P Global Sector PMI"
+    },
+    {
+      "metric_id": "uk-sp-global-composite-pmi",
+      "metric": "S&P Global UK Composite PMI",
+      "source": "SP",
+      "next_release": null,
+      "next_release_at": null,
+      "status": "not_found",
+      "official_source": "https://pmi.spglobal.com/Public/Release/ReleaseDates?language=en",
+      "official_evidence": "No future matching release was found on the official calendar."
+    },
+    {
+      "metric_id": "ea-sp-global-manufacturing-pmi",
+      "metric": "S&P Global Eurozone Manufacturing PMI",
+      "source": "SP",
+      "next_release": "2026-11-02",
+      "next_release_at": "2026-11-02T00:30:00+00:00",
+      "status": "official_date",
+      "official_source": "https://pmi.spglobal.com/Public/Release/ReleaseDates?language=en",
+      "official_evidence": "S&P Global official PMI calendar: 2026-11-02 00:30 UTC — S&P Global Indonesia Manufacturing PMI 00:30 UTC S&P Global Japan Manufacturing PMI 00:30 UTC S&P Global Malaysia Manufacturing PMI 00:30 UTC S&P Global Myanmar Manufacturing PMI 00:30 UTC S&P Global South Korea Manufacturing PMI 00:30 UTC S&P Global Taiwan Manufacturing PMI 00:30 UTC S&P Global Thailand Manufacturing PMI 00:30 UTC S&P Global Vietnam Manufacturing PMI 01:01 UTC AIB Ireland Manufacturing PMI 01:45 UTC RatingDog China General Manufacturing PMI 05:00 UTC HSBC India Manufacturing PMI 05:15 UTC HBL Pakistan Manufacturing PMI 06:00 UTC Nevi Netherlands Manufacturing PMI 06:00 UTC S&P Global Russia Manufacturing PMI 07:00 UTC Freedom Holding Corp. Kazakhstan Manufacturing PMI 07:00 UTC BCR Romania Manufacturing PMI 07:00 UTC Istanbul Chamber of Industry Türkiye Manufacturing PMI 08:00 UTC S&P Global Poland Manufacturing PMI 08:15 UTC S&P Global Spain Manufacturing PMI 08:30 UTC S&P Global Czechia Manufacturing PMI 08:45 UTC S&P Global Italy Manufacturing PMI 08:45 UTC Stanbic IBTC Bank Nigeria PMI 08:50 UTC S&P Global France Manufacturing PMI 08:55 UTC S&P Global Germany Manufacturing PMI 09:00 UTC S&P Global Eurozone Manufacturing PMI 09:00 UTC S&P Global Greece Manufacturing PMI 09:30 UTC S&P Global UK Manufacturing PMI 14:30 UTC S&P Global Canada Manufacturing PMI 14:45 UTC S&P Global US Manufacturing PMI 16:00 UTC JPMorgan Global Manufacturing PMI 16:00 UTC S&P Global PMI Commodity Price & Supply Indicators"
+    },
+    {
+      "metric_id": "ea-sp-global-services-pmi",
+      "metric": "S&P Global Eurozone Services PMI",
+      "source": "SP",
+      "next_release": null,
+      "next_release_at": null,
+      "status": "not_found",
+      "official_source": "https://pmi.spglobal.com/Public/Release/ReleaseDates?language=en",
+      "official_evidence": "No future matching release was found on the official calendar."
+    },
+    {
+      "metric_id": "ea-sp-global-composite-pmi",
+      "metric": "S&P Global Eurozone Composite PMI",
+      "source": "SP",
+      "next_release": "2026-11-04",
+      "next_release_at": "2026-11-04T00:30:00+00:00",
+      "status": "official_date",
+      "official_source": "https://pmi.spglobal.com/Public/Release/ReleaseDates?language=en",
+      "official_evidence": "S&P Global official PMI calendar: 2026-11-04 00:30 UTC — S&P Global Hong Kong SAR PMI 00:30 UTC S&P Global Singapore PMI 01:01 UTC AIB Ireland Services PMI 01:45 UTC S&P Global Asia Sector PMI 01:45 UTC RatingDog China General Services PMI 04:15 UTC S&P Global United Arab Emirates PMI 05:00 UTC HSBC India Services PMI 06:00 UTC Standard Bank Mozambique PMI 06:00 UTC Stanbic Bank Uganda PMI 07:00 UTC Freedom Holding Corp. Kazakhstan Services PMI 07:30 UTC Stanbic Bank Kenya PMI 08:15 UTC S&P Global Spain Services PMI 08:30 UTC Stanbic Bank Zambia PMI 08:45 UTC S&P Global Italy Services PMI 08:50 UTC S&P Global France Services PMI 08:55 UTC S&P Global Germany Services PMI 09:00 UTC S&P Global Eurozone Composite PMI 09:00 UTC S&P Global Ghana PMI 09:00 UTC BLOM Lebanon PMI 09:30 UTC S&P Global Europe Sector PMI 09:30 UTC S&P Global UK Services PMI 14:30 UTC S&P Global Canada Services PMI 14:45 UTC S&P Global US Sector PMI 14:45 UTC S&P Global US Services PMI 16:00 UTC JPMorgan Global Composite PMI 16:00 UTC S&P Global Sector PMI"
+    }
+  ]
+}

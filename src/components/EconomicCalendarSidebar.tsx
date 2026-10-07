@@ -6,7 +6,7 @@ import {
   Clock3,
   RefreshCw,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type CalendarEvent = {
   metricId: string;
@@ -16,11 +16,13 @@ type CalendarEvent = {
   family: string | null;
   scheduledDate: string | null;
   scheduledTime: string | null;
+  scheduledAt: string | null;
   scheduledTimeLabel: string;
   status: "released" | "pending" | "upcoming" | "past" | "unscheduled";
-  scheduleType: "scheduled" | "daily" | "unannounced" | "source-error";
+  scheduleType: "scheduled" | "daily" | "hourly" | "unannounced" | "source-error";
   scheduleNote: string | null;
   actual: number | null;
+  actualReleasedAt: string | null;
   forecast: number | null;
   previous: number | null;
   releasedAt: string | null;
@@ -34,10 +36,11 @@ type CalendarPayload = {
   weekEnd: string;
   timeZone: string;
   todayEvents: CalendarEvent[];
+  dailyEvents: CalendarEvent[];
   week: Record<string, CalendarEvent[]>;
   lastUpdated: string | null;
   allEvents: CalendarEvent[];
-  coverage: { totalMetrics: number; exactTime: number; deadline: number; dateOnly: number; daily: number; unannounced: number; sourceErrors: number };
+  coverage: { totalMetrics: number; exactTime: number; deadline: number; dateOnly: number; daily: number; hourly: number; unannounced: number; sourceErrors: number };
   error?: string;
 };
 
@@ -121,6 +124,8 @@ export function EconomicCalendarSidebar() {
   const [payload, setPayload] = useState<CalendarPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const previousPayload = useRef<CalendarPayload | null>(null);
+  const announced = useRef(new Set<string>());
 
   const load = useCallback(async () => {
     try {
@@ -145,6 +150,54 @@ export function EconomicCalendarSidebar() {
         throw new Error(data.error);
       }
 
+      const previous = previousPayload.current;
+      const now = Date.now();
+      for (const event of data.allEvents ?? []) {
+        if (event.scheduledAt) {
+          const remaining = Date.parse(event.scheduledAt) - now;
+          const stage = remaining > 60_000 && remaining <= 120_000
+            ? "2m"
+            : remaining > 0 && remaining <= 60_000
+              ? "1m"
+              : null;
+          const key = `${event.metricId}:${event.scheduledAt}:${stage}`;
+          if (stage && !announced.current.has(key)) {
+            announced.current.add(key);
+            window.dispatchEvent(new CustomEvent("macrohub:release-notice", {
+              detail: {
+                kind: "reminder",
+                metricId: event.metricId,
+                metricName: event.metricName,
+                region: event.region,
+                stage,
+                secondsRemaining: Math.max(1, Math.ceil(remaining / 1000)),
+              },
+            }));
+          }
+        }
+
+        if (!previous) continue;
+        const oldEvent = previous.allEvents.find((candidate) =>
+          candidate.metricId === event.metricId &&
+          (candidate.scheduledAt ?? candidate.scheduledDate) === (event.scheduledAt ?? event.scheduledDate)
+        );
+        const releaseKey = `released:${event.metricId}:${event.scheduledAt ?? event.scheduledDate ?? "unknown"}`;
+        if (event.status === "released" && oldEvent?.status !== "released" && !announced.current.has(releaseKey)) {
+          announced.current.add(releaseKey);
+          window.dispatchEvent(new CustomEvent("macrohub:release-notice", {
+            detail: {
+              kind: "released",
+              metricId: event.metricId,
+              metricName: event.metricName,
+              region: event.region,
+              actual: event.actual,
+              releasedAt: event.actualReleasedAt,
+            },
+          }));
+        }
+      }
+
+      previousPayload.current = data;
       setPayload(data);
       setError("");
     } catch (err) {
@@ -262,6 +315,14 @@ export function EconomicCalendarSidebar() {
               />
             ))
           )}
+          {payload?.dailyEvents.length ? (
+            <>
+              <div className="economic-calendar-date-heading">Daily and hourly metrics · no fixed release time</div>
+              {payload.dailyEvents.map((event) => (
+                <CalendarEventRow key={`daily-${event.metricId}`} event={event} />
+              ))}
+            </>
+          ) : null}
         </div>
       ) : tab === "all" ? (
         <div className="economic-calendar-list">
@@ -269,7 +330,7 @@ export function EconomicCalendarSidebar() {
           {payload && <div className="economic-calendar-coverage">{payload.coverage.exactTime} confirmed times · {payload.coverage.dateOnly} date-only releases</div>}
           {payload?.allEvents.map(event => (
             <div key={event.metricId}>
-              <div className="economic-calendar-date-heading">{event.scheduledDate ? formatDay(event.scheduledDate) : event.scheduleType === "daily" ? "Daily data · no fixed release" : "Next date unavailable"}</div>
+              <div className="economic-calendar-date-heading">{event.scheduledDate ? formatDay(event.scheduledDate) : event.scheduleType === "daily" || event.scheduleType === "hourly" ? `${event.scheduleType === "hourly" ? "Hourly" : "Daily"} data · no fixed release` : "Next date unavailable"}</div>
               <CalendarEventRow event={event} />
             </div>
           ))}
@@ -336,7 +397,7 @@ function CalendarEventRow({
     >
       <div className="economic-calendar-time">
         <Clock3 size={12} />
-        <span title={event.scheduleNote ?? undefined}>{event.scheduleType === "daily" ? "Daily" : !event.scheduledDate ? "No date" : event.scheduledTimeLabel ?? formatTime(event.scheduledTime)}</span>
+        <span title={event.scheduleNote ?? undefined}>{event.scheduleType === "hourly" ? "Hourly" : event.scheduleType === "daily" ? "Daily" : !event.scheduledDate ? "No date" : event.scheduledTimeLabel ?? formatTime(event.scheduledTime)}</span>
       </div>
 
       <div className="economic-calendar-event-main">
@@ -394,7 +455,7 @@ function CalendarEventRow({
           <span className="economic-calendar-status-dot" />
         )}
 
-        {event.scheduleType === "daily" ? "Daily" : event.scheduleType === "source-error" ? "Source error" : statusLabel(event.status)}
+        {event.scheduleType === "hourly" ? "Hourly" : event.scheduleType === "daily" ? "Daily" : event.scheduleType === "source-error" ? "Source error" : statusLabel(event.status)}
       </div>
     </div>
   );
