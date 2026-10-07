@@ -76,6 +76,7 @@ import {
   fetchBoeDmpSeries,
   fetchBoeMapsInflation,
   fetchBoeMprInflationSeries,
+  fetchBoeDailyInflationCompensation,
   fetchBoeAgentsPaySettlement,
 } from "../src/ingest/boe-dmp";
 import { fetchOnsPpiBulletin } from "../src/ingest/ons-ppi-bulletin";
@@ -1273,6 +1274,9 @@ const SPF_SERIES_MAP = {
 } as const satisfies Record<string, EcbSpfSeries>;
 
 async function fetchBoeBySeriesId(seriesId: string) {
+  if (seriesId === "UK_INFL_COMP_5Y5Y") {
+    return fetchBoeDailyInflationCompensation(seriesId);
+  }
   if (seriesId === "IAS_Q2A") return fetchBoeInflationExpectations("1y");
   if (seriesId === "IAS_Q2B") return fetchBoeInflationExpectations("2y");
   if (seriesId === "IAS_Q2C") return fetchBoeInflationExpectations("5y");
@@ -1307,8 +1311,7 @@ async function fetchBoeBySeriesId(seriesId: string) {
   if (
     seriesId === "CITI_YOUGOV_INFLATION_1Y" ||
     seriesId === "CITI_YOUGOV_INFLATION_5_10Y" ||
-    seriesId === "UK_INFL_COMP_1Y" ||
-    seriesId === "UK_INFL_COMP_5Y5Y"
+    seriesId === "UK_INFL_COMP_1Y"
   ) {
     return fetchBoeMprInflationSeries(seriesId);
   }

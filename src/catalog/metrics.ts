@@ -715,7 +715,7 @@ export const METRICS: MetricDef[] = [
   releaseName: "ECB Wage Tracker",
 },
 {
-  id: "ea-safe-selling-price-exp-1y",
+id: "ea-safe-selling-price-exp-1y",
   region: "EA",
   category: "inflation",
   subcategory: "expectations_business",
@@ -733,7 +733,7 @@ export const METRICS: MetricDef[] = [
   releaseName: "ECB SAFE Survey",
 },
 {
-  id: "ea-safe-input-cost-exp-1y",
+id: "ea-safe-input-cost-exp-1y",
   region: "EA",
   category: "inflation",
   subcategory: "expectations_business",
@@ -751,7 +751,7 @@ export const METRICS: MetricDef[] = [
   releaseName: "ECB SAFE Survey",
 },
 {
-  id: "ea-spf-current-year",
+    id: "ea-spf-current-year",
   region: "EA",
   category: "inflation",
   subcategory: "expectations_professional",
@@ -877,7 +877,7 @@ export const METRICS: MetricDef[] = [
     releaseName: "Manufacturers' Shipments, Inventories, and Orders",
   },
   {
-    id: "us-eci-wages",
+  id: "us-eci-wages",
     region: "US",
     category: "inflation",
     subcategory: "labor_costs",
@@ -3385,7 +3385,7 @@ export const METRICS: MetricDef[] = [
     releaseName: "ECB Survey of Professional Forecasters",
   },
   {
-    id: "ea-spf-wage-exp-1y",
+  id: "ea-spf-wage-exp-1y",
     region: "EA",
     category: "jobs",
     subcategory: "expectations_wages",
@@ -3835,7 +3835,7 @@ export const METRICS: MetricDef[] = [
   },
   // Market-based UK inflation compensation.
   {
-    id: "uk-inflation-comp-1y",
+  id: "uk-inflation-comp-1y",
     region: "UK", category: "inflation", subcategory: "expectations_market",
     name: "UK 1-Year Inflation Swap",
     shortName: "1Y Inflation Swap",
@@ -3865,14 +3865,14 @@ export const METRICS: MetricDef[] = [
     officialUrl: `${BOE}/statistics`, docsUrl: `${BOE}/statistics`, releaseName: "UK Inflation Compensation",
   },
   {
-    id: "uk-inflation-comp-5y5y",
+  id: "uk-inflation-comp-5y5y",
     region: "UK", category: "inflation", subcategory: "expectations_market",
-    name: "UK 5Y5Y Inflation Swap",
-    shortName: "5Y5Y Inflation Swap",
-    description: "Market-based five-year-forward five-year UK inflation compensation measure.",
+    name: "UK 5Y5Y Inflation Compensation",
+    shortName: "5Y5Y Inflation Comp.",
+    description: "Bank of England daily five-year-forward five-year implied inflation rate from the gilt inflation spot curve.",
     source: "boe", seriesId: "UK_INFL_COMP_5Y5Y",
-    transform: "level", frequency: "monthly", unit: "percent", importance: "high",
-    officialUrl: `${BOE}/statistics`, docsUrl: `${BOE}/statistics`, releaseName: "UK Inflation Compensation",
+    transform: "level", frequency: "daily", unit: "percent", importance: "high",
+    officialUrl: `${BOE}/statistics/yield-curves`, docsUrl: `${BOE}/statistics/yield-curves/terminology-and-concepts`, releaseName: "UK Inflation Compensation",
   },
 
   // ─── INFLATION EXPECTATIONS — EURO AREA ─────────────────────

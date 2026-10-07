@@ -5,6 +5,10 @@ const DMP_INDEX =
   "https://www.bankofengland.co.uk/decision-maker-panel/2026/august-2026";
 const MPS_INDEX = "https://www.bankofengland.co.uk/markets/market-intelligence/survey-results";
 const MPR_INDEX = "https://www.bankofengland.co.uk/monetary-policy-report/2026/july-2026";
+const BOE_DAILY_INFLATION_ARCHIVE =
+  "https://www.bankofengland.co.uk/-/media/boe/files/statistics/yield-curves/glcinflationddata.zip";
+const BOE_DAILY_INFLATION_LATEST =
+  "https://www.bankofengland.co.uk/-/media/boe/files/statistics/yield-curves/latest-yield-curve-data.zip";
 
 export type DmpWageSeries =
   | "DMP_WAGE_REALISED_3M"
@@ -21,6 +25,106 @@ const SERIES_COL: Record<DmpWageSeries, string> = {
 
 let cachedXlsx: { url: string; buf: Buffer; at: number } | null = null;
 const CACHE_MS = 10 * 60 * 1000;
+let cachedBoeDailyInflation: { points: RawPoint[]; at: number } | null = null;
+const BOE_DAILY_CURVE_CACHE_MS = 60 * 60 * 1000;
+
+/**
+ * Daily UK 5Y5Y implied inflation compensation from the BoE's gilt curve.
+ * The BoE publishes daily spot inflation zero-coupon rates at 5Y and 10Y;
+ * with continuous compounding, the five-year forward rate starting in five
+ * years is 2 * 10Y spot - 5Y spot. The 1Y point is not published in this
+ * dataset (the daily spot curve starts at 25 months), so it remains on the
+ * existing monthly MPR series until a valid daily one-year source is added.
+ */
+export async function fetchBoeDailyInflationCompensation(
+  seriesId: "UK_INFL_COMP_5Y5Y"
+): Promise<RawPoint[]> {
+  const now = Date.now();
+  if (cachedBoeDailyInflation && now - cachedBoeDailyInflation.at < BOE_DAILY_CURVE_CACHE_MS) {
+    return cachedBoeDailyInflation.points;
+  }
+
+  const [archiveResponse, latestResponse] = await Promise.all([
+    fetch(BOE_DAILY_INFLATION_ARCHIVE, {
+      headers: { "User-Agent": "macro-economy-tracker/1.0", Accept: "*/*" },
+    }),
+    fetch(BOE_DAILY_INFLATION_LATEST, {
+      headers: { "User-Agent": "macro-economy-tracker/1.0", Accept: "*/*" },
+    }),
+  ]);
+  if (!archiveResponse.ok) throw new Error(`BoE daily inflation archive HTTP ${archiveResponse.status}`);
+  if (!latestResponse.ok) throw new Error(`BoE latest yield curve HTTP ${latestResponse.status}`);
+
+  const archive = new AdmZip(Buffer.from(await archiveResponse.arrayBuffer()));
+  const recentEntry = archive.getEntries().find((entry) =>
+    /GLC Inflation daily data_2025 to present\.xlsx$/i.test(entry.entryName)
+  );
+  if (!recentEntry) throw new Error("BoE daily inflation archive is missing its current-history workbook");
+
+  const points = new Map<string, number>();
+  for (const point of parseBoeDailyFiveYearForward(recentEntry.getData())) {
+    points.set(point.date, point.value);
+  }
+
+  const latest = new AdmZip(Buffer.from(await latestResponse.arrayBuffer()));
+  const latestEntry = latest.getEntries().find((entry) =>
+    /GLC Inflation daily data current month\.xlsx$/i.test(entry.entryName)
+  );
+  if (!latestEntry) throw new Error("BoE latest yield curve ZIP is missing its inflation workbook");
+  for (const point of parseBoeDailyFiveYearForward(latestEntry.getData())) {
+    points.set(point.date, point.value);
+  }
+
+  const result = [...points.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, value]) => ({ date, value }));
+  if (!result.length) throw new Error(`${seriesId} returned no daily BoE curve observations`);
+  cachedBoeDailyInflation = { points: result, at: now };
+  return result;
+}
+
+function parseBoeDailyFiveYearForward(workbook: Buffer): RawPoint[] {
+  const zip = new AdmZip(workbook);
+  const shared = parseSharedStrings(
+    zip.getEntry("xl/sharedStrings.xml")?.getData().toString("utf8") ?? ""
+  );
+  const points = new Map<string, number>();
+
+  for (const sheet of zip.getEntries().filter((entry) =>
+    /^xl\/worksheets\/sheet\d+\.xml$/i.test(entry.entryName)
+  )) {
+    const rows = parseSheetRows(sheet.getData().toString("utf8"), shared);
+    if (!rows.some((row) => row.some((cell) => /implied inflation spot curve/i.test(cell)))) continue;
+
+    const header = rows.find((row) => /^years?:?$/i.test((row[0] ?? "").trim()));
+    if (!header) continue;
+    const fiveYearColumn = header.findIndex((cell) => {
+      const value = parseNumber(cell);
+      return value != null && Math.abs(value - 5) < 0.001;
+    });
+    const tenYearColumn = header.findIndex((cell) => {
+      const value = parseNumber(cell);
+      return value != null && Math.abs(value - 10) < 0.001;
+    });
+    if (fiveYearColumn < 0 || tenYearColumn < 0) continue;
+
+    for (const row of rows) {
+      const date = normalizeDate(row[0] ?? "");
+      if (!date) continue;
+      const fiveYear = parseNumber(row[fiveYearColumn] ?? "");
+      const tenYear = parseNumber(row[tenYearColumn] ?? "");
+      if (fiveYear == null || tenYear == null) continue;
+      const forward = 2 * tenYear - fiveYear;
+      if (Number.isFinite(forward) && forward >= -5 && forward <= 15) {
+        points.set(date, forward);
+      }
+    }
+  }
+
+  return [...points.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, value]) => ({ date, value }));
+}
 
 export async function fetchBoeDmpWages(seriesId: DmpWageSeries): Promise<RawPoint[]> {
   const col = SERIES_COL[seriesId];

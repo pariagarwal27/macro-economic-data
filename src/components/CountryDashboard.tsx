@@ -1860,6 +1860,13 @@ function getDisplayMode(
   }
 
   if (
+    metricId === "uk-inflation-comp-1y" ||
+    metricId === "uk-inflation-comp-5y5y"
+  ) {
+    return "rate";
+  }
+
+  if (
     metricId === "us-jolts-openings" ||
     metricId === "uk-employment-level" ||
     metricId === "uk-vacancies" ||
@@ -3469,16 +3476,31 @@ function expectationSeries(
     )
     .sort((a, b) => a.date.localeCompare(b.date));
 
+  const displayData = id === "uk-inflation-comp-5y5y" && data.length
+    ? (() => {
+        const latest = new Date(`${data[data.length - 1]!.date}T00:00:00Z`);
+        latest.setUTCDate(latest.getUTCDate() - 29);
+        const cutoff = latest.toISOString().slice(0, 10);
+        return data.filter((point) => point.date >= cutoff);
+      })()
+    : data;
+
   return {
     id,
     label: componentLabel,
     horizon: expectationHorizon(id, componentLabel),
     frequency: metric?.frequency,
-    data,
+    data: displayData,
   };
 }
 
-function expectationChartNote(horizon: string) {
+function expectationChartNote(
+  horizon: string,
+  series: ReturnType<typeof expectationSeries>[] = []
+) {
+  if (series.some((item) => item.id === "uk-inflation-comp-5y5y")) {
+    return "Bank of England implied inflation curve · daily · last 30 days.";
+  }
   return `${horizon} expectation${horizon === "1Y" ? "" : "s"} — each line is a component/source.`;
 }
 
@@ -3730,9 +3752,7 @@ if (isUsBusinessExpectations) {
           <ExpectationComparisonChart
             key={`${spec.id}-${horizon}`}
             title={`${horizon} Expectations`}
-            note={expectationChartNote(
-              horizon
-            )}
+            note={expectationChartNote(horizon, horizonSeries)}
             series={horizonSeries}
           />
         )
@@ -4234,7 +4254,9 @@ function ComponentDetailDrawer({
                   {displayMetricTitle(spec, metric)}
                 </h3>
                 <span style={{ whiteSpace: "nowrap", color: "var(--muted)" }}>
-                  {YEAR} trend
+                  {metric.meta.frequency === "daily" || metric.meta.frequency === "hourly"
+                    ? "Last 30 days"
+                    : `${YEAR} trend`}
                 </span>
               </div>
 
