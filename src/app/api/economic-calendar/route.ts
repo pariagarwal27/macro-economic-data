@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { and, gte, lt } from "drizzle-orm";
-import { METRICS } from "@/catalog/metrics";
+import { getDashboardCalendarMetrics } from "@/lib/dashboard-calendar-metrics";
 import { getEconomicCalendarRows } from "@/lib/economic-calendar-db";
 import { buildEconomicCalendar, type CalendarActual } from "@/lib/economic-calendar-view";
 import { getDb } from "@/db";
@@ -12,7 +12,9 @@ export const runtime = "nodejs";
 
 export async function GET(_request: NextRequest) {
   try {
-    const schedule = await getEconomicCalendarRows({ includeUnscheduled: true });
+    const catalog = getDashboardCalendarMetrics();
+    const displayed = new Set(catalog.map(metric => metric.id));
+    const schedule = (await getEconomicCalendarRows({ includeUnscheduled: true })).filter(row => displayed.has(row.metricId));
     const now = new Date();
     const windowStart = new Date(now.getTime() - 8 * 86_400_000).toISOString();
     const windowEnd = new Date(now.getTime() + 86_400_000).toISOString();
@@ -25,7 +27,7 @@ export async function GET(_request: NextRequest) {
     const history = await getEconomicCalendarRows({ history: true });
     const completions = await getCompletedCalendarReleases(windowStart);
     for (const completion of completions) if (completion.actual && !actuals.some(item=>item.id===completion.actual!.id)) actuals.push(completion.actual);
-    return NextResponse.json(buildEconomicCalendar(schedule, actuals, METRICS, now, {history,completions}), {
+    return NextResponse.json(buildEconomicCalendar(schedule, actuals, catalog, now, {history,completions}), {
       headers: { "Cache-Control": "no-store" },
     });
   } catch (error) {
