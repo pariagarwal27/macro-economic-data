@@ -256,7 +256,7 @@ EUROSTAT_METRICS = {
 RELEASE_FAMILIES = {
     "HICP": {
     "event_regex": re.compile(
-        r"^Inflation\s+\(HICP\).*",
+        r"^(?!.*\bflash\b)Inflation\s+\(HICP\).*",
         re.IGNORECASE,
     ),
 },
@@ -1276,11 +1276,8 @@ def extract_lfs_next_release():
 
     next_date = future_dates[0]
 
-    next_release_at = combine_date_time(
-        next_date.isoformat(),
-        EUROSTAT_STANDARD_RELEASE_TIME,
-        EUROSTAT_RELEASE_TIMEZONE,
-    )
+    # The LFS PDF announces publication dates, not news-release times.
+    next_release_at = None
 
     return {
         "success": True,
@@ -1335,6 +1332,9 @@ def resolve_release_at(event, family_name):
 
         return explicit
 
+    if family_name in {"LFS_MAIN_INDICATORS", "ECONOMIC_SENTIMENT"}:
+        return None
+
 
 
     # 2. Otherwise use Eurostat's standard release time
@@ -1358,6 +1358,64 @@ def resolve_release_at(event, family_name):
         EUROSTAT_RELEASE_TIMEZONE,
 
     )
+
+def parse_ecfin_schedule(text, today=None):
+    """Read the ESI column of the official two-column publication table."""
+    if not re.search(r"Business and consumer survey results", text, re.I):
+        return None
+    today = today or datetime.now(timezone.utc).date()
+    date_pattern = r"(\d{1,2}\s+[A-Za-z]+\s+\d{4})"
+    # Each row begins with the flash consumer date/time, followed by the
+    # ESI publication month (occasionally footnotes), then ESI date/time.
+    pattern = re.compile(
+        date_pattern + r"\s+\d{1,2}h\d{2}\s+[A-Za-z]+\s*"
+        r"(?:\d\)\s*)*" + date_pattern + r"\s+(\d{1,2})h(\d{2})",
+        re.I,
+    )
+    candidates = []
+    for match in pattern.finditer(' '.join(text.split())):
+        try:
+            release_date = datetime.strptime(match.group(2), "%d %B %Y").date()
+        except ValueError:
+            continue
+        if release_date >= today:
+            candidates.append((release_date, f"{int(match.group(3)):02d}:{match.group(4)}"))
+    return min(candidates) if candidates else None
+
+
+def fetch_ecfin_next_release():
+    """Discover DG ECFIN's annual schedule and use its ESI column."""
+    if PdfReader is None:
+        raise RuntimeError("Missing pypdf for official DG ECFIN schedule")
+    ecfin_url = (
+        "https://economy-finance.ec.europa.eu/economic-forecast-and-surveys/"
+        "business-and-consumer-surveys/latest-business-and-consumer-surveys_en"
+    )
+    response = requests.get(ecfin_url, headers=HEADERS, timeout=REQUEST_TIMEOUT)
+    response.raise_for_status()
+    links = re.findall(r'href=["\']([^"\']+)["\']', response.text, re.I)
+    schedule_urls = [urljoin(ecfin_url, link) for link in links
+                     if re.search(r"Publication(?:%20|\s)+dates(?:%20|\s)+\d{4}\.pdf", link, re.I)]
+    candidates = []
+    for pdf_url in dict.fromkeys(schedule_urls):
+        pdf_response = requests.get(pdf_url, headers=HEADERS, timeout=REQUEST_TIMEOUT)
+        pdf_response.raise_for_status()
+        reader = PdfReader(BytesIO(pdf_response.content))
+        parsed = parse_ecfin_schedule('\n'.join(page.extract_text() or '' for page in reader.pages))
+        if parsed:
+            candidates.append((parsed[0], parsed[1], pdf_url))
+    if not candidates:
+        raise RuntimeError("No future ESI publication in official DG ECFIN schedule")
+    release_date, release_time, pdf_url = min(candidates)
+    return {
+        "success": True,
+        "next_release": release_date.isoformat(),
+        "next_release_at": combine_date_time(release_date, release_time, "Europe/Brussels"),
+        "release_title": "Business and consumer survey results (incl. ESI, EEI, EUI, sectoral CIs)",
+        "release_url": pdf_url,
+        "error": None,
+    }
+
 
 def find_next_release(events, family_name, config):
 
@@ -1401,110 +1459,18 @@ def find_next_release(events, family_name, config):
 
     if not candidates:
 
-        # ESI is published by the European Commission DG ECFIN.
-
-        # Eurostat's calendar may omit the ECFIN event from the
-
-        # iCalendar feed even though it is shown in the official
-
-        # Eurostat release calendar. Use the official ECFIN page
-
-        # as a fallback and extract its published next-update date.
-
         if family_name == "ECONOMIC_SENTIMENT":
-
             try:
-
-                ecfin_url = (
-
-                    "https://economy-finance.ec.europa.eu/economic-forecast-and-surveys/"
-
-                    "business-and-consumer-surveys/latest-business-and-consumer-surveys_en"
-
-                )
-
-                response = requests.get(
-
-                    ecfin_url,
-
-                    headers={"User-Agent": HEADERS["User-Agent"]},
-
-                    timeout=REQUEST_TIMEOUT,
-
-                )
-
-                response.raise_for_status()
-
-
-
-                html = response.text
-
-                match = re.search(
-
-                    r"Next update:.*?[-–]\s*(\d{1,2}\s+[A-Za-z]+\s+\d{4})",
-
-                    html,
-
-                    re.IGNORECASE | re.DOTALL,
-
-                )
-
-
-
-                if match:
-
-                    parsed = datetime.strptime(
-
-                        match.group(1),
-
-                        "%d %B %Y",
-
-                    ).date()
-
-
-
-                    if parsed >= today:
-
-                        print(
-
-                            f"   {parsed.isoformat()} | "
-
-                            "Economic Sentiment Indicator & Business and Consumer Survey results "
-
-                            "(official DG ECFIN schedule)"
-
-                        )
-
-                        next_release_at = combine_date_time(
-                            parsed.isoformat(),
-                            EUROSTAT_STANDARD_RELEASE_TIME,
-                            EUROSTAT_RELEASE_TIMEZONE,
-                        )
-
-                        return {
-                            "success": True,
-                            "next_release": parsed.isoformat(),
-                            "next_release_at": next_release_at,
-                            "release_title": (
-                                "Economic Sentiment Indicator & Business and Consumer Survey results"
-                            ),
-                            "release_url": ecfin_url,
-                            "error": None,
-                        }
-
+                return fetch_ecfin_next_release()
             except Exception as exc:
-
-                ecfin_error = str(exc)
-
-            else:
-
-                ecfin_error = "No next-update date found"
-
-        else:
-
-            ecfin_error = None
-
-
+                return {
+                    "success": False,
+                    "next_release": None,
+                    "next_release_at": None,
+                    "release_title": None,
+                    "release_url": None,
+                    "error": f"DG ECFIN schedule lookup failed: {exc}",
+                }
 
         # Some domains, such as quarterly EU-LFS main indicators,
 

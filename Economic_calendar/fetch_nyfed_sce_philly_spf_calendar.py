@@ -170,36 +170,45 @@ def extract_family_release(
     family: str,
 ) -> dict | None:
 
-    parser = TextParser()
-    parser.feed(html)
-    text = parser.text()
-
-    if family == "SCE":
-        target = "Survey of Consumer Expectations"
-    elif family == "PHILLY_SPF":
-        target = "Survey of Professional Forecasters"
-    else:
+    targets = {
+        "SCE": "Survey of Consumer Expectations",
+        "PHILLY_SPF": "Survey of Professional Forecasters",
+    }
+    if family not in targets:
         raise ValueError(f"Unknown family: {family}")
+    target = targets[family]
+    return extract_calendar_release(html, year, month, target)
 
-    day = find_calendar_day(text, target)
 
+def extract_calendar_release(html: str, year: int, month: int, target: str) -> dict | None:
+    day = None
+    release_time = None
+    # Each official calendar day is one table cell. Navigation links and
+    # numbers in preceding releases cannot define this event's date.
+    for cell in re.findall(r"<td\b[^>]*>(.*?)</td>", html, re.I | re.S):
+        cell_parser = TextParser()
+        cell_parser.feed(cell)
+        day_match = re.match(r"\s*(\d{1,2})\b", cell_parser.text())
+        if not day_match:
+            continue
+        for entry in re.finditer(r"<a\b[^>]*>(.*?)</a>", cell, re.I | re.S):
+            title_parser = TextParser()
+            title_parser.feed(entry.group(1))
+            if title_parser.text().strip().casefold() != target.casefold():
+                continue
+            day = int(day_match.group(1))
+            # Only accept the time immediately following this title. Stop
+            # before the next linked release, even within the same day.
+            following = cell[entry.end():].split("<a", 1)[0]
+            following_parser = TextParser()
+            following_parser.feed(following)
+            time_match = re.match(r"\s*\((\d{1,2}:\d{2})\)", following_parser.text())
+            release_time = extract_release_time(time_match.group(1)) if time_match else None
+            break
+        if day is not None:
+            break
     if day is None:
         return None
-
-    # The official NY Fed calendar states that all times are Eastern Time.
-    # Find the time in the immediate vicinity of the matched release title.
-    release_time = None
-    for match in re.finditer(
-        re.escape(target),
-        text,
-        flags=re.IGNORECASE,
-    ):
-        window = text[
-            match.start():match.end() + 80
-        ]
-        release_time = extract_release_time(window)
-        if release_time:
-            break
 
     try:
         release_date = date(year, month, day)

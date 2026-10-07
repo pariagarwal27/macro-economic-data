@@ -239,7 +239,8 @@ async function processCandidate(candidate: Candidate) {
    */
   await markReleaseProcessed(
     candidate.metricId,
-    candidate.scheduledAt
+    candidate.scheduledAt,
+    'releaseId' in processed ? processed.releaseId : null
   );
 } else {
   /*

@@ -22,6 +22,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
+from bs4 import BeautifulSoup
 
 
 RELEASE_SCHEDULE_URL = "https://www.census.gov/retail/release_schedule.html"
@@ -230,16 +231,16 @@ def extract_from_release_schedule(html: str) -> list[dict]:
       September 2026 | October 15, 2026
     under Advance Monthly Retail Trade Report.
     """
-    parser = TableParser()
-    parser.feed(html)
-
     candidates = []
-
-    for row in parser.rows:
+    soup = BeautifulSoup(html, "html.parser")
+    heading = soup.find(lambda tag: tag.name in ("h1", "h2", "h3", "h4") and is_advance_retail_label(tag.get_text(" ", strip=True)))
+    table = heading.find_next("table") if heading else None
+    if table is None:
+        return []
+    header_time = extract_release_time(table.find("tr").get_text(" ", strip=True)) if table.find("tr") else None
+    for tr in table.find_all("tr"):
+        row = [cell.get_text(" ", strip=True) for cell in tr.find_all(["td", "th"])]
         row_text = " | ".join(row)
-
-        if not is_advance_retail_label(row_text):
-            continue
 
         dates = [parse_date(cell) for cell in row]
         dates = [d for d in dates if d is not None]
@@ -254,10 +255,10 @@ def extract_from_release_schedule(html: str) -> list[dict]:
         candidates.append(
             {
                 "date": release_date,
-                "release_time": extract_release_time(row_text),
+                "release_time": extract_release_time(row_text) or header_time,
                 "report_type": "Advance Monthly Retail Trade Report",
                 "source": RELEASE_SCHEDULE_URL,
-                "evidence": row_text,
+                "evidence": f"Advance Monthly Retail Trade Report | {row_text} | Release time {header_time}",
             }
         )
 
@@ -341,13 +342,13 @@ def extract_from_plain_text(html: str) -> list[dict]:
     results = []
 
     for match in pattern.finditer(section):
-        release_date = parse_date(match.group(2))
+        release_date = parse_date(match.group(0))
 
         if release_date:
             results.append(
                 {
                     "date": release_date,
-                    "release_time": extract_release_time(match.group(0)),
+                    "release_time": extract_release_time(section),
                     "report_type": "Advance Monthly Retail Trade Report",
                     "source": RELEASE_SCHEDULE_URL,
                     "evidence": match.group(0),

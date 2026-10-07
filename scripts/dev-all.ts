@@ -12,6 +12,7 @@ const spawnOptions = {
 const children = [
   spawn(npm, ["run", "dev:next"], spawnOptions),
   spawn(npm, ["run", "release:worker"], spawnOptions),
+  spawn(npm, ["run", "calendar:worker"], spawnOptions),
 ];
 
 if (process.env.LSEG_WORKER_AUTOSTART === "1") {

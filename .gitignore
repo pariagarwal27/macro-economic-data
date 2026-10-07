@@ -44,6 +44,10 @@ next-env.d.ts
 *.db-journal
 *.db-wal
 *.db-shm
+/data/calendar-refresh-state.json
+/data/calendar-refresh-state.json.lock
+/data/calendar-refresh-state.json.lock.db*
+/data/calendar-refresh-state.json.*.tmp
 # Track the pre-populated database files
 !data/macro.db
 !Economic_calendar/economic_calendar.db

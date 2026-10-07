@@ -163,6 +163,13 @@ ONS_METRICS = {
 
 RELEASE_FAMILIES = {
 
+    "AWE": {
+        # The official UK Labour Market calendar release explicitly includes
+        # average weekly earnings alongside employment and vacancies.
+        "query": "UK Labour Market",
+        "title_regex": r"^UK Labour Market:",
+    },
+
     # --------------------------------------------------------
     # Inflation
     # CPI + CPIH + RPI

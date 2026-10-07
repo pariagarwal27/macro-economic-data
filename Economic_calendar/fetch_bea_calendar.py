@@ -557,6 +557,13 @@ def find_next_release(
 
         text = item["text"].lower()
 
+        # Regional GDP products do not release the national NIPA tables.
+        if family == "GDP / NIPA" and not re.search(
+            r"\b(?:gdp|gross domestic product)\s*\((?:advance|second|third)\s+estimate\)",
+            text,
+        ):
+            continue
+
         matched = False
 
         for keyword in keywords:

@@ -24,7 +24,8 @@
     "validate:release-pipeline": "tsx scripts/validate-release-pipeline.ts",
     "release:lseg": "python Economic_calendar/lseg_worker.py",
     "repair:bea-derived": "tsx scripts/repair-bea-derived.ts",
-    "calendar:refresh": "cd Economic_calendar && python run_full_calendar_refresh.py",
+    "calendar:refresh": "node scripts/refresh-calendar.mjs",
+    "calendar:worker": "node scripts/calendar-worker.mjs",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"

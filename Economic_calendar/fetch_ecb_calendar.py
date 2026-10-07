@@ -44,6 +44,12 @@ ECB_CES_URL = (
 # ============================================================
 
 ECB_METRICS = {
+    "ea-safe-input-cost-exp-1y": "SAFE_INPUT_COST_EXP_1Y",
+    "ea-safe-selling-price-exp-1y": "SAFE_SELLING_PRICE_EXP_1Y",
+    "ea-spf-current-year": "SPF_HICP_CURRENT_YEAR",
+    "ea-spf-hicp-1y": "SPF_HICP_P12M",
+    "ea-wage-tracker": "EWT.M.U2.N.WT.INWS._T.4F0.GY",
+    "ea-wage-tracker-ex-oneoff": "EWT.M.U2.N.WT.INWX._T.4F0.GY",
     "ea-inflation-exp-1y": "SPF_HICP_P12M",
     "ea-safe-wage-exp-1y": "SAFE_WAGE_EXP_1Y",
     "ea-ces-inflation-exp-1y": "CES_HICP_1Y",
@@ -86,6 +92,11 @@ ECB_METRICS = {
 # ============================================================
 
 RELEASE_FAMILIES = {
+    "WAGE_TRACKER": {
+        "kind": "stats_calendar",
+        "release_title": "ECB Wage Tracker",
+        "source_url": ECB_STATS_CALENDAR_URL,
+    },
     "SPF": {
         "kind": "web_page",
         "url": ECB_SPF_URL,
@@ -144,6 +155,8 @@ def add_family(family, metrics):
 add_family(
     "SPF",
     [
+        "ea-spf-current-year",
+        "ea-spf-hicp-1y",
         "ea-inflation-exp-1y",
         "ea-core-inflation-exp-1y",
         "ea-spf-wage-exp-1y",
@@ -167,11 +180,18 @@ add_family(
 add_family(
     "SAFE",
     [
+        "ea-safe-input-cost-exp-1y",
+        "ea-safe-selling-price-exp-1y",
         "ea-safe-wage-exp-1y",
         "ea-safe-inflation-exp-1y",
         "ea-safe-inflation-exp-3y",
         "ea-safe-inflation-exp-5y",
     ],
+)
+
+add_family(
+    "WAGE_TRACKER",
+    ["ea-wage-tracker", "ea-wage-tracker-ex-oneoff"],
 )
 
 add_family(
@@ -399,7 +419,7 @@ def fetch_safe():
         # before it.
         pattern = re.compile(
             r"(\d{2}/\d{2}/\d{4})\s+(\d{2}:\d{2})"
-            r".{0,500}?"
+            r"(?:(?!\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}).){0,500}?"
             r"Survey on the access to finance of enterprises"
             r"\s+\(Dataset:\s*SAFE\)",
             flags=re.IGNORECASE | re.DOTALL,
@@ -473,16 +493,12 @@ def fetch_safe():
 def fetch_inflation_compensation():
     print("\n🔎 INFLATION_COMPENSATION")
 
-    next_date = next_weekday()
-
-    print(
-        f"   ℹ️ Market-data family; next business-day update: "
-        f"{next_date}"
-    )
+    print("   ℹ️ Market-data family; no announced scheduled release.")
 
     return {
         "success": True,
-        "next_release": next_date,
+        "next_release": None,
+        "next_release_at": None,
         "release_title": (
             RELEASE_FAMILIES["INFLATION_COMPENSATION"]["release_title"]
         ),
@@ -504,8 +520,50 @@ def fetch_inflation_compensation():
 # FETCH ALL FAMILY DATES
 # ============================================================
 
+def fetch_wage_tracker():
+    """Accept an EWT announcement only, never the separate INW release."""
+    result = {
+        "success": False,
+        "next_release": None,
+        "next_release_at": None,
+        "release_title": "ECB Wage Tracker",
+        "update_type": "scheduled_statistical_release",
+        "source_url": ECB_STATS_CALENDAR_URL,
+        "status": "not_announced",
+        "error": None,
+        "note": "No future ECB Wage Tracker event announced in the official statistical calendar.",
+    }
+    try:
+        text = fetch_text(ECB_STATS_CALENDAR_URL)
+        pattern = re.compile(
+            r"(\d{2}/\d{2}/\d{4})\s+(\d{2}:\d{2})"
+            r"(?:(?!\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}).){0,500}?"
+            r"(?:ECB\s+)?Wage Tracker\s+\(Dataset:\s*EWT\)",
+            re.I | re.S,
+        )
+        today = datetime.now(timezone.utc).date()
+        candidates = []
+        for match in pattern.finditer(text):
+            release_date = datetime.strptime(match.group(1), "%d/%m/%Y").date()
+            if release_date >= today:
+                candidates.append((release_date, match.group(2)))
+        if candidates:
+            release_date, release_time = min(candidates)
+            result.update({
+                "success": True,
+                "next_release": release_date.isoformat(),
+                "next_release_at": combine_date_time(release_date, release_time, "Europe/Berlin"),
+                "status": "success",
+                "note": None,
+            })
+    except Exception as exc:
+        result.update({"status": "error", "error": str(exc), "note": None})
+    return result
+
+
 def fetch_all_family_dates():
     return {
+        "WAGE_TRACKER": fetch_wage_tracker(),
         "SPF": fetch_spf(),
         "CES": fetch_ces(),
         "SAFE": fetch_safe(),
@@ -533,6 +591,7 @@ def build_metric_results(family_results):
             "next_release_at": family_result.get("next_release_at"),
             "release_title": family_result.get("release_title"),
             "update_type": family_result.get("update_type"),
+            "status": family_result.get("status"),
             "source_url": family_result.get("source_url"),
             "success": bool(
                 family_result.get("success")

@@ -14,9 +14,12 @@ type CalendarEvent = {
   region: "US" | "UK" | "EA" | "OTHER";
   source: string | null;
   family: string | null;
-  scheduledDate: string;
+  scheduledDate: string | null;
   scheduledTime: string | null;
-  status: "released" | "pending" | "upcoming" | "past";
+  scheduledTimeLabel: string;
+  status: "released" | "pending" | "upcoming" | "past" | "unscheduled";
+  scheduleType: "scheduled" | "daily" | "unannounced" | "source-error";
+  scheduleNote: string | null;
   actual: number | null;
   forecast: number | null;
   previous: number | null;
@@ -33,10 +36,12 @@ type CalendarPayload = {
   todayEvents: CalendarEvent[];
   week: Record<string, CalendarEvent[]>;
   lastUpdated: string | null;
+  allEvents: CalendarEvent[];
+  coverage: { totalMetrics: number; exactTime: number; deadline: number; dateOnly: number; daily: number; unannounced: number; sourceErrors: number };
   error?: string;
 };
 
-type Tab = "today" | "week";
+type Tab = "today" | "week" | "all";
 
 /**
  * All economic calendar dates/times displayed in the UI
@@ -74,7 +79,7 @@ function formatDay(day: string) {
 }
 
 function formatTime(time: string | null) {
-  return time ?? "Time TBA";
+  return time ?? "Time unavailable";
 }
 
 function formatValue(value: number | null) {
@@ -89,6 +94,7 @@ function statusLabel(status: CalendarEvent["status"]) {
   if (status === "released") return "RELEASED";
   if (status === "pending") return "PENDING";
   if (status === "upcoming") return "UPCOMING";
+  if (status === "unscheduled") return "NO DATE";
   return "PAST";
 }
 
@@ -214,6 +220,9 @@ export function EconomicCalendarSidebar() {
         >
           This Week
         </button>
+        <button type="button" className={tab === "all" ? "active" : ""} onClick={() => setTab("all")}>
+          All Metrics
+        </button>
       </div>
 
       {loading && !payload ? (
@@ -253,6 +262,17 @@ export function EconomicCalendarSidebar() {
             ))
           )}
         </div>
+      ) : tab === "all" ? (
+        <div className="economic-calendar-list">
+          <div className="economic-calendar-date-heading">All {payload?.coverage.totalMetrics ?? 0} metrics · UK time</div>
+          {payload && <div className="economic-calendar-empty">{payload.coverage.exactTime} exact times · {payload.coverage.deadline} publication deadlines · {payload.coverage.dateOnly} dates without an announced time</div>}
+          {payload?.allEvents.map(event => (
+            <div key={event.metricId}>
+              <div className="economic-calendar-date-heading">{event.scheduledDate ? formatDay(event.scheduledDate) : event.scheduleType === "daily" ? "Daily data · no fixed release" : "Next date unavailable"}</div>
+              <CalendarEventRow event={event} />
+            </div>
+          ))}
+        </div>
       ) : (
         <div className="economic-calendar-week">
           {weekDays.map(({ date, events }) => (
@@ -287,6 +307,7 @@ export function EconomicCalendarSidebar() {
         <div className="economic-calendar-footer">
           Calendar data updated{" "}
           {formatLastUpdated(payload.lastUpdated)}
+          <div>UK time (BST/GMT). “By” and “Before” indicate publication deadlines. Unannounced times are not estimated.</div>
         </div>
       )}
     </section>
@@ -314,7 +335,7 @@ function CalendarEventRow({
     >
       <div className="economic-calendar-time">
         <Clock3 size={12} />
-        <span>{formatTime(event.scheduledTime)}</span>
+        <span title={event.scheduleNote ?? undefined}>{event.scheduleType === "daily" ? "Daily" : !event.scheduledDate ? "No date" : event.scheduledTimeLabel ?? formatTime(event.scheduledTime)}</span>
       </div>
 
       <div className="economic-calendar-event-main">
@@ -329,7 +350,7 @@ function CalendarEventRow({
         </div>
 
         <div className="economic-calendar-event-name">
-          {event.metricName}
+          <a href={event.officialSource ?? undefined} target="_blank" rel="noreferrer" title="Open official source">{event.metricName}</a>
         </div>
 
         {!compact && (
@@ -357,6 +378,7 @@ function CalendarEventRow({
             )}
           </div>
         )}
+        {event.scheduleNote && !event.scheduledTime && <div className="economic-calendar-values">{event.scheduleNote}</div>}
       </div>
 
       <div
@@ -371,7 +393,7 @@ function CalendarEventRow({
           <span className="economic-calendar-status-dot" />
         )}
 
-        {statusLabel(event.status)}
+        {event.scheduleType === "daily" ? "DAILY" : event.scheduleType === "source-error" ? "SOURCE ERROR" : statusLabel(event.status)}
       </div>
     </div>
   );

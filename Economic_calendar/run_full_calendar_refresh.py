@@ -20,7 +20,7 @@ FETCHER_SCRIPTS = [
 
 MERGE_SCRIPT = "merge_all_calendars.py"
 LOAD_SCRIPT = os.path.join("db", "load_calendar_to_db.py")
-DB_PATH = "economic_calendar.db"
+DB_PATH = os.environ.get("CALENDAR_DB_PATH", "economic_calendar.db")
 
 
 def run_script(script):

@@ -37,6 +37,7 @@ async function main() {
   const children = [
     spawn(npm, ["run", "start"], spawnOptions),
     spawn(npm, ["run", "release:worker"], spawnOptions),
+    spawn(npm, ["run", "calendar:worker"], spawnOptions),
   ];
 
   if (process.env.LSEG_WORKER_AUTOSTART === "1") {

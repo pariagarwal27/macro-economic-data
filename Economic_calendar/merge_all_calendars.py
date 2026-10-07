@@ -27,6 +27,7 @@ Rules:
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from collections import defaultdict
 from datetime import datetime, timezone
@@ -84,6 +85,7 @@ CANONICAL_ID_ALIASES = {
     "us-gdpnow": "us-gdp-now",
     "de-unemployment-rate": "de-unemployment",
     "uk-oecd-cli": "uk-cli",
+    **{f"us-cleveland-inflation-exp-{horizon}": f"us-cleveland-exp-inf-{horizon}" for horizon in ("1y", "2y", "3y", "5y", "5-10y", "10y", "30y")},
 }
 
 def canonical_metric_id(value):
@@ -341,6 +343,14 @@ def normalize_record(
         record.get("status")
         or record.get("release_status")
     )
+    update_type = record.get("update_type")
+    if status == "daily_series" or update_type in {"daily_business_day", "daily_market_data", "continuous"}:
+        status = "daily_series"
+        next_release = None
+    elif (record.get("error") or status in {"fetch_failed", "fetch_error", "error"}) and not next_release:
+        status = "source_error"
+    elif not next_release:
+        status = status or "not_announced"
 
     # --------------------------------------------------------
     # Success
@@ -380,12 +390,18 @@ def normalize_record(
         "source_metric_id": source_metric_id,
         "family": family,
         "next_release": next_release,
-        "next_release_at": extract_release_at(record),
+        "next_release_at": None if status == "daily_series" else extract_release_at(record),
         "release_status": status,
         "success": bool(success),
         "official_source": official_source,
         "official_evidence": official_evidence,
+        "update_type": update_type,
+        "release_deadline_at": clean_datetime_value(record.get("release_deadline_at")),
+        "release_time_kind": record.get("release_time_kind"),
     }
+    for field in ("official_source", "official_evidence"):
+        if isinstance(normalized.get(field), str):
+            normalized[field] = re.sub(r"(?i)((?:api_key|registrationkey|token|apikey)=)[^&\s]+", r"\1[redacted]", normalized[field])
 
     # --------------------------------------------------------
     # Preserve useful original fields
@@ -405,9 +421,25 @@ def normalize_record(
 
     # Error
     if record.get("error") is not None:
-        normalized["error"] = record["error"]
+        normalized["error"] = re.sub(r"(?i)((?:api_key|registrationkey|token|apikey)=)[^&\s]+", r"\1[redacted]", str(record["error"]))
 
     return normalized
+
+
+def complete_catalog(records, catalog):
+    """Retain one honest schedule record for every actual dashboard metric."""
+    by_id = {record["metric_id"]: record for record in records}
+    result = []
+    for metric in catalog:
+        record = by_id.get(metric["id"])
+        if record is None:
+            record = {"metric_id": metric["id"], "source": metric["source"], "family": None,
+                      "next_release": None, "next_release_at": None,
+                      "release_status": "not_announced", "success": False,
+                      "official_source": metric.get("official_url"),
+                      "official_evidence": "No confirmed release schedule fetched for this catalog metric."}
+        result.append({**record, "metric": metric["name"]})
+    return result
 
 
 # ============================================================
@@ -588,6 +620,11 @@ def main():
         )
 
     # --------------------------------------------------------
+    # Match the actual app catalog, including explicitly unannounced metrics.
+    catalog_file = Path("catalog_metrics.json")
+    if catalog_file.exists():
+        canonical_records = complete_catalog(canonical_records, load_json(catalog_file)["metrics"])
+
     # Sort for stable output
     # --------------------------------------------------------
 

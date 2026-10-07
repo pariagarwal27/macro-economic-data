@@ -6,7 +6,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-cpi-mom": {
     "success": true,
@@ -15,7 +18,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-cpi-core": {
     "success": true,
@@ -24,7 +30,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-core-goods-cpi-yoy": {
     "success": true,
@@ -33,7 +42,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-core-goods-cpi-mom": {
     "success": true,
@@ -42,7 +54,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-services-cpi-yoy": {
     "success": true,
@@ -51,7 +66,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-services-cpi-mom": {
     "success": true,
@@ -60,7 +78,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-cpi-nsa": {
     "success": true,
@@ -69,7 +90,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-cpi-core-nsa": {
     "success": true,
@@ -78,7 +102,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-cpi-food": {
     "success": true,
@@ -87,7 +114,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-cpi-energy": {
     "success": true,
@@ -96,7 +126,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-cpi-apparel": {
     "success": true,
@@ -105,7 +138,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-cpi-new-vehicles": {
     "success": true,
@@ -114,7 +150,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-cpi-used-cars": {
     "success": true,
@@ -123,7 +162,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-cpi-medical-commodities": {
     "success": true,
@@ -132,7 +174,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-cpi-recreation-commodities": {
     "success": true,
@@ -141,7 +186,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-cpi-education-commodities": {
     "success": true,
@@ -150,7 +198,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-unit-labor-cost": {
     "success": true,
@@ -159,7 +210,10 @@
     "release_id": 47,
     "release_name": "Productivity and Costs",
     "next_release": "2026-11-05",
-    "next_release_at": "2026-11-05T08:30:00-05:00"
+    "next_release_at": "2026-11-05T08:30:00-05:00",
+    "official_source": "http://www.bls.gov/lpc/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-cpi-other-goods": {
     "success": true,
@@ -168,7 +222,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-cpi-shelter": {
     "success": true,
@@ -177,7 +234,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-cpi-medical-services": {
     "success": true,
@@ -186,7 +246,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-cpi-recreation-services": {
     "success": true,
@@ -195,7 +258,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-cpi-transport-services": {
     "success": true,
@@ -204,7 +270,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-cpi-education-services": {
     "success": true,
@@ -213,7 +282,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-cpi-other-services": {
     "success": true,
@@ -222,7 +294,10 @@
     "release_id": 10,
     "release_name": "Consumer Price Index",
     "next_release": "2026-10-14",
-    "next_release_at": "2026-10-14T08:30:00-04:00"
+    "next_release_at": "2026-10-14T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/cpi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-ppi-final-demand": {
     "success": true,
@@ -231,7 +306,10 @@
     "release_id": 46,
     "release_name": "Producer Price Index",
     "next_release": "2026-10-15",
-    "next_release_at": "2026-10-15T08:30:00-04:00"
+    "next_release_at": "2026-10-15T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/ppi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-ppi-core": {
     "success": true,
@@ -240,7 +318,10 @@
     "release_id": 46,
     "release_name": "Producer Price Index",
     "next_release": "2026-10-15",
-    "next_release_at": "2026-10-15T08:30:00-04:00"
+    "next_release_at": "2026-10-15T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/ppi/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-ahe": {
     "success": true,
@@ -249,7 +330,10 @@
     "release_id": 50,
     "release_name": "Employment Situation",
     "next_release": "2026-11-06",
-    "next_release_at": "2026-11-06T08:30:00-05:00"
+    "next_release_at": "2026-11-06T08:30:00-05:00",
+    "official_source": "http://www.bls.gov/ces/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-ahe-mom": {
     "success": true,
@@ -258,7 +342,10 @@
     "release_id": 50,
     "release_name": "Employment Situation",
     "next_release": "2026-11-06",
-    "next_release_at": "2026-11-06T08:30:00-05:00"
+    "next_release_at": "2026-11-06T08:30:00-05:00",
+    "official_source": "http://www.bls.gov/ces/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-nfp": {
     "success": true,
@@ -267,7 +354,10 @@
     "release_id": 50,
     "release_name": "Employment Situation",
     "next_release": "2026-11-06",
-    "next_release_at": "2026-11-06T08:30:00-05:00"
+    "next_release_at": "2026-11-06T08:30:00-05:00",
+    "official_source": "http://www.bls.gov/ces/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-payrolls-level": {
     "success": true,
@@ -276,7 +366,10 @@
     "release_id": 50,
     "release_name": "Employment Situation",
     "next_release": "2026-11-06",
-    "next_release_at": "2026-11-06T08:30:00-05:00"
+    "next_release_at": "2026-11-06T08:30:00-05:00",
+    "official_source": "http://www.bls.gov/ces/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-unemployment": {
     "success": true,
@@ -285,7 +378,10 @@
     "release_id": 50,
     "release_name": "Employment Situation",
     "next_release": "2026-11-06",
-    "next_release_at": "2026-11-06T08:30:00-05:00"
+    "next_release_at": "2026-11-06T08:30:00-05:00",
+    "official_source": "http://www.bls.gov/ces/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-u6": {
     "success": true,
@@ -294,7 +390,10 @@
     "release_id": 50,
     "release_name": "Employment Situation",
     "next_release": "2026-11-06",
-    "next_release_at": "2026-11-06T08:30:00-05:00"
+    "next_release_at": "2026-11-06T08:30:00-05:00",
+    "official_source": "http://www.bls.gov/ces/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-participation": {
     "success": true,
@@ -303,7 +402,10 @@
     "release_id": 50,
     "release_name": "Employment Situation",
     "next_release": "2026-11-06",
-    "next_release_at": "2026-11-06T08:30:00-05:00"
+    "next_release_at": "2026-11-06T08:30:00-05:00",
+    "official_source": "http://www.bls.gov/ces/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-employment-population": {
     "success": true,
@@ -312,7 +414,10 @@
     "release_id": 50,
     "release_name": "Employment Situation",
     "next_release": "2026-11-06",
-    "next_release_at": "2026-11-06T08:30:00-05:00"
+    "next_release_at": "2026-11-06T08:30:00-05:00",
+    "official_source": "http://www.bls.gov/ces/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-unemployed-persons": {
     "success": true,
@@ -321,7 +426,10 @@
     "release_id": 50,
     "release_name": "Employment Situation",
     "next_release": "2026-11-06",
-    "next_release_at": "2026-11-06T08:30:00-05:00"
+    "next_release_at": "2026-11-06T08:30:00-05:00",
+    "official_source": "http://www.bls.gov/ces/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-long-term-unemployed": {
     "success": true,
@@ -330,7 +438,10 @@
     "release_id": 50,
     "release_name": "Employment Situation",
     "next_release": "2026-11-06",
-    "next_release_at": "2026-11-06T08:30:00-05:00"
+    "next_release_at": "2026-11-06T08:30:00-05:00",
+    "official_source": "http://www.bls.gov/ces/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-private-payrolls": {
     "success": true,
@@ -339,7 +450,10 @@
     "release_id": 50,
     "release_name": "Employment Situation",
     "next_release": "2026-11-06",
-    "next_release_at": "2026-11-06T08:30:00-05:00"
+    "next_release_at": "2026-11-06T08:30:00-05:00",
+    "official_source": "http://www.bls.gov/ces/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-government-payrolls": {
     "success": true,
@@ -348,7 +462,10 @@
     "release_id": 50,
     "release_name": "Employment Situation",
     "next_release": "2026-11-06",
-    "next_release_at": "2026-11-06T08:30:00-05:00"
+    "next_release_at": "2026-11-06T08:30:00-05:00",
+    "official_source": "http://www.bls.gov/ces/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-civilian-labor-force": {
     "success": true,
@@ -357,7 +474,10 @@
     "release_id": 50,
     "release_name": "Employment Situation",
     "next_release": "2026-11-06",
-    "next_release_at": "2026-11-06T08:30:00-05:00"
+    "next_release_at": "2026-11-06T08:30:00-05:00",
+    "official_source": "http://www.bls.gov/ces/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-not-in-labor-force": {
     "success": true,
@@ -366,7 +486,10 @@
     "release_id": 50,
     "release_name": "Employment Situation",
     "next_release": "2026-11-06",
-    "next_release_at": "2026-11-06T08:30:00-05:00"
+    "next_release_at": "2026-11-06T08:30:00-05:00",
+    "official_source": "http://www.bls.gov/ces/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-average-weekly-earnings": {
     "success": true,
@@ -375,7 +498,10 @@
     "release_id": 50,
     "release_name": "Employment Situation",
     "next_release": "2026-11-06",
-    "next_release_at": "2026-11-06T08:30:00-05:00"
+    "next_release_at": "2026-11-06T08:30:00-05:00",
+    "official_source": "http://www.bls.gov/ces/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-jolts-openings": {
     "success": true,
@@ -384,7 +510,10 @@
     "release_id": 192,
     "release_name": "Job Openings and Labor Turnover Survey",
     "next_release": "2026-11-03",
-    "next_release_at": "2026-11-03T10:00:00-05:00"
+    "next_release_at": "2026-11-03T10:00:00-05:00",
+    "official_source": "http://www.bls.gov/jlt/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-jolts-quits": {
     "success": true,
@@ -393,7 +522,10 @@
     "release_id": 192,
     "release_name": "Job Openings and Labor Turnover Survey",
     "next_release": "2026-11-03",
-    "next_release_at": "2026-11-03T10:00:00-05:00"
+    "next_release_at": "2026-11-03T10:00:00-05:00",
+    "official_source": "http://www.bls.gov/jlt/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-jolts-hires": {
     "success": true,
@@ -402,7 +534,10 @@
     "release_id": 192,
     "release_name": "Job Openings and Labor Turnover Survey",
     "next_release": "2026-11-03",
-    "next_release_at": "2026-11-03T10:00:00-05:00"
+    "next_release_at": "2026-11-03T10:00:00-05:00",
+    "official_source": "http://www.bls.gov/jlt/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-jolts-layoffs": {
     "success": true,
@@ -411,7 +546,10 @@
     "release_id": 192,
     "release_name": "Job Openings and Labor Turnover Survey",
     "next_release": "2026-11-03",
-    "next_release_at": "2026-11-03T10:00:00-05:00"
+    "next_release_at": "2026-11-03T10:00:00-05:00",
+    "official_source": "http://www.bls.gov/jlt/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-jolts-hires-level": {
     "success": true,
@@ -420,7 +558,10 @@
     "release_id": 192,
     "release_name": "Job Openings and Labor Turnover Survey",
     "next_release": "2026-11-03",
-    "next_release_at": "2026-11-03T10:00:00-05:00"
+    "next_release_at": "2026-11-03T10:00:00-05:00",
+    "official_source": "http://www.bls.gov/jlt/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-jolts-quits-level": {
     "success": true,
@@ -429,7 +570,10 @@
     "release_id": 192,
     "release_name": "Job Openings and Labor Turnover Survey",
     "next_release": "2026-11-03",
-    "next_release_at": "2026-11-03T10:00:00-05:00"
+    "next_release_at": "2026-11-03T10:00:00-05:00",
+    "official_source": "http://www.bls.gov/jlt/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-jolts-layoffs-level": {
     "success": true,
@@ -438,7 +582,10 @@
     "release_id": 192,
     "release_name": "Job Openings and Labor Turnover Survey",
     "next_release": "2026-11-03",
-    "next_release_at": "2026-11-03T10:00:00-05:00"
+    "next_release_at": "2026-11-03T10:00:00-05:00",
+    "official_source": "http://www.bls.gov/jlt/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-jolts-total-separations": {
     "success": true,
@@ -447,7 +594,10 @@
     "release_id": 192,
     "release_name": "Job Openings and Labor Turnover Survey",
     "next_release": "2026-11-03",
-    "next_release_at": "2026-11-03T10:00:00-05:00"
+    "next_release_at": "2026-11-03T10:00:00-05:00",
+    "official_source": "http://www.bls.gov/jlt/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-avg-workweek": {
     "success": true,
@@ -456,7 +606,10 @@
     "release_id": 50,
     "release_name": "Employment Situation",
     "next_release": "2026-11-06",
-    "next_release_at": "2026-11-06T08:30:00-05:00"
+    "next_release_at": "2026-11-06T08:30:00-05:00",
+    "official_source": "http://www.bls.gov/ces/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-mfg-employment": {
     "success": true,
@@ -465,7 +618,10 @@
     "release_id": 50,
     "release_name": "Employment Situation",
     "next_release": "2026-11-06",
-    "next_release_at": "2026-11-06T08:30:00-05:00"
+    "next_release_at": "2026-11-06T08:30:00-05:00",
+    "official_source": "http://www.bls.gov/ces/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-temp-help": {
     "success": true,
@@ -474,7 +630,10 @@
     "release_id": 50,
     "release_name": "Employment Situation",
     "next_release": "2026-11-06",
-    "next_release_at": "2026-11-06T08:30:00-05:00"
+    "next_release_at": "2026-11-06T08:30:00-05:00",
+    "official_source": "http://www.bls.gov/ces/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-eci-total": {
     "success": true,
@@ -483,7 +642,10 @@
     "release_id": 11,
     "release_name": "Employment Cost Index",
     "next_release": "2026-10-30",
-    "next_release_at": "2026-10-30T08:30:00-04:00"
+    "next_release_at": "2026-10-30T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/ncs/ect",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-eci-wages": {
     "success": true,
@@ -492,7 +654,10 @@
     "release_id": 11,
     "release_name": "Employment Cost Index",
     "next_release": "2026-10-30",
-    "next_release_at": "2026-10-30T08:30:00-04:00"
+    "next_release_at": "2026-10-30T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/ncs/ect",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-housing-starts": {
     "success": true,
@@ -501,7 +666,10 @@
     "release_id": 27,
     "release_name": "New Residential Construction",
     "next_release": "2026-10-20",
-    "next_release_at": "2026-10-20T08:30:00-04:00"
+    "next_release_at": "2026-10-20T08:30:00-04:00",
+    "official_source": "http://www.census.gov/construction/nrc/",
+    "official_evidence": null,
+    "official_time_source": "https://www.census.gov/construction/nrc/about_the_surveys/release_schedule.html"
   },
   "us-building-permits": {
     "success": true,
@@ -510,13 +678,22 @@
     "release_id": 27,
     "release_name": "New Residential Construction",
     "next_release": "2026-10-20",
-    "next_release_at": "2026-10-20T08:30:00-04:00"
+    "next_release_at": "2026-10-20T08:30:00-04:00",
+    "official_source": "http://www.census.gov/construction/nrc/",
+    "official_evidence": null,
+    "official_time_source": "https://www.census.gov/construction/nrc/about_the_surveys/release_schedule.html"
   },
   "us-durable-goods": {
-    "success": false,
+    "success": true,
+    "metric_id": "us-durable-goods",
     "release_family": "Advance Report on Durable Goods",
-    "next_release": null,
-    "error": "Release family not found in FRED"
+    "release_id": null,
+    "release_name": "Advance Report on Durable Goods",
+    "next_release": "2026-10-27",
+    "next_release_at": "2026-10-27T08:30:00-04:00",
+    "official_source": "https://www.census.gov/manufacturing/m3/release_schedule.html",
+    "official_evidence": "September 2026 | 10/27/2026 | 11/3/2026 | Advance Report on Durable Goods and Advance Total Manufacturing (8:30 a.m. release time)",
+    "official_time_source": "https://www.census.gov/manufacturing/m3/release_schedule.html"
   },
   "us-import-prices": {
     "success": true,
@@ -525,13 +702,22 @@
     "release_id": 188,
     "release_name": "U.S. Import and Export Price Indexes",
     "next_release": "2026-10-16",
-    "next_release_at": "2026-10-16T08:30:00-04:00"
+    "next_release_at": "2026-10-16T08:30:00-04:00",
+    "official_source": "http://www.bls.gov/mxp/",
+    "official_evidence": null,
+    "official_time_source": "https://www.bls.gov/schedule/news_release/"
   },
   "us-manufacturers-new-orders": {
-    "success": false,
+    "success": true,
+    "metric_id": "us-manufacturers-new-orders",
     "release_family": "Manufacturers' Shipments, Inventories, and Orders",
-    "next_release": null,
-    "error": "Release family not found in FRED"
+    "release_id": null,
+    "release_name": "Manufacturers' Shipments, Inventories, and Orders",
+    "next_release": "2026-11-03",
+    "next_release_at": "2026-11-03T10:00:00-05:00",
+    "official_source": "https://www.census.gov/manufacturing/m3/release_schedule.html",
+    "official_evidence": "September 2026 | 10/27/2026 | 11/3/2026 | Full Report (10:00 a.m. release time)",
+    "official_time_source": "https://www.census.gov/manufacturing/m3/release_schedule.html"
   },
   "us-empire-state": {
     "success": true,
@@ -540,6 +726,9 @@
     "release_id": 321,
     "release_name": "Empire State Manufacturing Survey",
     "next_release": "2026-10-15",
-    "next_release_at": "2026-10-15T08:30:00-04:00"
+    "next_release_at": "2026-10-15T08:30:00-04:00",
+    "official_source": "http://www.newyorkfed.org/survey/empire/empiresurvey_overview.html",
+    "official_evidence": null,
+    "official_time_source": "https://www.newyorkfed.org/survey/empire/empiresurvey_overview.html"
   }
 }

@@ -1,0 +1,2447 @@
+{
+  "metrics": [
+    {
+      "id": "us-cpi",
+      "name": "CPI — Headline Index",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-cpi-mom",
+      "name": "CPI — Headline MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-cpi-core",
+      "name": "CPI — Core Index",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-core-goods-cpi-yoy",
+      "name": "CPI — Core Goods",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-core-goods-cpi-mom",
+      "name": "CPI — Core Goods MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-services-cpi-yoy",
+      "name": "CPI — Core Services",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-services-cpi-mom",
+      "name": "CPI — Core Services MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-cpi-nsa",
+      "name": "CPI — Headline Index (NSA)",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-cpi-core-nsa",
+      "name": "CPI — Core Index (NSA)",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-cpi-food",
+      "name": "CPI — Food",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-cpi-energy",
+      "name": "CPI — Energy",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-cpi-apparel",
+      "name": "CPI — Apparel",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-cpi-new-vehicles",
+      "name": "CPI — New Vehicles",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-cpi-used-cars",
+      "name": "CPI — Used Cars and Trucks",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-cpi-medical-commodities",
+      "name": "CPI — Medical Care Commodities",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-cpi-recreation-commodities",
+      "name": "CPI — Recreation Commodities",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-cpi-education-commodities",
+      "name": "CPI — Education & Communication Commodities",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-cpi-other-goods",
+      "name": "CPI — Other Goods",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-cpi-shelter",
+      "name": "CPI — Shelter",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-cpi-medical-services",
+      "name": "CPI — Medical Care Services",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-cpi-recreation-services",
+      "name": "CPI — Recreation Services",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-cpi-transport-services",
+      "name": "CPI — Transportation Services",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-cpi-education-services",
+      "name": "CPI — Education & Communication Services",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-cpi-other-services",
+      "name": "CPI — Other Services",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-pce",
+      "name": "PCE — Headline Price Index",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-core-pce",
+      "name": "PCE — Core Price Index",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index-excluding-food-and-energy"
+    },
+    {
+      "id": "us-pce-goods",
+      "name": "PCE — Goods",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-durable-goods",
+      "name": "PCE — Durable Goods",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-furnishings",
+      "name": "PCE — Furnishings & Durable Household Equipment",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-clothing",
+      "name": "PCE — Clothing & Footwear",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-food",
+      "name": "PCE — Food & Beverages",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-energy",
+      "name": "PCE — Gasoline & Other Energy Goods",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-services",
+      "name": "PCE — Services",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-household-services",
+      "name": "PCE — Household Services",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-healthcare",
+      "name": "PCE — Health Care",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-food-services",
+      "name": "PCE — Food Services & Accommodations",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-housing",
+      "name": "PCE — Housing",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-ppi-final-demand",
+      "name": "PPI Final Demand",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-core",
+      "name": "Core PPI Final Demand",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-core-pce-mom",
+      "name": "Core PCE Month-over-Month",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-cleveland-median-cpi",
+      "name": "Cleveland Fed Median CPI YoY",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.clevelandfed.org/indicators-and-data/median-cpi"
+    },
+    {
+      "id": "us-cleveland-trimmed-cpi",
+      "name": "Cleveland Fed 16% Trimmed-Mean CPI",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.clevelandfed.org/indicators-and-data/median-cpi"
+    },
+    {
+      "id": "us-sticky-cpi",
+      "name": "Atlanta Fed Sticky CPI YoY",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.atlantafed.org/research-and-data/data/sticky-price-cpi"
+    },
+    {
+      "id": "us-core-sticky-cpi",
+      "name": "Atlanta Fed Core Sticky CPI YoY",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.atlantafed.org/research-and-data/data/sticky-price-cpi"
+    },
+    {
+      "id": "us-flexible-cpi",
+      "name": "Atlanta Fed Flexible CPI YoY",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.atlantafed.org/chcs/stickyprice"
+    },
+    {
+      "id": "us-umich-inflation-exp-1y",
+      "name": "UMich Expected Inflation (1-Year)",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://data.sca.isr.umich.edu/"
+    },
+    {
+      "id": "us-nyfed-sce-inflation-exp-1y",
+      "name": "NY Fed SCE Inflation Expectations (1-Year)",
+      "source": "nyfed",
+      "frequency": "monthly",
+      "official_url": "https://www.newyorkfed.org/microeconomics/sce"
+    },
+    {
+      "id": "us-nyfed-sce-inflation-exp-3y",
+      "name": "NY Fed SCE Inflation Expectations (3-Year)",
+      "source": "nyfed",
+      "frequency": "monthly",
+      "official_url": "https://www.newyorkfed.org/microeconomics/sce"
+    },
+    {
+      "id": "us-nyfed-sce-inflation-exp-5y",
+      "name": "NY Fed SCE Inflation Expectations (5-Year)",
+      "source": "nyfed",
+      "frequency": "monthly",
+      "official_url": "https://www.newyorkfed.org/microeconomics/sce"
+    },
+    {
+      "id": "us-cleveland-exp-inf-1y",
+      "name": "Cleveland Fed Expected Inflation (1-Year)",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.clevelandfed.org/indicators-and-data/inflation-expectations"
+    },
+    {
+      "id": "us-cleveland-exp-inf-2y",
+      "name": "Cleveland Fed Expected Inflation (2-Year)",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.clevelandfed.org/indicators-and-data/inflation-expectations"
+    },
+    {
+      "id": "us-cleveland-exp-inf-5y",
+      "name": "Cleveland Fed Expected Inflation (5-Year)",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.clevelandfed.org/indicators-and-data/inflation-expectations"
+    },
+    {
+      "id": "us-cleveland-exp-inf-30y",
+      "name": "Cleveland Fed Expected Inflation (30-Year)",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.clevelandfed.org/indicators-and-data/inflation-expectations"
+    },
+    {
+      "id": "ea-wage-tracker",
+      "name": "ECB Wage Tracker",
+      "source": "ecb",
+      "frequency": "monthly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/EWT"
+    },
+    {
+      "id": "ea-wage-tracker-ex-oneoff",
+      "name": "ECB Wage Tracker Excluding One-Off Payments",
+      "source": "ecb",
+      "frequency": "monthly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/EWT"
+    },
+    {
+      "id": "ea-safe-selling-price-exp-1y",
+      "name": "ECB SAFE Selling Price Expectations",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/safe/html/index.en.html"
+    },
+    {
+      "id": "ea-safe-input-cost-exp-1y",
+      "name": "ECB SAFE Input Cost Expectations",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/safe/html/index.en.html"
+    },
+    {
+      "id": "ea-spf-current-year",
+      "name": "ECB SPF HICP Current-Year Forecast",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/SPF"
+    },
+    {
+      "id": "us-umich-sentiment",
+      "name": "University of Michigan Consumer Sentiment",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://data.sca.isr.umich.edu/"
+    },
+    {
+      "id": "us-breakeven-5y",
+      "name": "5-Year Breakeven Inflation Rate",
+      "source": "fred",
+      "frequency": "daily",
+      "official_url": "https://www.federalreserve.gov"
+    },
+    {
+      "id": "us-breakeven-10y",
+      "name": "10-Year Breakeven Inflation Rate",
+      "source": "fred",
+      "frequency": "daily",
+      "official_url": "https://www.federalreserve.gov"
+    },
+    {
+      "id": "us-5y5y-forward",
+      "name": "5Y5Y Forward Inflation Expectation",
+      "source": "fred",
+      "frequency": "daily",
+      "official_url": "https://www.federalreserve.gov"
+    },
+    {
+      "id": "us-import-prices",
+      "name": "Import Price Index",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/mxp"
+    },
+    {
+      "id": "us-manufacturers-new-orders",
+      "name": "Manufacturers New Orders MoM",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.census.gov/manufacturing/m3/index.html"
+    },
+    {
+      "id": "us-eci-wages",
+      "name": "Employment Cost Index — Wages & Salaries",
+      "source": "fred",
+      "frequency": "quarterly",
+      "official_url": "https://www.bls.gov/eci"
+    },
+    {
+      "id": "us-eci-total",
+      "name": "Employment Cost Index — Total Compensation",
+      "source": "fred",
+      "frequency": "quarterly",
+      "official_url": "https://www.bls.gov/eci"
+    },
+    {
+      "id": "us-ahe",
+      "name": "Average Hourly Earnings YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ces"
+    },
+    {
+      "id": "us-ahe-mom",
+      "name": "Average Hourly Earnings MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ces"
+    },
+    {
+      "id": "us-atlanta-wage",
+      "name": "Atlanta Fed Wage Growth Tracker",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.atlantafed.org/chcs/wage-growth-tracker"
+    },
+    {
+      "id": "us-unit-labor-cost",
+      "name": "Nonfarm Unit Labor Costs YoY",
+      "source": "fred",
+      "frequency": "quarterly",
+      "official_url": "https://www.bls.gov/lpc"
+    },
+    {
+      "id": "us-gdp-real",
+      "name": "Real GDP (QoQ SAAR)",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp"
+    },
+    {
+      "id": "us-gdp-now",
+      "name": "Atlanta Fed GDPNow",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.atlantafed.org/cqer/research/gdpnow"
+    },
+    {
+      "id": "us-industrial-production",
+      "name": "Industrial Production YoY",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.federalreserve.gov/releases/g17/"
+    },
+    {
+      "id": "us-capacity-utilization",
+      "name": "Capacity Utilization",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.federalreserve.gov/releases/g17/"
+    },
+    {
+      "id": "us-retail-sales",
+      "name": "Retail Sales MoM",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.census.gov/retail/index.html"
+    },
+    {
+      "id": "us-retail-sales-ex-auto",
+      "name": "Retail Sales ex Auto MoM",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.census.gov/retail/index.html"
+    },
+    {
+      "id": "us-durable-goods",
+      "name": "Durable Goods Orders MoM",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.census.gov/manufacturing/m3/index.html"
+    },
+    {
+      "id": "us-housing-starts",
+      "name": "Housing Starts",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.census.gov/construction/nrc/index.html"
+    },
+    {
+      "id": "us-building-permits",
+      "name": "Building Permits",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.census.gov/construction/nrc/index.html"
+    },
+    {
+      "id": "us-empire-state",
+      "name": "NY Fed Empire State Manufacturing Index",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.newyorkfed.org/survey/empire/empiresurvey_overview"
+    },
+    {
+      "id": "us-dallas-fed-activity",
+      "name": "Dallas Fed Business Activity Index",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.dallasfed.org/research/surveys/tssb"
+    },
+    {
+      "id": "us-mfg-employment",
+      "name": "Manufacturing Employment Level",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ces"
+    },
+    {
+      "id": "us-cfnai",
+      "name": "Chicago Fed National Activity Index",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.chicagofed.org/research/data/cfnai/current-data"
+    },
+    {
+      "id": "us-personal-spending",
+      "name": "Real Personal Consumption MoM",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures"
+    },
+    {
+      "id": "us-nfp",
+      "name": "Nonfarm Payrolls Change",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ces"
+    },
+    {
+      "id": "us-adp-change",
+      "name": "ADP Nonfarm Private Employment Change",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://adpemploymentreport.com/"
+    },
+    {
+      "id": "us-adp-level",
+      "name": "ADP Nonfarm Private Employment Level",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://adpemploymentreport.com/"
+    },
+    {
+      "id": "us-payrolls-level",
+      "name": "Total Nonfarm Payrolls Level",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ces"
+    },
+    {
+      "id": "us-unemployment",
+      "name": "Unemployment Rate",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cps"
+    },
+    {
+      "id": "us-u6",
+      "name": "U-6 Underemployment Rate",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cps"
+    },
+    {
+      "id": "us-participation",
+      "name": "Labor Force Participation Rate",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cps"
+    },
+    {
+      "id": "us-employment-population",
+      "name": "Employment-Population Ratio",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cps"
+    },
+    {
+      "id": "us-jolts-openings",
+      "name": "JOLTS Job Openings",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/jlt"
+    },
+    {
+      "id": "us-jolts-quits",
+      "name": "JOLTS Quits Rate",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/jlt"
+    },
+    {
+      "id": "us-jolts-hires",
+      "name": "JOLTS Hires Rate",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/jlt"
+    },
+    {
+      "id": "us-jolts-layoffs",
+      "name": "JOLTS Layoffs & Discharges Rate",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/jlt"
+    },
+    {
+      "id": "us-initial-claims",
+      "name": "Initial Jobless Claims",
+      "source": "fred",
+      "frequency": "weekly",
+      "official_url": "https://oui.doleta.gov/unemploy/claims.asp"
+    },
+    {
+      "id": "us-continuing-claims",
+      "name": "Continuing Jobless Claims",
+      "source": "fred",
+      "frequency": "weekly",
+      "official_url": "https://oui.doleta.gov/unemploy/claims.asp"
+    },
+    {
+      "id": "us-temp-help",
+      "name": "Temporary Help Services Employment",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ces"
+    },
+    {
+      "id": "us-avg-workweek",
+      "name": "Average Weekly Hours",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ces"
+    },
+    {
+      "id": "uk-cpi-yoy",
+      "name": "UK CPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices"
+    },
+    {
+      "id": "uk-cpih-yoy",
+      "name": "UK CPIH YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices"
+    },
+    {
+      "id": "uk-alcohol-cpi-yoy",
+      "name": "UK Alcohol & Tobacco CPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7g9/mm23"
+    },
+    {
+      "id": "uk-clothing-cpi-yoy",
+      "name": "UK Clothing & Footwear CPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7ga/mm23"
+    },
+    {
+      "id": "uk-furniture-cpi-yoy",
+      "name": "UK Furniture & Household Goods CPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7gc/mm23"
+    },
+    {
+      "id": "uk-health-cpi-yoy",
+      "name": "UK Health CPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7gd/mm23"
+    },
+    {
+      "id": "uk-transport-cpi-yoy",
+      "name": "UK Transport CPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7ge/mm23"
+    },
+    {
+      "id": "uk-communication-cpi-yoy",
+      "name": "UK Communication CPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7gf/mm23"
+    },
+    {
+      "id": "uk-recreation-cpi-yoy",
+      "name": "UK Recreation & Culture CPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7gg/mm23"
+    },
+    {
+      "id": "uk-education-cpi-yoy",
+      "name": "UK Education CPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7gh/mm23"
+    },
+    {
+      "id": "uk-restaurants-hotels-cpi-yoy",
+      "name": "UK Restaurants & Hotels CPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7gi/mm23"
+    },
+    {
+      "id": "uk-miscellaneous-cpi-yoy",
+      "name": "UK Miscellaneous Goods & Services CPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7gj/mm23"
+    },
+    {
+      "id": "uk-alcohol-cpih-yoy",
+      "name": "UK Alcohol & Tobacco CPIH YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l55q/mm23"
+    },
+    {
+      "id": "uk-clothing-cpih-yoy",
+      "name": "UK Clothing & Footwear CPIH YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l55r/mm23"
+    },
+    {
+      "id": "uk-furniture-cpih-yoy",
+      "name": "UK Furniture & Household Goods CPIH YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l55t/mm23"
+    },
+    {
+      "id": "uk-health-cpih-yoy",
+      "name": "UK Health CPIH YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l55u/mm23"
+    },
+    {
+      "id": "uk-transport-cpih-yoy",
+      "name": "UK Transport CPIH YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l55v/mm23"
+    },
+    {
+      "id": "uk-communication-cpih-yoy",
+      "name": "UK Communication CPIH YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l55w/mm23"
+    },
+    {
+      "id": "uk-recreation-cpih-yoy",
+      "name": "UK Recreation & Culture CPIH YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l55x/mm23"
+    },
+    {
+      "id": "uk-education-cpih-yoy",
+      "name": "UK Education CPIH YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l55y/mm23"
+    },
+    {
+      "id": "uk-restaurants-hotels-cpih-yoy",
+      "name": "UK Restaurants & Hotels CPIH YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l55z/mm23"
+    },
+    {
+      "id": "uk-miscellaneous-cpih-yoy",
+      "name": "UK Miscellaneous Goods & Services CPIH YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l562/mm23"
+    },
+    {
+      "id": "uk-core-cpi-yoy",
+      "name": "UK Core CPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices"
+    },
+    {
+      "id": "uk-cpi-mom",
+      "name": "UK CPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7oe/mm23"
+    },
+    {
+      "id": "uk-core-cpi-mom",
+      "name": "UK Core CPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/dkc6/mm23"
+    },
+    {
+      "id": "uk-services-cpi-yoy",
+      "name": "UK Services CPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7nn/mm23"
+    },
+    {
+      "id": "uk-services-cpi-mom",
+      "name": "UK Services CPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7mv/mm23"
+    },
+    {
+      "id": "uk-goods-cpi-yoy",
+      "name": "UK Goods CPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7nm/mm23"
+    },
+    {
+      "id": "uk-goods-cpi-mom",
+      "name": "UK Goods CPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7mu/mm23"
+    },
+    {
+      "id": "uk-food-cpi-yoy",
+      "name": "UK Food CPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7g8/mm23"
+    },
+    {
+      "id": "uk-energy-cpi-yoy",
+      "name": "UK Energy CPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7gt/mm23"
+    },
+    {
+      "id": "uk-housing-cpi-yoy",
+      "name": "UK Housing CPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7gb/mm23"
+    },
+    {
+      "id": "uk-rpi-yoy",
+      "name": "UK RPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices"
+    },
+    {
+      "id": "uk-ppi-output-yoy",
+      "name": "UK Output PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices"
+    },
+    {
+      "id": "uk-awe-regular-yoy",
+      "name": "UK Average Weekly Earnings (Regular Pay) YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours"
+    },
+    {
+      "id": "uk-paye-median-pay-mom",
+      "name": "UK PAYE Median Pay MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/bulletins/earningsandemploymentfrompayasyouearnrealtimeinformationuk/latest"
+    },
+    {
+      "id": "uk-awe-regular-mom",
+      "name": "UK Average Weekly Earnings (Regular Pay) MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/timeseries/kai7/lms"
+    },
+    {
+      "id": "uk-ppi-input-yoy",
+      "name": "UK Input PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices"
+    },
+    {
+      "id": "uk-gdp-yoy",
+      "name": "UK GDP YoY",
+      "source": "ons",
+      "frequency": "quarterly",
+      "official_url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp/timeseries/ihyr/pn2"
+    },
+    {
+      "id": "uk-gdp-qoq",
+      "name": "UK Real GDP QoQ",
+      "source": "ons",
+      "frequency": "quarterly",
+      "official_url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp/timeseries/ihyq/pn2"
+    },
+    {
+      "id": "uk-net-trade-qoq",
+      "name": "UK Net Trade Contribution QoQ",
+      "source": "ons",
+      "frequency": "quarterly",
+      "official_url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp/timeseries/zz5u/qna"
+    },
+    {
+      "id": "uk-net-trade-yoy",
+      "name": "UK Net Trade Contribution YoY",
+      "source": "ons",
+      "frequency": "quarterly",
+      "official_url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp/timeseries/zz6d/qna"
+    },
+    {
+      "id": "uk-gdp-mom",
+      "name": "UK Monthly GDP MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp/timeseries/ecyx/mgdp"
+    },
+    {
+      "id": "uk-gdp-3m-yoy",
+      "name": "UK Monthly GDP 3m YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp/timeseries/ed9t/mgdp"
+    },
+    {
+      "id": "uk-industrial-production",
+      "name": "UK Industrial Production YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/economicoutputandproductivity"
+    },
+    {
+      "id": "uk-retail-sales",
+      "name": "UK Retail Sales Volume YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry"
+    },
+    {
+      "id": "uk-cli",
+      "name": "UK OECD Composite Leading Indicator",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.oecd.org/en/data/indicators/composite-leading-indicator-cli.html"
+    },
+    {
+      "id": "uk-business-confidence",
+      "name": "UK Business Confidence",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.bankofengland.co.uk"
+    },
+    {
+      "id": "uk-unemployment",
+      "name": "UK Unemployment Rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peoplenotinwork/unemployment"
+    },
+    {
+      "id": "uk-employment-level",
+      "name": "UK Employment Level",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/employmentandemployeetypes"
+    },
+    {
+      "id": "uk-awe-total-yoy",
+      "name": "UK Average Weekly Earnings (Total Pay) YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours"
+    },
+    {
+      "id": "uk-vacancies",
+      "name": "UK Job Vacancies",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/employmentandemployeetypes"
+    },
+    {
+      "id": "ea-hicp-yoy",
+      "name": "Euro Area HICP YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/hicp"
+    },
+    {
+      "id": "ea-core-hicp-yoy",
+      "name": "Euro Area Core HICP YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/hicp"
+    },
+    {
+      "id": "ea-hicp-mom",
+      "name": "Euro Area HICP MoM",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/hicp"
+    },
+    {
+      "id": "ea-core-hicp-mom",
+      "name": "Euro Area Core HICP MoM",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/hicp"
+    },
+    {
+      "id": "ea-services-hicp-yoy",
+      "name": "Euro Area Services HICP YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/hicp"
+    },
+    {
+      "id": "ea-services-hicp-mom",
+      "name": "Euro Area Services HICP MoM",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/hicp"
+    },
+    {
+      "id": "ea-goods-hicp-yoy",
+      "name": "Euro Area Goods HICP YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/hicp"
+    },
+    {
+      "id": "ea-food-hicp-yoy",
+      "name": "Euro Area Food HICP YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/hicp"
+    },
+    {
+      "id": "ea-energy-hicp-yoy",
+      "name": "Euro Area Energy HICP YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/hicp"
+    },
+    {
+      "id": "de-cpi-yoy",
+      "name": "Germany HICP YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://www.destatis.de"
+    },
+    {
+      "id": "fr-cpi-yoy",
+      "name": "France HICP YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://www.insee.fr"
+    },
+    {
+      "id": "it-cpi-yoy",
+      "name": "Italy HICP YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://www.istat.it"
+    },
+    {
+      "id": "es-cpi-yoy",
+      "name": "Spain HICP YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://www.ine.es"
+    },
+    {
+      "id": "ea-ppi-yoy",
+      "name": "Euro Area PPI YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/short-term-business-statistics"
+    },
+    {
+      "id": "ea-unemployed-persons",
+      "name": "Euro Area Unemployed Persons",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/labour-market"
+    },
+    {
+      "id": "ea-gdp-yoy",
+      "name": "Euro Area Real GDP YoY",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/web/national-accounts"
+    },
+    {
+      "id": "ea-gdp-qoq",
+      "name": "Euro Area Real GDP QoQ",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/web/national-accounts"
+    },
+    {
+      "id": "ea-industrial-production",
+      "name": "Euro Area Industrial Production YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/short-term-business-statistics"
+    },
+    {
+      "id": "ea-retail-sales",
+      "name": "Euro Area Retail Trade YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/short-term-business-statistics"
+    },
+    {
+      "id": "ea-esi",
+      "name": "Euro Area Economic Sentiment",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://economy-finance.ec.europa.eu/economic-forecast-and-surveys/business-and-consumer-surveys_en"
+    },
+    {
+      "id": "ea-business-confidence",
+      "name": "Euro Area Industrial Confidence",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://economy-finance.ec.europa.eu/economic-forecast-and-surveys/business-and-consumer-surveys_en"
+    },
+    {
+      "id": "ea-unemployment",
+      "name": "Euro Area Unemployment Rate",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/labour-market/statistics-illustrated"
+    },
+    {
+      "id": "de-unemployment",
+      "name": "Germany Unemployment Rate",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.destatis.de"
+    },
+    {
+      "id": "ea-employment-yoy",
+      "name": "Euro Area Employment YoY",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/web/labour-market"
+    },
+    {
+      "id": "ea-employment-qoq",
+      "name": "Euro Area Employment QoQ",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/web/labour-market"
+    },
+    {
+      "id": "ea-youth-unemployment",
+      "name": "Euro Area Youth Unemployment Rate",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/labour-market"
+    },
+    {
+      "id": "ea-youth-unemployed-persons",
+      "name": "Euro Area Youth Unemployed Persons",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/labour-market"
+    },
+    {
+      "id": "ea-employment-rate",
+      "name": "Euro Area Employment Rate",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/web/labour-market"
+    },
+    {
+      "id": "ea-inactive-population",
+      "name": "Euro Area Inactive Population",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/web/labour-market"
+    },
+    {
+      "id": "ea-inactivity-change",
+      "name": "Euro Area Inactivity Change",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/web/labour-market"
+    },
+    {
+      "id": "ea-vacant-posts",
+      "name": "Euro Area Vacant Posts",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/web/labour-market/job-vacancies"
+    },
+    {
+      "id": "ea-vacancy-change",
+      "name": "Euro Area Vacancy Change",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/web/labour-market/job-vacancies"
+    },
+    {
+      "id": "ea-long-term-unemployment",
+      "name": "Euro Area Long-Term Unemployment",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/web/labour-market"
+    },
+    {
+      "id": "uk-payrolled-employees-level",
+      "name": "UK Payrolled Employees",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/bulletins/earningsandemploymentfrompayasyouearnrealtimeinformationuk/latest"
+    },
+    {
+      "id": "uk-employment-change",
+      "name": "UK Employment Change",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/bulletins/earningsandemploymentfrompayasyouearnrealtimeinformationuk/latest"
+    },
+    {
+      "id": "ea-employment-change",
+      "name": "Euro Area Employment Change",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/web/labour-market"
+    },
+    {
+      "id": "ea-wage-growth",
+      "name": "Euro Area Wage Growth YoY",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/web/labour-market"
+    },
+    {
+      "id": "ea-wage-growth-qoq",
+      "name": "Euro Area Wage Growth QoQ",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/web/labour-market"
+    },
+    {
+      "id": "ea-inflation-exp-1y",
+      "name": "ECB SPF HICP 1-Year Expectation",
+      "source": "ecb",
+      "frequency": "monthly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/SPF"
+    },
+    {
+      "id": "uk-inflation-exp-1y",
+      "name": "UK Inflation Expectations 1-Year",
+      "source": "boe",
+      "frequency": "quarterly",
+      "official_url": "https://www.bankofengland.co.uk/inflation-attitudes-survey"
+    },
+    {
+      "id": "uk-inflation-exp-5y",
+      "name": "UK Inflation Expectations 5-Year",
+      "source": "boe",
+      "frequency": "quarterly",
+      "official_url": "https://www.bankofengland.co.uk/inflation-attitudes-survey"
+    },
+    {
+      "id": "uk-dmp-wage-growth-3m",
+      "name": "UK DMP Realised Wage Growth (3m avg)",
+      "source": "boe",
+      "frequency": "monthly",
+      "official_url": "https://www.bankofengland.co.uk/decision-maker-panel"
+    },
+    {
+      "id": "uk-dmp-wage-exp-1y-3m",
+      "name": "UK DMP Expected Wage Growth 1Y (3m avg)",
+      "source": "boe",
+      "frequency": "monthly",
+      "official_url": "https://www.bankofengland.co.uk/decision-maker-panel"
+    },
+    {
+      "id": "uk-dmp-wage-exp-1y",
+      "name": "UK DMP Expected Wage Growth 1-Year",
+      "source": "boe",
+      "frequency": "monthly",
+      "official_url": "https://www.bankofengland.co.uk/decision-maker-panel"
+    },
+    {
+      "id": "uk-agents-pay-settlement-exp-1y",
+      "name": "BoE Agents Expected Pay Settlement 1-Year",
+      "source": "boe",
+      "frequency": "annual",
+      "official_url": "https://www.bankofengland.co.uk/agents-summary"
+    },
+    {
+      "id": "ea-safe-wage-exp-1y",
+      "name": "EA SAFE Expected Wage Growth 1Y",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/safe/html/index.en.html"
+    },
+    {
+      "id": "uk-retail-sales-mom",
+      "name": "UK Retail Sales Volume MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry"
+    },
+    {
+      "id": "ea-retail-sales-mom",
+      "name": "Euro Area Retail Trade MoM",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/retail-trade"
+    },
+    {
+      "id": "ea-ces-inflation-exp-1y",
+      "name": "ECB CES Consumer Inflation 1Y",
+      "source": "ecb",
+      "frequency": "monthly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/CES"
+    },
+    {
+      "id": "ea-core-inflation-exp-1y",
+      "name": "ECB SPF Core HICP 1-Year",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/SPF"
+    },
+    {
+      "id": "ea-spf-wage-exp-1y",
+      "name": "ECB SPF Wage Growth Assumption 1Y",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/SPF"
+    },
+    {
+      "id": "ea-inflation-exp-lt",
+      "name": "ECB SPF HICP Longer-Term",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/SPF"
+    },
+    {
+      "id": "us-umich-inflation-exp-5y",
+      "name": "UMich Expected Inflation (5-Year)",
+      "source": "umich",
+      "frequency": "monthly",
+      "official_url": "https://data.sca.isr.umich.edu/data-archive/mine.php"
+    },
+    {
+      "id": "us-nyfed-sce-1y",
+      "name": "NY Fed SCE Inflation Expectations 1-Year",
+      "source": "nyfed",
+      "frequency": "monthly",
+      "official_url": "https://www.newyorkfed.org/microeconomics/sce"
+    },
+    {
+      "id": "us-nyfed-sce-3y",
+      "name": "NY Fed SCE Inflation Expectations 3-Year",
+      "source": "nyfed",
+      "frequency": "monthly",
+      "official_url": "https://www.newyorkfed.org/microeconomics/sce"
+    },
+    {
+      "id": "us-nyfed-sce-5y",
+      "name": "NY Fed SCE Inflation Expectations 5-Year",
+      "source": "nyfed",
+      "frequency": "monthly",
+      "official_url": "https://www.newyorkfed.org/microeconomics/sce"
+    },
+    {
+      "id": "us-nyfed-sce-1y-uncertainty",
+      "name": "NY Fed SCE Inflation Uncertainty 1-Year",
+      "source": "nyfed",
+      "frequency": "monthly",
+      "official_url": "https://www.newyorkfed.org/microeconomics/sce"
+    },
+    {
+      "id": "us-cleveland-exp-inf-5-10y",
+      "name": "Cleveland Fed Expected Inflation 5–10 Year",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.clevelandfed.org/indicators-and-data/inflation-expectations"
+    },
+    {
+      "id": "us-atlanta-bie-1y",
+      "name": "Atlanta Fed Business Inflation Expectations 1-Year",
+      "source": "atlanta",
+      "frequency": "monthly",
+      "official_url": "https://www.atlantafed.org/research/inflationproject/bie"
+    },
+    {
+      "id": "us-atlanta-bie-unit-cost-1y",
+      "name": "Atlanta Fed BIE Expected Unit-Cost Growth 1-Year",
+      "source": "atlanta",
+      "frequency": "monthly",
+      "official_url": "https://www.atlantafed.org/research/inflationproject/bie"
+    },
+    {
+      "id": "us-cleveland-sofie-1y",
+      "name": "Cleveland Fed SoFIE Expected CPI Inflation (1-Year)",
+      "source": "cleveland_sofie",
+      "frequency": "quarterly",
+      "official_url": "https://www.clevelandfed.org/indicators-and-data/survey-of-firms-inflation-expectations"
+    },
+    {
+      "id": "us-cleveland-sofie-5y",
+      "name": "Cleveland Fed SoFIE Expected CPI Inflation (5-Year)",
+      "source": "cleveland_sofie",
+      "frequency": "quarterly",
+      "official_url": "https://www.clevelandfed.org/indicators-and-data/survey-of-firms-inflation-expectations"
+    },
+    {
+      "id": "us-philly-spf-cpi-1y",
+      "name": "Philadelphia Fed SPF CPI 1-Year",
+      "source": "philadelphia",
+      "frequency": "quarterly",
+      "official_url": "https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/survey-of-professional-forecasters"
+    },
+    {
+      "id": "us-philly-spf-core-cpi-1y",
+      "name": "Philadelphia Fed SPF Core CPI 1-Year",
+      "source": "philadelphia",
+      "frequency": "quarterly",
+      "official_url": "https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/survey-of-professional-forecasters"
+    },
+    {
+      "id": "us-philly-spf-pce-1y",
+      "name": "Philadelphia Fed SPF PCE 1-Year",
+      "source": "philadelphia",
+      "frequency": "quarterly",
+      "official_url": "https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/survey-of-professional-forecasters"
+    },
+    {
+      "id": "us-philly-spf-core-pce-1y",
+      "name": "Philadelphia Fed SPF Core PCE 1-Year",
+      "source": "philadelphia",
+      "frequency": "quarterly",
+      "official_url": "https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/survey-of-professional-forecasters"
+    },
+    {
+      "id": "us-philly-spf-cpi-5y",
+      "name": "Philadelphia Fed SPF CPI 5-Year",
+      "source": "philadelphia",
+      "frequency": "quarterly",
+      "official_url": "https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/survey-of-professional-forecasters"
+    },
+    {
+      "id": "us-philly-spf-pce-5y",
+      "name": "Philadelphia Fed SPF PCE 5-Year",
+      "source": "philadelphia",
+      "frequency": "quarterly",
+      "official_url": "https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/survey-of-professional-forecasters"
+    },
+    {
+      "id": "us-philly-spf-cpi-10y",
+      "name": "Philadelphia Fed SPF CPI 10-Year",
+      "source": "philadelphia",
+      "frequency": "quarterly",
+      "official_url": "https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/survey-of-professional-forecasters"
+    },
+    {
+      "id": "us-philly-spf-pce-10y",
+      "name": "Philadelphia Fed SPF PCE 10-Year",
+      "source": "philadelphia",
+      "frequency": "quarterly",
+      "official_url": "https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/survey-of-professional-forecasters"
+    },
+    {
+      "id": "us-philly-spf-5y5y-cpi",
+      "name": "Philadelphia Fed SPF 5Y5Y Forward CPI",
+      "source": "philadelphia",
+      "frequency": "quarterly",
+      "official_url": "https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/survey-of-professional-forecasters"
+    },
+    {
+      "id": "us-philly-spf-5y5y-pce",
+      "name": "Philadelphia Fed SPF 5Y5Y Forward PCE",
+      "source": "philadelphia",
+      "frequency": "quarterly",
+      "official_url": "https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/survey-of-professional-forecasters"
+    },
+    {
+      "id": "us-breakeven-1y",
+      "name": "1-Year Breakeven Inflation Rate",
+      "source": "fred",
+      "frequency": "daily",
+      "official_url": "https://www.federalreserve.gov"
+    },
+    {
+      "id": "us-breakeven-2y",
+      "name": "2-Year Breakeven Inflation Rate",
+      "source": "fred",
+      "frequency": "daily",
+      "official_url": "https://www.federalreserve.gov"
+    },
+    {
+      "id": "us-cleveland-exp-inf-3y",
+      "name": "Cleveland Fed Expected Inflation 3-Year",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.clevelandfed.org/indicators-and-data/inflation-expectations"
+    },
+    {
+      "id": "us-cleveland-exp-inf-10y",
+      "name": "Cleveland Fed Expected Inflation 10-Year",
+      "source": "fred",
+      "frequency": "monthly",
+      "official_url": "https://www.clevelandfed.org/indicators-and-data/inflation-expectations"
+    },
+    {
+      "id": "uk-inflation-exp-2y",
+      "name": "UK Inflation Expectations 2-Year",
+      "source": "boe",
+      "frequency": "quarterly",
+      "official_url": "https://www.bankofengland.co.uk/inflation-attitudes-survey"
+    },
+    {
+      "id": "uk-citi-yougov-inflation-exp-1y",
+      "name": "Citi/YouGov UK Inflation Expectations 1-Year",
+      "source": "boe",
+      "frequency": "monthly",
+      "official_url": "https://www.bankofengland.co.uk/monetary-policy-report"
+    },
+    {
+      "id": "uk-citi-yougov-inflation-exp-5-10y",
+      "name": "Citi/YouGov UK Inflation Expectations 5–10-Year",
+      "source": "boe",
+      "frequency": "monthly",
+      "official_url": "https://www.bankofengland.co.uk/monetary-policy-report"
+    },
+    {
+      "id": "uk-dmp-inflation-exp-1y",
+      "name": "UK DMP CPI Inflation Expectation 1-Year",
+      "source": "boe",
+      "frequency": "monthly",
+      "official_url": "https://www.bankofengland.co.uk/decision-maker-panel"
+    },
+    {
+      "id": "uk-dmp-inflation-exp-3y",
+      "name": "UK DMP CPI Inflation Expectation 3-Year",
+      "source": "boe",
+      "frequency": "monthly",
+      "official_url": "https://www.bankofengland.co.uk/decision-maker-panel"
+    },
+    {
+      "id": "uk-dmp-own-price-exp-1y",
+      "name": "UK DMP Own-Price Inflation Expectation 1-Year",
+      "source": "boe",
+      "frequency": "monthly",
+      "official_url": "https://www.bankofengland.co.uk/decision-maker-panel"
+    },
+    {
+      "id": "uk-maps-inflation-1y",
+      "name": "BoE MaPS CPI Inflation 1-Year",
+      "source": "boe",
+      "frequency": "monthly",
+      "official_url": "https://www.bankofengland.co.uk/markets/market-participants-survey"
+    },
+    {
+      "id": "uk-maps-inflation-2y",
+      "name": "BoE MaPS CPI Inflation 2-Year",
+      "source": "boe",
+      "frequency": "monthly",
+      "official_url": "https://www.bankofengland.co.uk/markets/market-participants-survey"
+    },
+    {
+      "id": "uk-maps-inflation-3y",
+      "name": "BoE MaPS CPI Inflation 3-Year",
+      "source": "boe",
+      "frequency": "monthly",
+      "official_url": "https://www.bankofengland.co.uk/markets/market-participants-survey"
+    },
+    {
+      "id": "uk-maps-inflation-5y",
+      "name": "BoE MaPS CPI Inflation 5-Year",
+      "source": "boe",
+      "frequency": "monthly",
+      "official_url": "https://www.bankofengland.co.uk/markets/market-participants-survey"
+    },
+    {
+      "id": "uk-inflation-comp-1y",
+      "name": "UK 1-Year Inflation Swap",
+      "source": "boe",
+      "frequency": "daily",
+      "official_url": "https://www.bankofengland.co.uk/statistics"
+    },
+    {
+      "id": "uk-inflation-comp-5y",
+      "name": "UK 5-Year Inflation Compensation",
+      "source": "boe",
+      "frequency": "daily",
+      "official_url": "https://www.bankofengland.co.uk/statistics"
+    },
+    {
+      "id": "uk-inflation-comp-10y",
+      "name": "UK 10-Year Inflation Compensation",
+      "source": "boe",
+      "frequency": "daily",
+      "official_url": "https://www.bankofengland.co.uk/statistics"
+    },
+    {
+      "id": "uk-inflation-comp-5y5y",
+      "name": "UK 5Y5Y Inflation Swap",
+      "source": "boe",
+      "frequency": "daily",
+      "official_url": "https://www.bankofengland.co.uk/statistics"
+    },
+    {
+      "id": "ea-ces-inflation-exp-3y",
+      "name": "ECB CES Consumer Inflation 3-Year",
+      "source": "ecb",
+      "frequency": "monthly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/CES"
+    },
+    {
+      "id": "ea-ces-inflation-exp-5y",
+      "name": "ECB CES Consumer Inflation 5-Year",
+      "source": "ecb",
+      "frequency": "monthly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/CES"
+    },
+    {
+      "id": "ea-ces-inflation-uncertainty",
+      "name": "ECB CES Inflation Uncertainty",
+      "source": "ecb",
+      "frequency": "monthly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/CES"
+    },
+    {
+      "id": "ea-safe-inflation-exp-1y",
+      "name": "ECB SAFE Business Inflation Expectation 1-Year",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/safe/html/index.en.html"
+    },
+    {
+      "id": "ea-safe-inflation-exp-3y",
+      "name": "ECB SAFE Business Inflation Expectation 3-Year",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/safe/html/index.en.html"
+    },
+    {
+      "id": "ea-safe-inflation-exp-5y",
+      "name": "ECB SAFE Business Inflation Expectation 5-Year",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/safe/html/index.en.html"
+    },
+    {
+      "id": "ea-spf-hicp-1y",
+      "name": "ECB SPF HICP 1-Year",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/SPF"
+    },
+    {
+      "id": "ea-spf-hicp-2y",
+      "name": "ECB SPF HICP 2-Year",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/SPF"
+    },
+    {
+      "id": "ea-spf-hicp-lt",
+      "name": "ECB SPF HICP Long-Term",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/SPF"
+    },
+    {
+      "id": "ea-spf-hicpx-1y",
+      "name": "ECB SPF Core HICP 1-Year",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/SPF"
+    },
+    {
+      "id": "ea-inflation-comp-1y",
+      "name": "Euro Area 1-Year Inflation Compensation",
+      "source": "lseg",
+      "frequency": "daily",
+      "official_url": "https://data.ecb.europa.eu/"
+    },
+    {
+      "id": "ea-inflation-comp-2y",
+      "name": "Euro Area 2-Year Inflation Compensation",
+      "source": "lseg",
+      "frequency": "daily",
+      "official_url": "https://data.ecb.europa.eu/"
+    },
+    {
+      "id": "ea-inflation-comp-5y",
+      "name": "Euro Area 5-Year Inflation Compensation",
+      "source": "lseg",
+      "frequency": "daily",
+      "official_url": "https://data.ecb.europa.eu/"
+    },
+    {
+      "id": "ea-inflation-comp-10y",
+      "name": "Euro Area 10-Year Inflation Compensation",
+      "source": "lseg",
+      "frequency": "daily",
+      "official_url": "https://data.ecb.europa.eu/"
+    },
+    {
+      "id": "ea-inflation-comp-5y5y",
+      "name": "Euro Area 5Y5Y Forward Inflation Compensation",
+      "source": "lseg",
+      "frequency": "daily",
+      "official_url": "https://data.ecb.europa.eu/"
+    },
+    {
+      "id": "us-real-pce-growth",
+      "name": "Real Personal Consumption Expenditures",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-pce-goods",
+      "name": "Real PCE Goods",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-pce-durable-goods",
+      "name": "Real PCE Durable Goods",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-pce-nondurable-goods",
+      "name": "Real PCE Nondurable Goods",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-pce-services",
+      "name": "Real PCE Services",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-private-investment",
+      "name": "Real Gross Private Domestic Investment",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-fixed-investment",
+      "name": "Real Fixed Investment",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-nonresidential-investment",
+      "name": "Real Nonresidential Investment",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-structures",
+      "name": "Real Structures Investment",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-equipment",
+      "name": "Real Equipment Investment",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-ipp",
+      "name": "Real Intellectual Property Products Investment",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-residential-investment",
+      "name": "Real Residential Investment",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-inventories",
+      "name": "Change in Private Inventories",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-net-exports",
+      "name": "Real Net Exports of Goods and Services",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-exports",
+      "name": "Real Exports",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-export-goods",
+      "name": "Real Exports of Goods",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-export-services",
+      "name": "Real Exports of Services",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-imports",
+      "name": "Real Imports",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-import-goods",
+      "name": "Real Imports of Goods",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-import-services",
+      "name": "Real Imports of Services",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-government",
+      "name": "Real Government Consumption and Investment",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-federal-government",
+      "name": "Real Federal Government",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-defense",
+      "name": "Real National Defense",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-nondefense",
+      "name": "Real Federal Nondefense",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-real-state-local",
+      "name": "Real State and Local Government",
+      "source": "bea",
+      "frequency": "quarterly",
+      "official_url": "https://www.bea.gov/data/gdp/gross-domestic-product"
+    },
+    {
+      "id": "us-unemployed-persons",
+      "name": "Unemployed Persons",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cps"
+    },
+    {
+      "id": "us-long-term-unemployed",
+      "name": "Long-Term Unemployed",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cps"
+    },
+    {
+      "id": "us-private-payrolls",
+      "name": "Private Employment",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ces"
+    },
+    {
+      "id": "us-government-payrolls",
+      "name": "Government Employment",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ces"
+    },
+    {
+      "id": "us-civilian-labor-force",
+      "name": "Civilian Labor Force",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cps"
+    },
+    {
+      "id": "us-not-in-labor-force",
+      "name": "Not in Labor Force",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cps"
+    },
+    {
+      "id": "us-jolts-hires-level",
+      "name": "JOLTS Hires",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/jlt"
+    },
+    {
+      "id": "us-jolts-quits-level",
+      "name": "JOLTS Quits",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/jlt"
+    },
+    {
+      "id": "us-jolts-layoffs-level",
+      "name": "JOLTS Layoffs and Discharges",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/jlt"
+    },
+    {
+      "id": "us-jolts-total-separations",
+      "name": "JOLTS Total Separations",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/jlt"
+    },
+    {
+      "id": "us-average-weekly-earnings",
+      "name": "Average Weekly Earnings",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ces"
+    },
+    {
+      "id": "uk-cpih-mom",
+      "name": "UK CPIH MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices"
+    },
+    {
+      "id": "uk-core-cpih-yoy",
+      "name": "UK Core CPIH YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices"
+    },
+    {
+      "id": "uk-food-cpih-yoy",
+      "name": "UK Food CPIH YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices"
+    },
+    {
+      "id": "uk-food-cpih-mom",
+      "name": "UK Food CPIH MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices"
+    },
+    {
+      "id": "uk-housing-cpih-yoy",
+      "name": "UK Housing CPIH YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices"
+    },
+    {
+      "id": "uk-housing-cpih-mom",
+      "name": "UK Housing CPIH MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices"
+    },
+    {
+      "id": "uk-household-consumption-level",
+      "name": "UK Real Household Final Consumption",
+      "source": "ons",
+      "frequency": "quarterly",
+      "official_url": "https://www.ons.gov.uk/economy/nationalaccounts/satelliteaccounts/timeseries/abjr/qna"
+    },
+    {
+      "id": "uk-gfcf-level",
+      "name": "UK Real Gross Fixed Capital Formation",
+      "source": "ons",
+      "frequency": "quarterly",
+      "official_url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp"
+    },
+    {
+      "id": "uk-gfcf-yoy",
+      "name": "UK Gross Fixed Capital Formation YoY",
+      "source": "ons",
+      "frequency": "quarterly",
+      "official_url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp/timeseries/kg7t/pn2"
+    },
+    {
+      "id": "uk-gfcf-qoq",
+      "name": "UK Gross Fixed Capital Formation QoQ",
+      "source": "ons",
+      "frequency": "quarterly",
+      "official_url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp/timeseries/kg7q/pn2"
+    },
+    {
+      "id": "uk-business-investment-qoq",
+      "name": "UK Business Investment QoQ",
+      "source": "ons",
+      "frequency": "quarterly",
+      "official_url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp/timeseries/kg7p/pn2"
+    },
+    {
+      "id": "uk-business-investment-yoy",
+      "name": "UK Business Investment YoY",
+      "source": "ons",
+      "frequency": "quarterly",
+      "official_url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp/timeseries/kg7s/pn2"
+    },
+    {
+      "id": "uk-government-consumption-level",
+      "name": "UK Government Final Consumption",
+      "source": "ons",
+      "frequency": "quarterly",
+      "official_url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp"
+    },
+    {
+      "id": "ea-household-consumption",
+      "name": "Euro Area Household and NPISH Consumption",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/statistics-explained/index.php?title=National_accounts_and_GDP"
+    },
+    {
+      "id": "ea-gfcf",
+      "name": "Euro Area Gross Fixed Capital Formation",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/statistics-explained/index.php?title=National_accounts_and_GDP"
+    },
+    {
+      "id": "ea-government-consumption",
+      "name": "Euro Area Government Final Consumption",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/statistics-explained/index.php?title=National_accounts_and_GDP"
+    },
+    {
+      "id": "us-nyfed-sce-labor-earnings-1y",
+      "name": "NY Fed SCE Earnings Growth Expectations (1-Year)",
+      "source": "nyfed",
+      "frequency": "monthly",
+      "official_url": "https://www.newyorkfed.org/microeconomics/sce"
+    },
+    {
+      "id": "us-nyfed-sce-labor-job-separation-1y",
+      "name": "NY Fed SCE Job Separation Probability (1-Year)",
+      "source": "nyfed",
+      "frequency": "monthly",
+      "official_url": "https://www.newyorkfed.org/microeconomics/sce"
+    },
+    {
+      "id": "us-nyfed-sce-labor-job-finding-1y",
+      "name": "NY Fed SCE Job Finding Probability (1-Year)",
+      "source": "nyfed",
+      "frequency": "monthly",
+      "official_url": "https://www.newyorkfed.org/microeconomics/sce"
+    },
+    {
+      "id": "us-nyfed-sce-labor-unemployment-1y",
+      "name": "NY Fed SCE Unemployment Expectations (1-Year)",
+      "source": "nyfed",
+      "frequency": "monthly",
+      "official_url": "https://www.newyorkfed.org/microeconomics/sce"
+    },
+    {
+      "id": "us-nyfed-sce-finance-income-1y",
+      "name": "NY Fed SCE Household Income Growth Expectations (1-Year)",
+      "source": "nyfed",
+      "frequency": "monthly",
+      "official_url": "https://www.newyorkfed.org/microeconomics/sce"
+    },
+    {
+      "id": "us-nyfed-sce-finance-spending-1y",
+      "name": "NY Fed SCE Household Spending Growth Expectations (1-Year)",
+      "source": "nyfed",
+      "frequency": "monthly",
+      "official_url": "https://www.newyorkfed.org/microeconomics/sce"
+    },
+    {
+      "id": "us-nyfed-sce-finance-tax-1y",
+      "name": "NY Fed SCE Tax Change Expectations (1-Year)",
+      "source": "nyfed",
+      "frequency": "monthly",
+      "official_url": "https://www.newyorkfed.org/microeconomics/sce"
+    },
+    {
+      "id": "ea-exports",
+      "name": "Euro Area Exports",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/statistics-explained/index.php?title=National_accounts_and_GDP"
+    },
+    {
+      "id": "ea-imports",
+      "name": "Euro Area Imports",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/statistics-explained/index.php?title=National_accounts_and_GDP"
+    },
+    {
+      "id": "ea-inactivity",
+      "name": "Euro Area Inactivity Rate",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Employment_and_unemployment"
+    },
+    {
+      "id": "ea-job-vacancies",
+      "name": "Euro Area Job Vacancy Rate",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Job_vacancy_statistics"
+    },
+    {
+      "id": "us-retail-motor-vehicles",
+      "name": "US Retail Sales — Motor Vehicles",
+      "source": "census",
+      "frequency": "monthly",
+      "official_url": "https://www.census.gov/retail/marts/www/timeseries.html"
+    },
+    {
+      "id": "us-retail-gasoline",
+      "name": "US Retail Sales — Gasoline Stations",
+      "source": "census",
+      "frequency": "monthly",
+      "official_url": "https://www.census.gov/retail/marts/www/timeseries.html"
+    },
+    {
+      "id": "us-retail-food-beverage",
+      "name": "US Retail Sales — Food & Beverage",
+      "source": "census",
+      "frequency": "monthly",
+      "official_url": "https://www.census.gov/retail/marts/www/timeseries.html"
+    },
+    {
+      "id": "us-retail-general-merchandise",
+      "name": "US Retail Sales — General Merchandise",
+      "source": "census",
+      "frequency": "monthly",
+      "official_url": "https://www.census.gov/retail/marts/www/timeseries.html"
+    },
+    {
+      "id": "us-retail-nonstore",
+      "name": "US Retail Sales — Nonstore",
+      "source": "census",
+      "frequency": "monthly",
+      "official_url": "https://www.census.gov/retail/marts/www/timeseries.html"
+    },
+    {
+      "id": "us-retail-food-services",
+      "name": "US Retail Sales — Food Services",
+      "source": "census",
+      "frequency": "monthly",
+      "official_url": "https://www.census.gov/retail/marts/www/timeseries.html"
+    },
+    {
+      "id": "us-retail-sales-total",
+      "name": "US Retail Sales — Total",
+      "source": "census",
+      "frequency": "monthly",
+      "official_url": "https://www.census.gov/retail/marts/www/timeseries.html"
+    },
+    {
+      "id": "us-ism-manufacturing-pmi",
+      "name": "US ISM Manufacturing PMI",
+      "source": "pmi_scrape",
+      "frequency": "monthly",
+      "official_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/"
+    },
+    {
+      "id": "us-ism-services-pmi",
+      "name": "US ISM Services PMI",
+      "source": "pmi_scrape",
+      "frequency": "monthly",
+      "official_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/"
+    },
+    {
+      "id": "us-sp-global-manufacturing-pmi",
+      "name": "US S&P Global Manufacturing PMI",
+      "source": "pmi_scrape",
+      "frequency": "monthly",
+      "official_url": "https://www.pmi.spglobal.com/PUBLIC/HOME?language=en"
+    },
+    {
+      "id": "us-sp-global-services-pmi",
+      "name": "US S&P Global Services PMI",
+      "source": "pmi_scrape",
+      "frequency": "monthly",
+      "official_url": "https://www.pmi.spglobal.com/PUBLIC/HOME?language=en"
+    },
+    {
+      "id": "uk-retail-food-stores",
+      "name": "UK Retail Sales — Food Stores",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/eapt/drsi"
+    },
+    {
+      "id": "uk-retail-non-food-stores",
+      "name": "UK Retail Sales — Non-Food Stores",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/eapv/drsi"
+    },
+    {
+      "id": "uk-retail-nonstore",
+      "name": "UK Retail Sales — Non-Store",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/j5dz/drsi"
+    },
+    {
+      "id": "uk-retail-automotive-fuel",
+      "name": "UK Retail Sales — Automotive Fuel",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/jo5a/drsi"
+    },
+    {
+      "id": "uk-retail-sales-total-ex-fuel",
+      "name": "UK Retail Sales — Total ex Fuel",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/j5ec/drsi"
+    },
+    {
+      "id": "uk-sp-global-manufacturing-pmi",
+      "name": "UK S&P Global Manufacturing PMI",
+      "source": "pmi_scrape",
+      "frequency": "monthly",
+      "official_url": "https://www.pmi.spglobal.com/PUBLIC/HOME?language=en"
+    },
+    {
+      "id": "uk-sp-global-services-pmi",
+      "name": "UK S&P Global Services PMI",
+      "source": "pmi_scrape",
+      "frequency": "monthly",
+      "official_url": "https://www.pmi.spglobal.com/PUBLIC/HOME?language=en"
+    },
+    {
+      "id": "uk-sp-global-composite-pmi",
+      "name": "UK S&P Global Composite PMI",
+      "source": "pmi_scrape",
+      "frequency": "monthly",
+      "official_url": "https://www.pmi.spglobal.com/PUBLIC/HOME?language=en"
+    },
+    {
+      "id": "ea-retail-food-drinks-tobacco",
+      "name": "Euro Area Retail Sales — Food / Drinks / Tobacco",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/retail-trade"
+    },
+    {
+      "id": "ea-retail-non-food-ex-fuel",
+      "name": "Euro Area Retail Sales — Non-Food ex Fuel",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/retail-trade"
+    },
+    {
+      "id": "ea-retail-automotive-fuel",
+      "name": "Euro Area Retail Sales — Automotive Fuel",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/retail-trade"
+    },
+    {
+      "id": "ea-retail-sales-total-ex-motor-vehicles",
+      "name": "Euro Area Retail Sales — Total ex Motor Vehicles",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/retail-trade"
+    },
+    {
+      "id": "ea-sp-global-manufacturing-pmi",
+      "name": "Euro Area S&P Global Manufacturing PMI",
+      "source": "pmi_scrape",
+      "frequency": "monthly",
+      "official_url": "https://www.pmi.spglobal.com/PUBLIC/HOME?language=en"
+    },
+    {
+      "id": "ea-sp-global-services-pmi",
+      "name": "Euro Area S&P Global Services PMI",
+      "source": "pmi_scrape",
+      "frequency": "monthly",
+      "official_url": "https://www.pmi.spglobal.com/PUBLIC/HOME?language=en"
+    },
+    {
+      "id": "ea-sp-global-composite-pmi",
+      "name": "Euro Area S&P Global Composite PMI",
+      "source": "pmi_scrape",
+      "frequency": "monthly",
+      "official_url": "https://www.pmi.spglobal.com/PUBLIC/HOME?language=en"
+    },
+    {
+      "id": "us-retail-total-ex-auto-gas",
+      "name": "US Retail Sales — Total ex Autos & Gas",
+      "source": "census",
+      "frequency": "monthly",
+      "official_url": "https://www.census.gov/retail/marts/www/timeseries.html"
+    },
+    {
+      "id": "uk-employment-rate",
+      "name": "UK Employment Rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/employmentandemployeetypes"
+    },
+    {
+      "id": "uk-inactivity-rate",
+      "name": "UK Economic Inactivity Rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peoplenotinwork/economicinactivity"
+    }
+  ]
+}

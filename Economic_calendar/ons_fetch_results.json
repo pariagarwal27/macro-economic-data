@@ -1,10 +1,18 @@
 {
   "source": "ONS",
-  "generated_at_utc": "2026-10-06T10:47:24.900887+00:00",
+  "generated_at_utc": "2026-10-07T07:30:58.698509+00:00",
   "total_metrics": 75,
-  "successful_metrics": 72,
-  "failed_metrics": 3,
+  "successful_metrics": 75,
+  "failed_metrics": 0,
   "family_results": {
+    "AWE": {
+      "success": true,
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T06:00:00+00:00",
+      "release_title": "UK Labour Market: October 2026",
+      "release_uri": "/releases/uklabourmarketoctober2026",
+      "error": null
+    },
     "CPI": {
       "success": true,
       "next_release": "2026-10-21",
@@ -501,10 +509,11 @@
       "metric_id": "uk-awe-regular-yoy",
       "series_id": "KAI9",
       "release_family": "AWE",
-      "next_release": null,
-      "release_title": null,
-      "success": false,
-      "error": "Family result missing"
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T06:00:00+00:00",
+      "release_title": "UK Labour Market: October 2026",
+      "success": true,
+      "error": null
     },
     {
       "metric_id": "uk-paye-median-pay-mom",
@@ -520,10 +529,11 @@
       "metric_id": "uk-awe-regular-mom",
       "series_id": "KAI7",
       "release_family": "AWE",
-      "next_release": null,
-      "release_title": null,
-      "success": false,
-      "error": "Family result missing"
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T06:00:00+00:00",
+      "release_title": "UK Labour Market: October 2026",
+      "success": true,
+      "error": null
     },
     {
       "metric_id": "uk-unemployment",
@@ -549,10 +559,11 @@
       "metric_id": "uk-awe-total-yoy",
       "series_id": "KAC3",
       "release_family": "AWE",
-      "next_release": null,
-      "release_title": null,
-      "success": false,
-      "error": "Family result missing"
+      "next_release": "2026-10-20",
+      "next_release_at": "2026-10-20T06:00:00+00:00",
+      "release_title": "UK Labour Market: October 2026",
+      "success": true,
+      "error": null
     },
     {
       "metric_id": "uk-vacancies",

@@ -12,3 +12,5 @@ services:
         value: production
       - key: PORT
         value: 10000
+      - key: CALENDAR_DB_PATH
+        value: /app/data/economic_calendar.db

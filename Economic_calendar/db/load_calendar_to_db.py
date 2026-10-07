@@ -1,10 +1,11 @@
 import json
+import os
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 
 
-DB_PATH = Path("economic_calendar.db")
+DB_PATH = Path(os.environ.get("CALENDAR_DB_PATH", "economic_calendar.db"))
 INPUT_FILE = Path("all_calendar_results.json")
 TABLE_NAME = "calendar"
 
@@ -23,6 +24,7 @@ CANONICAL_ID_ALIASES = {
     "us-gdpnow": "us-gdp-now",
     "de-unemployment-rate": "de-unemployment",
     "uk-oecd-cli": "uk-cli",
+    **{f"us-cleveland-inflation-exp-{horizon}": f"us-cleveland-exp-inf-{horizon}" for horizon in ("1y", "2y", "3y", "5y", "5-10y", "10y", "30y")},
 }
 
 def canonical_metric_id(value):
@@ -93,6 +95,8 @@ def ensure_table(conn):
         "official_source": "TEXT",
         "official_evidence": "TEXT",
         "updated_at": "TEXT",
+        "release_deadline_at": "TEXT",
+        "release_time_kind": "TEXT",
     }
 
     for column, sql_type in required.items():
@@ -101,6 +105,23 @@ def ensure_table(conn):
                 f"ALTER TABLE {TABLE_NAME} "
                 f"ADD COLUMN {column} {sql_type}"
             )
+
+
+def archive_calendar(conn):
+    """Keep scheduled events when the next-release snapshot rolls forward."""
+    conn.execute("CREATE TABLE IF NOT EXISTS calendar_history AS SELECT *, COALESCE(next_release_at,next_release_date) AS scheduled_key FROM calendar WHERE 0")
+    conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS calendar_history_event ON calendar_history(metric_id,scheduled_key)")
+    conn.execute("INSERT OR REPLACE INTO calendar_history SELECT *, COALESCE(next_release_at,next_release_date) FROM calendar WHERE next_release_date IS NOT NULL AND (status != 'daily_series' OR status IS NULL)")
+
+
+def retain_confirmed_schedule(incoming, prior):
+    if incoming.get("status") != "source_error" or not prior.get("next_release_date"):
+        return incoming
+    retained = dict(incoming)
+    for key in ("next_release_date", "next_release_at", "release_deadline_at", "release_time_kind", "official_source", "updated_at"):
+        retained[key] = prior.get(key)
+    retained["official_evidence"] = "Latest provider fetch failed; retaining the last confirmed schedule. " + (prior.get("official_evidence") or "")
+    return retained
 
 
 def normalize(record):
@@ -136,6 +157,8 @@ def normalize(record):
         "official_evidence": record.get(
             "official_evidence"
         ),
+        "release_deadline_at": record.get("release_deadline_at"),
+        "release_time_kind": record.get("release_time_kind"),
 
         "updated_at": datetime.now(
             timezone.utc
@@ -173,16 +196,19 @@ def main():
 
     try:
         ensure_table(conn)
+        archive_calendar(conn)
 
         # Build the new snapshot, but first retain any existing scheduled row
         # that is absent from the current fetch output. This prevents a stale
         # or partially populated provider JSON file from deleting a previously
         # known release schedule. Legacy/provider IDs are canonicalized before
         # they are retained.
+        catalog_path = Path("catalog_metrics.json")
+        catalog_ids = {item["id"] for item in json.loads(catalog_path.read_text(encoding="utf-8"))["metrics"]} if catalog_path.exists() else None
         existing_rows = {}
-        for row in conn.execute(f"SELECT metric_id, metric, source, family, next_release_date, next_release_at, status, official_source, official_evidence FROM {TABLE_NAME}").fetchall():
+        for row in conn.execute(f"SELECT metric_id, metric, source, family, next_release_date, next_release_at, status, official_source, official_evidence, updated_at, release_deadline_at, release_time_kind FROM {TABLE_NAME}").fetchall():
             rid = canonical_metric_id(row[0])
-            if rid and rid not in existing_rows:
+            if rid and rid not in existing_rows and (catalog_ids is None or rid in catalog_ids):
                 existing_rows[rid] = row
 
         incoming = {}
@@ -194,6 +220,12 @@ def main():
                 incoming[rid] = item
 
         for rid, row in existing_rows.items():
+            if rid in incoming:
+                incoming[rid] = retain_confirmed_schedule(incoming[rid], {
+                    "next_release_date":row[4], "next_release_at":row[5],
+                    "official_source":row[7], "official_evidence":row[8], "updated_at":row[9],
+                    "release_deadline_at":row[10], "release_time_kind":row[11],
+                })
             if rid not in incoming:
                 incoming[rid] = {
                     "metric_id": rid,
@@ -205,7 +237,9 @@ def main():
                     "status": row[6],
                     "official_source": row[7],
                     "official_evidence": row[8],
-                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                    "updated_at": row[9],
+                    "release_deadline_at": row[10],
+                    "release_time_kind": row[11],
                 }
 
         valid = list(incoming.values())
@@ -222,7 +256,7 @@ def main():
                 SELECT metric, source, family,
                        next_release_date, next_release_at, status,
                        official_source,
-                       official_evidence
+                       official_evidence, release_deadline_at, release_time_kind
                 FROM {TABLE_NAME}
                 WHERE metric_id = ?
                 """,
@@ -238,6 +272,8 @@ def main():
                 item["status"],
                 item["official_source"],
                 item["official_evidence"],
+                item["release_deadline_at"],
+                item["release_time_kind"],
             )
 
             if existing is None:
@@ -254,9 +290,11 @@ def main():
                         status,
                         official_source,
                         official_evidence,
+                        release_deadline_at,
+                        release_time_kind,
                         updated_at
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         item["metric_id"],
@@ -286,6 +324,8 @@ def main():
                         status = ?,
                         official_source = ?,
                         official_evidence = ?,
+                        release_deadline_at = ?,
+                        release_time_kind = ?,
                         updated_at = ?
                     WHERE metric_id = ?
                     """,

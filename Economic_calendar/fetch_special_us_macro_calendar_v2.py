@@ -40,10 +40,13 @@ import re
 from datetime import date, datetime, timedelta
 from html.parser import HTMLParser
 from pathlib import Path
+from functools import lru_cache
+from fetch_nyfed_sce_philly_spf_calendar import extract_calendar_release, month_url
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
+from urllib.parse import urljoin, urlparse
 
-from release_time_utils import combine_date_time
+from release_time_utils import combine_date_time, extract_release_time
 
 
 TIMEOUT = 20
@@ -54,13 +57,13 @@ METRICS = [
     # Cleveland Fed / SoFIE
     ("us-cleveland-median-cpi", "Cleveland Fed Median CPI YoY", "CLEVELAND_CPI"),
     ("us-cleveland-trimmed-cpi", "Cleveland Fed 16% Trimmed-Mean CPI", "CLEVELAND_CPI"),
-    ("us-cleveland-inflation-exp-1y", "Cleveland Fed Expected Inflation 1-Year", "CLEVELAND_SOFIE"),
-    ("us-cleveland-inflation-exp-2y", "Cleveland Fed Expected Inflation 2-Year", "CLEVELAND_SOFIE"),
-    ("us-cleveland-inflation-exp-3y", "Cleveland Fed Expected Inflation 3-Year", "CLEVELAND_SOFIE"),
-    ("us-cleveland-inflation-exp-5y", "Cleveland Fed Expected Inflation 5-Year", "CLEVELAND_SOFIE"),
-    ("us-cleveland-inflation-exp-5-10y", "Cleveland Fed Expected Inflation 5–10 Year", "CLEVELAND_SOFIE"),
-    ("us-cleveland-inflation-exp-10y", "Cleveland Fed Expected Inflation 10-Year", "CLEVELAND_SOFIE"),
-    ("us-cleveland-inflation-exp-30y", "Cleveland Fed Expected Inflation 30-Year", "CLEVELAND_SOFIE"),
+    ("us-cleveland-inflation-exp-1y", "Cleveland Fed Expected Inflation 1-Year", "CLEVELAND_INFLATION_EXPECTATIONS"),
+    ("us-cleveland-inflation-exp-2y", "Cleveland Fed Expected Inflation 2-Year", "CLEVELAND_INFLATION_EXPECTATIONS"),
+    ("us-cleveland-inflation-exp-3y", "Cleveland Fed Expected Inflation 3-Year", "CLEVELAND_INFLATION_EXPECTATIONS"),
+    ("us-cleveland-inflation-exp-5y", "Cleveland Fed Expected Inflation 5-Year", "CLEVELAND_INFLATION_EXPECTATIONS"),
+    ("us-cleveland-inflation-exp-5-10y", "Cleveland Fed Expected Inflation 5–10 Year", "CLEVELAND_INFLATION_EXPECTATIONS"),
+    ("us-cleveland-inflation-exp-10y", "Cleveland Fed Expected Inflation 10-Year", "CLEVELAND_INFLATION_EXPECTATIONS"),
+    ("us-cleveland-inflation-exp-30y", "Cleveland Fed Expected Inflation 30-Year", "CLEVELAND_INFLATION_EXPECTATIONS"),
     ("us-cleveland-sofie-1y", "Cleveland Fed SoFIE Expected CPI Inflation 1-Year", "CLEVELAND_SOFIE"),
     ("us-cleveland-sofie-5y", "Cleveland Fed SoFIE Expected CPI Inflation 5-Year", "CLEVELAND_SOFIE"),
 
@@ -104,6 +107,8 @@ METRICS = [
 
 URLS = {
     "BLS_CPI": "https://www.bls.gov/schedule/news_release/cpi.htm",
+    "CLEVELAND_INFLATION_EXPECTATIONS": "https://www.clevelandfed.org/indicators-and-data/inflation-expectations",
+    "CLEVELAND_CPI": "https://www.clevelandfed.org/indicators-and-data/median-cpi",
     "CLEVELAND_SOFIE": "https://www.clevelandfed.org/indicators-and-data/survey-of-firms-inflation-expectations",
     "CLEVELAND_SITEMAP": "https://www.clevelandfed.org/ess-html-sitemap",
     "ATLANTA_CPI": "https://www.atlantafed.org/research-and-data/data/sticky-price-cpi",
@@ -250,6 +255,30 @@ def next_date_from_bls_cpi() -> dict:
     )
 
 
+def fetch_cpi_derived(family: str) -> dict:
+    d = date.fromisoformat(next_date_from_bls_cpi()["date"])
+    descriptions = {
+        "ATLANTA_CPI": "Atlanta Fed publishes sticky-price CPI by 11:00 a.m. ET on the CPI release day; this is a deadline, not an exact release time.",
+        "CLEVELAND_CPI": "Cleveland Fed derives median/trimmed CPI from the monthly BLS CPI report; no exact publication time established.",
+        "CLEVELAND_INFLATION_EXPECTATIONS": "Cleveland Fed runs the inflation expectations model on CPI release day and publishes before 4 p.m.; this is a deadline, not an exact release time.",
+    }
+    value = result(d, URLS[family], descriptions[family])
+    if family in {"ATLANTA_CPI", "CLEVELAND_INFLATION_EXPECTATIONS"}:
+        try:
+            policy = visible_text(fetch(URLS[family]))
+        except Exception:
+            value["official_evidence"] = "BLS CPI release day confirmed; the provider's publication-time policy could not be retrieved."
+            return value
+        match = re.search(r"\b(by|before)\s+(\d{1,2}(?::\d{2})?\s*[ap]\.?\s*m\.?)", policy, re.I)
+        if match:
+            value["release_deadline_at"] = combine_date_time(d, extract_release_time(match.group(2)), "America/New_York")
+            value["release_time_kind"] = match.group(1).lower()
+            value["official_evidence"] = f"BLS CPI release day confirmed; provider publication policy: {match.group(0)} Eastern time (deadline, not an exact release time)."
+        else:
+            value["official_evidence"] = "BLS CPI release day confirmed; no exact time or publication deadline was found on the provider page."
+    return value
+
+
 def result(
     d: date | None,
     source: str,
@@ -303,6 +332,26 @@ def fetch_gdpnow() -> dict:
     return result(None, URLS["ATLANTA_GDPNOW"], "No explicit future GDPNow update date found.", "not_announced")
 
 
+@lru_cache(maxsize=24)
+def fetch_nyfed_calendar(year: int, month: int) -> str:
+    return fetch(month_url(year, month))
+
+
+def result_with_calendar_time(d: date, source: str, evidence: str, titles: tuple[str, ...]) -> dict:
+    try:
+        html = fetch_nyfed_calendar(d.year, d.month)
+        for title in titles:
+            entry = extract_calendar_release(html, d.year, d.month, title)
+            if entry and entry["date"] == d and entry.get("release_time"):
+                return result(
+                    d, entry["official_source"], evidence + "; " + entry["official_evidence"],
+                    release_time=entry["release_time"], timezone_name="America/New_York",
+                )
+    except (HTTPError, URLError, TimeoutError, OSError):
+        pass
+    return result(d, source, evidence)
+
+
 def fetch_umich() -> dict:
     text = visible_text(fetch(URLS["UMICH"]))
     m = re.search(
@@ -314,12 +363,13 @@ def fetch_umich() -> dict:
     if m:
         d = parse_month_day_year(m.group(1))
         if d and d >= date.today():
-            return result(d, URLS["UMICH"], f"University of Michigan Surveys of Consumers: next data release {d.isoformat()}")
+            return result_with_calendar_time(d, URLS["UMICH"], f"University of Michigan Surveys of Consumers: next data release {d.isoformat()}", ("Michigan Consumer Survey (Preliminary)", "Michigan Consumer Survey (Final)"))
     return result(None, URLS["UMICH"], "No explicit future consumer-survey release date found.", "not_announced")
 
 
 def fetch_bie() -> dict:
-    text = visible_text(fetch(URLS["ATLANTA_BIE"]))
+    html = fetch(URLS["ATLANTA_BIE"])
+    text = visible_text(html)
     today = date.today()
 
     # Restrict parsing to the official "Survey Release Dates" section.
@@ -330,7 +380,15 @@ def fetch_bie() -> dict:
     if pos < 0:
         return result(None, URLS["ATLANTA_BIE"], "Survey Release Dates section not found.", "not_announced")
 
-    section = text[pos:pos + 1800]
+    # Read only the explicitly labelled year schedule; linked articles
+    # after it must not contribute candidate dates.
+    schedule = re.search(
+        rf"Survey Release Dates.*?<h[23]\b[^>]*>\s*(?:<strong>\s*)?{today.year}\s*(?:</strong>\s*)?</h[23]>(.*?)(?=<a\b|<h[1-6]\b|$)",
+        html, re.I | re.S,
+    )
+    if not schedule:
+        return result(None, URLS["ATLANTA_BIE"], "Current-year BIE schedule not found.", "not_announced")
+    section = visible_text(schedule.group(1))
     year = today.year
     dates = []
     month_names = (
@@ -370,25 +428,29 @@ def fetch_fed_g17() -> dict:
         url = f"{URLS['FED_CALENDAR_BASE']}/{year}-{month_name}.htm"
 
         try:
-            text = visible_text(fetch(url))
+            html = fetch(url)
         except Exception:
             continue
 
         target = "G.17 - Industrial Production and Capacity Utilization"
-        pos = text.lower().find(target.lower())
-        if pos < 0:
+        # Read the Board's title, release-date and time columns from the
+        # same row. An absent date must not borrow another event's number.
+        for candidate in re.finditer(
+            r'<div\b[^>]*class="[^"]*col-xs-2[^"]*"[^>]*>(.*?)</div>\s*'
+            r'<div\b[^>]*class="[^"]*col-xs-7[^"]*"[^>]*>(.*?)</div>\s*'
+            r'<div\b[^>]*class="[^"]*col-xs-3[^"]*"[^>]*>(.*?)</div>',
+            html, re.I | re.S,
+        ):
+            if visible_text(candidate.group(2)).strip().casefold() == target.casefold():
+                entry = candidate
+                break
+        else:
             continue
-
-        window = text[pos + len(target):pos + len(target) + 120]
-
-        # Board calendar structure:
-        # G.17 - Industrial Production and Capacity Utilization
-        # 16
-        m = re.search(r"\b([1-9]|[12]\d|3[01])\b", window)
-        if not m:
+        day_text = visible_text(entry.group(3)).strip()
+        if not re.fullmatch(r"[0-9]{1,2}", day_text):
             continue
-
-        day = int(m.group(1))
+        day = int(day_text)
+        release_time = extract_release_time(visible_text(entry.group(1)))
 
         try:
             d = date(year, month, day)
@@ -400,7 +462,7 @@ def fetch_fed_g17() -> dict:
                 d,
                 url,
                 f"Federal Reserve Board G.17 calendar entry: {d.isoformat()}",
-                release_time="09:15",
+                release_time=release_time,
                 timezone_name="America/New_York",
             )
 
@@ -428,7 +490,7 @@ def fetch_dallas() -> dict:
         if m:
             d = date(today.year, month_num, int(m.group(1)))
             if d > today:
-                return result(d, URLS["DALLAS"], f"Dallas Fed Texas Manufacturing Outlook Survey next release date: {d.isoformat()}")
+                return result_with_calendar_time(d, URLS["DALLAS"], f"Dallas Fed Texas Manufacturing Outlook Survey next release date: {d.isoformat()}", ("Dallas Fed Manufacturing Survey",))
 
     return result(None, URLS["DALLAS"], "No future Dallas Fed TMOS date parsed.", "not_announced")
 
@@ -471,7 +533,39 @@ def fetch_chicago() -> dict:
         )
     return result(None, URLS["CHICAGO"], "No future CFNAI date parsed.", "not_announced")
 
+def fetch_adp_announcement() -> dict | None:
+    listing_url = "https://mediacenter.adp.com/press-releases"
+    html = fetch(listing_url)
+    for link in re.finditer(r'<a\b[^>]*href="([^"]+)"[^>]*>(.*?)</a>', html, re.I | re.S):
+        title = visible_text(link.group(2))
+        if not re.match(r"ADP National Employment Report:\s*Private[- ]Sector Employment", title, re.I):
+            continue
+        url = urljoin(listing_url, link.group(1))
+        if urlparse(url).hostname != "mediacenter.adp.com":
+            continue
+        text = visible_text(fetch(url))
+        announcement = re.search(
+            r"ADP National Employment Report\s+will be released on\s+"
+            r"([A-Za-z]+\s+\d{1,2},\s+\d{4})\s+at\s+"
+            r"(\d{1,2}:\d{2}\s*[ap]\.?m\.?)\s*(?:ET|Eastern)",
+            text, re.I,
+        )
+        if announcement:
+            d = parse_month_day_year(announcement.group(1))
+            if d and d >= date.today():
+                return result(d, url, announcement.group(0), release_time=extract_release_time(announcement.group(2)), timezone_name="America/New_York")
+        # The newest monthly release is enough; avoid stale announcements.
+        break
+    return None
+
+
 def fetch_adp() -> dict:
+    try:
+        announcement = fetch_adp_announcement()
+        if announcement:
+            return announcement
+    except (HTTPError, URLError, TimeoutError, OSError):
+        pass
     # ADP publishes two calendars on the same page:
     #   1) monthly National Employment Report
     #   2) weekly NER pulse
@@ -567,44 +661,31 @@ def fetch_oecd_cli_bci() -> dict:
             d = datetime.strptime(f"{m.group(1)} {m.group(2)} {m.group(3)}", "%d %B %Y").date()
         except ValueError:
             continue
-        if d > today:
-            dates.append(d)
-
-    if dates:
-        d = min(dates)
-        return result(d, URLS["OECD_CLI"], f"OECD CLI/BCI dataset update date: {d.isoformat()}")
-    return result(None, URLS["OECD_CLI"], "No future OECD CLI/BCI update date parsed.", "not_announced")
-
-def fetch_oecd_unemployment() -> dict:
-    text = visible_text(fetch(URLS["OECD_RELEASES"]))
-    today = date.today()
-
-    pos = text.lower().find("unemployment rates and labour market situation")
-    if pos < 0:
-        pos = text.lower().find("unemployment rates")
-
-    window = text[pos:pos + 1800] if pos >= 0 else text
-    dates = []
-
-    for m in re.finditer(
-        r"\b(\d{1,2})\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{4})\b",
-        window,
-        re.I,
-    ):
-        try:
-            d = datetime.strptime(
-                f"{m.group(1)} {m.group(2)} {m.group(3)}", "%d %B %Y"
-            ).date()
-        except ValueError:
-            continue
         if d >= today:
             dates.append(d)
 
     if dates:
         d = min(dates)
-        return result(d, URLS["OECD_RELEASES"], f"OECD unemployment-rate release calendar: {d.isoformat()}")
+        value = result(d, URLS["OECD_CLI"], f"OECD CLI/BCI dataset update date: {d.isoformat()}")
+        published_time = re.search(r"updated\s+at\s+(\d{1,2}:\d{2})\s+CET\b", window, re.I)
+        if published_time:
+            # Preserve the published CET rule (UTC+1), rather than assuming CEST.
+            value["next_release_at"] = combine_date_time(d, published_time.group(1), "Etc/GMT-1")
+            value["official_evidence"] += f"; OECD specifies {published_time.group(1)} CET for CLIs, standardised BCIs and CCIs."
+        return value
+    return result(None, URLS["OECD_CLI"], "No future OECD CLI/BCI update date parsed.", "not_announced")
 
-    return result(None, URLS["OECD_RELEASES"], "No future OECD unemployment release date parsed.", "not_announced")
+def fetch_oecd_unemployment() -> dict:
+    # The catalog ingests Germany's LRHUTTTTDEM156S from FRED (OECD
+    # Main Economic Indicators), not the OECD aggregate unemployment
+    # press release. That press calendar cannot establish when this
+    # individual FRED series will update. FRED publishes no next date.
+    return result(
+        None,
+        "https://fred.stlouisfed.org/series/LRHUTTTTDEM156S",
+        "FRED LRHUTTTTDEM156S (OECD Main Economic Indicators): next release date unavailable; the OECD aggregate press calendar is not a series update schedule.",
+        "not_announced",
+    )
 
 
 def weekly_claims_result() -> dict:
@@ -707,9 +788,10 @@ def main():
     family_results = {}
 
     jobs = {
-        "CLEVELAND_CPI": next_date_from_bls_cpi,
+        "CLEVELAND_CPI": lambda: fetch_cpi_derived("CLEVELAND_CPI"),
+        "CLEVELAND_INFLATION_EXPECTATIONS": lambda: fetch_cpi_derived("CLEVELAND_INFLATION_EXPECTATIONS"),
         "CLEVELAND_SOFIE": sofie_result,
-        "ATLANTA_CPI": next_date_from_bls_cpi,
+        "ATLANTA_CPI": lambda: fetch_cpi_derived("ATLANTA_CPI"),
         "ATLANTA_WAGE": lambda: not_announced(
             URLS["ATLANTA_WAGE"],
             "Atlanta Fed says the Wage Growth Tracker is usually updated by the second Friday of the month; exact timing depends on Census CPS microdata availability.",
@@ -733,7 +815,8 @@ def main():
             family_results[family] = fn()
         except Exception as exc:
             source_by_family = {
-                "CLEVELAND_CPI": URLS["BLS_CPI"],
+                "CLEVELAND_CPI": URLS["CLEVELAND_CPI"],
+                "CLEVELAND_INFLATION_EXPECTATIONS": URLS["CLEVELAND_INFLATION_EXPECTATIONS"],
                 "CLEVELAND_SOFIE": URLS["CLEVELAND_SOFIE"],
                 "ATLANTA_CPI": URLS["BLS_CPI"],
                 "ATLANTA_WAGE": URLS["ATLANTA_WAGE"],
@@ -770,6 +853,8 @@ def main():
             "family": family,
             "next_release_date": r["date"],
             "next_release_at": r.get("next_release_at"),
+            "release_deadline_at": r.get("release_deadline_at"),
+            "release_time_kind": r.get("release_time_kind"),
             "release_status": r["status"],
             "official_source": r["official_source"],
             "official_evidence": r["official_evidence"],

@@ -21,6 +21,7 @@ from urllib.request import Request, urlopen
 from bs4 import BeautifulSoup
 
 from release_time_utils import combine_date_time
+from fetch_nyfed_sce_philly_spf_calendar import extract_calendar_release, month_sequence, month_url
 
 OUTPUT_FILE = Path("pmi_calendar_fetch_results.json")
 TIMEOUT = 30
@@ -84,6 +85,9 @@ def parse_ism() -> dict[str, dict]:
     today = date.today()
     out: dict[str, dict] = {}
 
+    if not soup.find("table"):
+        raise RuntimeError("ISM response contains no release-calendar table (blocked, redirected, or changed markup).")
+
     for table in soup.find_all("table"):
         for tr in table.find_all("tr"):
             cells = [" ".join(c.stripped_strings) for c in tr.find_all(["th", "td"])]
@@ -121,6 +125,8 @@ def parse_ism() -> dict[str, dict]:
                 if d < today:
                     continue
 
+                if metric_id in out and out[metric_id]["next_release"] <= d.isoformat():
+                    continue
                 out[metric_id] = {
                     "next_release": d.isoformat(),
                     "next_release_at": combine_date_time(
@@ -134,82 +140,111 @@ def parse_ism() -> dict[str, dict]:
     return out
 
 
+def parse_ism_nyfed(today: date | None = None) -> dict[str, dict]:
+    """Use the Federal Reserve's published calendar if ISM blocks retrieval."""
+    today = today or date.today()
+    targets = {
+        "us-ism-manufacturing-pmi": "ISM Manufacturing",
+        "us-ism-services-pmi": "ISM Non-Manufacturing",
+    }
+    out = {}
+    for year, month in month_sequence(today, 3):
+        try:
+            html = fetch(month_url(year, month))
+        except Exception:
+            continue
+        for metric_id, title in targets.items():
+            if metric_id in out:
+                continue
+            release = extract_calendar_release(html, year, month, title)
+            if release and release["date"] >= today:
+                out[metric_id] = {
+                    "next_release": release["date"].isoformat(),
+                    "next_release_at": release["release_at"],
+                    "status": "official_date",
+                    "official_source": release["official_source"],
+                    "official_evidence": f"NY Fed published indicators calendar: {release['official_evidence']}; ISM primary calendar could not be retrieved.",
+                }
+        if len(out) == len(targets):
+            break
+    return out
+
+
 def parse_sp() -> dict[str, dict]:
     html = fetch(SP_URL)
     soup = BeautifulSoup(html, "html.parser")
     text = soup.get_text(" ", strip=True)
     today = date.today()
 
-    # The official calendar exposes lines such as:
-    # "June 23 13:45 UTC S&P Global Flash US PMI".
-    # We intentionally match only the final monthly products used by this
-    # project, not the flash releases.
-    month_re = (
-        r"(January|February|March|April|May|June|July|August|September|"
-        r"October|November|December)"
-    )
-    pat = re.compile(
-        rf"\b{month_re}\s+(\d{{1,2}})\s+(\d{{2}}:\d{{2}})\s+UTC\s+"
-        r"([^;|]+?)(?=(?:\b(?:January|February|March|April|May|June|July|August|"
-        r"September|October|November|December)\s+\d{1,2}\s+\d{2}:\d{2}\s+UTC)|$)",
-        re.I,
-    )
-
+    # Calendar dates are headings shared by many individual UTC entries.
+    # Bound each product by the next time, rather than attaching the first
+    # time of the day to every title in the block.
+    month_re = r"January|February|March|April|May|June|July|August|September|October|November|December"
+    date_pattern = re.compile(rf"\b({month_re})\s+(\d{{1,2}})(?:\s+(20\d{{2}}))?\s+(?=\d{{1,2}}:\d{{2}}\s+UTC)", re.I)
+    entry_pattern = re.compile(r"\b(\d{1,2}:\d{2})\s+UTC\s+(.+?)(?=\b\d{1,2}:\d{2}\s+UTC|$)", re.I)
     out: dict[str, dict] = {}
-
-    # Determine a year from the closest preceding explicit year. The page
-    # normally contains one calendar year in the current/upcoming section.
-    for match in pat.finditer(text):
-        before = text[max(0, match.start() - 160):match.start()]
-        years = re.findall(r"\b(20\d{2})\b", before)
-        year = int(years[-1]) if years else today.year
-        month = MONTHS[match.group(1).lower()]
-        day = int(match.group(2))
-        utc_time = match.group(3)
-        title = " ".join(match.group(4).split())
-
+    headings = list(date_pattern.finditer(text))
+    if not headings:
+        raise RuntimeError("S&P response contains no dated UTC release entries (blocked or changed markup).")
+    for index, match in enumerate(headings):
+        years = re.findall(r"\b(20\d{2})\b", text[:match.start()])
+        year = int(match.group(3)) if match.group(3) else (int(years[-1]) if years else today.year)
         try:
-            d = date(year, month, day)
+            d = date(year, MONTHS[match.group(1).lower()], int(match.group(2)))
         except ValueError:
             continue
         if d < today:
             continue
-
-        for metric_id, pattern in SP_PATTERNS.items():
-            if not pattern.search(title):
-                continue
-            # Exclude Flash PMI entries; this catalog stores the standard
-            # monthly manufacturing/services/composite release.
+        end = headings[index + 1].start() if index + 1 < len(headings) else len(text)
+        for entry in entry_pattern.finditer(text[match.end():end]):
+            utc_time, title = entry.group(1), " ".join(entry.group(2).split())
             if "flash" in title.lower():
                 continue
-
-            out.setdefault(
-                metric_id,
-                {
+            hour, minute = map(int, utc_time.split(":"))
+            if hour > 23 or minute > 59:
+                continue
+            matched = {metric_id for metric_id, pattern in SP_PATTERNS.items() if pattern.search(title)}
+            # The final Eurozone Composite release contains its Services
+            # Business Activity index; UK Services includes Composite.
+            if "ea-sp-global-composite-pmi" in matched:
+                matched.add("ea-sp-global-services-pmi")
+            if "uk-sp-global-services-pmi" in matched:
+                matched.add("uk-sp-global-composite-pmi")
+            for metric_id in matched:
+                item = {
                     "next_release": d.isoformat(),
-                    "next_release_at": f"{d.isoformat()}T{utc_time}:00+00:00",
+                    "next_release_at": f"{d.isoformat()}T{hour:02d}:{minute:02d}:00+00:00",
                     "status": "official_date",
                     "official_source": SP_URL,
                     "official_evidence": f"S&P Global official PMI calendar: {d.isoformat()} {utc_time} UTC — {title}",
-                },
-            )
+                }
+                if metric_id not in out or item["next_release_at"] < out[metric_id]["next_release_at"]:
+                    out[metric_id] = item
 
     return out
 
 
 def main():
     results: list[dict] = []
+    errors = {}
 
     try:
         ism = parse_ism()
     except Exception as exc:
         print(f"[ISM] calendar fetch failed: {exc}")
+        errors["ISM"] = str(exc)
         ism = {}
+
+    if len(ism) < 2:
+        fallback = parse_ism_nyfed()
+        for metric_id, item in fallback.items():
+            ism.setdefault(metric_id, item)
 
     try:
         sp = parse_sp()
     except Exception as exc:
         print(f"[S&P Global] calendar fetch failed: {exc}")
+        errors["SP"] = str(exc)
         sp = {}
 
     for metric_id, (name, provider) in METRICS.items():
@@ -223,9 +258,9 @@ def main():
                     "source": provider,
                     "next_release": None,
                     "next_release_at": None,
-                    "status": "not_found",
+                    "status": "fetch_failed" if provider in errors else "not_found",
                     "official_source": ISM_URL if provider == "ISM" else SP_URL,
-                    "official_evidence": "No future matching release was found on the official calendar.",
+                    "official_evidence": errors.get(provider, "No future matching release was found on the official calendar."),
                 }
             )
         else:

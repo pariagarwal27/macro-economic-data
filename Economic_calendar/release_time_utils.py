@@ -51,7 +51,7 @@ def extract_release_time(text: str | None) -> str | None:
             continue
 
         hour = int(match.group("hour"))
-        minute = int(match.group("minute"))
+        minute = int(match.groupdict().get("minute") or 0)
 
         if hour > 23 or minute > 59:
             continue
@@ -59,6 +59,8 @@ def extract_release_time(text: str | None) -> str | None:
         ampm = match.groupdict().get("ampm")
 
         if ampm:
+            if not 1 <= hour <= 12:
+                return None
             ampm = ampm.lower().replace(".", "")
             if ampm == "pm" and hour != 12:
                 hour += 12
@@ -98,6 +100,8 @@ def combine_date_time(
     except Exception:
         return None
 
+    if not 0 <= hour <= 23 or not 0 <= minute <= 59:
+        return None
     local_dt = datetime(
         date_value.year,
         date_value.month,
@@ -161,6 +165,8 @@ def clean_datetime_value(value: str | None) -> str | None:
     if len(value) == 10 and re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
         return None
 
-    # Preserve an explicit timezone if present; otherwise preserve the
-    # source's naive datetime rather than inventing a timezone.
+    # A naive datetime cannot safely be displayed in another timezone.
+    # Fetchers must attach their verified provider timezone first.
+    if parsed.tzinfo is None:
+        return None
     return parsed.isoformat()

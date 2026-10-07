@@ -3,9 +3,10 @@
 import json
 import os
 import requests
-from datetime import date
+from datetime import date, datetime
+from bs4 import BeautifulSoup
 
-from release_time_utils import combine_date_time
+from release_time_utils import combine_date_time, extract_release_time
 
 
 # ============================================================
@@ -328,11 +329,66 @@ BLS_RELEASE_TIMES = {
     "New Residential Construction": "08:30",
     "Advance Report on Durable Goods": "08:30",
     "U.S. Import and Export Price Indexes": "08:30",
-    "Manufacturers' Shipments, Inventories, and Orders": "08:30",
+    "Manufacturers' Shipments, Inventories, and Orders": "10:00",
     "Empire State Manufacturing Survey": "08:30",
 }
 
 BLS_RELEASE_TIMEZONE = "America/New_York"
+
+CENSUS_M3_URL = "https://www.census.gov/manufacturing/m3/release_schedule.html"
+BLS_TIME_SOURCE = "https://www.bls.gov/schedule/news_release/"
+RELEASE_TIME_SOURCES = {
+    family: BLS_TIME_SOURCE for family in (
+        "CPI", "PPI", "Employment Situation", "JOLTS",
+        "Productivity and Costs", "Employment Cost Index",
+        "U.S. Import and Export Price Indexes",
+    )
+}
+RELEASE_TIME_SOURCES.update({
+    "New Residential Construction": "https://www.census.gov/construction/nrc/about_the_surveys/release_schedule.html",
+    "Advance Report on Durable Goods": CENSUS_M3_URL,
+    "Manufacturers' Shipments, Inventories, and Orders": CENSUS_M3_URL,
+    "Empire State Manufacturing Survey": "https://www.newyorkfed.org/survey/empire/empiresurvey_overview.html",
+})
+
+
+def parse_census_m3_schedule(html, today=None):
+    """Use each official M3 column's dates/time, leaving TBD unpublished."""
+    today = today or date.today()
+    out = {}
+    soup = BeautifulSoup(html, "html.parser")
+    for table in soup.find_all("table"):
+        rows = table.find_all("tr")
+        if not rows:
+            continue
+        headers = [c.get_text(" ", strip=True) for c in rows[0].find_all(["td", "th"])]
+        families = {}
+        for column, label in enumerate(headers):
+            if "Advance Report on Durable Goods" in label:
+                families[column] = "Advance Report on Durable Goods"
+            elif "Full Report" in label:
+                families[column] = "Manufacturers' Shipments, Inventories, and Orders"
+        for row in rows[1:]:
+            cells = [c.get_text(" ", strip=True) for c in row.find_all(["td", "th"])]
+            for column, family in families.items():
+                if column >= len(cells):
+                    continue
+                try:
+                    release_date = datetime.strptime(cells[column], "%m/%d/%Y").date()
+                except ValueError:
+                    continue
+                if release_date < today:
+                    continue
+                item = {
+                    "next_release": release_date.isoformat(),
+                    "next_release_at": combine_date_time(release_date, extract_release_time(headers[column]), BLS_RELEASE_TIMEZONE),
+                    "release_name": family,
+                    "official_source": CENSUS_M3_URL,
+                    "official_evidence": " | ".join(cells) + " | " + headers[column],
+                }
+                if family not in out or item["next_release"] < out[family]["next_release"]:
+                    out[family] = item
+    return out
 
 # ============================================================
 # FRED API HELPERS
@@ -479,7 +535,7 @@ def fetch_next_release(release_id):
 
         return None
 
-    return future_dates[0]
+    return min(future_dates)
 
 
 # ============================================================
@@ -508,7 +564,19 @@ def main():
 
     family_dates = {}
 
+    # These are Census products; their FRED release names do not match
+    # the historical aliases above. Prefer Census's dated column schedule.
+    try:
+        response = requests.get(CENSUS_M3_URL, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
+        response.raise_for_status()
+        family_dates.update(parse_census_m3_schedule(response.text))
+    except Exception as exc:
+        print(f"Census M3 schedule unavailable: {exc}")
+
     for family, release_info in releases.items():
+
+        if family in family_dates:
+            continue
 
         release_id = release_info["release_id"]
 
@@ -607,7 +675,10 @@ def main():
             ),
 
             "next_release": next_release,
-            "next_release_at": next_release_at
+            "next_release_at": next_release_at,
+            "official_source": family_info.get("official_source", family_info.get("release_link")),
+            "official_evidence": family_info.get("official_evidence"),
+            "official_time_source": RELEASE_TIME_SOURCES.get(family),
         }
 
 

@@ -24,16 +24,9 @@ BOE_MARKETS_SITEMAP = BOE_BASE + "/sitemap/markets"
 BOE_AGENTS_SITEMAP = BOE_BASE + "/sitemap/agents-summary"
 BOE_RELEASE_TIMEZONE = "Europe/London"
 
-# Official BoE statistical release convention: 09:30 UK unless
-# the publication explicitly states a different time.
-# IAS/DMP/Agents are covered by this convention.
-# MaPS is left explicit-only because its pages do not publish a
-# standard release time in the source text.
-BOE_STANDARD_RELEASE_TIME_BY_FAMILY = {
-    "IAS": "09:30",
-    "DMP": "09:30",
-    "AGENTS": "09:30",
-}
+# Survey publication pages can announce a date without a time.
+# Do not apply the statistical-release convention to these publications.
+BOE_STANDARD_RELEASE_TIME_BY_FAMILY = {}
 
 TIMEOUT = (5, 15)
 
@@ -213,12 +206,6 @@ def explicit_release_date(text):
             if parsed and parsed >= date.today():
                 return parsed
 
-    for raw in ISO_DATE_RE.findall(text):
-        parsed = parse_date(raw)
-
-        if parsed and parsed >= date.today():
-            return parsed
-
     return None
 
 
@@ -228,6 +215,8 @@ def explicit_date_phrase(text):
     JSON can be audited later.
     """
 
+    # Decimal times (9.30am) are part of the sentence, not its terminator.
+    sentence_text = re.sub(r"(?<=\d)\.(?=\d{2}\s*(?:am|pm))", ":", text, flags=re.I)
     patterns = [
         rf"[^.]*next\s+(?:publication|release)\s+date[^.]*"
         rf"{DATE_PATTERN}[^.]*\.",
@@ -240,7 +229,7 @@ def explicit_date_phrase(text):
     ]
 
     for pattern in patterns:
-        match = re.search(pattern, text, re.IGNORECASE | re.DOTALL)
+        match = re.search(pattern, sentence_text, re.IGNORECASE | re.DOTALL)
 
         if match:
             return " ".join(match.group(0).split())
@@ -490,7 +479,7 @@ def fetch_ias_date():
     )
 
 
-def fetch_latest_family_explicit_date(keyword_groups):
+def fetch_latest_family_explicit_date(keyword_groups, family=None):
     """
     Resolve a family from the official BoE Latest & Upcoming page.
 
@@ -625,7 +614,7 @@ def fetch_agents_date():
 
     return discover_future_release_from_sitemap(
         BOE_AGENTS_SITEMAP,
-        ["agents summary of business conditions"],
+        ["agents", "summary of business conditions"],
         family="AGENTS",
     )
 
