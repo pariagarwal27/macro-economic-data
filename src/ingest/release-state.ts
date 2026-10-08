@@ -1,4 +1,5 @@
 import { executeSql } from "@/db";
+import { RELEASE_RETRY_COOLDOWN_MS } from "./release-logging";
 
 let tableReady: Promise<void> | null = null;
 
@@ -66,7 +67,7 @@ export async function claimRelease(
    */
   const staleBefore =
     new Date(
-      Date.now() - 2 * 60_000
+      Date.now() - RELEASE_RETRY_COOLDOWN_MS
     ).toISOString();
 
   await client.execute({
@@ -175,6 +176,18 @@ export async function markReleaseProcessed(
     ],
   });
   await executeSql({ sql: "UPDATE release_poll_state SET status = 'processed' WHERE metric_id = ? AND scheduled_at = ?", args: [metricId, scheduledAt] });
+}
+
+export async function getReleaseAttempt(metricId: string, scheduledAt: string) {
+  await ensureReleaseStateTable();
+  const result = await executeSql({
+    sql: "SELECT attempts, last_attempt_at FROM release_dispatch_state WHERE metric_id = ? AND scheduled_at = ? LIMIT 1",
+    args: [metricId, scheduledAt],
+  });
+  return {
+    attempt: Number(result.rows[0]?.attempts ?? 0),
+    startedAt: result.rows[0]?.last_attempt_at == null ? null : String(result.rows[0].last_attempt_at),
+  };
 }
 
 export async function getCompletedCalendarReleases(since: string) {

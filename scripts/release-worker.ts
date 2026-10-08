@@ -1,4 +1,5 @@
 import { loadEnvConfig } from "@next/env";
+import { logReleaseEvent } from "../src/ingest/release-logging";
 
 loadEnvConfig(process.cwd());
 
@@ -11,15 +12,34 @@ async function main() {
   }
 
   const runOnce = process.env.RUN_ONCE === "1";
+  const maxMetrics = Number(process.env.RELEASE_MAX_METRICS_PER_CYCLE ?? 40);
+  logReleaseEvent({
+    event: "worker_started",
+    pollIntervalMs: interval,
+    maxMetricsPerCycle: maxMetrics,
+    runOnce,
+  });
 
   do {
     try {
       const result = await dispatchDueReleases({
-        maxMetrics: Number(process.env.RELEASE_MAX_METRICS_PER_CYCLE ?? 40),
+        maxMetrics,
       });
-      console.log(JSON.stringify(result));
+      if (result.attempted > 0) {
+        logReleaseEvent({
+          event: "cycle_completed",
+          checkedAt: result.checkedAt,
+          scheduledDue: result.scheduledDue,
+          safetyDue: result.safetyDue,
+          eligible: result.eligible,
+          attempted: result.attempted,
+        });
+      }
     } catch (error) {
-      console.error("[release-worker]", error);
+      logReleaseEvent({
+        event: "worker_cycle_failed",
+        error: error instanceof Error ? error.message : String(error),
+      });
       if (runOnce) process.exitCode = 1;
     }
 
@@ -29,6 +49,9 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error(error);
+  logReleaseEvent({
+    event: "worker_start_failed",
+    error: error instanceof Error ? error.message : String(error),
+  });
   process.exitCode = 1;
 });

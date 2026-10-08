@@ -9,10 +9,16 @@ import { fetchMetricFromOfficialSource } from "./source-adapter";
 import { processFetchedRelease } from "./release-processor";
 import {
   claimRelease,
+  getReleaseAttempt,
   markReleaseProcessed,
   markReleaseRetry,
   getPollState,
 } from "./release-state";
+import {
+  logReleaseEvent,
+  nextReleaseRetryAt,
+  RELEASE_RETRY_COOLDOWN_MS,
+} from "./release-logging";
 import { METRICS } from "@/catalog/metrics";
 import type { MetricDef } from "@/catalog/metrics";
 
@@ -200,6 +206,15 @@ async function processCandidate(candidate: Candidate) {
   );
 
   if (!claimed) {
+    const metric = METRICS.find((item) => item.id === candidate.metricId);
+    logReleaseEvent({
+      event: "attempt_skipped",
+      metricId: candidate.metricId,
+      metricName: metric?.shortName ?? metric?.name ?? candidate.metricId,
+      scheduledAt: candidate.scheduledAt,
+      mode: candidate.mode,
+      reason: "Another worker owns this attempt, or it is already complete.",
+    });
     return {
       metricId: candidate.metricId,
       status: "skipped",
@@ -207,8 +222,45 @@ async function processCandidate(candidate: Candidate) {
     };
   }
 
+  const metric = METRICS.find((item) => item.id === candidate.metricId);
+  const config = sourceConfig(candidate.metricId);
+  const attemptInfo = await getReleaseAttempt(candidate.metricId, candidate.scheduledAt);
+  const attemptStartedAt = attemptInfo.startedAt ?? new Date().toISOString();
+  const context = {
+    metricId: candidate.metricId,
+    metricName: metric?.shortName ?? metric?.name ?? candidate.metricId,
+    region: metric?.region,
+    source: metric?.source?.toUpperCase(),
+    seriesId: metric?.seriesId,
+    adapter: config?.adapter,
+    sourceSeries: config?.sourceId,
+    scheduledAt: candidate.scheduledAt,
+    mode: candidate.mode,
+    attempt: attemptInfo.attempt,
+  };
+
+  logReleaseEvent({
+    event: "attempt_started",
+    ...context,
+    at: attemptStartedAt,
+    action: "fetch_official_source",
+  });
+
+  let stage = "source_fetch";
+  const fetchStartedMs = Date.now();
   try {
     const result = await fetchMetricFromOfficialSource(candidate.metricId);
+    const sourceFetchMs = Date.now() - fetchStartedMs;
+
+    logReleaseEvent({
+      event: "source_response",
+      ...context,
+      fetched: Boolean(result),
+      period: result?.periodDate ?? null,
+      value: result?.value ?? null,
+      sourceFetchMs,
+      outcome: result ? "value_returned" : "no_new_value_returned",
+    });
 
     if (!result) {
       await markReleaseRetry(
@@ -216,12 +268,22 @@ async function processCandidate(candidate: Candidate) {
         candidate.scheduledAt,
         "Official source has not published a new value yet."
       );
+      logReleaseEvent({
+        event: "attempt_retry_scheduled",
+        ...context,
+        status: "waiting_for_source",
+        reason: "Official source has not published a new value yet.",
+        retryEligibleAt: nextReleaseRetryAt(attemptStartedAt, RELEASE_RETRY_COOLDOWN_MS),
+        retryDelaySeconds: RELEASE_RETRY_COOLDOWN_MS / 1000,
+        elapsedMs: Date.now() - Date.parse(attemptStartedAt),
+      });
       return {
         metricId: candidate.metricId,
         status: "waiting",
       };
     }
 
+    stage = "database_update";
     const processed = await processFetchedRelease({
       metricId: candidate.metricId,
       result: {
@@ -271,6 +333,27 @@ async function processCandidate(candidate: Candidate) {
       await markReleaseProcessed(candidate.metricId, candidate.scheduledAt);
     }
 
+    const safetyCheckComplete = candidate.mode === "safety" &&
+      !processed.updated && processed.reason === "no-new-release";
+    const retryEligible = !processed.updated && !safetyCheckComplete;
+    logReleaseEvent({
+      event: processed.updated ? "attempt_updated" : safetyCheckComplete ? "attempt_checked_unchanged" : "attempt_retry_scheduled",
+      ...context,
+      status: processed.updated ? "updated" : safetyCheckComplete ? "unchanged_safety_check" : "no_new_release_yet",
+      fetchedPeriod: result.periodDate,
+      fetchedValue: result.value,
+      previousPeriod: "latestDbPeriod" in processed ? processed.latestDbPeriod : null,
+      previousValue: "latestDbValue" in processed ? processed.latestDbValue : null,
+      databaseUpdated: processed.updated,
+      releaseId: "releaseId" in processed ? processed.releaseId ?? null : null,
+      reason: processed.reason ?? null,
+      retryEligibleAt: retryEligible
+        ? nextReleaseRetryAt(attemptStartedAt, RELEASE_RETRY_COOLDOWN_MS)
+        : null,
+      retryDelaySeconds: retryEligible ? RELEASE_RETRY_COOLDOWN_MS / 1000 : null,
+      elapsedMs: Date.now() - Date.parse(attemptStartedAt),
+    });
+
     return {
       metricId: candidate.metricId,
       status: "checked",
@@ -287,10 +370,16 @@ async function processCandidate(candidate: Candidate) {
       message
     );
 
-    console.error(
-      `[release-dispatcher] ${candidate.metricId}`,
-      error
-    );
+    logReleaseEvent({
+      event: "attempt_failed",
+      ...context,
+      stage,
+      status: "error",
+      error: message,
+      retryEligibleAt: nextReleaseRetryAt(attemptStartedAt, RELEASE_RETRY_COOLDOWN_MS),
+      retryDelaySeconds: RELEASE_RETRY_COOLDOWN_MS / 1000,
+      elapsedMs: Date.now() - Date.parse(attemptStartedAt),
+    });
 
     return {
       metricId: candidate.metricId,
@@ -313,7 +402,7 @@ export async function dispatchDueReleases(options?: {
     const state = pollState.get(candidate.metricId);
     if (!state) return true;
     if (state.scheduledAt === candidate.scheduledAt && state.status === "processed") return false;
-    return now.getTime() - Date.parse(state.lastAttemptAt) >= 2 * 60_000;
+    return now.getTime() - Date.parse(state.lastAttemptAt) >= RELEASE_RETRY_COOLDOWN_MS;
   }).sort((a, b) => {
     if (a.mode !== b.mode) return a.mode === "scheduled" ? -1 : 1;
     return (pollState.get(a.metricId)?.lastAttemptAt ?? "").localeCompare(pollState.get(b.metricId)?.lastAttemptAt ?? "");
