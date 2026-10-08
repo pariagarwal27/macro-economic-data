@@ -26,6 +26,19 @@ type ScrapeConfig = {
   valuePatterns: RegExp[];
 };
 
+function browserLaunchOptions() {
+  const executablePath = process.env.PLAYWRIGHT_EXECUTABLE_PATH;
+  const args = process.env.PLAYWRIGHT_NO_SANDBOX === "1"
+    ? ["--no-sandbox", "--disable-setuid-sandbox"]
+    : [];
+
+  return {
+    headless: true,
+    ...(executablePath ? { executablePath } : {}),
+    ...(args.length ? { args } : {}),
+  };
+}
+
 const ISM_BASE =
   "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports";
 
@@ -378,9 +391,7 @@ export async function fetchPmiMetric(
 
   const packageName = process.env.LOCAL_BROWSER_MODULE ?? "playwright";
   const { chromium } = await import(/* webpackIgnore: true */ packageName) as typeof import("playwright");
-  const browser = await chromium.launch({
-    headless: true,
-  });
+  const browser = await chromium.launch(browserLaunchOptions());
 
   try {
     if (metricId.startsWith("us-ism-")) {
@@ -400,9 +411,7 @@ export async function fetchAllPmiMetrics(
 
   const packageName = process.env.LOCAL_BROWSER_MODULE ?? "playwright";
   const { chromium } = await import(/* webpackIgnore: true */ packageName) as typeof import("playwright");
-  const browser = await chromium.launch({
-    headless: true,
-  });
+  const browser = await chromium.launch(browserLaunchOptions());
 
   const results = new Map<string, PmiPoint[]>();
 

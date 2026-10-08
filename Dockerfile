@@ -21,11 +21,13 @@ FROM node:20-slim AS runner
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y python3 python3-venv ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y python3 python3-venv ca-certificates chromium && rm -rf /var/lib/apt/lists/*
 COPY Economic_calendar/requirements.txt /tmp/calendar-requirements.txt
 RUN python3 -m venv /opt/calendar-python && /opt/calendar-python/bin/pip install --no-cache-dir -r /tmp/calendar-requirements.txt
 ENV PYTHON_COMMAND=/opt/calendar-python/bin/python
 ENV CALENDAR_DB_PATH=/app/data/economic_calendar.db
+ENV PLAYWRIGHT_EXECUTABLE_PATH=/usr/bin/chromium
+ENV PLAYWRIGHT_NO_SANDBOX=1
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1

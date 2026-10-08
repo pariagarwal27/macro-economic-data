@@ -13,6 +13,16 @@ async function main() {
   assert.equal(getCloudSourceConfig("us-cpi")?.adapter, "pipeline", "Cloud CPI must use its official mapping");
   assert.equal(getCloudSourceConfig("us-pce")?.source, "bea");
   assert.equal(getCloudSourceConfig("ea-inflation-comp-5y5y"), null, "Desktop-only source must not claim cloud support");
+  const pmiIds = [
+    "us-ism-manufacturing-pmi", "us-ism-services-pmi",
+    "us-sp-global-manufacturing-pmi", "us-sp-global-services-pmi",
+    "uk-sp-global-manufacturing-pmi", "uk-sp-global-services-pmi", "uk-sp-global-composite-pmi",
+    "ea-sp-global-manufacturing-pmi", "ea-sp-global-services-pmi", "ea-sp-global-composite-pmi",
+  ];
+  for (const id of pmiIds) {
+    assert.equal(getSourceConfig(id)?.adapter, "pipeline", `${id} must use the official PMI fetcher locally`);
+    assert.equal(getCloudSourceConfig(id), null, `${id} must remain excluded from D1 runtimes without a browser`);
+  }
 
   const sqlite = new DatabaseSync(":memory:");
   const calls: string[] = [];

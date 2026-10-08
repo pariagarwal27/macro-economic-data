@@ -24,6 +24,7 @@ import {
   type UiNode,
 } from "./macro-ui-hierarchy";
 import { formatEconomicLevel, formatObsDate } from "@/lib/format";
+import { formatLiveSourceLabel } from "@/lib/live-source-label";
 import { latestQuarterPair, quarterlyGrowthPoints } from "@/lib/quarterly-gdp";
 import { RefreshDataButton } from "@/components/RefreshDataButton";
 import { ExpectationComparisonChart } from "@/components/ExpectationComparisonChart";
@@ -45,6 +46,7 @@ type Metric = {
   frequency: string;
   importance: string;
   source?: string;
+  liveSource?: string | null;
   officialUrl: string;
   docsUrl: string;
   releaseName: string;
@@ -3232,7 +3234,7 @@ function IndicatorCard({
 
         <span className="release-source">
           Source:{" "}
-          {m?.source?.toUpperCase() ?? "—"}
+          {formatLiveSourceLabel(m?.liveSource)}
         </span>
       </div>
 
@@ -3796,11 +3798,12 @@ function ExpectationComponentsTable({
               <td className="px-3 py-2 text-[var(--muted)]">{payload.meta.unit}</td>
               <td className="px-3 py-2 text-[var(--muted)]">{payload.meta.frequency}</td>
               <td className="px-3 py-2 text-[var(--muted)]">
-                {payload.meta.officialUrl ? (
-                  <a href={payload.meta.officialUrl} target="_blank" rel="noreferrer" className="expectation-source-link">
-                    {payload.meta.source || "Official source"}
+                {formatLiveSourceLabel(payload.meta.liveSource)}
+                {payload.meta.officialUrl && (
+                  <a href={payload.meta.officialUrl} target="_blank" rel="noreferrer" className="expectation-source-link ml-1" aria-label={`Open official series source for ${payload.meta.shortName}`}>
+                    ↗
                   </a>
-                ) : payload.meta.source || "—"}
+                )}
               </td>
               <td className="px-3 py-2 text-[var(--muted)]">{getLatestPeriodDate(payload) ? formatObsDate(getLatestPeriodDate(payload)!) : "—"}</td>
               <td className="px-3 py-2 text-[var(--muted)]">{(payload.displayReleasedAt ?? payload.releases?.at(-1)?.releasedAt) ? formatObsDate((payload.displayReleasedAt ?? payload.releases?.at(-1)?.releasedAt)!) : "—"}</td>
@@ -4062,7 +4065,7 @@ function ComponentDetailDrawer({
               }}
             >
               {metric.meta.releaseName || "Official data series"}
-              {metric.meta.source ? ` · ${metric.meta.source.toUpperCase()}` : ""}
+              {` · Live source: ${formatLiveSourceLabel(metric.meta.liveSource)}`}
               {metric.meta.frequency ? ` · ${metric.meta.frequency}` : ""}
             </p>
           </div>
@@ -4099,7 +4102,7 @@ function ComponentDetailDrawer({
         >
           <span>Release date: <b>{metric.displayReleasedAt ? formatObsDate(metric.displayReleasedAt) : "—"}</b></span>
           <span>Latest period: <b>{latestPeriodDate ? formatObsDate(latestPeriodDate) : "—"}</b></span>
-          <span>Source: <b>{metric.meta.source?.toUpperCase() ?? "—"}</b></span>
+          <span>Live source: <b>{formatLiveSourceLabel(metric.meta.liveSource)}</b></span>
           <span>Frequency: <b>{metric.meta.frequency ?? "—"}</b></span>
         </div>
 
@@ -4281,7 +4284,7 @@ function DetailDrawer({
     .map((id) => allMetrics[id])
     .filter((payload): payload is DetailPayload => Boolean(payload));
   const expectationSources = [...new Set(expectationPayloads
-    .map((payload) => payload.meta.source?.trim())
+    .map((payload) => payload.meta.liveSource ? formatLiveSourceLabel(payload.meta.liveSource) : null)
     .filter((source): source is string => Boolean(source)))];
   const expectationFrequencies = [...new Set(expectationPayloads
     .map((payload) => payload.meta.frequency?.trim())
@@ -4651,7 +4654,7 @@ function DetailDrawer({
                               ? "BoE DMP + BoE Agents"
                               : "New York Fed SCE + Atlanta Fed Wage Growth Tracker"
                           : "Inflation expectations"
-                : `${root?.meta.releaseName ?? "Official data series"}${root?.meta.source ? ` · ${root.meta.source.toUpperCase()}` : ""}${root?.meta.frequency ? ` · ${root.meta.frequency}` : ""}`}
+                : `${root?.meta.releaseName ?? "Official data series"} · Live source: ${formatLiveSourceLabel(root?.meta.liveSource)}${root?.meta.frequency ? ` · ${root.meta.frequency}` : ""}`}
             </p>
           </div>
 
@@ -4702,7 +4705,7 @@ function DetailDrawer({
             <>
               <span>Release date: <b>{root?.displayReleasedAt ? formatObsDate(root.displayReleasedAt) : "—"}</b></span>
               <span>Latest period: <b>{latestPeriodDate ? formatObsDate(latestPeriodDate) : "—"}</b></span>
-              <span>Source: <b>{root?.meta.source?.toUpperCase() ?? "—"}</b></span>
+              <span>Live source: <b>{formatLiveSourceLabel(root?.meta.liveSource)}</b></span>
               <span>Frequency: <b>{root?.meta.frequency ?? "—"}</b></span>
             </>
           )}

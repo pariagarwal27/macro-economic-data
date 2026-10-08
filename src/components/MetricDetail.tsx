@@ -7,6 +7,7 @@ import clsx from "clsx";
 import { formatDelta, formatObsDate, formatValue } from "@/lib/format";
 import { surpriseTone, computeSurprise } from "@/lib/surprise";
 import { INFLATION_TREES, US_PCE_TREE, type Node } from "@/catalog/hierarchy";
+import { formatLiveSourceLabel } from "@/lib/live-source-label";
 
 type SeriesPayload = {
   meta: {
@@ -25,6 +26,7 @@ type SeriesPayload = {
     earliestAvailable: string | null;
     observationCount: number | null;
     lastIngestedAt: string | null;
+    liveSource?: string | null;
   };
   history: Array<{ date: string; value: number }>;
   displayReleasedAt?: string | null;
@@ -204,8 +206,11 @@ export function MetricDetail({ id }: { id: string }) {
             rel="noreferrer"
             className="rounded-lg border border-[var(--line)] px-3 py-1.5 hover:border-[var(--accent)]"
           >
-            Official source
+            Official series source
           </a>
+          <span className="rounded-lg border border-[var(--line)] px-3 py-1.5 text-[var(--muted)]">
+            Live refresh: {formatLiveSourceLabel(meta.liveSource)}
+          </span>
         </div>
       </header>
 

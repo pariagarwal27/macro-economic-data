@@ -4,6 +4,7 @@ import Link from "next/link";
 import { formatDelta, formatObsDate, formatValue } from "@/lib/format";
 import clsx from "clsx";
 import { surpriseTone } from "@/lib/surprise";
+import { formatLiveSourceLabel } from "@/lib/live-source-label";
 
 export interface MetricCardData {
   id: string;
@@ -21,6 +22,7 @@ export interface MetricCardData {
   earliestAvailable: string | null;
   observationCount: number | null;
   liveProvider?: string | null;
+  liveSource?: string | null;
   feedNote?: string | null;
   latest: { date: string; value: number } | null;
   prior: { date: string; value: number } | null;
@@ -150,13 +152,9 @@ export function MetricCard({ metric }: { metric: MetricCardData }) {
       <div className="mt-3 flex items-center justify-between border-t border-[var(--line)] pt-3 text-[11px] text-[var(--muted)]">
         <span className="truncate">
           {metric.releaseName}
-          {metric.liveProvider && metric.liveProvider !== "fred-fallback" ? (
-            <span className="ml-2 rounded bg-[var(--accent-soft)] px-1.5 py-0.5 font-medium text-[var(--accent-ink)]">
-              {metric.liveProvider}
-            </span>
-          ) : (
-            <span className="ml-2 rounded bg-[var(--line)] px-1.5 py-0.5">fred fallback</span>
-          )}
+          <span className="ml-2 rounded bg-[var(--accent-soft)] px-1.5 py-0.5 font-medium text-[var(--accent-ink)]">
+            Live · {formatLiveSourceLabel(metric.liveSource)}
+          </span>
         </span>
         <span className="text-[var(--accent-ink)] opacity-0 transition group-hover:opacity-100">
           Detail →

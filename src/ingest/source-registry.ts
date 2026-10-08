@@ -18,6 +18,8 @@ export type MetricSourceConfig = {
 
 // Authoritative LSEG routes supplied for the project. The 15 PCE-family
 // routes are deliberately excluded from this array and are routed to BEA.
+// PMI series use the official ISM/S&P release-page fetcher instead: the LSEG
+// worker requires a separate desktop session that is not present on Render.
 const LSEG: MetricSourceConfig[] = [
   ["us-cpi","USCPNY=ECI"],["us-cpi-mom","USCPI=ECI"],["us-cpi-core","USCPFY=ECI"],
   ["us-core-goods-cpi-yoy","USCPOY=ECI"],["us-core-goods-cpi-mom","USCPOF=ECI"],
@@ -48,9 +50,7 @@ const LSEG: MetricSourceConfig[] = [
   ["us-jolts-total-separations","aUSJBSEPRO/A"],["us-average-weekly-earnings","USEARN=ECI"],
   ["us-retail-gasoline","USRLCO=ECI"],["us-retail-food-beverage","aUSRSLSFB/A"],
   ["us-retail-general-merchandise","aUSRSLSGM/A"],["us-retail-nonstore","aUSRSLSNSR/A"],
-  ["us-retail-food-services","USRSL=ECI"],["us-ism-manufacturing-pmi","USPMI=ECI"],
-  ["us-ism-services-pmi","USNPMI=ECI"],["us-sp-global-manufacturing-pmi","USPMIM=ECI"],
-  ["us-sp-global-services-pmi","USPMIS=ECI"],["us-retail-total-ex-auto-gas","aUSRSLGA"],
+  ["us-retail-food-services","USRSL=ECI"],["us-retail-total-ex-auto-gas","aUSRSLGA"],
   // UK
   ["uk-cpi-yoy","GBHICY=ECI"],["uk-alcohol-cpi-yoy","GBCPXY=ECI"],["uk-cpi-mom","GBHICM=ECI"],
   ["uk-core-cpi-mom","GBCPXM=ECI"],["uk-services-cpi-yoy","pGBCPXY=4295870355"],
@@ -62,8 +62,7 @@ const LSEG: MetricSourceConfig[] = [
   ["uk-payrolled-employees-level","GBPYR=ECI"],["uk-employment-change","GBEMP=ECI"],
   ["uk-retail-sales-mom","GBRSL=ECI"],
   ["uk-retail-food-stores","aGBRSLSVFS/CA"],
-  ["uk-retail-automotive-fuel","GBRSX=ECI"],["uk-sp-global-manufacturing-pmi","GBPMIM=ECI"],
-  ["uk-sp-global-services-pmi","GBPMIS=ECI"],["uk-sp-global-composite-pmi","GBPMIC=ECI"],
+  ["uk-retail-automotive-fuel","GBRSX=ECI"],
   ["uk-employment-rate","GBILOU=ECI"],["uk-inactivity-rate","aGBEIAPRT/A"],
   // Euro area
   ["ea-hicp-yoy","EUHICY=ECI"],["ea-core-hicp-yoy","EUCPXY=ECI"],["ea-hicp-mom","EUHIC=ECI"],
@@ -73,8 +72,6 @@ const LSEG: MetricSourceConfig[] = [
   ["ea-esi","EUCONS=ECI"],["ea-unemployment","EUUNR=ECI"],["de-unemployment","DEUNR=ECI"],
   ["ea-employment-yoy","EUEMPY=ECI"],["ea-employment-qoq","EUEMPQ=ECI"],
   ["ea-retail-sales-mom","EURSL=ECI"],
-  ["ea-sp-global-manufacturing-pmi","EUPMIM=ECI"],["ea-sp-global-services-pmi","EUPMIS=ECI"],
-  ["ea-sp-global-composite-pmi","EUPMIC=ECI"],
 ].map(([metricId, sourceId]) => ({
   metricId, source: "LSEG", sourceId, adapter: "lseg",
   releaseStrategy: "scheduled-poll", pollSeconds: 5
@@ -146,6 +143,20 @@ export function getCloudSourceConfig(metricId: string): MetricSourceConfig | nul
     adapter: source === "philadelphia" ? "philadelphia" : "pipeline",
     releaseStrategy: "scheduled-poll", pollSeconds: 60,
   };
+}
+
+/**
+ * Resolve the source that actually supplies live values in the selected runtime.
+ * Pipeline adapters honor LIVE_MAP when present; dedicated adapters (for example
+ * LSEG) use their registry source directly.
+ */
+export function getActiveLiveSource(metricId: string, isCloud: boolean): string | null {
+  const config = isCloud ? getCloudSourceConfig(metricId) : getSourceConfig(metricId);
+  if (!config) return null;
+  if (config.adapter !== "pipeline") return config.source;
+
+  const mapped = LIVE_MAP[metricId];
+  return mapped && mapped.provider !== "lseg" ? mapped.provider : config.source;
 }
 
 export function assertRegistryIsValid() {

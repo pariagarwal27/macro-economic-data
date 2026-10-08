@@ -24,7 +24,8 @@ import {
   lt,
 } from "drizzle-orm";
 import { LIVE_MAP } from "@/catalog/live-map";
-import { executeRead, getDb } from "@/db";
+import { executeRead, getD1Database, getDb } from "@/db";
+import { getActiveLiveSource } from "@/ingest/source-registry";
 import {
   calendarEvents,
   ingestRuns,
@@ -256,6 +257,7 @@ export async function getDashboardData(filters?: {
   category?: string;
 }) {
   const db = getDb();
+  const isCloud = Boolean(getD1Database());
   const allMetrics = await db.select().from(metrics);
 
   const filtered = allMetrics.filter((m) => {
@@ -309,6 +311,7 @@ export async function getDashboardData(filters?: {
       observationCount: m.observationCount,
       lastIngestedAt: m.lastIngestedAt,
       liveProvider: live?.provider ?? (m.source === "fred" ? "fred-fallback" : m.source),
+      liveSource: getActiveLiveSource(m.id, isCloud),
       feedNote: release?.notes ?? null,
       latest: latest ? { date: latest.date, value: latest.value } : null,
       prior: prior ? { date: prior.date, value: prior.value } : null,
@@ -345,6 +348,7 @@ export async function getDashboardData(filters?: {
 
 export async function getSeriesHistory(metricId: string, limit = 240) {
   const db = getDb();
+  const isCloud = Boolean(getD1Database());
   const meta = (await db.select().from(metrics).where(eq(metrics.id, metricId)))[0];
   if (!meta) return null;
 
@@ -388,6 +392,7 @@ export async function getSeriesHistory(metricId: string, limit = 240) {
     meta: {
       ...meta,
       liveProvider: LIVE_MAP[metricId]?.provider ?? meta.source,
+      liveSource: getActiveLiveSource(metricId, isCloud),
     },
     history,
     releases: releasesDeduped,
@@ -419,6 +424,7 @@ export async function getSeriesHistories(
 
   const safeLimit = Math.min(Math.max(limit, 24), 2000);
   const db = getDb();
+  const isCloud = Boolean(getD1Database());
 
   const metricRows = await db
     .select()
@@ -699,6 +705,7 @@ const latestPeriod =
         ...meta,
         liveProvider:
           LIVE_MAP[metricId]?.provider ?? meta.source,
+        liveSource: getActiveLiveSource(metricId, isCloud),
       },
       history,
       releases: releasesDeduped,

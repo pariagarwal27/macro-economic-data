@@ -1,11 +1,12 @@
 import { desc, eq } from "drizzle-orm";
-import { getDb } from "@/db";
+import { getD1Database, getDb } from "@/db";
+import { getActiveLiveSource } from "@/ingest/source-registry";
 import { metrics, observations } from "@/db/schema";
 import { round } from "./transforms";
 
 type Point = { date: string; value: number };
 type Metric = {
-  id: string; name: string; shortName: string; source: string;
+  id: string; name: string; shortName: string; source: string; liveSource: string | null;
   officialUrl: string; docsUrl: string;
   date: string | null; index: number | null; yoy: number | null; mom: number | null;
   history: Point[];
@@ -70,6 +71,7 @@ function calc(points: Point[]) {
 }
 
 export async function getUsInflationDashboard() {
+  const isCloud = Boolean(getD1Database());
   const ids = [
     "us-cpi", "us-cpi-core", "us-cpi-nsa", "us-cpi-core-nsa",
     "us-pce", "us-core-pce",
@@ -88,6 +90,7 @@ export async function getUsInflationDashboard() {
     if (!m || !d) return null;
     return {
       id, name: m.name, shortName: m.shortName, source: m.source,
+      liveSource: getActiveLiveSource(id, isCloud),
       officialUrl: m.officialUrl, docsUrl: m.docsUrl,
       date: d.date, index: d.index, yoy: d.yoy, mom: d.mom, history: d.history,
     };
