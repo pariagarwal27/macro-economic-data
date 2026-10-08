@@ -23,10 +23,15 @@ import {
   type Region,
   type UiNode,
 } from "./macro-ui-hierarchy";
-import { formatObsDate } from "@/lib/format";
+import { formatEconomicLevel, formatObsDate } from "@/lib/format";
+import { latestQuarterPair, quarterlyGrowthPoints } from "@/lib/quarterly-gdp";
 import { RefreshDataButton } from "@/components/RefreshDataButton";
 import { ExpectationComparisonChart } from "@/components/ExpectationComparisonChart";
 import { EconomicCalendarSidebar } from "@/components/EconomicCalendarSidebar";
+import {
+  formatOfficialComponentWeight,
+  getOfficialComponentWeight,
+} from "@/lib/official-component-weights";
 
 
 type Metric = {
@@ -90,6 +95,81 @@ function isInChartYearRange(date: string, frequency?: string) {
   return Number(date.slice(0, 4)) >= chartStartYear(frequency);
 }
 
+const QUARTERLY_GDP_METRIC_IDS = new Set(["us-gdp-real", "uk-gdp-qoq"]);
+
+function isQuarterlyGdpMetric(metricId?: string) {
+  return Boolean(metricId && QUARTERLY_GDP_METRIC_IDS.has(metricId));
+}
+
+function QuarterlyGdpChart({
+  metric,
+  compact = false,
+  height = 320,
+}: {
+  metric: DetailPayload | undefined;
+  compact?: boolean;
+  height?: number;
+}) {
+  const data = quarterlyGrowthPoints(metric?.history ?? []);
+  if (!data.length) {
+    return compact ? null : <div className="spark-chart-empty">No quarterly data</div>;
+  }
+
+  const metricId = metric?.meta.id;
+  const seriesLabel = metricId === "us-gdp-real" ? "Quarterly growth · SAAR" : "Quarterly growth · QoQ";
+  const formatValue = (value: number) => `${value > 0 ? "+" : ""}${value.toFixed(1)}%`;
+
+  return (
+    <div
+      className={compact ? "macro-mini-chart" : undefined}
+      style={{ width: "100%", height: compact ? 76 : height, minHeight: 0 }}
+      aria-label={seriesLabel}
+    >
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={data} margin={compact ? { top: 5, right: 5, left: 5, bottom: 3 } : { top: 8, right: 22, left: 8, bottom: 28 }}>
+          <CartesianGrid vertical={false} stroke="var(--line)" strokeDasharray="3 5" />
+          <YAxis
+            hide={compact}
+            width={compact ? 0 : 60}
+            tickFormatter={(value) => `${Number(value).toFixed(1)}%`}
+            tick={{ fill: "var(--muted)", fontSize: 12 }}
+            domain={["auto", "auto"]}
+          />
+          <XAxis
+            dataKey="quarter"
+            hide={compact}
+            tickLine={false}
+            axisLine={!compact}
+            tickMargin={8}
+            minTickGap={compact ? 0 : 16}
+            interval="preserveStartEnd"
+            tick={{ fill: "var(--muted)", fontSize: 12 }}
+          />
+          <Tooltip
+            cursor={false}
+            contentStyle={{ borderRadius: 8, border: "1px solid var(--line)", background: "var(--panel)", fontSize: 12 }}
+            labelFormatter={(label) => String(label)}
+            formatter={(value) => [formatValue(Number(value)), seriesLabel]}
+          />
+          {!compact && <Legend verticalAlign="top" align="center" height={28} iconType="line" />}
+          <Line
+            type="monotone"
+            dataKey="value"
+            name={seriesLabel}
+            stroke="var(--country-series)"
+            strokeWidth={compact ? 2.6 : 2.8}
+            strokeLinecap="round"
+            dot={compact ? false : { r: 3.5, fill: "var(--panel)", stroke: "var(--country-series)", strokeWidth: 2 }}
+            activeDot={{ r: compact ? 4 : 6 }}
+            connectNulls={false}
+            isAnimationActive={false}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
 const US_INFLATION_PRIMARY_IDS = new Set([
   "us-cpi-card",
   "us-core-cpi-card",
@@ -108,30 +188,6 @@ function isUkInflationHiddenSpec(spec: IndicatorSpec) {
     id.includes("food_inflation") ||
     id.includes("household-services") ||
     id.includes("household_services")
-  );
-}
-
-function isInflationExpectationSpec(
-  spec: IndicatorSpec,
-  metrics: Record<string, DetailPayload>
-) {
-  const title = (spec.title ?? "").toLowerCase();
-  const specId = spec.id.toLowerCase();
-  const metricId = spec.metricId.toLowerCase();
-  const subcategory =
-    metrics[spec.metricId]?.meta.subcategory?.toLowerCase() ?? "";
-
-  return (
-    subcategory.startsWith("expectations_") ||
-    title.includes("expectation") ||
-    title.includes("market-based") ||
-    title.includes("market participants") ||
-    specId.includes("expectation") ||
-    specId.includes("market-based") ||
-    specId.includes("market-participants") ||
-    metricId.includes("expectation") ||
-    metricId.includes("market-based") ||
-    metricId.includes("market-participant")
   );
 }
 
@@ -168,179 +224,6 @@ function formatExpectationValue(
 
   return value.toFixed(1);
 }
-
-const INFLATION_EXPECTATION_GROUPS: ReadonlyArray<{
-  key: string;
-  title: string;
-  description: string;
-  icon: string;
-  usMetricIds?: readonly string[];
-  ukMetricIds?: readonly string[];
-  eaMetricIds?: readonly string[];
-
-}> = [
-  // US groups — preserve existing MacroHub structure.
-  {
-    key: "expectations_wage",
-    title: "Wage Expectations",
-    description: "New York Fed SCE + Atlanta Fed Wage Tracker",
-    icon: "◉",
-    usMetricIds: [
-      "us-nyfed-sce-1y",
-      "us-nyfed-sce-3y",
-      "us-nyfed-sce-5y",
-      "us-nyfed-sce-labor-earnings-1y",
-      "us-nyfed-sce-labor-job-separation-1y",
-      "us-nyfed-sce-labor-job-finding-1y",
-      "us-nyfed-sce-labor-unemployment-1y",
-      "us-nyfed-sce-finance-income-1y",
-      "us-nyfed-sce-finance-spending-1y",
-      "us-nyfed-sce-finance-tax-1y",
-      "us-atlanta-wage",
-    ],
-  },
-  {
-    key: "expectations_business",
-    title: "Business Expectations",
-    description: "Atlanta Fed BIE + Cleveland Fed SoFIE",
-    icon: "▦",
-    usMetricIds: [
-      "us-atlanta-bie-1y",
-      "us-cleveland-sofie-1y",
-      "us-cleveland-sofie-5y",
-    ],
-    ukMetricIds: [
-      "uk-dmp-inflation-exp-1y",
-      "uk-dmp-inflation-exp-3y",
-      "uk-dmp-own-price-exp-1y",
-    ],
-  },
-  {
-    key: "expectations_market",
-    title: "Market-Based Expectations",
-    description: "UK inflation swaps",
-    icon: "▥",
-    usMetricIds: [
-      "us-5y5y-forward",
-      "us-breakeven-5y",
-      "us-breakeven-10y",
-    ],
-    ukMetricIds: [
-      "uk-inflation-comp-1y",
-      "uk-inflation-comp-5y5y",
-    ],
-  },
-  {
-    key: "expectations_model",
-    title: "Model-Based",
-    description: "Cleveland Fed + University of Michigan",
-    icon: "↗",
-    usMetricIds: [
-      "us-cleveland-exp-inf-1y",
-      "us-cleveland-exp-inf-5y",
-      "us-cleveland-exp-inf-10y",
-      "us-cleveland-exp-inf-30y",
-      "us-umich-inflation-exp-1y",
-      "us-umich-inflation-exp-5y",
-    ],
-  },
-  // UK final structure.
-  {
-    key: "expectations_consumer",
-    title: "Consumer Expectations",
-    description: "BoE Inflation Attitudes Survey + Citi/YouGov",
-    icon: "◉",
-    ukMetricIds: [
-      "uk-inflation-exp-1y",
-      "uk-inflation-exp-2y",
-      "uk-inflation-exp-5y",
-      "uk-citi-yougov-inflation-exp-1y",
-      "uk-citi-yougov-inflation-exp-5-10y",
-    ],
-  },
-  {
-    key: "expectations_professional",
-    title: "Professional Expectations",
-    description: "BoE Market Participants Survey",
-    icon: "◈",
-    ukMetricIds: [
-      "uk-maps-inflation-1y",
-      "uk-maps-inflation-2y",
-      "uk-maps-inflation-3y",
-      "uk-maps-inflation-5y",
-    ],
-  },
-  {
-    key: "expectations_wage_uk",
-    title: "Wage Expectations",
-    description: "BoE DMP + BoE Agents",
-    icon: "↗",
-    ukMetricIds: [
-      "uk-dmp-wage-exp-1y",
-      "uk-agents-pay-settlement-exp-1y",
-    ],
-  },
-  {
-  key: "expectations_consumer_ea",
-  title: "Consumer Expectations",
-  description: "ECB Consumer Expectations Survey (CES)",
-  icon: "◉",
-  eaMetricIds: [
-    "ea-ces-inflation-exp-1y",
-    "ea-ces-inflation-exp-3y",
-    "ea-ces-inflation-exp-5y",
-  ],
-},
-
-{
-  key: "expectations_wage_ea",
-  title: "Wage Expectations",
-  description: "ECB Wage Tracker + SPF",
-  icon: "◌",
-  eaMetricIds: [
-    "ea-wage-tracker",
-    "ea-wage-tracker-ex-oneoff",
-    "ea-spf-wage-exp-1y",
-  ],
-},
-
-{
-  key: "expectations_business_ea",
-  title: "Business Expectations",
-  description: "ECB SAFE",
-  icon: "▦",
-  eaMetricIds: [
-    "ea-safe-selling-price-exp-1y",
-    "ea-safe-input-cost-exp-1y",
-    "ea-safe-wage-exp-1y",
-  ],
-},
-
-{
-  key: "expectations_market_ea",
-  title: "Market-Based Expectations",
-  description: "EUR inflation swaps",
-  icon: "▥",
-  eaMetricIds: [
-    "ea-inflation-comp-1y",
-    "ea-inflation-comp-2y",
-    "ea-inflation-comp-5y5y",
-  ],
-},
-
-{
-  key: "expectations_professional_ea",
-  title: "Professional Forecasters",
-  description: "ECB Survey of Professional Forecasters (SPF)",
-  icon: "◈",
-  eaMetricIds: [
-    "ea-spf-current-year",
-    "ea-inflation-exp-1y",
-    "ea-spf-hicp-2y",
-    "ea-inflation-exp-lt",
-  ],
-},
-] as const;
 
 function Spark({
   data,
@@ -583,6 +466,10 @@ function RateChart({
   const sortedRootHistory = [...rootHistory].sort(
     (a, b) => a.date.localeCompare(b.date)
   );
+
+  if (isQuarterlyGdpMetric(root?.meta.id)) {
+    return <QuarterlyGdpChart metric={root} height={height} />;
+  }
 
   const isUSNetExports = isUSNetExportsMetric(root);
 
@@ -1310,6 +1197,52 @@ function MiniRateChart({
     a.date.localeCompare(b.date)
   );
 
+  if (isQuarterlyGdpMetric(root?.meta.id)) {
+    return <QuarterlyGdpChart metric={root} compact />;
+  }
+
+  // Expectation readings are published survey/market levels. Treating them
+  // as generic index levels and calculating YoY/MoM rates creates misleading
+  // synthetic changes, so the card sparkline shows the published series.
+  if (spec.expectationGroup) {
+    const data = sortedRootHistory
+      .filter((point) => isInChartYearRange(point.date, root?.meta.frequency))
+      .map((point) => ({ date: point.date.slice(0, 10), value: Number(point.value) }))
+      .filter((point) => Number.isFinite(point.value));
+
+    if (!data.length) return null;
+
+    const seriesName = root?.meta.shortName || root?.meta.name || spec.title || "Expectation";
+    return (
+      <div className="macro-mini-chart" style={{ width: "100%", height: 76, minHeight: 0 }} aria-label={`${seriesName} published readings`}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data} margin={{ top: 5, right: 5, left: 5, bottom: 3 }}>
+            <CartesianGrid vertical={false} stroke="var(--line)" strokeDasharray="2 5" />
+            <YAxis hide domain={["auto", "auto"]} />
+            <Line
+              type="monotone"
+              dataKey="value"
+              name="expectation-level"
+              stroke="var(--country-series)"
+              strokeWidth={2.6}
+              strokeLinecap="round"
+              dot={(point) => point.index === data.length - 1 ? <circle cx={point.cx} cy={point.cy} r={3} fill="var(--country-series)" stroke="var(--panel)" strokeWidth={2} /> : null}
+              activeDot={{ r: 3.5, fill: "var(--country-series)", stroke: "var(--panel)", strokeWidth: 2 }}
+              connectNulls={false}
+              isAnimationActive={false}
+            />
+            <Tooltip
+              cursor={false}
+              contentStyle={{ borderRadius: 8, border: "1px solid var(--line)", background: "var(--panel)", fontSize: 10, padding: "5px 7px" }}
+              labelFormatter={(label) => formatChartDate(String(label), root?.meta.frequency, true)}
+              formatter={(value) => [formatExpectationValue(root, Number(value)), seriesName]}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    );
+  }
+
   const secondLabel =
     root?.meta.frequency === "weekly"
       ? "WoW"
@@ -1849,12 +1782,26 @@ function getDisplayMode(
   | "normal" {
   if (!metricId) return "normal";
 
+  if (isQuarterlyGdpMetric(metricId)) return "published-growth";
+
   if (
     metricId === "us-unemployment" ||
+    metricId === "us-u6" ||
     metricId === "us-participation" ||
+    metricId === "us-employment-population" ||
+    metricId === "us-long-term-unemployed" ||
+    metricId === "us-ahe" ||
+    metricId === "us-ahe-mom" ||
     metricId === "uk-unemployment" ||
     metricId === "uk-employment-rate" ||
-    metricId === "uk-inactivity-rate"
+    metricId === "uk-inactivity-rate" ||
+    metricId === "uk-vacancy-rate" ||
+    metricId === "ea-unemployment" ||
+    metricId === "ea-youth-unemployment" ||
+    metricId === "ea-employment-rate" ||
+    metricId === "ea-inactivity" ||
+    metricId === "ea-long-term-unemployment" ||
+    metricId === "ea-job-vacancies"
   ) {
     return "rate";
   }
@@ -1868,23 +1815,63 @@ function getDisplayMode(
 
   if (
     metricId === "us-jolts-openings" ||
+    metricId === "us-unemployed-persons" ||
+    metricId === "us-civilian-labor-force" ||
+    metricId === "us-not-in-labor-force" ||
+    metricId === "us-private-payrolls" ||
+    metricId === "us-government-payrolls" ||
+    metricId === "us-jolts-hires-level" ||
+    metricId === "us-jolts-quits-level" ||
+    metricId === "us-jolts-layoffs-level" ||
+    metricId === "us-jolts-total-separations" ||
+    metricId === "ea-unemployed-persons" ||
+    metricId === "ea-youth-unemployed-persons" ||
+    metricId === "uk-unemployed-persons" ||
+    metricId === "uk-long-term-unemployed" ||
+    metricId === "uk-inactive-persons" ||
+    metricId === "uk-employee-jobs" ||
+    metricId === "ea-vacant-posts" ||
     metricId === "uk-employment-level" ||
     metricId === "uk-vacancies" ||
     metricId === "uk-payrolled-employees-level" ||
+    metricId === "uk-inactivity-student" ||
+    metricId === "uk-inactivity-family" ||
+    metricId === "uk-inactivity-temporary-sick" ||
+    metricId === "uk-inactivity-long-term-sick" ||
+    metricId === "uk-inactivity-discouraged" ||
+    metricId === "uk-inactivity-retired" ||
+    metricId === "uk-inactivity-other" ||
     metricId === "us-payrolls-level"
   ) {
     return "level";
   }
 
   if (
+    metricId === "ea-vacancy-change" ||
+    metricId === "ea-employment-change" ||
+    metricId === "ea-inactivity-change"
+  ) {
+    return "absolute-change";
+  }
+
+  if (
     metricId === "uk-awe-total-yoy" ||
-    metricId === "uk-awe-regular-yoy"
+    metricId === "uk-awe-regular-yoy" ||
+    metricId === "uk-awe-real-total-yoy" ||
+    metricId === "uk-awe-real-regular-yoy" ||
+    metricId === "uk-payrolled-employees-annual-change" ||
+    metricId === "ea-employment-yoy" ||
+    metricId === "ea-employment-qoq" ||
+    metricId === "ea-wage-growth" ||
+    metricId === "ea-wage-growth-qoq"
   ) {
     return "published-growth";
   }
 
   if (
     metricId === "uk-employment-change" ||
+    metricId === "uk-inactivity-change" ||
+    metricId === "uk-vacancy-change" ||
     metricId === "us-nfp"
   ) {
     return "absolute-change";
@@ -1930,6 +1917,13 @@ function formatMetricValue(
   value: number | null | undefined,
   metric: DetailPayload | undefined
 ) {
+  const id = metric?.meta.id;
+  if (
+    (id === "ea-vacant-posts" || id === "ea-vacancy-change") &&
+    (value == null || !Number.isFinite(value))
+  ) {
+    return "Not published for Euro Area aggregate";
+  }
   if (
     value == null ||
     !Number.isFinite(value)
@@ -1937,14 +1931,8 @@ function formatMetricValue(
     return "—";
   }
 
-  const id = metric?.meta.id;
   const mode = getDisplayMode(id);
   const unit = metric?.meta.unit?.toLowerCase() ?? "";
-if (id === "us-real-net-exports") {
-  const billions = Math.abs(value) / 1000;
-
-  return `${value < 0 ? "-$" : "$"}${billions.toFixed(1)}B`;
-}
   if (isUSNetExportsMetric(metric)) {
     return formatUsNetExportsValue(value);
   }
@@ -1961,6 +1949,14 @@ if (UK_GROWTH_NET_TRADE_PP_IDS.has(id ?? "")) {
   }
 
   if (mode === "absolute-change") {
+    if (unit.includes("post")) {
+      const abs = Math.abs(value);
+      const sign = value > 0 ? "+" : value < 0 ? "-" : "";
+      if (abs >= 1_000_000) return `${sign}${(abs / 1_000_000).toFixed(1)}M posts`;
+      if (abs >= 1_000) return `${sign}${(abs / 1_000).toFixed(1)}K posts`;
+      return `${sign}${abs.toLocaleString("en-US", { maximumFractionDigits: 0 })} posts`;
+    }
+
     if (unit.includes("thousand")) {
       return `${
         value > 0 ? "+" : ""
@@ -1971,6 +1967,18 @@ if (UK_GROWTH_NET_TRADE_PP_IDS.has(id ?? "")) {
   }
 
   if (mode === "level") {
+    if (["usd_billions", "gbp_millions", "eur_millions"].includes(unit)) {
+      return formatEconomicLevel(value, unit);
+    }
+
+    if (unit.includes("post")) {
+      const abs = Math.abs(value);
+      const sign = value < 0 ? "-" : "";
+      if (abs >= 1_000_000) return `${sign}${(abs / 1_000_000).toFixed(1)}M posts`;
+      if (abs >= 1_000) return `${sign}${(abs / 1_000).toFixed(1)}K posts`;
+      return `${value.toLocaleString("en-US", { maximumFractionDigits: 0 })} posts`;
+    }
+
     if (unit.includes("thousand")) {
       if (Math.abs(value) >= 1000) {
         return `${(value / 1000).toFixed(1)}M`;
@@ -1995,6 +2003,22 @@ if (UK_GROWTH_NET_TRADE_PP_IDS.has(id ?? "")) {
     return value.toLocaleString("en-US");
   }
 
+  if (metric?.meta.category === "jobs" && unit.includes("percent")) {
+    return `${value.toFixed(1)}%`;
+  }
+
+  if (unit.includes("dollar")) {
+    return `$${value.toLocaleString("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}`;
+  }
+
+  if (["usd_billions", "gbp_millions", "eur_millions"].includes(unit)) {
+    return formatEconomicLevel(value, unit);
+  }
+
+  if (unit.includes("hour")) {
+    return `${value.toLocaleString("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} hrs`;
+  }
+
   return value.toLocaleString("en-US");
 }
 
@@ -2002,18 +2026,27 @@ function formatAbsoluteChangeValue(value: number | null | undefined, metric: Det
   if (value == null || !Number.isFinite(value)) return "—";
   const unit = metric?.meta.unit?.toLowerCase() ?? "";
   const sign = value > 0 ? "+" : "";
+  if (unit.includes("post")) {
+    const abs = Math.abs(value);
+    const prefix = value > 0 ? "+" : value < 0 ? "-" : "";
+    if (abs >= 1_000_000) return `${prefix}${(abs / 1_000_000).toFixed(1)}M posts`;
+    if (abs >= 1_000) return `${prefix}${(abs / 1_000).toFixed(1)}K posts`;
+    return `${prefix}${abs.toLocaleString("en-US", { maximumFractionDigits: 0 })} posts`;
+  }
   if (unit.includes("thousand")) return `${sign}${Math.round(value)}K`;
   return `${sign}${value.toLocaleString("en-US", { maximumFractionDigits: 1 })}`;
 }
 
 const percentagePointIds = new Set([
   "us-unemployment",
+  "us-long-term-unemployed",
   "us-participation",
   "uk-unemployment",
   "uk-employment-rate",
   "uk-inactivity-rate",
   "ea-unemployment",
   "ea-youth-unemployment",
+  "ea-long-term-unemployment",
   "ea-inactivity",
   "ea-job-vacancies",
 ]);
@@ -2061,6 +2094,18 @@ function getMetricKpis(
 
   const id = metric.meta.id;
   const mode = getDisplayMode(id);
+
+  if (isQuarterlyGdpMetric(id)) {
+    const { latest, prior } = latestQuarterPair(metric.history ?? []);
+    return {
+      mode: "published-growth" as const,
+      leftLabel: latest ? `Latest (${latest.quarter})` : "Latest quarter",
+      leftValue: latest?.value ?? null,
+      rightLabel: prior ? `Prior (${prior.quarter})` : "Prior quarter",
+      rightValue: prior?.value ?? null,
+      showRight: true,
+    };
+  }
 
   // US Labor Force Participation is a published rate level.
   if (id === "us-participation") {
@@ -2740,6 +2785,10 @@ function getCardKpis(
 
   const id = metric.meta.id;
 
+  if (isQuarterlyGdpMetric(id)) {
+    return getMetricKpis(metric);
+  }
+
   // The US payroll front card emphasizes the month-over-month employment
   // change; the detail view keeps its existing published level comparison.
   if (id === "us-payrolls-level" && surface === "front") {
@@ -2754,53 +2803,6 @@ function getCardKpis(
       rightValue: null,
       showRight: false,
     };
-  }
-
-  // US Unemployment: front card shows only the latest rate; the opened
-  // card shows YoY/MoM percentage-point changes.
-  if (id === "us-unemployment") {
-    if (surface === "front") {
-      const history = normalizeHistory(
-        metric.history ?? []
-      );
-
-      return {
-        mode: "rate" as const,
-        leftLabel: "Latest",
-        leftValue: history.at(-1)?.value ?? null,
-        rightLabel: "",
-        rightValue: null,
-        showRight: false,
-      };
-    }
-
-    return getMetricKpis(metric);
-  }
-
-  // US Labor Force Participation: latest/prior rate on both front and detail.
-  if (id === "us-participation") {
-    return getMetricKpis(metric);
-  }
-
-  // US JOLTS Job Openings: front card shows only the latest level; detail
-  // keeps latest/prior, with the underlying series displayed in millions.
-  if (id === "us-jolts-openings") {
-    const history = normalizeHistory(
-      metric.history ?? []
-    );
-
-    if (surface === "front") {
-      return {
-        mode: "level" as const,
-        leftLabel: "Latest",
-        leftValue: history.at(-1)?.value ?? null,
-        rightLabel: "",
-        rightValue: null,
-        showRight: false,
-      };
-    }
-
-    return getMetricKpis(metric);
   }
 
   // UK monthly GDP: show only the published MoM value.
@@ -2893,6 +2895,41 @@ if (isUSNetExportsMetric(metric)) {
     rightValue: rates.mom,
     showRight: true,
   };
+}
+
+function ExpectationMetricPreview({
+  spec,
+  metrics,
+}: {
+  spec: IndicatorSpec;
+  metrics: Record<string, DetailPayload | undefined>;
+}) {
+  const entries: UiNode[] = [];
+  const collect = (nodes: UiNode[] = []) => {
+    nodes.forEach((node) => {
+      if (node.metricId) entries.push(node);
+      if (node.children?.length) collect(node.children);
+    });
+  };
+  collect(spec.components);
+
+  return (
+    <div className="expectation-metric-preview" aria-label="Current expectation readings">
+      <span className="expectation-preview-heading">Current readings</span>
+      <div className="expectation-preview-list">
+        {entries.map((entry) => {
+          const payload = entry.metricId ? metrics[entry.metricId] : undefined;
+          const value = payload?.history?.at(-1)?.value;
+          return (
+            <div className="expectation-preview-item" key={entry.id} title={entry.label}>
+              <span>{entry.label}</span>
+              <strong>{formatExpectationValue(payload, value)}</strong>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 
@@ -3085,7 +3122,9 @@ function IndicatorCard({
         <MetricBadge importance={m?.importance} />
       </div>
 
-      <div className="macro-values">
+      {spec.expectationGroup ? (
+        <ExpectationMetricPreview spec={spec} metrics={componentMetrics} />
+      ) : <div className="macro-values">
         <div className="rate-box">
           <span>{cardKpis.leftLabel}</span>
 
@@ -3151,7 +3190,7 @@ function IndicatorCard({
             </strong>
           </div>
         )}
-      </div>
+      </div>}
 
       <div
         className={clsx(
@@ -3209,216 +3248,6 @@ function IndicatorCard({
     </article>
   );
 }
-function expectationComponentNodes(
-  region: Region,
-  groupKey: string,
-  groupMetrics: DetailPayload[]
-): UiNode[] {
-  const byId = new Map(groupMetrics.map((p) => [p.meta.id, p]));
-  const leaf = (id: string, index: number): UiNode | null => {
-    const p = byId.get(id);
-    return p
-      ? {
-          id: `${groupKey}-${id}-${index}`,
-          label: p.meta.shortName || p.meta.name,
-          metricId: id,
-        }
-      : null;
-  };
-
-  if (region !== "UK") {
-    return groupMetrics.map((p, index) => ({
-      id: `${groupKey}-${p.meta.id}-${index}`,
-      label: p.meta.shortName || p.meta.name,
-      metricId: p.meta.id,
-    }));
-  }
-
-  if (groupKey === "expectations_consumer") {
-    return [
-      {
-        id: "uk-boe-ias",
-        label: "BoE Inflation Attitudes Survey",
-        children: [
-          leaf("uk-inflation-exp-1y", 1),
-          leaf("uk-inflation-exp-2y", 2),
-          leaf("uk-inflation-exp-5y", 3),
-        ].filter(Boolean) as UiNode[],
-      },
-      {
-        id: "uk-citi-yougov",
-        label: "Citi/YouGov",
-        children: [
-          leaf("uk-citi-yougov-inflation-exp-1y", 4),
-          leaf("uk-citi-yougov-inflation-exp-5-10y", 5),
-        ].filter(Boolean) as UiNode[],
-      },
-    ];
-  }
-
-  if (groupKey === "expectations_professional") {
-    return [
-      {
-        id: "uk-maps",
-        label: "BoE Market Participants Survey",
-        children: [
-          leaf("uk-maps-inflation-1y", 1),
-          leaf("uk-maps-inflation-2y", 2),
-          leaf("uk-maps-inflation-3y", 3),
-          leaf("uk-maps-inflation-5y", 4),
-        ].filter(Boolean) as UiNode[],
-      },
-    ];
-  }
-
-  if (groupKey === "expectations_wage_uk") {
-    return [
-      {
-        id: "uk-dmp-wage",
-        label: "BoE DMP",
-        children: [leaf("uk-dmp-wage-exp-1y", 1)].filter(Boolean) as UiNode[],
-      },
-      {
-        id: "uk-agents-wage",
-        label: "BoE Agents",
-        children: [leaf("uk-agents-pay-settlement-exp-1y", 2)].filter(Boolean) as UiNode[],
-      },
-    ];
-  }
-
-  return groupMetrics.map((p, index) => ({
-    id: `${groupKey}-${p.meta.id}-${index}`,
-    label: p.meta.shortName || p.meta.name,
-    metricId: p.meta.id,
-  }));
-}
-
-function InflationExpectationSection({
-  region,
-  metrics,
-  onOpen,
-}: {
-  region: Region;
-  metrics: Record<string, DetailPayload>;
-  onOpen: (spec: IndicatorSpec) => void;
-}) {
-  if (!["US", "UK", "EA"].includes(region)) return null;
-
-  const groups = INFLATION_EXPECTATION_GROUPS
-    .filter((group) => {
-      if (region === "US") return Boolean(group.usMetricIds?.length);
-      if (region === "UK") return Boolean(group.ukMetricIds?.length);
-        if (region === "EA") return Boolean(group.eaMetricIds?.length);
-
-      return false;
-    })
-    .map((group) => {
-      const ids =
-  region === "US"
-    ? group.usMetricIds ?? []
-    : region === "UK"
-      ? group.ukMetricIds ?? []
-      : group.eaMetricIds ?? [];
-      const groupMetrics = ids
-        .map((id) => metrics[id])
-        .filter((payload): payload is DetailPayload => Boolean(payload));
-
-      const sources = new Set(groupMetrics.map((payload) => payload.meta.source).filter(Boolean));
-      const first = groupMetrics[0];
-      if (!first) return { ...group, metrics: [], sourceCount: 0, spec: null };
-
-      const expectationGroup:
-  | "consumer"
-  | "business"
-  | "market"
-  | "professional"
-  | "wage"
-  | "model" =
-  group.key === "expectations_consumer" ||
-  group.key === "expectations_consumer_ea"
-    ? "consumer"
-    : group.key === "expectations_business" ||
-        group.key === "expectations_business_ea"
-      ? "business"
-      : group.key === "expectations_market" ||
-          group.key === "expectations_market_ea"
-        ? "market"
-        : group.key === "expectations_professional" ||
-            group.key === "expectations_professional_ea"
-          ? "professional"
-          : group.key === "expectations_wage" ||
-              group.key === "expectations_wage_uk" ||
-              group.key === "expectations_wage_ea"
-            ? "wage"
-            : "model";
-
-const spec: IndicatorSpec = {
-  id: `${region.toLowerCase()}-${group.key}-group`,
-  title: group.title,
-  metricId: first.meta.id,
-  expectationGroup,
-  chartMetricIds: ids.length ? [...ids] : undefined,
-  components: expectationComponentNodes(
-    region,
-    group.key,
-    groupMetrics
-  ),
-};
-
-      return { ...group, metrics: groupMetrics, sourceCount: sources.size, spec };
-    });
-
-  return (
-    <div className="inflation-expectations-section">
-      <div className="inflation-expectations-header">
-        <div>
-          <div className="inflation-expectations-title">
-            <h3>
-              {region === "UK"
-                ? "🇬🇧 UK Inflation Expectations"
-                : region === "EA"
-                  ? "🇪🇺 Euro Area Inflation Expectations"
-                  : "Inflation Expectations"}
-            </h3>
-            <span className="expectations-info">i</span>
-            <p>
-              {region === "UK"
-                ? "Expectations from consumers, businesses, markets, professionals and wage surveys"
-                : region === "EA"
-                  ? "Expectations from consumers, wages, businesses, markets and professional forecasters"
-                  : "Expectations from wages, businesses, markets and models"}
-            </p>
-          </div>
-        </div>
-        <div className="expectations-count">
-          {groups.length} categories <ChevronRight size={20} />
-        </div>
-      </div>
-
-      <div className="expectation-category-grid">
-        {groups.map((group) => (
-          <button
-            key={group.key}
-            type="button"
-            className="expectation-category-card"
-            onClick={() => group.spec && onOpen(group.spec)}
-          >
-            <div className="expectation-icon">{group.icon}</div>
-            <div className="expectation-card-content">
-              <h4>{group.title}</h4>
-              <p>{group.description}</p>
-              <strong className="mt-3 block">
-                {group.metrics.length} {group.metrics.length === 1 ? "component" : "components"}
-              </strong>
-            </div>
-            <ChevronRight className="expectation-chevron" size={22} />
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function expectationHorizon(metricId: string, label: string) {
   const text = `${metricId} ${label}`.toLowerCase();
 
@@ -3528,7 +3357,7 @@ function ExpectationCharts({
    */
 
   const isUsWageExpectations =
-    spec.id === "us-expectations_wage-group";
+    spec.id === "us-inflation-expectations-wage";
 
   if (isUsWageExpectations) {
     const chartGroups = [
@@ -3555,23 +3384,22 @@ function ExpectationCharts({
       },
 
       {
-        key: "nyfed-labor",
-        title: "NY Fed SCE Labor Market Expectations",
-        note: "Expected earnings, job finding, job separation and unemployment.",
+        key: "pay-growth",
+        title: "Household Pay Growth Expectations",
+        note: "NY Fed SCE expected earnings growth and Atlanta Fed wage growth tracker.",
         ids: [
           "us-nyfed-sce-labor-earnings-1y",
+          "us-atlanta-wage",
+        ],
+      },
+      {
+        key: "labor-market-probabilities",
+        title: "NY Fed SCE Labor Market Probabilities",
+        note: "Expected probabilities of finding a job, job separation and higher unemployment.",
+        ids: [
           "us-nyfed-sce-labor-job-separation-1y",
           "us-nyfed-sce-labor-job-finding-1y",
           "us-nyfed-sce-labor-unemployment-1y",
-        ],
-      },
-
-      {
-        key: "atlanta-wage",
-        title: "Atlanta Fed Wage Growth Tracker",
-        note: "Atlanta Fed Wage Growth Tracker.",
-        ids: [
-          "us-atlanta-wage",
         ],
       },
     ];
@@ -3589,11 +3417,6 @@ function ExpectationCharts({
                 id
               )
             )
-            .filter(
-              (item) =>
-                item.data.length > 0
-            );
-
           if (!series.length) {
             return null;
           }
@@ -3611,9 +3434,9 @@ function ExpectationCharts({
     );
   }
 const isUsBusinessExpectations =
-  spec.id === "us-expectations_business-group";
+  spec.id === "us-inflation-expectations-business";
 
-if (isUsBusinessExpectations) {
+  if (isUsBusinessExpectations) {
   const chartGroups = [
     {
       key: "atlanta-bie",
@@ -3623,14 +3446,22 @@ if (isUsBusinessExpectations) {
         "us-atlanta-bie-1y",
       ],
     },
-    {
-      key: "cleveland-sofie",
-      title: "Cleveland Fed SoFIE",
-      note: "Quarterly 1Y business inflation expectations.",
-      ids: [
-        "us-cleveland-sofie-1y",
-      ],
-    },
+      {
+        key: "cleveland-sofie",
+        title: "Cleveland Fed SoFIE",
+        note: "Quarterly 1Y business inflation expectations.",
+        ids: [
+          "us-cleveland-sofie-1y",
+        ],
+      },
+      {
+        key: "cleveland-sofie-5y",
+        title: "Cleveland Fed SoFIE · 5-Year",
+        note: "Quarterly long-term business inflation expectations.",
+        ids: [
+          "us-cleveland-sofie-5y",
+        ],
+      },
   ];
 
   return (
@@ -3646,11 +3477,6 @@ if (isUsBusinessExpectations) {
               id
             )
           )
-          .filter(
-            (item) =>
-              item.data.length > 0
-          );
-
         if (!series.length) {
           return null;
         }
@@ -3682,7 +3508,13 @@ if (isUsBusinessExpectations) {
     Boolean(allMetrics[id])
   );
 
-  if (!ids.length) return null;
+  if (!ids.length) {
+    return (
+      <div className="expectation-comparison-empty" role="status">
+        No series data is available for this card.
+      </div>
+    );
+  }
 
   const series = ids.map((id) =>
     expectationSeries(
@@ -3712,7 +3544,121 @@ if (isUsBusinessExpectations) {
     );
   }
 
-  if (!grouped.size) return null;
+  const explicitGroups: Record<string, Array<{ key: string; title: string; note: string; ids: string[] }>> = {
+    "uk-inflation-expectations-business": [
+      {
+        key: "dmp-cpi-1y",
+        title: "BoE Decision Maker Panel · CPI 1-Year Expectations",
+        note: "Businesses’ expected consumer price inflation one year ahead.",
+        ids: ["uk-dmp-inflation-exp-1y"],
+      },
+      {
+        key: "dmp-cpi-3y",
+        title: "BoE Decision Maker Panel · CPI 3-Year Expectations",
+        note: "Businesses’ expected consumer price inflation three years ahead.",
+        ids: ["uk-dmp-inflation-exp-3y"],
+      },
+      {
+        key: "dmp-own-price",
+        title: "BoE Decision Maker Panel · Own-Price Expectations",
+        note: "Businesses’ expected own-price growth.",
+        ids: ["uk-dmp-own-price-exp-1y"],
+      },
+    ],
+    "ea-inflation-expectations-business": [
+      {
+        key: "selling-prices",
+        title: "ECB SAFE · Selling-Price Expectations",
+        note: "Expected selling-price growth over the next year.",
+        ids: ["ea-safe-selling-price-exp-1y"],
+      },
+      {
+        key: "input-costs",
+        title: "ECB SAFE · Input-Cost Expectations",
+        note: "Expected non-labour input-cost growth over the next year.",
+        ids: ["ea-safe-input-cost-exp-1y"],
+      },
+      {
+        key: "wages",
+        title: "ECB SAFE · Wage Expectations",
+        note: "Businesses’ expected wage growth over the next year.",
+        ids: ["ea-safe-wage-exp-1y"],
+      },
+    ],
+    "ea-inflation-expectations-wage": [
+      {
+        key: "wage-tracker",
+        title: "ECB Wage Tracker",
+        note: "Agreed wage growth, including and excluding one-off payments.",
+        ids: ["ea-wage-tracker", "ea-wage-tracker-ex-oneoff"],
+      },
+      {
+        key: "spf-wages",
+        title: "ECB SPF · Wage Expectations",
+        note: "Professional forecasters’ wage and labour-cost outlook.",
+        ids: ["ea-spf-wage-exp-1y"],
+      },
+    ],
+    "ea-inflation-expectations-professional": [
+      {
+        key: "spf-current-year",
+        title: "ECB SPF · Current-Year HICP",
+        note: "Survey forecast for the current calendar year.",
+        ids: ["ea-spf-current-year"],
+      },
+      {
+        key: "spf-one-year",
+        title: "ECB SPF · One-Year-Ahead HICP",
+        note: "Survey forecast for inflation one year ahead.",
+        ids: ["ea-inflation-exp-1y"],
+      },
+      {
+        key: "spf-two-year",
+        title: "ECB SPF · Two-Year-Ahead HICP",
+        note: "Survey forecast for inflation two years ahead.",
+        ids: ["ea-spf-hicp-2y"],
+      },
+      {
+        key: "spf-long-term",
+        title: "ECB SPF · Long-Term HICP",
+        note: "Long-term professional inflation expectations.",
+        ids: ["ea-inflation-exp-lt"],
+      },
+    ],
+  };
+
+  const explicit = explicitGroups[spec.id];
+  if (explicit) {
+    const groups = explicit.map((group) => ({
+      ...group,
+      series: group.ids
+        .filter((id) => Boolean(allMetrics[id]))
+        .map((id) => expectationSeries(allMetrics, id)),
+    })).filter((group) => group.series.length > 0);
+
+    if (groups.length) {
+      return (
+        <div className="grid gap-4 xl:grid-cols-2">
+          {groups.map((group) => (
+            <ExpectationComparisonChart
+              key={`${spec.id}-${group.key}`}
+              title={group.title}
+              note={group.note}
+              series={group.series}
+            />
+          ))}
+        </div>
+      );
+    }
+  }
+
+  if (!grouped.size) {
+    return (
+      <div className="expectation-comparison-empty" role="status">
+        No historical observations are available for this expectation group yet.
+      </div>
+    );
+  }
 
   const horizonOrder = [
     "1Y",
@@ -3783,17 +3729,20 @@ function ExpectationKpis({
 }) {
   if (!spec.expectationGroup) return null;
 
-  const ids = collectMetricIds(spec.components);
+  const ids = [...new Set([
+    ...collectMetricIds(spec.components),
+    ...(spec.chartMetricIds ?? []),
+  ])];
   const items = ids.map((id) => allMetrics[id]).filter((payload): payload is DetailPayload => Boolean(payload));
   const value = (payload: DetailPayload | undefined) => payload?.history.at(-1)?.value ?? null;
   const fmt = (payload: DetailPayload | undefined) => {
     const v = value(payload);
-    return v == null ? "—" : `${v.toFixed(1)}%`;
+    return formatExpectationValue(payload, v);
   };
 
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-      {items.slice(0, 4).map((payload) => (
+    <div className="expectation-kpi-grid grid grid-cols-2 gap-2 sm:grid-cols-4">
+      {items.map((payload) => (
         <div className="rate-box" key={payload.meta.id}>
           <span>{payload.meta.shortName || payload.meta.name}</span>
           <strong>{fmt(payload)}</strong>
@@ -3813,14 +3762,17 @@ function ExpectationComponentsTable({
   allMetrics: Record<string, DetailPayload | undefined>;
   onComponentOpen: (metricId: string, children?: UiNode[]) => void;
 }) {
-  const rows = collectMetricIds(spec.components)
+  const rows = [...new Set([
+    ...collectMetricIds(spec.components),
+    ...(spec.chartMetricIds ?? []),
+  ])]
     .map((id) => allMetrics[id])
     .filter((payload): payload is DetailPayload => Boolean(payload));
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-[var(--line)]">
-      <table className="min-w-[760px] w-full text-left text-[11px]">
-        <thead className="bg-[#edf5ff] text-[10px] font-bold text-[#29476f]">
+    <div className="expectation-data-table overflow-x-auto rounded-xl border border-[var(--line)]">
+      <table className="min-w-[900px] w-full text-left text-[11px]">
+        <thead>
   <tr>
     <th className="px-3 py-2">Name</th>
     <th className="px-3 py-2">Short Name</th>
@@ -3829,7 +3781,8 @@ function ExpectationComponentsTable({
     <th className="px-3 py-2">Unit</th>
     <th className="px-3 py-2">Frequency</th>
     <th className="px-3 py-2">Source</th>
-    <th className="px-3 py-2">Last Updated</th>
+    <th className="px-3 py-2">Latest period</th>
+    <th className="px-3 py-2">Released</th>
     <th className="px-3 py-2"></th>
   </tr>
 </thead>
@@ -3842,8 +3795,15 @@ function ExpectationComponentsTable({
               <td className="px-3 py-2 text-right font-mono">{formatExpectationValue(payload, payload.history.at(-2)?.value)}</td>
               <td className="px-3 py-2 text-[var(--muted)]">{payload.meta.unit}</td>
               <td className="px-3 py-2 text-[var(--muted)]">{payload.meta.frequency}</td>
-              <td className="px-3 py-2 text-[var(--muted)]">{payload.meta.source}</td>
+              <td className="px-3 py-2 text-[var(--muted)]">
+                {payload.meta.officialUrl ? (
+                  <a href={payload.meta.officialUrl} target="_blank" rel="noreferrer" className="expectation-source-link">
+                    {payload.meta.source || "Official source"}
+                  </a>
+                ) : payload.meta.source || "—"}
+              </td>
               <td className="px-3 py-2 text-[var(--muted)]">{getLatestPeriodDate(payload) ? formatObsDate(getLatestPeriodDate(payload)!) : "—"}</td>
+              <td className="px-3 py-2 text-[var(--muted)]">{(payload.displayReleasedAt ?? payload.releases?.at(-1)?.releasedAt) ? formatObsDate((payload.displayReleasedAt ?? payload.releases?.at(-1)?.releasedAt)!) : "—"}</td>
               <td className="px-3 py-2 text-right">
   <button
     type="button"
@@ -4313,6 +4273,24 @@ function DetailDrawer({
   const cardKpis = getCardKpis(spec, root, allMetrics, "detail");
   const allNodes = spec.components ?? [];
   const latestPeriodDate = getLatestPeriodDate(root);
+  const expectationMetricIds = [...new Set([
+    ...collectMetricIds(allNodes),
+    ...(spec.chartMetricIds ?? []),
+  ])];
+  const expectationPayloads = expectationMetricIds
+    .map((id) => allMetrics[id])
+    .filter((payload): payload is DetailPayload => Boolean(payload));
+  const expectationSources = [...new Set(expectationPayloads
+    .map((payload) => payload.meta.source?.trim())
+    .filter((source): source is string => Boolean(source)))];
+  const expectationFrequencies = [...new Set(expectationPayloads
+    .map((payload) => payload.meta.frequency?.trim())
+    .filter((frequency): frequency is string => Boolean(frequency)))];
+  const latestExpectationRelease = expectationPayloads
+    .flatMap((payload) => [payload.displayReleasedAt, payload.releases?.at(-1)?.releasedAt])
+    .filter((date): date is string => Boolean(date))
+    .sort()
+    .at(-1);
 
   const isExpectation =
     spec.id.includes("expectations_") ||
@@ -4330,6 +4308,7 @@ function DetailDrawer({
   const renderNode = (node: UiNode, depth = 0): React.ReactNode => {
     const d = node.metricId ? allMetrics[node.metricId] : undefined;
     const componentKpis = d ? getMetricKpis(d) : null;
+    const officialWeight = getOfficialComponentWeight(node.metricId);
     const hasChildren = !!node.children?.length;
     const expanded = !!open[node.id];
 
@@ -4353,9 +4332,9 @@ function DetailDrawer({
           className={clsx("drawer-row", hasChildren && "drawer-group")}
           style={{
             display: "grid",
-            gridTemplateColumns: "34px minmax(0, 1fr) 78px 78px minmax(90px, 120px) 34px",
+            gridTemplateColumns: "28px minmax(0, 1fr) 52px 72px 72px minmax(48px, 80px) 30px",
             alignItems: "center",
-            columnGap: 8,
+            columnGap: 4,
             width: "100%",
             minWidth: 0,
             minHeight: 56,
@@ -4409,6 +4388,32 @@ function DetailDrawer({
             }}
           >
             {node.label}
+          </div>
+
+          <div
+            className="node-weight"
+            title={officialWeight ? `${officialWeight.basis}. Official all-items basket share.` : "No directly comparable official basket weight is available for this row."}
+            style={{
+              minWidth: 0,
+              textAlign: "right",
+              color: officialWeight ? "var(--text)" : "var(--muted)",
+              whiteSpace: "nowrap",
+              fontSize: 11,
+              fontWeight: officialWeight ? 600 : 400,
+              fontVariantNumeric: "tabular-nums",
+            }}
+          >
+            {officialWeight ? (
+              <a
+                href={officialWeight.source}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`Official weight ${formatOfficialComponentWeight(officialWeight.value)}; ${officialWeight.basis}`}
+                style={{ color: "var(--accent-ink)", textDecoration: "none" }}
+              >
+                {formatOfficialComponentWeight(officialWeight.value)}
+              </a>
+            ) : "N/A"}
           </div>
 
           <div
@@ -4669,12 +4674,12 @@ function DetailDrawer({
         </div>
 
         <div
-          className="drawer-release"
+          className={clsx("drawer-release", isExpectation && "expectation-release-meta")}
           style={{
             flex: "0 0 auto",
             display: "grid",
             gridTemplateColumns: isExpectation
-              ? "repeat(3, minmax(0, 1fr))"
+              ? "repeat(4, minmax(0, 1fr))"
               : "repeat(4, minmax(0, 1fr))",
             gap: 10,
             minWidth: 0,
@@ -4685,23 +4690,12 @@ function DetailDrawer({
           {isExpectation ? (
             <>
               <span>
-                Sources: <b>{
-                  region === "EA"
-                    ? "European Central Bank"
-                    : region === "UK"
-                      ? "Bank of England + Citi/YouGov"
-                      : root?.meta.source?.toUpperCase() ?? "—"
-                }</b>
+                Sources: <b>{expectationSources.length ? expectationSources.join(" · ").toUpperCase() : "—"}</b>
               </span>
               <span>
-                Frequency: <b>{
-                  region === "EA"
-                    ? "Monthly + Quarterly + Daily"
-                    : region === "UK"
-                      ? "Monthly + Quarterly + Annual"
-                      : root?.meta.frequency ?? "—"
-                }</b>
+                Frequency: <b>{expectationFrequencies.length ? expectationFrequencies.join(" + ") : "—"}</b>
               </span>
+              <span>Latest release: <b>{latestExpectationRelease ? formatObsDate(latestExpectationRelease) : "—"}</b></span>
               <span>Coverage: <b>{spec.title ?? "Inflation expectations"}</b></span>
             </>
           ) : (
@@ -4860,7 +4854,24 @@ function DetailDrawer({
   </div>
 )}
 </div>
-            </section>
+</section>
+
+            {isExpectation && expectationMetricIds.length > 0 && (
+              <section className="drawer-components expectation-series-details">
+                <div className="drawer-section-head">
+                  <div>
+                    <h3>Series data &amp; release details</h3>
+                    <p>Latest readings, observation dates, frequency and official source for every series in this card.</p>
+                  </div>
+                  <span>{expectationPayloads.length} series</span>
+                </div>
+                <ExpectationComponentsTable
+                  spec={spec}
+                  allMetrics={allMetrics}
+                  onComponentOpen={(metricId) => onComponentOpen(metricId, [])}
+                />
+              </section>
+            )}
 
             {!isExpectation && root?.meta.category?.toLowerCase().includes("inflation") && allNodes.length > 0 && (
               <InflationDistribution
@@ -4907,9 +4918,8 @@ function DetailDrawer({
                   style={{
                     width: "100%",
                     minWidth: 0,
-                    overflowX: "auto",
-                    overflowY: "visible",
-                    WebkitOverflowScrolling: "touch",
+                    overflowX: "hidden",
+                    overflowY: "hidden",
                     boxSizing: "border-box",
                     border: "1px solid var(--line)",
                     borderRadius: 12,
@@ -4920,9 +4930,9 @@ function DetailDrawer({
                     className="component-table-head"
                     style={{
                       display: "grid",
-                      gridTemplateColumns: "34px minmax(0, 1fr) 78px 78px minmax(90px, 120px) 34px",
+                      gridTemplateColumns: "28px minmax(0, 1fr) 52px 72px 72px minmax(48px, 80px) 30px",
                       alignItems: "center",
-                      columnGap: 8,
+                      columnGap: 4,
                       minWidth: 0,
                       minHeight: 44,
                       padding: "8px 10px",
@@ -4936,6 +4946,7 @@ function DetailDrawer({
                   >
                     <span></span>
                     <span>Component</span>
+                    <span title="Official share of the all-items CPI/HICP basket; N/A when no direct official weight is available." style={{ textAlign: "right" }}>Weight</span>
                     <span style={{ textAlign: "right" }}>{componentLeftHeader}</span>
                     <span style={{ textAlign: "right" }}>{componentRightHeader}</span>
                     <span>Trend</span>
@@ -4944,6 +4955,9 @@ function DetailDrawer({
 
                   {allNodes.map((node) => renderNode(node))}
                 </div>
+                <p style={{ margin: "8px 2px 0", color: "var(--muted)", fontSize: 10, lineHeight: 1.4 }}>
+                  Weight is the published share of the all-items CPI/HICP basket using the applicable 2026 official weights. N/A means a directly comparable official basket weight is not published or does not apply.
+                </p>
               </section>
             )}
           </div>
@@ -5402,13 +5416,6 @@ const specs =
     ))}
   </div>
 
-  {category === "expectations" && (
-  <InflationExpectationSection
-    region={r}
-    metrics={metrics}
-    onOpen={setSelected}
-  />
-)}
 </div>
             </section>
           );

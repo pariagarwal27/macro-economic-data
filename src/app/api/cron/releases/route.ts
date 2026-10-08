@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { dispatchDueReleases } from "@/ingest/release-dispatcher";
+import { seedCatalog } from "@/ingest/pipeline";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -13,6 +14,12 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
   try {
+    // The scheduled worker must have catalog rows before its first release
+    // poll, including for newly added UK unemployment component series.
+    await seedCatalog({
+      metricIds: ["uk-unemployed-persons", "uk-long-term-unemployed"],
+      cleanupOrphans: false,
+    });
     const result = await dispatchDueReleases({ maxMetrics: 2 });
     return NextResponse.json({ ok: true, ...result }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {

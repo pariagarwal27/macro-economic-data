@@ -170,7 +170,7 @@ export function ExpectationComparisonChart({
 
   if (!valid.length) {
     return (
-      <div className="expectation-comparison-card rounded-2xl border border-[var(--border)] bg-white p-4">
+      <div className="expectation-comparison-card">
         <div className="expectation-comparison-heading mb-3">
         <h4 className="text-sm font-semibold text-[var(--ink)]">
           {title}
@@ -250,7 +250,7 @@ export function ExpectationComparisonChart({
   const yMax = maxValue + padding;
 
   return (
-    <div className="expectation-comparison-card rounded-2xl border border-[var(--border)] bg-white p-4">
+    <div className="expectation-comparison-card">
       <div className="expectation-comparison-heading mb-3">
         <h4 className="text-base font-semibold text-[var(--ink)]">
           {title}
@@ -278,7 +278,7 @@ export function ExpectationComparisonChart({
             }}
           >
             <CartesianGrid
-              stroke="rgba(28,36,41,0.08)"
+              stroke="var(--line)"
               vertical={false}
             />
 
@@ -287,13 +287,13 @@ export function ExpectationComparisonChart({
               tickFormatter={hasDailySeries ? dayLabel : monthLabel}
               tick={{
                 fontSize: 10,
-                fill: "#64748b",
+                fill: "var(--muted)",
               }}
               axisLine={{
-                stroke: "#94a3b8",
+                stroke: "var(--line-strong)",
               }}
               tickLine={{
-                stroke: "#94a3b8",
+                stroke: "var(--line-strong)",
               }}
               minTickGap={hasDailySeries ? 28 : 18}
               interval="preserveStartEnd"
@@ -308,13 +308,13 @@ export function ExpectationComparisonChart({
               tickFormatter={percent}
               tick={{
                 fontSize: 11,
-                fill: "#64748b",
+                fill: "var(--muted)",
               }}
               axisLine={{
-                stroke: "#94a3b8",
+                stroke: "var(--line-strong)",
               }}
               tickLine={{
-                stroke: "#94a3b8",
+                stroke: "var(--line-strong)",
               }}
               width={52}
               allowDecimals
@@ -331,8 +331,10 @@ export function ExpectationComparisonChart({
               ]}
               contentStyle={{
                 borderRadius: 12,
-                border: "1px solid #dbe3ef",
-                boxShadow: "0 8px 24px rgba(15,23,42,0.10)",
+                border: "1px solid var(--line)",
+                background: "var(--panel)",
+                color: "var(--ink)",
+                boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
                 fontSize: 12,
               }}
             />

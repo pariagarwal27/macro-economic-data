@@ -235,12 +235,18 @@ export async function ensureSchema(): Promise<void> {
   await ensureColumn("releases", "expected_value", "REAL");
 }
 
-export async function seedCatalog(): Promise<void> {
+export async function seedCatalog(opts?: {
+  metricIds?: string[];
+  cleanupOrphans?: boolean;
+}): Promise<void> {
   const db = getDb();
   const client = getClient();
   const catalogIds = new Set(METRICS.map((m) => m.id));
+  const selectedMetrics = opts?.metricIds?.length
+    ? METRICS.filter((metric) => opts.metricIds!.includes(metric.id))
+    : METRICS;
 
-  for (const m of METRICS) {
+  for (const m of selectedMetrics) {
     await db
       .insert(metrics)
       .values({
@@ -283,25 +289,27 @@ export async function seedCatalog(): Promise<void> {
       });
   }
 
-  const existing = await db.select({ id: metrics.id }).from(metrics);
-  for (const row of existing) {
-    if (!catalogIds.has(row.id)) {
-      await client.execute({
-        sql: "DELETE FROM observations WHERE metric_id = ?",
-        args: [row.id],
-      });
-      await client.execute({
-        sql: "DELETE FROM releases WHERE metric_id = ?",
-        args: [row.id],
-      });
-      await client.execute({
-        sql: "DELETE FROM metrics WHERE id = ?",
-        args: [row.id],
-      });
+  if (!opts?.metricIds?.length && opts?.cleanupOrphans !== false) {
+    const existing = await db.select({ id: metrics.id }).from(metrics);
+    for (const row of existing) {
+      if (!catalogIds.has(row.id)) {
+        await client.execute({
+          sql: "DELETE FROM observations WHERE metric_id = ?",
+          args: [row.id],
+        });
+        await client.execute({
+          sql: "DELETE FROM releases WHERE metric_id = ?",
+          args: [row.id],
+        });
+        await client.execute({
+          sql: "DELETE FROM metrics WHERE id = ?",
+          args: [row.id],
+        });
+      }
     }
   }
 
-  for (const h of X_HANDLES) {
+  for (const h of opts?.metricIds?.length ? [] : X_HANDLES) {
     await db
       .insert(sourceHandles)
       .values({
@@ -1680,7 +1688,21 @@ export async function runIngest(
     "ea-inflation-comp-5y5y",
   ]);
 
+  // Eurostat publishes the Euro Area vacancy rate, but absolute JOBVAC counts
+  // are not available for the aggregate. The count rows are omitted from the
+  // visible hierarchy and skipped here to avoid ingesting rates as post counts.
+  const unpublishedEaVacancyCountIds = new Set([
+    "ea-vacant-posts",
+    "ea-vacancy-change",
+  ]);
+
   const targets = requestedTargets.filter((metric) => {
+    if (unpublishedEaVacancyCountIds.has(metric.id)) {
+      console.log(
+        `[ingest] Skipping ${metric.id} — Eurostat does not publish absolute vacancy counts for the Euro Area aggregate`
+      );
+      return false;
+    }
     if (deferredEaMarketMetricIds.has(metric.id) && !LIVE_MAP[metric.id]) {
       console.log(
         `[ingest] Skipping deferred EA market metric ${metric.id} — LSEG RIC not configured`

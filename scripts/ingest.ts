@@ -229,7 +229,7 @@ export async function ensureSchema(): Promise<void> {
   await ensureColumn("releases", "expected_value", "REAL");
 }
 
-export async function seedCatalog(): Promise<void> {
+export async function seedCatalog(opts?: { cleanupOrphans?: boolean }): Promise<void> {
   const db = getDb();
   const client = getClient();
   const catalogIds = new Set(METRICS.map((m) => m.id));
@@ -277,21 +277,23 @@ export async function seedCatalog(): Promise<void> {
       });
   }
 
-  const existing = await db.select({ id: metrics.id }).from(metrics);
-  for (const row of existing) {
-    if (!catalogIds.has(row.id)) {
-      await client.execute({
-        sql: "DELETE FROM observations WHERE metric_id = ?",
-        args: [row.id],
-      });
-      await client.execute({
-        sql: "DELETE FROM releases WHERE metric_id = ?",
-        args: [row.id],
-      });
-      await client.execute({
-        sql: "DELETE FROM metrics WHERE id = ?",
-        args: [row.id],
-      });
+  if (opts?.cleanupOrphans !== false) {
+    const existing = await db.select({ id: metrics.id }).from(metrics);
+    for (const row of existing) {
+      if (!catalogIds.has(row.id)) {
+        await client.execute({
+          sql: "DELETE FROM observations WHERE metric_id = ?",
+          args: [row.id],
+        });
+        await client.execute({
+          sql: "DELETE FROM releases WHERE metric_id = ?",
+          args: [row.id],
+        });
+        await client.execute({
+          sql: "DELETE FROM metrics WHERE id = ?",
+          args: [row.id],
+        });
+      }
     }
   }
 
@@ -1328,7 +1330,9 @@ export async function runIngest(
   opts?: { metricIds?: string[] }
 ): Promise<IngestSummary> {
   await ensureSchema();
-  await seedCatalog();
+  // Filtered repairs/backfills should only seed their selected catalog rows;
+  // avoid deleting unrelated rows from a user's local database.
+  await seedCatalog({ cleanupOrphans: !opts?.metricIds?.length });
 
   const db = getDb();
   const startedAt = new Date().toISOString();
@@ -2334,9 +2338,14 @@ export async function getDeskSmoothedData(opts?: { months?: number }) {
 }
 const mode = process.argv[2];
 const metricsFlagIndex = process.argv.indexOf("--metrics");
-const metricsArg = metricsFlagIndex >= 0 ? process.argv[metricsFlagIndex + 1] : undefined;
+const metricsEqualsArg = process.argv.find((arg) => arg.startsWith("--metrics="));
+const metricsArg = metricsEqualsArg
+  ? metricsEqualsArg.slice("--metrics=".length)
+  : metricsFlagIndex >= 0
+    ? process.argv[metricsFlagIndex + 1]
+    : undefined;
 
-if (metricsFlagIndex >= 0 && !metricsArg) {
+if ((metricsFlagIndex >= 0 || metricsEqualsArg) && !metricsArg) {
   console.error("\n=== INGEST FAILED ===");
   console.error("--metrics requires a comma-separated list of metric IDs");
   process.exitCode = 1;

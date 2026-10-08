@@ -25,6 +25,33 @@ export function formatValue(value: number | null | undefined, unit: string): str
   return value.toFixed(digits);
 }
 
+/** Format official real expenditure levels in their catalogued currency scale. */
+export function formatEconomicLevel(value: number | null | undefined, unit: string): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) return "—";
+  const normalizedUnit = unit.toLowerCase();
+  let amount: number;
+  let symbol: string;
+
+  if (normalizedUnit === "usd_billions") {
+    amount = value;
+    symbol = "$";
+  } else if (normalizedUnit === "gbp_millions") {
+    amount = value / 1_000;
+    symbol = "£";
+  } else if (normalizedUnit === "eur_millions") {
+    amount = value / 1_000;
+    symbol = "€";
+  } else {
+    return new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 }).format(value);
+  }
+
+  const sign = amount < 0 ? "−" : "";
+  return `${sign}${symbol}${Math.abs(amount).toLocaleString("en-US", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  })}B`;
+}
+
 export function formatDelta(delta: number | null | undefined, unit: string): string {
   if (delta === null || delta === undefined || !Number.isFinite(delta)) return "—";
   const sign = delta > 0 ? "+" : "";

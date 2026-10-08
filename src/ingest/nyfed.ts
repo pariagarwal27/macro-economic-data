@@ -1204,8 +1204,67 @@ function extractHouseholdFinanceSeries(
  */
 const SCE_PAGE_URL = "https://www.newyorkfed.org/microeconomics/sce";
 
+type SceInflationSeriesId =
+  | "SCE_INFLATION_1Y"
+  | "SCE_INFLATION_3Y"
+  | "SCE_INFLATION_5Y";
+
+export function parseSceInflationRelease(
+  html: string,
+  seriesId: SceInflationSeriesId
+): RawPoint[] {
+  const text = html
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&rsquo;|&#8217;/gi, "’")
+    .replace(/&apos;/gi, "'")
+    .replace(/&amp;/gi, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const periodMatch = text.match(
+    /released the ([A-Za-z]+) (20\d{2}) Survey of Consumer Expectations/i
+  );
+  if (!periodMatch) throw new Error("NY Fed current SCE release month not found");
+
+  const months: Record<string, string> = {
+    january: "01", february: "02", march: "03", april: "04", may: "05", june: "06",
+    july: "07", august: "08", september: "09", october: "10", november: "11", december: "12",
+  };
+  const month = months[periodMatch[1]!.toLowerCase()];
+  if (!month) throw new Error("NY Fed current SCE release month is invalid");
+
+  const horizon = seriesId === "SCE_INFLATION_1Y"
+    ? "one-year(?:-ahead)?"
+    : seriesId === "SCE_INFLATION_3Y"
+      ? "three-year(?:-ahead)?"
+      : "five-year(?:-ahead)?";
+  const number = "([0-9]+(?:\\.[0-9]+)?)\\s*(?:%|percent)";
+  const valueMatch = text.match(new RegExp(
+    `(?:${horizon} horizon[^.]{0,120}?(?:to|at)\\s*${number}|(?:to|at)\\s*${number}[^.]{0,120}?${horizon} horizon)`,
+    "i"
+  ));
+  const value = valueMatch ? Number(valueMatch[1] ?? valueMatch[2]) : NaN;
+  if (!Number.isFinite(value)) {
+    throw new Error(`NY Fed SCE release does not contain ${seriesId}`);
+  }
+
+  return [{ date: `${periodMatch[2]}-${month}-01`, value }];
+}
+
+export function mergeLatestOfficialPoint(history: RawPoint[], latest: RawPoint): RawPoint[] {
+  const byDate = new Map(history.map((point) => [point.date, point]));
+  const existing = byDate.get(latest.date);
+  // The monthly release summary is the authoritative value for its period;
+  // keep all workbook history, replacing/adding only that month.
+  if (!existing || latest.value !== existing.value) byDate.set(latest.date, latest);
+  return [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
+}
+
 async function fetchLatestSceReleasePoints(
-  seriesId: "SCE_LABOR_EARNINGS_1Y" | "SCE_LABOR_JOB_FINDING_1Y"
+  seriesId: SceInflationSeriesId | "SCE_LABOR_EARNINGS_1Y" | "SCE_LABOR_JOB_FINDING_1Y"
 ): Promise<RawPoint[]> {
   const indexRes = await fetch(SCE_PAGE_URL, {
     headers: { Accept: "text/html", "User-Agent": "MacroHub/1.0" },
@@ -1229,6 +1288,14 @@ async function fetchLatestSceReleasePoints(
   if (!releaseRes.ok) throw new Error(`NY Fed SCE release ${releaseRes.status}`);
 
   const html = await releaseRes.text();
+  if (
+    seriesId === "SCE_INFLATION_1Y" ||
+    seriesId === "SCE_INFLATION_3Y" ||
+    seriesId === "SCE_INFLATION_5Y"
+  ) {
+    return parseSceInflationRelease(html, seriesId);
+  }
+
   const text = html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
@@ -1295,19 +1362,24 @@ export async function fetchNyfedSeries(
 ): Promise<RawPoint[]> {
   switch (seriesId) {
     case "SCE_INFLATION_1Y":
-      return (
-        await fetchNyFedSceInflationExpectations()
-      ).oneYear;
-
     case "SCE_INFLATION_3Y":
-      return (
-        await fetchNyFedSceInflationExpectations()
-      ).threeYear;
-
-    case "SCE_INFLATION_5Y":
-      return (
-        await fetchNyFedSceInflationExpectations()
-      ).fiveYear;
+    case "SCE_INFLATION_5Y": {
+      const result = await fetchNyFedSceInflationExpectations();
+      const history = seriesId === "SCE_INFLATION_1Y"
+        ? result.oneYear
+        : seriesId === "SCE_INFLATION_3Y"
+          ? result.threeYear
+          : result.fiveYear;
+      try {
+        const [latest] = await fetchLatestSceReleasePoints(seriesId);
+        return latest ? mergeLatestOfficialPoint(history, latest) : history;
+      } catch (error) {
+        // Keep the workbook history available during temporary release-page
+        // outages; the scheduled dispatcher will retry on the next poll.
+        console.warn(`[nyfed] ${seriesId}: latest press-release parse unavailable; using workbook history`, error);
+        return history;
+      }
+    }
 
     case "SCE_INFLATION_UNCERTAINTY_1Y":
       return fetchNyfedInflationUncertainty1y();

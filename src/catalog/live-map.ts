@@ -215,19 +215,19 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
 
   "us-jolts-hires-level": {
     provider: "bls",
-    seriesId: "JTS000000000000000HIR",
+    seriesId: "JTS000000000000000HIL",
   },
   "us-jolts-quits-level": {
     provider: "bls",
-    seriesId: "JTS000000000000000QUR",
+    seriesId: "JTS000000000000000QUL",
   },
   "us-jolts-layoffs-level": {
     provider: "bls",
-    seriesId: "JTS000000000000000LDR",
+    seriesId: "JTS000000000000000LDL",
   },
   "us-jolts-total-separations": {
     provider: "bls",
-    seriesId: "JTS000000000000000TSR",
+    seriesId: "JTS000000000000000TSL",
   },
 
   // ---------------------------------------------------------------------------

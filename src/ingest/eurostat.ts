@@ -192,14 +192,14 @@ export async function fetchEurostatPreset(seriesId: string): Promise<RawPoint[]>
       });
     case "ea_gdp_real":
       return fetchEurostatSeries("namq_10_gdp", {
-        geo: "EA20",
+        geo: "EA21",
         na_item: "B1GQ",
-        unit: "CLV15_MEUR",
+        unit: "CLV20_MEUR",
         s_adj: "SCA",
       });
       case "ea_retail_food_drinks_tobacco":
   return fetchEurostatSeries("sts_trtu_m", {
-    geo: "EA20",
+    geo: "EA21",
     nace_r2: "G47_FOOD",
     indic_bt: "VOL_SLS",
     unit: "I21",
@@ -208,7 +208,7 @@ export async function fetchEurostatPreset(seriesId: string): Promise<RawPoint[]>
 
 case "ea_retail_non_food_ex_fuel":
   return fetchEurostatSeries("sts_trtu_m", {
-    geo: "EA20",
+    geo: "EA21",
     nace_r2: "G47_NFOOD_X_G473",
     indic_bt: "VOL_SLS",
     unit: "I21",
@@ -217,7 +217,7 @@ case "ea_retail_non_food_ex_fuel":
 
 case "ea_retail_automotive_fuel":
   return fetchEurostatSeries("sts_trtu_m", {
-    geo: "EA20",
+    geo: "EA21",
     nace_r2: "G473",
     indic_bt: "VOL_SLS",
     unit: "I21",
@@ -226,7 +226,7 @@ case "ea_retail_automotive_fuel":
 
 case "ea_retail_sales_total_ex_motor_vehicles":
   return fetchEurostatSeries("sts_trtu_m", {
-    geo: "EA20",
+    geo: "EA21",
     nace_r2: "G47",
     indic_bt: "VOL_SLS",
     unit: "I21",
@@ -421,37 +421,37 @@ case "jvs_q_nace2": {
   });
     case "ea_household_consumption":
       return fetchEurostatSeries("namq_10_gdp", {
-        geo: "EA20",
-        na_item: "P3",
-        unit: "CLV15_MEUR",
+        geo: "EA21",
+        na_item: "P31_S14_S15",
+        unit: "CLV20_MEUR",
         s_adj: "SCA",
       });
     case "ea_gfcf":
       return fetchEurostatSeries("namq_10_gdp", {
-        geo: "EA20",
+        geo: "EA21",
         na_item: "P51G",
-        unit: "CLV15_MEUR",
+        unit: "CLV20_MEUR",
         s_adj: "SCA",
       });
     case "ea_government_consumption":
       return fetchEurostatSeries("namq_10_gdp", {
-        geo: "EA20",
+        geo: "EA21",
         na_item: "P3_S13",
-        unit: "CLV15_MEUR",
+        unit: "CLV20_MEUR",
         s_adj: "SCA",
       });
     case "ea_exports":
       return fetchEurostatSeries("namq_10_gdp", {
-        geo: "EA20",
+        geo: "EA21",
         na_item: "P6",
-        unit: "CLV15_MEUR",
+        unit: "CLV20_MEUR",
         s_adj: "SCA",
       });
     case "ea_imports":
       return fetchEurostatSeries("namq_10_gdp", {
-        geo: "EA20",
+        geo: "EA21",
         na_item: "P7",
-        unit: "CLV15_MEUR",
+        unit: "CLV20_MEUR",
         s_adj: "SCA",
       });
     case "ea_inactivity_rate":
@@ -466,7 +466,7 @@ case "jvs_q_nace2": {
     geo: "EA21",
     nace_r2_1: "B-T",
     sizeclas: "TOTAL",
-    s_adj: "NSA",
+    s_adj: "SA",
     indic_em: "JVR",
   });
     case "lc_lci_wage_qoq":
@@ -520,14 +520,15 @@ case "jvs_q_nace2": {
         geo: "EA21",
         nace_r2_1: "B-T",
         sizeclas: "TOTAL",
-        s_adj: "NSA",
-        indic_em: "JVR",
+        s_adj: "SA",
+        indic_em: "JOBVAC",
       });
     case "ea-long-term-unemployment":
       return fetchEurostatSeries("une_ltu_q", {
         geo: "EA21",
         sex: "T",
-        unit: "PC_UNE",
+        age: "Y15-74",
+        unit: "PC_ACT",
       });
     default:
       return fetchEurostatSeries(seriesId, { geo: "EA" });

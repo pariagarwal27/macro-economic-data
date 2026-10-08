@@ -24,6 +24,12 @@ export function applyTransform(
   const out: TransformedPoint[] = [];
   for (let i = 0; i < sorted.length; i++) {
     const cur = sorted[i];
+    if (transform === "diff_3m") {
+      const priorDate = shiftMonths(cur.date, -3);
+      const prev = sorted.find((point) => point.date === priorDate);
+      if (prev) out.push({ date: cur.date, value: cur.value - prev.value, rawValue: cur.value });
+      continue;
+    }
     if (transform === "diff" || transform === "pct_change") {
       if (i === 0) continue;
       const prev = sorted[i - 1];
@@ -67,6 +73,12 @@ export function applyTransform(
 function shiftYear(date: string): string {
   const [y, m, d] = date.split("-").map(Number);
   return `${String(y - 1).padStart(4, "0")}-${String(m).padStart(2, "0")}-${String(d ?? 1).padStart(2, "0")}`;
+}
+
+function shiftMonths(date: string, offset: number): string {
+  const [year, month, day] = date.split("-").map(Number);
+  const shifted = new Date(Date.UTC(year, month - 1 + offset, day));
+  return `${shifted.getUTCFullYear()}-${String(shifted.getUTCMonth() + 1).padStart(2, "0")}-${String(shifted.getUTCDate()).padStart(2, "0")}`;
 }
 
 function findClosest(points: RawPoint[], target: string, beforeIdx: number): RawPoint | null {

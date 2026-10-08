@@ -123,17 +123,14 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
 
 {
   id: "us-inflation-expectations-consumer",
-  metricId: "us-cleveland-exp-inf-1y",
+  metricId: "us-umich-inflation-exp-1y",
   title: "Consumer Expectations",
   expectationGroup: "consumer",
   components: [
-    n("cleveland-1y", "Cleveland Fed — 1-Year", "us-cleveland-exp-inf-1y"),
     n("umich-1y", "University of Michigan — 1-Year", "us-umich-inflation-exp-1y"),
+    n("umich-5y", "University of Michigan — 5-Year", "us-umich-inflation-exp-5y"),
   ],
   chartMetricIds: [
-    "us-cleveland-exp-inf-1y",
-    "us-cleveland-exp-inf-3y",
-    "us-cleveland-exp-inf-5y",
     "us-umich-inflation-exp-1y",
     "us-umich-inflation-exp-5y",
   ],
@@ -142,7 +139,7 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
 {
   id: "us-inflation-expectations-wage",
   metricId: "us-nyfed-sce-labor-earnings-1y",
-  title: "Wage Expectations",
+  title: "Household & Wage Expectations",
   expectationGroup: "wage",
   components: [
     n("sce-inflation-1y", "NY Fed SCE Inflation — 1-Year", "us-nyfed-sce-1y"),
@@ -183,10 +180,12 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
   components: [
     n("atlanta-bie", "Atlanta Fed BIE", "us-atlanta-bie-1y"),
     n("cleveland-sofie", "Cleveland Fed SoFIE", "us-cleveland-sofie-1y"),
+    n("cleveland-sofie-5y", "Cleveland Fed SoFIE — 5-Year", "us-cleveland-sofie-5y"),
   ],
   chartMetricIds: [
     "us-atlanta-bie-1y",
     "us-cleveland-sofie-1y",
+    "us-cleveland-sofie-5y",
   ],
 },
 
@@ -216,24 +215,24 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
   expectationGroup: "model",
   components: [
     n("cleveland-1y", "Cleveland Fed — 1-Year", "us-cleveland-exp-inf-1y"),
+    n("cleveland-3y", "Cleveland Fed — 3-Year", "us-cleveland-exp-inf-3y"),
     n("cleveland-5y", "Cleveland Fed — 5-Year", "us-cleveland-exp-inf-5y"),
+    n("cleveland-10y", "Cleveland Fed — 10-Year", "us-cleveland-exp-inf-10y"),
+    n("cleveland-30y", "Cleveland Fed — 30-Year", "us-cleveland-exp-inf-30y"),
   ],
   chartMetricIds: [
     "us-cleveland-exp-inf-1y",
+    "us-cleveland-exp-inf-3y",
     "us-cleveland-exp-inf-5y",
+    "us-cleveland-exp-inf-10y",
+    "us-cleveland-exp-inf-30y",
   ],
 },
   ],
     growth: [
       {
         id: "us-gdp-card", metricId: "us-gdp-real", title: "Real GDP",
-        components: [
-          n("gdp", "Real GDP", "us-gdp-real"),
-          n("pce", "Personal Consumption", "us-real-pce-growth"),
-          n("investment", "Private Investment", "us-real-private-investment"),
-          n("net-exports", "Net Exports", "us-real-net-exports"),
-          n("government", "Government", "us-real-government"),
-        ],
+        components: [n("gdp", "Real GDP", "us-gdp-real")],
       },
       {
   id: "us-retail-sales-card",
@@ -322,7 +321,7 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
         components: [
           n("rate", "Unemployment Rate", "us-unemployment"),
           n("persons", "Unemployed Persons", "us-unemployed-persons"),
-          n("long-term", "Long-Term Unemployed", "us-long-term-unemployed"),
+          n("long-term", "Long-Term Unemployment Share", "us-long-term-unemployed"),
           n("u6", "U-6 Underemployment Rate", "us-u6"),
         ],
       },
@@ -461,6 +460,7 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
   id: "uk-inflation-expectations-consumer",
   metricId: "uk-inflation-exp-1y",
   title: "Consumer Expectations",
+  expectationGroup: "consumer",
   components: [
     n(
       "ias-1y",
@@ -501,6 +501,7 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
   id: "uk-inflation-expectations-business",
   metricId: "uk-dmp-inflation-exp-1y",
   title: "Business Expectations",
+  expectationGroup: "business",
   components: [
     n(
       "dmp-1y",
@@ -528,15 +529,22 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
   id: "uk-inflation-expectations-wage",
   metricId: "uk-dmp-wage-exp-1y",
   title: "Wage Expectations",
+  expectationGroup: "wage",
   components: [
     n(
       "dmp-wage",
       "BoE DMP — Wage Growth 1-Year",
       "uk-dmp-wage-exp-1y"
     ),
+    n(
+      "agents-pay-settlement",
+      "BoE Agents — Pay Settlement Expectations",
+      "uk-agents-pay-settlement-exp-1y"
+    ),
   ],
   chartMetricIds: [
     "uk-dmp-wage-exp-1y",
+    "uk-agents-pay-settlement-exp-1y",
   ],
 },
 
@@ -544,6 +552,7 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
   id: "uk-inflation-expectations-market",
   metricId: "uk-inflation-comp-1y",
   title: "Market-Based",
+  expectationGroup: "market",
   components: [
     n(
       "uk-market-1y",
@@ -568,6 +577,7 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
   id: "uk-inflation-expectations-professional",
   metricId: "uk-maps-inflation-1y",
   title: "Professional Expectations",
+  expectationGroup: "professional",
   components: [
     n(
       "maps-1y",
@@ -605,25 +615,12 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
   {
     id: "uk-gdp-card",
     metricId: "uk-gdp-qoq",
-    yoyMetricId: "uk-gdp-yoy",
-    momMetricId: "uk-gdp-qoq",
-    title: "Real GDP",
-    components: [
-      n("qoq", "Real GDP QoQ", "uk-gdp-qoq"),
-      n("yoy", "Real GDP YoY", "uk-gdp-yoy"),
-    ],
-  },
-
-  {
-    id: "uk-gdp-monthly-card",
-    metricId: "uk-gdp-mom",
     title: "GDP",
     components: [
-      n("mom", "GDP MoM", "uk-gdp-mom"),
+      n("quarterly", "Real GDP — quarterly", "uk-gdp-qoq"),
+      n("monthly", "GDP — monthly", "uk-gdp-mom"),
     ],
-    chartMetricIds: [
-      "uk-gdp-mom",
-    ],
+    chartMetricIds: ["uk-gdp-qoq", "uk-gdp-mom"],
   },
 
   {
@@ -651,15 +648,12 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
   },
 
   {
-  id: "uk-household-card",
+  id: "uk-consumption-card",
   metricId: "uk-household-consumption-level",
-  title: "Household Consumption",
+  title: "Consumption",
   components: [
-    n(
-      "household",
-      "Household Final Consumption",
-      "uk-household-consumption-level"
-    ),
+    n("household", "Household Consumption", "uk-household-consumption-level"),
+    n("government", "Government Consumption", "uk-government-consumption-level"),
   ],
 },
 
@@ -684,19 +678,6 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
 },
 
   {
-    id: "uk-government-card",
-    metricId: "uk-government-consumption-level",
-    title: "Government Consumption",
-    components: [
-      n(
-        "government",
-        "Government Final Consumption",
-        "uk-government-consumption-level"
-      ),
-    ],
-  },
-
-  {
     id: "uk-net-trade-card",
     metricId: "uk-net-trade-qoq",
     title: "Net Trade Contribution",
@@ -719,8 +700,8 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
         id: "uk-unemployment-card", metricId: "uk-unemployment", title: "Unemployment Rate",
         components: [
           n("rate", "Unemployment Rate", "uk-unemployment"),
-          n("persons", "Unemployed Persons"),
-          n("long-term", "Long-Term Unemployment"),
+          n("persons", "Unemployed Persons", "uk-unemployed-persons"),
+          n("long-term", "Unemployed over 12 months", "uk-long-term-unemployed"),
         ],
       },
       {
@@ -729,24 +710,32 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
           n("level", "Employment Level", "uk-employment-level"),
           n("rate", "Employment Rate", "uk-employment-rate"),
           n("change", "Employment Change", "uk-employment-change"),
-          n("employee-jobs", "Employee Jobs"),
+          n("employee-jobs", "Employee Jobs", "uk-employee-jobs"),
         ],
       },
       {
         id: "uk-inactivity-card", metricId: "uk-inactivity-rate", title: "Economic Inactivity",
         components: [
-          n("rate", "Inactivity Rate", "uk-inactivity-rate"),
-          n("inactive", "Inactive Persons"),
-          n("change", "Inactivity Change"),
-          n("reasons", "By Reason"),
+          n("rate", "Inactivity Rate (ages 16–64)", "uk-inactivity-rate"),
+          n("inactive", "Inactive Persons (ages 16–64)", "uk-inactive-persons"),
+          n("change", "Inactivity Annual Change", "uk-inactivity-change"),
+          n("reasons", "By Reason", undefined, [
+            n("student", "Student", "uk-inactivity-student"),
+            n("family", "Looking after family or home", "uk-inactivity-family"),
+            n("temporary-sick", "Temporarily sick", "uk-inactivity-temporary-sick"),
+            n("long-term-sick", "Long-term sick", "uk-inactivity-long-term-sick"),
+            n("discouraged", "Discouraged workers", "uk-inactivity-discouraged"),
+            n("retired", "Retired", "uk-inactivity-retired"),
+            n("other", "Other reasons", "uk-inactivity-other"),
+          ]),
         ],
       },
       {
         id: "uk-vacancies-card", metricId: "uk-vacancies", title: "Job Vacancies",
         components: [
           n("vacancies", "Total Vacancies", "uk-vacancies"),
-          n("rate", "Vacancy Rate"),
-          n("change", "Vacancy Change"),
+          n("vacancy-rate", "Vacancy Rate", "uk-vacancy-rate"),
+          n("vacancy-change", "Vacancy Change", "uk-vacancy-change"),
         ],
       },
       {
@@ -754,8 +743,8 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
         components: [
           n("total", "AWE Total Pay", "uk-awe-total-yoy"),
           n("regular", "AWE Regular Pay", "uk-awe-regular-yoy"),
-          n("real-total", "Real AWE Total"),
-          n("real-regular", "Real AWE Regular"),
+          n("real-total", "Real AWE Total Pay Growth", "uk-awe-real-total-yoy"),
+          n("real-regular", "Real AWE Regular Pay Growth", "uk-awe-real-regular-yoy"),
         ],
       },
       {
@@ -765,7 +754,7 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
   components: [
     n("payrolled", "Payrolled Employees", "uk-payrolled-employees-level"),
     n("monthly", "Monthly Change", "uk-employment-change"),
-    n("annual", "Annual Change"),
+    n("annual", "Annual Change", "uk-payrolled-employees-annual-change"),
   ],
 },
     ],
@@ -952,7 +941,7 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
       },
       {
         id: "ea-capital-card", metricId: "ea-gfcf", title: "Gross Fixed Capital Formation",
-        components: [n("gfcf", "Gross Fixed Capital Formation", "ea-gfcf"), n("inventories", "Change in Inventories"), n("valuables", "Acquisition less disposal of valuables")],
+        components: [n("gfcf", "Gross Fixed Capital Formation", "ea-gfcf")],
       },
       {
         id: "ea-government-card", metricId: "ea-government-consumption", title: "Government Consumption",
@@ -960,11 +949,11 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
       },
       {
         id: "ea-exports-card", metricId: "ea-exports", title: "Exports",
-        components: [n("total", "Total Exports", "ea-exports"), n("goods", "Goods Exports"), n("services", "Services Exports")],
+        components: [n("total", "Total Exports", "ea-exports")],
       },
       {
         id: "ea-imports-card", metricId: "ea-imports", title: "Imports / Net Trade",
-        components: [n("imports", "Total Imports", "ea-imports"), n("goods", "Goods Imports"), n("services", "Services Imports"), n("net", "Net Exports")],
+        components: [n("imports", "Total Imports", "ea-imports")],
       },
       
     ],
@@ -976,7 +965,7 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
         components: [
           n("rate", "Unemployment Rate", "ea-unemployment"),
           n("persons", "Unemployed Persons", "ea-unemployed-persons"),
-          n("long-term", "Long-Term Unemployment", "ea-long-term-unemployment"),
+          n("long-term", "Long-Term Unemployment Rate", "ea-long-term-unemployment"),
         ],
       },
 
@@ -1018,8 +1007,6 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
         title: "Job Vacancies",
         components: [
           n("rate", "Vacancy Rate", "ea-job-vacancies"),
-          n("posts", "Vacant Posts", "ea-vacant-posts"),
-          n("change", "Vacancy Change", "ea-vacancy-change"),
         ],
       },
 
@@ -1058,7 +1045,7 @@ const CATEGORY_SPEC_IDS: Record<Region, Record<MacroCategory, string[]>> = {
   },
   UK: {
     prices: ["uk-cpi-card", "uk-cpih-card", "uk-core-card", "uk-goods-card", "uk-services-card", "uk-food-card", "uk-housing-card"],
-    activity: ["uk-gdp-card", "uk-gdp-monthly-card", "uk-retail-sales-card", "uk-pmi-card", "uk-household-card", "uk-capital-card", "uk-government-card"],
+    activity: ["uk-gdp-card", "uk-consumption-card", "uk-retail-sales-card", "uk-capital-card", "uk-pmi-card"],
     labour: ["uk-unemployment-card", "uk-employment-card", "uk-inactivity-card", "uk-vacancies-card", "uk-wages-card", "uk-payrolled-card"],
     monetary: [],
     expectations: ["uk-inflation-expectations-consumer", "uk-inflation-expectations-business", "uk-inflation-expectations-wage", "uk-inflation-expectations-market", "uk-inflation-expectations-professional"],
@@ -1067,9 +1054,9 @@ const CATEGORY_SPEC_IDS: Record<Region, Record<MacroCategory, string[]>> = {
   EA: {
     prices: ["ea-hicp-card", "ea-core-card", "ea-food-card", "ea-energy-card", "ea-neig-card", "ea-services-card"],
     activity: ["ea-gdp-card", "ea-retail-sales-card", "ea-pmi-card", "ea-household-card", "ea-capital-card", "ea-government-card"],
-    labour: ["ea-unemployment-card", "ea-youth-card", "ea-employment-card", "ea-inactivity-card", "ea-vacancies-card", "ea-wages-card", "ea-inflation-expectations-wage"],
+    labour: ["ea-unemployment-card", "ea-youth-card", "ea-employment-card", "ea-inactivity-card", "ea-vacancies-card", "ea-wages-card"],
     monetary: [],
-    expectations: ["ea-inflation-expectations-consumer", "ea-inflation-expectations-business", "ea-inflation-expectations-market", "ea-inflation-expectations-professional"],
+    expectations: ["ea-inflation-expectations-consumer", "ea-inflation-expectations-wage", "ea-inflation-expectations-business", "ea-inflation-expectations-market", "ea-inflation-expectations-professional"],
     external: ["ea-exports-card", "ea-imports-card"],
   },
 };

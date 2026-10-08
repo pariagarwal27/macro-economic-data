@@ -5,6 +5,7 @@ import {
   fetchOnsPayeMedianPayLevel,
 } from "./ons-paye-rti";
 import { fetchUkLabourMarketBulletinUe } from "./ons-labour-bulletin";
+import { fetchOnsJobOpeningsRate } from "./ons-vacs02";
 
 /**
  * ONS public CSV generator — more reliable than the legacy JSON API.
@@ -58,12 +59,29 @@ const SERIES_URI: Record<string, string> = {
   JVZ7: "/economy/inflationandpriceindices/timeseries/jvz7/ppi",
   ZZ65: "/economy/grossdomesticproductgdp/timeseries/zz65/pn2", // legacy output index
   AP2Y: "/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/timeseries/ap2y/unem",
+  AP2Z: "/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/timeseries/ap2z/unem", // vacancies per 100 employee jobs (ONS legacy LMS rate series)
+  BCAJ: "/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/timeseries/bcaj/lms", // employee jobs, total, thousands, SA
+  LF2M: "/employmentandlabourmarket/peoplenotinwork/economicinactivity/timeseries/lf2m/lms", // inactive persons, ages 16-64, thousands, SA
+  LF2S: "/employmentandlabourmarket/peoplenotinwork/economicinactivity/timeseries/lf2s/lms", // inactivity rate, ages 16-64, percent, SA
+  FV28: "/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/timeseries/fv28/lms", // inactivity level annual change, ages 16-64, thousands, SA
+  LF63: "/employmentandlabourmarket/peoplenotinwork/economicinactivity/timeseries/lf63/lms", // inactivity: students, thousands, SA
+  LF65: "/employmentandlabourmarket/peoplenotinwork/economicinactivity/timeseries/lf65/lms", // inactivity: family/home, thousands, SA
+  LF67: "/employmentandlabourmarket/peoplenotinwork/economicinactivity/timeseries/lf67/lms", // inactivity: temporary sickness, thousands, SA
+  LF69: "/employmentandlabourmarket/peoplenotinwork/economicinactivity/timeseries/lf69/lms", // inactivity: long-term sickness, thousands, SA
+  LFL8: "/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/timeseries/lfl8/lms", // inactivity: discouraged workers, thousands, SA
+  LF6B: "/employmentandlabourmarket/peoplenotinwork/economicinactivity/timeseries/lf6b/lms", // inactivity: retired, thousands, SA
+  LF6D: "/employmentandlabourmarket/peoplenotinwork/economicinactivity/timeseries/lf6d/lms", // inactivity: other reasons, thousands, SA
+  N4JE: "/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/timeseries/n4je/lms", // job openings rate
+  A3WW: "/employmentandlabourmarket/peopleinwork/earningsandworkinghours/timeseries/a3ww/lms", // real total pay growth, CPIH-adjusted, 3m average YoY
+  A2FA: "/employmentandlabourmarket/peopleinwork/earningsandworkinghours/timeseries/a2fa/lms", // real regular pay growth, CPIH-adjusted, 3m average YoY
   KAC3: "/employmentandlabourmarket/peopleinwork/earningsandworkinghours/timeseries/kac3/lms", // total pay 3m YoY %
   KAB9: "/employmentandlabourmarket/peopleinwork/earningsandworkinghours/timeseries/kab9/lms",
   KAI7: "/employmentandlabourmarket/peopleinwork/earningsandworkinghours/timeseries/kai7/lms", // regular pay level £ SA
   KAI8: "/employmentandlabourmarket/peopleinwork/earningsandworkinghours/timeseries/kai8/lms", // regular pay 1m YoY %
   KAI9: "/employmentandlabourmarket/peopleinwork/earningsandworkinghours/timeseries/kai9/lms", // regular pay 3m YoY %
   MGSX: "/employmentandlabourmarket/peoplenotinwork/unemployment/timeseries/mgsx/lms",
+  MGSC: "/employmentandlabourmarket/peoplenotinwork/unemployment/timeseries/mgsc/unem", // unemployed persons aged 16+, thousands, SA
+  YBWH: "/employmentandlabourmarket/peoplenotinwork/unemployment/timeseries/ybwh/lms", // unemployed over 12 months aged 16+, thousands, SA
   MGRZ: "/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/timeseries/mgrz/lms",
   NMRY: "/economy/grossdomesticproductgdp/timeseries/nmry/pn2",
   DIOP: "/economy/economicoutputandproductivity/output/timeseries/diop/diop",
@@ -83,7 +101,7 @@ const SERIES_URI: Record<string, string> = {
   ABMI: "/economy/grossdomesticproductgdp/timeseries/abmi/qna",
   // Official growth rates from GDP first quarterly estimate (PN2) — not levels
   IHYR: "/economy/grossdomesticproductgdp/timeseries/ihyr/pn2", // q-on-q4 YoY %
-  IHYQ: "/economy/grossdomesticproductgdp/timeseries/ihyq/pn2", // QoQ %
+  IHYQ: "/economy/grossdomesticproductgdp/timeseries/ihyq/qna", // QoQ %, latest quarterly national accounts
   L59C: "/economy/inflationandpriceindices/timeseries/l59c/mm23", // CPIH monthly rate
   L5LQ: "/economy/inflationandpriceindices/timeseries/l5lq/mm23", // core CPIH annual rate
   L55P: "/economy/inflationandpriceindices/timeseries/l55p/mm23", // CPIH food annual rate
@@ -105,6 +123,8 @@ KG7Q: "/economy/grossdomesticproductgdp/timeseries/kg7q/qna",
 };
 
 export async function fetchOnsSeries(seriesId: string): Promise<RawPoint[]> {
+  if (seriesId === "N4JE") return fetchOnsJobOpeningsRate();
+
   if (seriesId === "PAYE_EMP_LEVEL") {
   return fetchOnsPayeEmploymentLevel();
 }
