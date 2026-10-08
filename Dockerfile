@@ -31,7 +31,7 @@ ENV PLAYWRIGHT_NO_SANDBOX=1
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=3000
+ENV PORT=10000
 
 # Copy node_modules and built app
 COPY --from=builder /app/package*.json ./
@@ -47,7 +47,7 @@ COPY --from=builder /app/next.config.ts ./next.config.ts
 COPY --from=builder /app/data ./data
 COPY --from=builder /app/Economic_calendar ./Economic_calendar
 
-EXPOSE 3000
+EXPOSE 10000
 
 # Start both Next.js and the background release ingestion worker
 CMD ["npm", "run", "start:all"]
