@@ -6617,6 +6617,14 @@ html[data-theme="dark"]{
 .macro-spark-plot,.macro-mini-chart{min-width:0;}
 .macro-spark-plot .recharts-responsive-container,
 .macro-mini-chart .recharts-responsive-container{overflow:visible !important;}
+.claims-mini-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%;height:76px;min-width:0;}
+.claims-mini-series{display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+.claims-mini-series>span{font-size:9px;line-height:14px;font-weight:700;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.claims-mini-series .macro-mini-chart{height:52px !important;}
+.claims-detail-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;width:100%;min-width:0;}
+.claims-detail-series{min-width:0;padding:12px 10px 4px;background:var(--panel-2,var(--surface));border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+.claims-detail-series h4{margin:0 0 4px;color:var(--text);font-size:14px;font-weight:700;}
+@media(max-width:760px){.claims-detail-pair{grid-template-columns:minmax(0,1fr);}}
 .macro-spark .recharts-cartesian-grid line{opacity:.48;}
 .macro-spark .recharts-line path{stroke-width:2.6px !important;stroke-linecap:round;stroke-linejoin:round;}
 .macro-spark .recharts-dot{filter:drop-shadow(0 1px 1px color-mix(in srgb,var(--country-series) 28%,transparent));}

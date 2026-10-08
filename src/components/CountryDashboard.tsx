@@ -26,6 +26,7 @@ import {
 import { formatEconomicLevel, formatObsDate } from "@/lib/format";
 import { formatLiveSourceLabel } from "@/lib/live-source-label";
 import { latestQuarterPair, quarterlyGrowthPoints } from "@/lib/quarterly-gdp";
+import { claimsChartPoints, formatClaimsCount } from "@/lib/claims-display";
 import { RefreshDataButton } from "@/components/RefreshDataButton";
 import { ExpectationComparisonChart } from "@/components/ExpectationComparisonChart";
 import { EconomicCalendarSidebar } from "@/components/EconomicCalendarSidebar";
@@ -95,6 +96,15 @@ function chartStartYear(frequency?: string) {
 
 function isInChartYearRange(date: string, frequency?: string) {
   return Number(date.slice(0, 4)) >= chartStartYear(frequency);
+}
+
+function claimsTrendPoints(metric: DetailPayload | undefined) {
+  return claimsChartPoints(normalizeHistory(metric?.history ?? []))
+    .filter((point) => isInChartYearRange(point.date, "weekly"));
+}
+
+function latestClaimsValue(metric: DetailPayload | undefined) {
+  return normalizeHistory(metric?.history ?? []).at(-1)?.value ?? metric?.meta.latest?.value ?? null;
 }
 
 const QUARTERLY_GDP_METRIC_IDS = new Set(["us-gdp-real", "uk-gdp-qoq"]);
@@ -168,6 +178,104 @@ function QuarterlyGdpChart({
           />
         </LineChart>
       </ResponsiveContainer>
+    </div>
+  );
+}
+
+function ClaimsTrendChart({
+  data,
+  seriesName,
+  color,
+  compact = false,
+  height = 440,
+}: {
+  data: Array<{ date: string; value: number }>;
+  seriesName: "Initial Claims" | "Continuing Claims";
+  color: string;
+  compact?: boolean;
+  height?: number;
+}) {
+  if (!data.length) return compact ? null : <div className="spark-chart-empty">No weekly {seriesName.toLowerCase()} data</div>;
+
+  return (
+    <div
+      className={compact ? "macro-mini-chart" : undefined}
+      style={{ width: "100%", height: compact ? 52 : height, minHeight: 0 }}
+      aria-label={`${seriesName} weekly trend`}
+    >
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={data} margin={compact ? { top: 4, right: 4, left: 4, bottom: 2 } : { top: 10, right: 20, left: 72, bottom: 36 }}>
+          <CartesianGrid vertical={false} stroke="var(--line)" strokeDasharray="3 5" />
+          <XAxis
+            dataKey="date"
+            hide={compact}
+            tickFormatter={(value) => formatChartDate(value, "weekly")}
+            tickLine={false}
+            axisLine={!compact}
+            tickMargin={8}
+            minTickGap={compact ? 0 : 22}
+            interval="preserveStartEnd"
+            tick={{ fill: "var(--muted)", fontSize: 12 }}
+          />
+          <YAxis
+            hide={compact}
+            width={compact ? 0 : 72}
+            tickFormatter={(value) => formatClaimsCount(Number(value))}
+            tick={{ fill: "var(--muted)", fontSize: 11 }}
+            domain={["auto", "auto"]}
+          />
+          <Tooltip
+            cursor={false}
+            contentStyle={{ borderRadius: 8, border: "1px solid var(--line)", background: "var(--panel)", fontSize: compact ? 10 : 12 }}
+            labelFormatter={(label) => formatChartDate(String(label), "weekly", true)}
+            formatter={(value, name) => [formatClaimsCount(Number(value)), String(name)]}
+          />
+          <Line
+            type="monotone"
+            dataKey="value"
+            name={seriesName}
+            stroke={color}
+            strokeWidth={compact ? 2 : 2.7}
+            strokeLinecap="round"
+            dot={false}
+            activeDot={{ r: compact ? 3 : 5 }}
+            connectNulls
+            isAnimationActive={false}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+function ClaimsMiniCharts({ initial, continuing }: { initial: DetailPayload | undefined; continuing: DetailPayload | undefined }) {
+  return (
+    <div className="claims-mini-pair" aria-label="Initial and continuing claims charts">
+      {[
+        { name: "Initial Claims" as const, data: claimsTrendPoints(initial), color: "var(--country-series)" },
+        { name: "Continuing Claims" as const, data: claimsTrendPoints(continuing), color: "var(--up)" },
+      ].map((series) => (
+        <div className="claims-mini-series" key={series.name}>
+          <span>{series.name}</span>
+          <ClaimsTrendChart data={series.data} seriesName={series.name} color={series.color} compact />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ClaimsDetailCharts({ initial, continuing, height }: { initial: DetailPayload | undefined; continuing: DetailPayload | undefined; height: number }) {
+  return (
+    <div className="claims-detail-pair">
+      {[
+        { name: "Initial Claims" as const, data: claimsTrendPoints(initial), color: "var(--country-series)" },
+        { name: "Continuing Claims" as const, data: claimsTrendPoints(continuing), color: "var(--up)" },
+      ].map((series) => (
+        <section className="claims-detail-series" key={series.name}>
+          <h4>{series.name}</h4>
+          <ClaimsTrendChart data={series.data} seriesName={series.name} color={series.color} height={height} />
+        </section>
+      ))}
     </div>
   );
 }
@@ -471,6 +579,10 @@ function RateChart({
 
   if (isQuarterlyGdpMetric(root?.meta.id)) {
     return <QuarterlyGdpChart metric={root} height={height} />;
+  }
+
+  if (root?.meta.id === "us-initial-claims") {
+    return <ClaimsDetailCharts initial={root} continuing={allMetrics["us-continuing-claims"]} height={height} />;
   }
 
   const isUSNetExports = isUSNetExportsMetric(root);
@@ -1203,6 +1315,10 @@ function MiniRateChart({
     return <QuarterlyGdpChart metric={root} compact />;
   }
 
+  if (root?.meta.id === "us-initial-claims") {
+    return <ClaimsMiniCharts initial={root} continuing={allMetrics["us-continuing-claims"]} />;
+  }
+
   // Expectation readings are published survey/market levels. Treating them
   // as generic index levels and calculating YoY/MoM rates creates misleading
   // synthetic changes, so the card sparkline shows the published series.
@@ -1933,6 +2049,10 @@ function formatMetricValue(
     return "—";
   }
 
+  if (id === "us-initial-claims" || id === "us-continuing-claims") {
+    return formatClaimsCount(value);
+  }
+
   const mode = getDisplayMode(id);
   const unit = metric?.meta.unit?.toLowerCase() ?? "";
   if (isUSNetExportsMetric(metric)) {
@@ -1987,19 +2107,6 @@ if (UK_GROWTH_NET_TRADE_PP_IDS.has(id ?? "")) {
       }
 
       return `${Math.round(value)}K`;
-    }
-
-    if (
-      id === "us-initial-claims" ||
-      id === "us-continuing-claims"
-    ) {
-      if (Math.abs(value) >= 1_000_000) {
-        return `${(value / 1_000_000).toFixed(1)}M`;
-      }
-
-      if (Math.abs(value) >= 1_000) {
-        return `${Math.round(value / 1_000)}K`;
-      }
     }
 
     return value.toLocaleString("en-US");
@@ -3092,6 +3199,7 @@ function IndicatorCard({
   onOpen: () => void;
 }) {
   const m = metric?.meta;
+  const isUSClaimsCard = spec.id === "us-claims-card";
 
   const cardKpis = getCardKpis(
     spec,
@@ -3126,6 +3234,18 @@ function IndicatorCard({
 
       {spec.expectationGroup ? (
         <ExpectationMetricPreview spec={spec} metrics={componentMetrics} />
+      ) : isUSClaimsCard ? (
+        <div className="macro-values" aria-label="Latest jobless claims counts">
+          {[
+            { id: "us-initial-claims", label: "Initial Claims", payload: metric ?? componentMetrics["us-initial-claims"] },
+            { id: "us-continuing-claims", label: "Continuing Claims", payload: componentMetrics["us-continuing-claims"] },
+          ].map((claim) => (
+            <div className="rate-box" key={claim.id}>
+              <span>{claim.label}</span>
+              <strong>{formatClaimsCount(latestClaimsValue(claim.payload))}</strong>
+            </div>
+          ))}
+        </div>
       ) : <div className="macro-values">
         <div className="rate-box">
           <span>{cardKpis.leftLabel}</span>
@@ -3755,6 +3875,38 @@ function ExpectationKpis({
   );
 }
 
+function ClaimsKpis({
+  initial,
+  continuing,
+}: {
+  initial: DetailPayload | undefined;
+  continuing: DetailPayload | undefined;
+}) {
+  return (
+    <>
+      {[
+        { id: "us-initial-claims", label: "Initial Claims", payload: initial },
+        { id: "us-continuing-claims", label: "Continuing Claims", payload: continuing },
+      ].map((claim) => {
+        const latest = normalizeHistory(claim.payload?.history ?? []).at(-1);
+        const latestValue = latest?.value ?? claim.payload?.meta.latest?.value ?? null;
+        const latestDate = latest?.date ?? claim.payload?.meta.latest?.date;
+        return (
+          <div className="drawer-kpi" key={claim.id}>
+            <span>{claim.label}</span>
+            <strong style={{ display: "block", marginTop: 4 }}>
+              {formatClaimsCount(latestValue)}
+            </strong>
+            <small style={{ display: "block", marginTop: 4, color: "var(--muted)" }}>
+              {latestDate ? formatObsDate(latestDate) : "Latest published week"}
+            </small>
+          </div>
+        );
+      })}
+    </>
+  );
+}
+
 function ExpectationComponentsTable({
   spec,
   allMetrics,
@@ -4299,6 +4451,7 @@ function DetailDrawer({
     spec.id.includes("expectations_") ||
     root?.meta.subcategory?.startsWith("expectations_") ||
     isInflationExpectationSpecId(spec);
+  const isUSClaimsCard = spec.id === "us-claims-card" || root?.meta.id === "us-initial-claims";
 
   useEffect(() => {
     const next: Record<string, boolean> = {};
@@ -4728,6 +4881,11 @@ function DetailDrawer({
         >
           {isExpectation ? (
             <ExpectationKpis spec={spec} allMetrics={allMetrics} />
+          ) : isUSClaimsCard ? (
+            <ClaimsKpis
+              initial={root}
+              continuing={allMetrics["us-continuing-claims"]}
+            />
           ) : (
             <>
               <div
@@ -4821,7 +4979,7 @@ function DetailDrawer({
                 }}
               >
                 <h3 style={{ margin: 0, color: "var(--text)" }}>
-                  {displayMetricTitle(spec, root)}
+                  {isUSClaimsCard ? "Jobless Claims" : displayMetricTitle(spec, root)}
                 </h3>
                 <span style={{ whiteSpace: "nowrap", color: "var(--muted)" }}>
                   {isExpectation ? "Historical observations" : `${YEAR} trend`}

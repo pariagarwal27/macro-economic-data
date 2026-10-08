@@ -21,6 +21,7 @@ import {
 } from "./release-logging";
 import { METRICS } from "@/catalog/metrics";
 import type { MetricDef } from "@/catalog/metrics";
+import { mapConcurrent } from "./release-concurrency";
 
 function sourceTimeZone(metricId: string) {
   if (
@@ -412,25 +413,19 @@ export async function dispatchDueReleases(options?: {
     Number(options?.maxMetrics ?? 40)
   );
 
-  const results: unknown[] = [];
+  const results: Awaited<ReturnType<typeof processCandidate>>[] = [];
 
-  // We deliberately claim candidates one-by-one before fetching. This means
-  // a batch of failed/slow metrics cannot permanently starve the next batch:
-  // already-processing/recently-failed claims are skipped on the next cron tick.
-  for (const candidate of candidates) {
-    if (
-      results.filter(
-        (item) =>
-          typeof item === "object" &&
-          item !== null &&
-          "status" in item &&
-          (item as { status?: string }).status !== "skipped"
-      ).length >= maxMetrics
-    ) {
-      break;
-    }
-
-    results.push(await processCandidate(candidate));
+  // Start each batch together so one slow provider does not delay requests
+  // for other metrics released at the same time. The per-cycle cap also bounds
+  // pressure on official sources and the database.
+  let nextCandidate = 0;
+  let attempted = 0;
+  while (nextCandidate < candidates.length && attempted < maxMetrics) {
+    const batch = candidates.slice(nextCandidate, nextCandidate + maxMetrics - attempted);
+    nextCandidate += batch.length;
+    const batchResults = await mapConcurrent(batch, batch.length, processCandidate);
+    results.push(...batchResults);
+    attempted += batchResults.filter((item) => item.status !== "skipped").length;
   }
 
   if (getD1Database()) {
