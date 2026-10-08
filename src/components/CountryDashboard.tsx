@@ -219,7 +219,7 @@ function ClaimsTrendChart({
           />
           <YAxis
             hide={compact}
-            width={compact ? 0 : 72}
+            width={compact ? 0 : 68}
             tickFormatter={(value) => formatClaimsCount(Number(value))}
             tick={{ fill: "var(--muted)", fontSize: 11 }}
             domain={["auto", "auto"]}
@@ -230,16 +230,17 @@ function ClaimsTrendChart({
             labelFormatter={(label) => formatChartDate(String(label), "weekly", true)}
             formatter={(value, name) => [formatClaimsCount(Number(value)), String(name)]}
           />
+          {!compact && <Legend verticalAlign="top" align="center" height={28} iconType="line" />}
           <Line
             type="monotone"
             dataKey="value"
             name={seriesName}
             stroke={color}
-            strokeWidth={compact ? 2 : 2.7}
+            strokeWidth={compact ? 2 : 2.5}
             strokeLinecap="round"
-            dot={false}
-            activeDot={{ r: compact ? 3 : 5 }}
-            connectNulls
+            dot={compact ? false : { r: 3.5, fill: "var(--panel)", stroke: color, strokeWidth: 2 }}
+            activeDot={{ r: compact ? 3 : 6 }}
+            connectNulls={false}
             isAnimationActive={false}
           />
         </LineChart>
@@ -272,8 +273,8 @@ function ClaimsDetailCharts({ initial, continuing, height }: { initial: DetailPa
         { name: "Continuing Claims" as const, data: claimsTrendPoints(continuing), color: "var(--up)" },
       ].map((series) => (
         <section className="claims-detail-series" key={series.name}>
-          <h4>{series.name}</h4>
-          <ClaimsTrendChart data={series.data} seriesName={series.name} color={series.color} height={height} />
+          <h4>{series.name} · Weekly · {YEAR}</h4>
+          <ClaimsTrendChart data={series.data} seriesName={series.name} color={series.color} height={height - 34} />
         </section>
       ))}
     </div>
