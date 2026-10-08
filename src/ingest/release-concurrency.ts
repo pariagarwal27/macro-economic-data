@@ -1,7 +1,7 @@
 export async function mapConcurrent<T, R>(
   items: readonly T[],
-  concurrency: number,
-  mapper: (item: T, index: number) => Promise<R>
+  mapper: (item: T, index: number) => Promise<R>,
+  concurrency = items.length || 1
 ): Promise<R[]> {
   if (!Number.isInteger(concurrency) || concurrency < 1) {
     throw new Error("concurrency must be a positive integer");

@@ -12,19 +12,16 @@ async function main() {
   }
 
   const runOnce = process.env.RUN_ONCE === "1";
-  const maxMetrics = Number(process.env.RELEASE_MAX_METRICS_PER_CYCLE ?? 40);
   logReleaseEvent({
     event: "worker_started",
     pollIntervalMs: interval,
-    maxMetricsPerCycle: maxMetrics,
+    dispatchMode: "all-eligible-metrics-concurrent",
     runOnce,
   });
 
   do {
     try {
-      const result = await dispatchDueReleases({
-        maxMetrics,
-      });
+      const result = await dispatchDueReleases();
       if (result.attempted > 0) {
         logReleaseEvent({
           event: "cycle_completed",

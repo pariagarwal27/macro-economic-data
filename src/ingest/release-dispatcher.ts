@@ -392,7 +392,6 @@ async function processCandidate(candidate: Candidate) {
 }
 
 export async function dispatchDueReleases(options?: {
-  maxMetrics?: number;
   metricIds?: string[];
 }) {
   const now = new Date();
@@ -408,25 +407,9 @@ export async function dispatchDueReleases(options?: {
     if (a.mode !== b.mode) return a.mode === "scheduled" ? -1 : 1;
     return (pollState.get(a.metricId)?.lastAttemptAt ?? "").localeCompare(pollState.get(b.metricId)?.lastAttemptAt ?? "");
   });
-  const maxMetrics = Math.max(
-    1,
-    Number(options?.maxMetrics ?? 40)
-  );
-
-  const results: Awaited<ReturnType<typeof processCandidate>>[] = [];
-
-  // Start each batch together so one slow provider does not delay requests
-  // for other metrics released at the same time. The per-cycle cap also bounds
-  // pressure on official sources and the database.
-  let nextCandidate = 0;
-  let attempted = 0;
-  while (nextCandidate < candidates.length && attempted < maxMetrics) {
-    const batch = candidates.slice(nextCandidate, nextCandidate + maxMetrics - attempted);
-    nextCandidate += batch.length;
-    const batchResults = await mapConcurrent(batch, batch.length, processCandidate);
-    results.push(...batchResults);
-    attempted += batchResults.filter((item) => item.status !== "skipped").length;
-  }
+  // Start every eligible release request together. This avoids delaying a
+  // metric behind earlier candidates when multiple releases share a timestamp.
+  const results = await mapConcurrent(candidates, processCandidate);
 
   if (getD1Database()) {
     const outcomes = results as { metricId: string; status: string; error?: string; processed?: { updated: boolean } }[];

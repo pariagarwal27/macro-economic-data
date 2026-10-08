@@ -20,7 +20,7 @@ export async function GET(request: Request) {
       metricIds: ["uk-unemployed-persons", "uk-long-term-unemployed"],
       cleanupOrphans: false,
     });
-    const result = await dispatchDueReleases({ maxMetrics: 2 });
+    const result = await dispatchDueReleases();
     return NextResponse.json({ ok: true, ...result }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("[cron/releases]", error);

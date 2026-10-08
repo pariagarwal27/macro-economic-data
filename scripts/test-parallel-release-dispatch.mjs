@@ -7,7 +7,7 @@ const batchGate = new Promise((resolve) => {
   releaseBatch = resolve;
 });
 
-const work = mapConcurrent(["continuing-claims", "initial-claims"], 2, async (metricId) => {
+const work = mapConcurrent(["continuing-claims", "initial-claims"], async (metricId) => {
   started.push(metricId);
   await batchGate;
   return metricId;
@@ -22,4 +22,21 @@ assert.deepEqual(
 
 releaseBatch();
 assert.deepEqual(await work, ["continuing-claims", "initial-claims"]);
-console.log("Parallel release dispatch starts eligible metric fetches together");
+
+const largeBatchStarted = [];
+let releaseLargeBatch;
+const largeBatchGate = new Promise((resolve) => {
+  releaseLargeBatch = resolve;
+});
+const allEligible = Array.from({ length: 45 }, (_, index) => index);
+const largeWork = mapConcurrent(allEligible, async (metricId) => {
+  largeBatchStarted.push(metricId);
+  await largeBatchGate;
+  return metricId;
+});
+
+await new Promise((resolve) => setImmediate(resolve));
+assert.equal(largeBatchStarted.length, allEligible.length, "every eligible metric should start before any request completes");
+releaseLargeBatch();
+assert.deepEqual(await largeWork, allEligible);
+console.log("All eligible release metrics start concurrently without sequential batches");

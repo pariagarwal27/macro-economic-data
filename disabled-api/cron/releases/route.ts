@@ -22,9 +22,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const result = await dispatchDueReleases({
-      maxMetrics: Number(process.env.RELEASE_MAX_METRICS_PER_CYCLE ?? 40),
-    });
+    const result = await dispatchDueReleases();
     return NextResponse.json({ ok: true, ...result }, {
       headers: { "Cache-Control": "no-store" },
     });
