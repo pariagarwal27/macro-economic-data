@@ -7,9 +7,11 @@ export function formatClaimsCount(value: number | null | undefined) {
   return Math.round(value).toLocaleString("en-US");
 }
 
-export function claimsChartPoints(history: readonly ClaimsObservation[]): ClaimsChartPoint[] {
-  return history
+export function claimsChartPoints(history: readonly ClaimsObservation[], limit?: number): ClaimsChartPoint[] {
+  const points = history
     .map(({ date, value }) => ({ date: date.slice(0, 10), value: Number(value) }))
     .filter(({ date, value }) => Boolean(date) && Number.isFinite(value))
     .sort((a, b) => a.date.localeCompare(b.date));
+
+  return limit == null ? points : points.slice(-Math.max(0, Math.floor(limit)));
 }

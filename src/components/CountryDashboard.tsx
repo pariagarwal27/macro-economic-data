@@ -99,8 +99,7 @@ function isInChartYearRange(date: string, frequency?: string) {
 }
 
 function claimsTrendPoints(metric: DetailPayload | undefined) {
-  return claimsChartPoints(normalizeHistory(metric?.history ?? []))
-    .filter((point) => isInChartYearRange(point.date, "weekly"));
+  return claimsChartPoints(normalizeHistory(metric?.history ?? []), 20);
 }
 
 function latestClaimsValue(metric: DetailPayload | undefined) {

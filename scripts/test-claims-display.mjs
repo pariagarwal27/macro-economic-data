@@ -17,4 +17,14 @@ assert.deepEqual(
   "each claims chart should keep its own dated observations"
 );
 
+const twentyFiveWeeklyObservations = Array.from({ length: 25 }, (_, index) => ({
+  date: `2026-${String(Math.floor(index / 4) + 1).padStart(2, "0")}-${String((index % 4) * 7 + 1).padStart(2, "0")}`,
+  value: 200_000 + index,
+}));
+assert.deepEqual(
+  claimsChartPoints(twentyFiveWeeklyObservations, 20).map(({ value }) => value),
+  Array.from({ length: 20 }, (_, index) => 200_005 + index),
+  "claims charts should be able to restrict plotted history to the latest 20 observations"
+);
+
 console.log("Claims values retain full counts and each series keeps its own weekly observations");
