@@ -7,7 +7,7 @@ export type CalendarCompletion = { metricId: string; scheduledAt: string; proces
 const dayKey = (date: Date) => new Intl.DateTimeFormat("en-CA", { timeZone: CALENDAR_TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit" }).format(date);
 const addDays = (key: string, days: number) => { const value = new Date(`${key}T12:00:00Z`); value.setUTCDate(value.getUTCDate() + days); return value.toISOString().slice(0, 10); };
 
-export function buildEconomicCalendar(schedule: ScheduledCalendarRow[], actuals: CalendarActual[], catalog: MetricDef[], now = new Date(), options: { history?: ScheduledCalendarRow[]; completions?: CalendarCompletion[] } = {}) {
+export function buildEconomicCalendar(schedule: ScheduledCalendarRow[], actuals: CalendarActual[], catalog: MetricDef[], now = new Date(), options: { history?: ScheduledCalendarRow[]; completions?: CalendarCompletion[]; latestValues?: ReadonlyMap<string, number | null> } = {}) {
   const today = dayKey(now);
   const weekday = new Date(`${today}T12:00:00Z`).getUTCDay();
   const weekStart = addDays(today, -((weekday + 6) % 7));
@@ -47,7 +47,7 @@ export function buildEconomicCalendar(schedule: ScheduledCalendarRow[], actuals:
       source: row?.source ?? metric.source, family: row?.family ?? null,
       scheduledDate, scheduledTime, scheduledTimeLabel, scheduledAt, deadlineAt, scheduleType, scheduleNote,
       status, actual: actual?.value ?? null, forecast: actual?.expectedValue ?? null,
-      previous: actual?.priorPeriodValue ?? null, releasedAt: scheduledAt,
+      previous: actual ? actual.priorPeriodValue : options.latestValues?.get(metric.id) ?? null, releasedAt: scheduledAt,
       actualReleasedAt: actual?.releasedAt ?? null, officialSource: row?.officialSource ?? metric.officialUrl,
       updatedAt: row?.updatedAt ?? null,
     };

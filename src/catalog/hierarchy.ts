@@ -32,10 +32,36 @@ export const US_CPI_TREE: Node[] = [
 ];
 
 export const US_PCE_TREE: Node[] = [
-  node('headline','Headline PCE','us-pce'), node('core','Core PCE','us-core-pce'),
-  node('goods','Goods','us-pce-goods',[node('durable','Durable goods','us-pce-durable-goods'),node('furnishings','Furnishings','us-pce-furnishings'),node('clothing','Clothing & footwear','us-pce-clothing')]),
-  node('food','Food & beverages','us-pce-food'), node('energy','Gasoline & energy goods','us-pce-energy'),
-  node('services','Services','us-pce-services',[node('household','Household services','us-pce-household-services'),node('healthcare','Health care','us-pce-healthcare'),node('housing','Housing','us-pce-housing'),node('food-services','Food services & accommodations','us-pce-food-services')]),
+  node('headline','Headline PCE','us-pce',[
+    node('goods','Goods','us-pce-goods',[
+      node('durable','Durable goods','us-pce-durable-goods',[
+        node('motor-vehicles','Motor vehicles and parts'),
+        node('furnishings','Furnishings and durable household equipment','us-pce-furnishings'),
+        node('recreational-goods','Recreational goods and vehicles'),
+        node('other-durable','Other durable goods'),
+      ]),
+      node('nondurable','Nondurable goods',undefined,[
+        node('food','Food and beverages purchased for off-premises consumption','us-pce-food'),
+        node('clothing','Clothing and footwear','us-pce-clothing'),
+        node('energy-goods','Gasoline and other energy goods','us-pce-energy'),
+        node('other-nondurable','Other nondurable goods'),
+      ]),
+    ]),
+    node('services','Services','us-pce-services',[
+      node('household','Household consumption expenditures for services','us-pce-household-services',[
+        node('housing','Housing','us-pce-housing'),
+        node('healthcare','Health care','us-pce-healthcare'),
+        node('transportation-services','Transportation services'),
+        node('recreation-services','Recreation services'),
+        node('food-services','Food services and accommodations','us-pce-food-services'),
+        node('financial-services','Financial services and insurance'),
+        node('other-services','Other services'),
+      ]),
+    ]),
+  ]),
+  node('related-measures','Related aggregate (not a headline component)',undefined,[
+    node('core','Core PCE (excludes food and energy)','us-core-pce'),
+  ]),
 ];
 
 export const UK_INFLATION_TREE: Node[] = [

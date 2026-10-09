@@ -8,6 +8,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { getNiceTickDomain, getNiceTicks } from "@/lib/chart-axis";
 
 type Point = {
   date: string;
@@ -231,23 +232,7 @@ export function ExpectationComparisonChart({
   const allValues = valid.flatMap((item) =>
     item.data.map((point) => point.value)
   );
-
-  const minValue = Math.min(...allValues);
-  const maxValue = Math.max(...allValues);
-
-  const span = maxValue - minValue;
-
-  /*
-   * Give the chart enough breathing room without producing
-   * an unnecessarily huge Y-axis.
-   */
-  const padding =
-    span > 0
-      ? Math.max(span * 0.12, 0.15)
-      : Math.max(Math.abs(minValue) * 0.05, 0.2);
-
-  const yMin = minValue - padding;
-  const yMax = maxValue + padding;
+  const yTicks = getNiceTicks(allValues);
 
   return (
     <div className="expectation-comparison-card">
@@ -279,7 +264,8 @@ export function ExpectationComparisonChart({
           >
             <CartesianGrid
               stroke="var(--line)"
-              vertical={false}
+              strokeDasharray="2 4"
+              vertical
             />
 
             <XAxis
@@ -289,12 +275,8 @@ export function ExpectationComparisonChart({
                 fontSize: 10,
                 fill: "var(--muted)",
               }}
-              axisLine={{
-                stroke: "var(--line-strong)",
-              }}
-              tickLine={{
-                stroke: "var(--line-strong)",
-              }}
+              axisLine={false}
+              tickLine={false}
               minTickGap={hasDailySeries ? 28 : 18}
               interval="preserveStartEnd"
               padding={{
@@ -304,18 +286,15 @@ export function ExpectationComparisonChart({
             />
 
             <YAxis
-              domain={[yMin, yMax]}
+              domain={getNiceTickDomain(yTicks)}
+              ticks={yTicks}
               tickFormatter={percent}
               tick={{
                 fontSize: 11,
                 fill: "var(--muted)",
               }}
-              axisLine={{
-                stroke: "var(--line-strong)",
-              }}
-              tickLine={{
-                stroke: "var(--line-strong)",
-              }}
+              axisLine={false}
+              tickLine={false}
               width={52}
               allowDecimals
               tickCount={5}
@@ -359,7 +338,8 @@ export function ExpectationComparisonChart({
                 strokeDasharray={LINE_DASHES[index % LINE_DASHES.length]}
                 strokeWidth={2.4}
                 dot={{
-                  r: 2.5,
+                  r: 3,
+                  fill: "var(--panel)",
                   strokeWidth: 1.5,
                 }}
                 activeDot={{

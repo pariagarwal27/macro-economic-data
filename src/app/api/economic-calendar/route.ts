@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { and, gte, lt } from "drizzle-orm";
+import { and, desc, gte, inArray, lt } from "drizzle-orm";
 import { getDashboardCalendarMetrics } from "@/lib/dashboard-calendar-metrics";
 import { getEconomicCalendarRows } from "@/lib/economic-calendar-db";
 import { buildEconomicCalendar, type CalendarActual } from "@/lib/economic-calendar-view";
@@ -24,10 +24,16 @@ export async function GET(_request: NextRequest) {
       value: releases.value, expectedValue: releases.expectedValue,
       priorPeriodValue: releases.priorPeriodValue,
     }).from(releases).where(and(gte(releases.releasedAt, windowStart), lt(releases.releasedAt, windowEnd)));
+    const latestRows = await getDb().select({ metricId: releases.metricId, value: releases.value })
+      .from(releases)
+      .where(inArray(releases.metricId, catalog.map(metric => metric.id)))
+      .orderBy(desc(releases.releasedAt));
+    const latestValues = new Map<string, number | null>();
+    for (const row of latestRows) if (!latestValues.has(row.metricId)) latestValues.set(row.metricId, row.value);
     const history = await getEconomicCalendarRows({ history: true });
     const completions = await getCompletedCalendarReleases(windowStart);
     for (const completion of completions) if (completion.actual && !actuals.some(item=>item.id===completion.actual!.id)) actuals.push(completion.actual);
-    return NextResponse.json(buildEconomicCalendar(schedule, actuals, catalog, now, {history,completions}), {
+    return NextResponse.json(buildEconomicCalendar(schedule, actuals, catalog, now, {history,completions,latestValues}), {
       headers: { "Cache-Control": "no-store" },
     });
   } catch (error) {

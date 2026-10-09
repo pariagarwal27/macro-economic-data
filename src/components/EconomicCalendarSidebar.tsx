@@ -2,8 +2,6 @@
 
 import {
   CalendarDays,
-  CheckCircle2,
-  Clock3,
   RefreshCw,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -63,13 +61,6 @@ const FLAG: Record<CalendarEvent["region"], string> = {
   OTHER: "🌐",
 };
 
-const REGION_LABEL: Record<CalendarEvent["region"], string> = {
-  US: "US",
-  UK: "UK",
-  EA: "Euro Area",
-  OTHER: "Other",
-};
-
 function formatDay(day: string) {
   const d = new Date(`${day}T12:00:00Z`);
 
@@ -77,6 +68,7 @@ function formatDay(day: string) {
     weekday: "short",
     month: "short",
     day: "numeric",
+    year: "numeric",
     timeZone: DISPLAY_TIME_ZONE,
   });
 }
@@ -119,7 +111,7 @@ function formatLastUpdated(timestamp: string) {
   });
 }
 
-export function EconomicCalendarSidebar() {
+export function EconomicCalendarSidebar({ onReleaseSelect }: { onReleaseSelect?: (event: { metricId: string; region: string; metricName: string }) => void }) {
   const [tab, setTab] = useState<Tab>("today");
   const [payload, setPayload] = useState<CalendarPayload | null>(null);
   const [loading, setLoading] = useState(true);
@@ -234,6 +226,24 @@ export function EconomicCalendarSidebar() {
       }));
   }, [payload]);
 
+  const diaryGroups = useMemo(() => {
+    if (!payload) return [] as { date: string; events: CalendarEvent[] }[];
+    if (tab === "today") return [
+      ...(payload.todayEvents.length ? [{ date: formatDay(payload.today), events: payload.todayEvents }] : []),
+      ...(payload.dailyEvents.length ? [{ date: "Daily and hourly metrics · no fixed release time", events: payload.dailyEvents }] : []),
+    ];
+    if (tab === "week") return weekDays.map(({ date, events }) => ({ date: formatDay(date), events }));
+    const groups = new Map<string, CalendarEvent[]>();
+    for (const event of payload.allEvents) {
+      const label = event.scheduledDate ? formatDay(event.scheduledDate)
+        : event.scheduleType === "daily" || event.scheduleType === "hourly"
+          ? `${event.scheduleType === "hourly" ? "Hourly" : "Daily"} data · no fixed release`
+          : "Next date unavailable";
+      groups.set(label, [...(groups.get(label) ?? []), event]);
+    }
+    return Array.from(groups, ([date, events]) => ({ date, events }));
+  }, [payload, tab, weekDays]);
+
   return (
     <section className="economic-calendar-sidebar">
       <div className="economic-calendar-head">
@@ -243,7 +253,7 @@ export function EconomicCalendarSidebar() {
             ECONOMIC CALENDAR
           </div>
 
-          <h2>Releases</h2>
+          <h2>Release Diary</h2>
           <p className="economic-calendar-subtitle">Official data. At a glance.</p>
         </div>
 
@@ -295,74 +305,8 @@ export function EconomicCalendarSidebar() {
             Try again
           </button>
         </div>
-      ) : tab === "today" ? (
-        <div className="economic-calendar-list">
-          <div className="economic-calendar-date-heading">
-            {payload
-              ? formatDay(payload.today)
-              : "Today"}
-          </div>
-
-          {!payload?.todayEvents.length ? (
-            <div className="economic-calendar-empty">
-              No scheduled releases today.
-            </div>
-          ) : (
-            payload.todayEvents.map((event) => (
-              <CalendarEventRow
-                key={`${event.metricId}-${event.scheduledDate}`}
-                event={event}
-              />
-            ))
-          )}
-          {payload?.dailyEvents.length ? (
-            <>
-              <div className="economic-calendar-date-heading">Daily and hourly metrics · no fixed release time</div>
-              {payload.dailyEvents.map((event) => (
-                <CalendarEventRow key={`daily-${event.metricId}`} event={event} />
-              ))}
-            </>
-          ) : null}
-        </div>
-      ) : tab === "all" ? (
-        <div className="economic-calendar-list">
-          <div className="economic-calendar-date-heading">All {payload?.coverage.totalMetrics ?? 0} metrics · UK time</div>
-          {payload && <div className="economic-calendar-coverage">{payload.coverage.exactTime} confirmed times · {payload.coverage.dateOnly} date-only releases</div>}
-          {payload?.allEvents.map(event => (
-            <div key={event.metricId}>
-              <div className="economic-calendar-date-heading">{event.scheduledDate ? formatDay(event.scheduledDate) : event.scheduleType === "daily" || event.scheduleType === "hourly" ? `${event.scheduleType === "hourly" ? "Hourly" : "Daily"} data · no fixed release` : "Next date unavailable"}</div>
-              <CalendarEventRow event={event} />
-            </div>
-          ))}
-        </div>
       ) : (
-        <div className="economic-calendar-week">
-          {weekDays.map(({ date, events }) => (
-            <div
-              className="economic-calendar-day"
-              key={date}
-            >
-              <div className="economic-calendar-day-title">
-                <span>{formatDay(date)}</span>
-                <b>{events.length}</b>
-              </div>
-
-              {events.map((event) => (
-                <CalendarEventRow
-                  key={`${event.metricId}-${date}`}
-                  event={event}
-                  compact
-                />
-              ))}
-            </div>
-          ))}
-
-          {!weekDays.length && (
-            <div className="economic-calendar-empty">
-              No scheduled releases this week.
-            </div>
-          )}
-        </div>
+        <CalendarDiary groups={diaryGroups} onSelect={onReleaseSelect} emptyText={tab === "today" ? "No scheduled releases today." : tab === "week" ? "No scheduled releases this week." : "No releases available."} />
       )}
 
       {payload?.lastUpdated && (
@@ -376,87 +320,26 @@ export function EconomicCalendarSidebar() {
   );
 }
 
-function CalendarEventRow({
-  event,
-  compact = false,
-}: {
-  event: CalendarEvent;
-  compact?: boolean;
+function CalendarDiary({ groups, onSelect, emptyText }: {
+  groups: { date: string; events: CalendarEvent[] }[];
+  onSelect?: (event: { metricId: string; region: string; metricName: string }) => void;
+  emptyText: string;
 }) {
-  const released = event.status === "released";
-
-  return (
-    <div
-      className={[
-        "economic-calendar-event",
-        compact ? "compact" : "",
-        released ? "is-released" : "",
-      ]
-        .filter(Boolean)
-        .join(" ")}
-    >
-      <div className="economic-calendar-time">
-        <Clock3 size={12} />
-        <span title={event.scheduleNote ?? undefined}>{event.scheduleType === "hourly" ? "Hourly" : event.scheduleType === "daily" ? "Daily" : !event.scheduledDate ? "No date" : event.scheduledTimeLabel ?? formatTime(event.scheduledTime)}</span>
-      </div>
-
-      <div className="economic-calendar-event-main">
-        <div className="economic-calendar-event-title">
-          <span className="economic-calendar-flag">
-            {FLAG[event.region]}
-          </span>
-
-          <span className="economic-calendar-region">
-            {REGION_LABEL[event.region]}
-          </span>
-        </div>
-
-        <div className="economic-calendar-event-name">
-          <a href={event.officialSource ?? undefined} target="_blank" rel="noreferrer" title="Open official source">{event.metricName}</a>
-        </div>
-
-        {!compact && (
-          <div className="economic-calendar-values">
-            {released ? (
-              <>
-                <span>
-                  Actual <b>{formatValue(event.actual)}</b>
-                </span>
-
-                <span>
-                  Forecast{" "}
-                  <b>{formatValue(event.forecast)}</b>
-                </span>
-
-                <span>
-                  Previous{" "}
-                  <b>{formatValue(event.previous)}</b>
-                </span>
-              </>
-            ) : (
-              <span>
-                {event.source ?? "Official source"}
-              </span>
-            )}
-          </div>
-        )}
-        {event.scheduleNote && !event.scheduledTime && <div className="economic-calendar-values">{event.scheduleNote}</div>}
-      </div>
-
-      <div
-        className={[
-          "economic-calendar-status",
-          event.status,
-        ].join(" ")}
-      >
-        {event.status === "released" ? (
-          <CheckCircle2 size={12} />
-        ) : (
-          <span className="economic-calendar-status-dot" />
-        )}
-
-        {event.scheduleType === "hourly" ? "Hourly" : event.scheduleType === "daily" ? "Daily" : event.scheduleType === "source-error" ? "Source error" : statusLabel(event.status)}
-      </div>
-    </div>
-  );
+  if (!groups.length) return <div className="economic-calendar-list release-diary"><div className="economic-calendar-empty">{emptyText}</div></div>;
+  return <div className="economic-calendar-list release-diary">
+    <div className="release-diary-head" aria-hidden="true"><span>Date &amp; time</span><span>Release</span><span>Previous</span><span>Actual</span><span>Status</span></div>
+    {groups.map((group, groupIndex) => <section className="release-diary-group" key={`${group.date}-${groupIndex}`}>
+      <h3>{group.date}</h3>
+      {group.events.map((event, index) => {
+        const canOpen = event.region !== "OTHER" && event.status !== "unscheduled";
+        return <div key={`${event.metricId}-${event.scheduledAt ?? event.scheduledDate ?? index}`} className={`release-diary-row ${event.status} ${canOpen ? "is-component-link" : ""}`} role={canOpen ? "button" : undefined} tabIndex={canOpen ? 0 : undefined} onClick={() => { if (canOpen) onSelect?.(event); }} onKeyDown={keyboardEvent => { if (canOpen && (keyboardEvent.key === "Enter" || keyboardEvent.key === " ")) { keyboardEvent.preventDefault(); onSelect?.(event); } }}>
+          <span className="release-diary-time">{event.scheduleType === "daily" ? "Daily" : event.scheduleType === "hourly" ? "Hourly" : event.scheduledDate ? event.scheduledTimeLabel ?? formatTime(event.scheduledTime) : "—"}</span>
+          <span className="release-diary-name"><i>{FLAG[event.region]}</i><span>{event.metricName}</span></span>
+          <span className="release-diary-value">{formatValue(event.previous)}</span>
+          <span className="release-diary-value">{formatValue(event.actual)}</span>
+          <span className={`release-diary-status ${event.status}`}><i />{event.scheduleType === "hourly" ? "Hourly" : event.scheduleType === "daily" ? "Daily" : statusLabel(event.status)}</span>
+        </div>;
+      })}
+    </section>)}
+  </div>;
 }

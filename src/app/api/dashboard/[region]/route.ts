@@ -64,7 +64,10 @@ export async function GET(
       .map((metric) => metric.id);
     const ids = [...new Set([...rootIds, ...componentIds, ...chartIds, ...continuousIds])];
 
-    const result = await getSeriesHistories(ids, 60);
+    // Include the prior year so 2026 charts can calculate YoY values from
+    // the underlying published levels while the visible chart stays scoped
+    // to the current year in the client.
+    const result = await getSeriesHistories(ids, 240);
     const hourlyIds = METRICS
       .filter((metric) => metric.region === r && metric.frequency === "hourly")
       .map((metric) => metric.id);

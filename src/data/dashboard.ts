@@ -51,6 +51,7 @@ import {
   speakerInstitution,
   utcDayStart,
   addUtcDays,
+  releaseTapeWindow,
 } from "@/lib/calendar-tape";
 import { round } from "@/ingest/transforms";`r`
 import { investingToCatalogScale } from "@/catalog/investing-map";
@@ -93,13 +94,13 @@ export async function getReleaseTape(opts?: {
   region?: string;
   kind?: "all" | "data" | "speakers" | "policy";
   forwardOnly?: boolean;
+  pastOnly?: boolean;
 }) {
   const db = getDb();
   const days = opts?.days ?? 7;
   const now = new Date();
   const forwardOnly = opts?.forwardOnly !== false;
-  const start = forwardOnly ? now : utcDayStart(now);
-  const end = addUtcDays(start, days);
+  const { start, end } = releaseTapeWindow(now, days, { forwardOnly, pastOnly: opts?.pastOnly });
 
   const rows = await db
     .select({

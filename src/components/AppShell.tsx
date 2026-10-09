@@ -10,7 +10,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isCountryPage = pathname?.startsWith("/country/");
 
   useEffect(() => {
-    const saved = window.localStorage.getItem("macrohub-theme");
+    const saved = window.localStorage.getItem("macrohub-editorial-theme");
     document.documentElement.dataset.theme = saved === "dark" ? "dark" : "light";
   }, [isCountryPage]);
 
@@ -23,11 +23,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <span className="site-brand-icon"><Globe2 size={25} /></span>
           <span><b>MacroHub</b><small>Global Macro Dashboard</small></span>
         </Link>
+        <nav className="editorial-primary-nav" aria-label="Main navigation">
+          <Link href="/" aria-current={pathname === "/" ? "page" : undefined}>Overview</Link>
+          <Link href="/country/uk">Countries</Link>
+          <Link href="/calendar" aria-current={pathname === "/calendar" ? "page" : undefined}>Calendar</Link>
+        </nav>
         <div className="site-header-right">
           <Link href="/country/us" data-country="us" className="header-link">🇺🇸 US</Link>
           <Link href="/country/uk" data-country="uk" className="header-link">🇬🇧 UK</Link>
           <Link href="/country/ea" data-country="ea" className="header-link">🇪🇺 Euro Area</Link>
-          <Link href="/calendar" className="header-link calendar-link"><CalendarDays size={15}/> Calendar</Link>
+          {pathname !== "/" && <Link href="/calendar" className="header-link calendar-link"><CalendarDays size={15}/> Calendar</Link>}
         </div>
       </header>
       <main>{children}</main>

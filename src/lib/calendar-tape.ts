@@ -82,6 +82,14 @@ export function utcDayStart(d: Date): Date {
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
 }
 
+/** Preserve the release tape's existing forward/today windows, and add an
+ * explicit past-only window for the overview's historical calendar. */
+export function releaseTapeWindow(now: Date, days: number, options: { forwardOnly?: boolean; pastOnly?: boolean } = {}) {
+  const start = options.pastOnly ? addUtcDays(now, -days) : options.forwardOnly === false ? utcDayStart(now) : now;
+  const end = options.pastOnly ? now : addUtcDays(start, days);
+  return { start, end };
+}
+
 export function formatDayHeader(day: string): string {
   const d = new Date(`${day}T12:00:00Z`);
   return d.toLocaleDateString("en-GB", {

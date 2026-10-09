@@ -13,12 +13,14 @@ export async function GET(req: NextRequest) {
     | "speakers"
     | "policy";
   const forwardOnly = req.nextUrl.searchParams.get("forwardOnly") !== "false";
+  const pastOnly = req.nextUrl.searchParams.get("pastOnly") === "true";
 
   const tape = await getReleaseTape({
     region,
     days: Math.min(Math.max(days, 1), 30),
     kind,
     forwardOnly,
+    pastOnly,
   });
 
   return NextResponse.json(tape, { headers: { "Cache-Control": "no-store" } });

@@ -94,20 +94,31 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
       metricId: "us-pce",
       title: "PCE (Headline)",
       components: [
-        n("core", "Core PCE", "us-core-pce"),
         n("goods", "Goods", "us-pce-goods", [
-          n("durable", "Durable Goods", "us-pce-durable-goods"),
-          n("furnishings", "Furnishings & Durable Household Equipment", "us-pce-furnishings"),
-          n("clothing", "Clothing & Footwear", "us-pce-clothing"),
+          n("durable", "Durable goods", "us-pce-durable-goods", [
+            n("motor-vehicles", "Motor vehicles and parts"),
+            n("furnishings", "Furnishings and durable household equipment", "us-pce-furnishings"),
+            n("recreational-goods", "Recreational goods and vehicles"),
+            n("other-durable", "Other durable goods"),
+          ]),
+          n("nondurable", "Nondurable goods", undefined, [
+            n("food", "Food and beverages purchased for off-premises consumption", "us-pce-food"),
+            n("clothing", "Clothing and footwear", "us-pce-clothing"),
+            n("energy-goods", "Gasoline and other energy goods", "us-pce-energy"),
+            n("other-nondurable", "Other nondurable goods"),
+          ]),
         ]),
         n("services", "Services", "us-pce-services", [
-          n("household", "Household Services", "us-pce-household-services"),
-          n("healthcare", "Health Care", "us-pce-healthcare"),
-          n("housing", "Housing", "us-pce-housing"),
-          n("food-services", "Food Services & Accommodations", "us-pce-food-services"),
+          n("household-services", "Household consumption expenditures for services", "us-pce-household-services", [
+            n("housing", "Housing", "us-pce-housing"),
+            n("healthcare", "Health care", "us-pce-healthcare"),
+            n("transportation-services", "Transportation services"),
+            n("recreation-services", "Recreation services"),
+            n("food-services", "Food services and accommodations", "us-pce-food-services"),
+            n("financial-services", "Financial services and insurance"),
+            n("other-services", "Other services"),
+          ]),
         ]),
-        n("food", "Food & Beverages", "us-pce-food"),
-        n("energy", "Gasoline & Other Energy Goods", "us-pce-energy"),
       ],
     },
 
@@ -1037,27 +1048,27 @@ const MACRO_CATEGORY_ORDER: MacroCategory[] = [
 const CATEGORY_SPEC_IDS: Record<Region, Record<MacroCategory, string[]>> = {
   US: {
     prices: ["us-cpi-card", "us-core-cpi-card", "us-pce-card", "us-core-pce-card"],
-    activity: ["us-gdp-card", "us-retail-sales-card", "us-pmi-card", "us-pce-growth-card", "us-investment-card", "us-government-card"],
+    activity: ["us-gdp-card", "us-retail-sales-card", "us-pmi-card", "us-pce-growth-card", "us-investment-card", "us-government-card", "us-net-exports-card"],
     labour: ["us-unemployment-card", "us-payrolls-card", "us-participation-card", "us-jolts-card", "us-wages-card", "us-claims-card"],
     monetary: [],
     expectations: ["us-inflation-expectations-consumer", "us-inflation-expectations-wage", "us-inflation-expectations-business", "us-inflation-expectations-market", "us-inflation-expectations-model"],
-    external: ["us-net-exports-card"],
+    external: [],
   },
   UK: {
     prices: ["uk-cpi-card", "uk-cpih-card", "uk-core-card", "uk-goods-card", "uk-services-card", "uk-food-card", "uk-housing-card"],
-    activity: ["uk-gdp-card", "uk-consumption-card", "uk-retail-sales-card", "uk-capital-card", "uk-pmi-card"],
+    activity: ["uk-gdp-card", "uk-consumption-card", "uk-retail-sales-card", "uk-capital-card", "uk-pmi-card", "uk-net-trade-card"],
     labour: ["uk-unemployment-card", "uk-employment-card", "uk-inactivity-card", "uk-vacancies-card", "uk-wages-card", "uk-payrolled-card"],
     monetary: [],
     expectations: ["uk-inflation-expectations-consumer", "uk-inflation-expectations-business", "uk-inflation-expectations-wage", "uk-inflation-expectations-market", "uk-inflation-expectations-professional"],
-    external: ["uk-net-trade-card"],
+    external: [],
   },
   EA: {
     prices: ["ea-hicp-card", "ea-core-card", "ea-food-card", "ea-energy-card", "ea-neig-card", "ea-services-card"],
-    activity: ["ea-gdp-card", "ea-retail-sales-card", "ea-pmi-card", "ea-household-card", "ea-capital-card", "ea-government-card"],
+    activity: ["ea-gdp-card", "ea-retail-sales-card", "ea-pmi-card", "ea-household-card", "ea-capital-card", "ea-government-card", "ea-exports-card", "ea-imports-card"],
     labour: ["ea-unemployment-card", "ea-youth-card", "ea-employment-card", "ea-inactivity-card", "ea-vacancies-card", "ea-wages-card"],
     monetary: [],
     expectations: ["ea-inflation-expectations-consumer", "ea-inflation-expectations-wage", "ea-inflation-expectations-business", "ea-inflation-expectations-market", "ea-inflation-expectations-professional"],
-    external: ["ea-exports-card", "ea-imports-card"],
+    external: [],
   },
 };
 
