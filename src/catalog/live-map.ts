@@ -27,6 +27,20 @@ export interface LiveSeriesRef {
 /** Map metric id → official live series (release-day source of truth). */
 export const LIVE_MAP: Record<string, LiveSeriesRef> = {
   // ---------------------------------------------------------------------------
+  // LSEG Economic Indicators — PMI survey readings (local Workspace session)
+  // ---------------------------------------------------------------------------
+  "us-ism-manufacturing-pmi": { provider: "lseg", seriesId: "USPMI=ECI" },
+  "us-ism-services-pmi": { provider: "lseg", seriesId: "USNPMI=ECI" },
+  "us-sp-global-manufacturing-pmi": { provider: "lseg", seriesId: "USMPMF=ECI" },
+  "us-sp-global-services-pmi": { provider: "lseg", seriesId: "USMPSF=ECI" },
+  "uk-sp-global-manufacturing-pmi": { provider: "lseg", seriesId: "GBPMIM=ECI" },
+  "uk-sp-global-services-pmi": { provider: "lseg", seriesId: "GBPMIS=ECI" },
+  "uk-sp-global-composite-pmi": { provider: "lseg", seriesId: "GBCPMI=ECI" },
+  "ea-sp-global-manufacturing-pmi": { provider: "lseg", seriesId: "EUPMI=ECI" },
+  "ea-sp-global-services-pmi": { provider: "lseg", seriesId: "EUPMIS=ECI" },
+  "ea-sp-global-composite-pmi": { provider: "lseg", seriesId: "EUPMIP=ECI" },
+
+  // ---------------------------------------------------------------------------
   // BLS — Employment Situation
   // ---------------------------------------------------------------------------
   "us-nfp": {

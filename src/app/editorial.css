@@ -560,7 +560,7 @@ html[data-theme="dark"] .editorial-dashboard .detail-button {
 .inflation-chart-legend { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px 14px; }
 .inflation-chart-legend > span { display:inline-flex; align-items:center; gap:5px; white-space:nowrap; color:var(--muted); font-size:10px; }
 .inflation-chart-legend i { width:12px; height:3px; border-radius:2px; }
-.inflation-plot { height:235px; padding:6px 14px 12px; }
+.inflation-plot { height:287px; padding:6px 14px 12px; }
 .inflation-no-selection { display:grid; height:100%; place-items:center; color:var(--muted); font-size:12px; }
 .inflation-reading-heading { padding-top:10px; }
 .inflation-reading-wrap { overflow:auto; margin:8px 12px 12px; border:1px solid var(--line); }
@@ -620,7 +620,7 @@ button.economic-calendar-event-name { border:0; padding:0; background:transparen
 @media(max-width:600px) {
   .component-search { order:4; width:100%; min-width:0; }
   .editorial-dashboard .macro-calendar-sidebar { height:500px; }
-  .inflation-plot { height:205px; padding-inline:6px; }
+  .inflation-plot { height:257px; padding-inline:6px; }
   .inflation-chart-heading,.inflation-reading-heading { align-items:flex-start; flex-direction:column; gap:3px; }
   .inflation-chart-heading { flex-direction:row; flex-wrap:wrap; align-items:flex-start; gap:8px 12px; }
   .inflation-chart-title { min-width:0; flex-wrap:wrap; gap:4px 9px; }
@@ -727,7 +727,11 @@ button.economic-calendar-event-name { border:0; padding:0; background:transparen
 .flight-deck-selected b { color:var(--text); font-size:12px; }
 .flight-deck-selected span { color:var(--muted); font-size:10px; }
 .flight-deck-selected button { display:inline-flex; align-items:center; justify-content:center; gap:6px; flex:0 0 auto; border:0; background:transparent; color:var(--accent-ink); font:inherit; font-size:11px; font-weight:600; cursor:pointer; }
-.detail-drawer.flight-deck-series-dialog .drawer-chart { margin-bottom:14px !important; }
+.detail-drawer.flight-deck-series-dialog .drawer-chart { height:auto !important; min-height:0 !important; flex:0 0 auto !important; margin-bottom:8px !important; }
+.detail-drawer.flight-deck-series-dialog .drawer-scroll-inner { gap:8px !important; padding:0 18px 16px !important; }
+.detail-drawer.flight-deck-series-dialog .drawer-chart { padding:10px 12px 8px !important; }
+.detail-drawer.flight-deck-series-dialog .drawer-chart > .drawer-section-head { margin-bottom:4px !important; }
+.detail-drawer.flight-deck-series-dialog .inflation-distribution { margin-top:8px !important; }
 .detail-drawer.flight-deck-series-dialog .drawer-kpis { padding:10px 24px !important; }
 .detail-drawer.flight-deck-series-dialog .drawer-kpi strong { font-size:24px; }
 .detail-drawer.flight-deck-drawer .drawer-release { border-bottom:1px solid var(--line) !important; padding-bottom:12px !important; }
@@ -740,6 +744,9 @@ button.economic-calendar-event-name { border:0; padding:0; background:transparen
 .flight-deck-field-head p { margin:4px 0 0; color:var(--muted); font-size:11px; }
 .flight-deck-field-head > span { color:var(--muted); font-size:10px; white-space:nowrap; }
 .flight-deck-columns,.flight-deck-row { display:grid; grid-template-columns:minmax(180px,1.15fr) minmax(180px,1.4fr) 92px 92px 34px; align-items:center; gap:14px; }
+.flight-deck-columns > span:nth-child(3) { grid-column:3 / 5; text-align:center; }
+.flight-deck-measures { display:flex; min-width:0; justify-content:flex-end; gap:22px; }
+.flight-deck-measures .flight-deck-value { min-width:58px; }
 .flight-deck-columns { padding:0 12px 7px; color:var(--muted); font-size:9px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; }
 .flight-deck-rows { border-top:1px solid var(--line); }
 .flight-deck-row { width:100%; min-height:82px; padding:7px 12px; border:0; border-bottom:1px solid var(--line); background:transparent; color:var(--text); text-align:left; transition:background .15s ease; }
@@ -768,9 +775,28 @@ button.economic-calendar-event-name { border:0; padding:0; background:transparen
 .flight-deck-row.tone-3 .flight-deck-spark { filter:hue-rotate(245deg); }
 .flight-deck-selected { min-height:72px; }
 .flight-deck-selected > div:last-child { display:flex; flex-direction:column; align-items:flex-end; gap:8px; }
+
+/* Keep metric/component detail dialogs focused and compact on desktop. */
+.detail-drawer.flight-deck-drawer .drawer-release { padding:8px 20px 10px !important; }
+.detail-drawer.flight-deck-drawer .drawer-scroll-inner { gap:10px !important; padding:0 20px 16px !important; }
+.detail-drawer.flight-deck-drawer.has-component-field .drawer-kpis { padding:8px 20px !important; gap:8px !important; }
+.detail-drawer.flight-deck-drawer.has-component-field .drawer-kpi { padding:8px 12px !important; gap:10px !important; }
+.detail-drawer.flight-deck-drawer.has-component-field .drawer-kpi strong { font-size:24px !important; }
+.flight-deck-field { padding:2px 20px 18px; }
+.flight-deck-field-head { margin-bottom:9px; }
+.flight-deck-field-head h3 { font-size:21px; }
+.flight-deck-columns,.flight-deck-row { gap:10px; }
+.flight-deck-row { min-height:68px; padding:5px 10px; }
+.flight-deck-spark { height:54px; }
+.flight-deck-spark > div { height:28px; }
+.detail-drawer.flight-deck-series-dialog .drawer-scroll-inner { padding:0 16px 14px !important; }
+
 @media(max-width:700px) {
   .flight-deck-field { padding-inline:14px; }
   .flight-deck-columns,.flight-deck-row { grid-template-columns:minmax(110px,1fr) minmax(90px,1fr) 62px 62px 28px; gap:7px; }
+  .flight-deck-columns > span:nth-child(3) { grid-column:3 / 5; }
+  .flight-deck-measures { gap:5px; }
+  .flight-deck-measures .flight-deck-value { min-width:48px; font-size:11px; }
   .flight-deck-field-head h3 { font-size:21px; }
   .flight-deck-spark { height:58px; }
   .flight-deck-spark > div { height:58px; }
@@ -783,3 +809,5 @@ button.economic-calendar-event-name { border:0; padding:0; background:transparen
   .detail-drawer.flight-deck-drawer:not(.flight-deck-series-dialog) .drawer-row { grid-template-columns:20px minmax(90px,1fr) 58px 58px minmax(65px,.8fr) 28px !important; column-gap:3px !important; padding-inline:6px !important; }
   .flight-deck-selected { align-items:flex-start; flex-direction:column; }
 }
+
+

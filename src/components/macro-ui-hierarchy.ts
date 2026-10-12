@@ -6,6 +6,7 @@ export type UiNode = {
   id: string;
   label: string;
   metricId?: string;
+  momMetricId?: string;
   children?: UiNode[];
 };
 
@@ -27,8 +28,8 @@ expectationGroup?:
   components?: UiNode[];
 };
 
-const n = (id: string, label: string, metricId?: string, children?: UiNode[]): UiNode => ({
-  id, label, ...(metricId ? { metricId } : {}), ...(children?.length ? { children } : {}),
+const n = (id: string, label: string, metricId?: string, children?: UiNode[], momMetricId?: string): UiNode => ({
+  id, label, ...(metricId ? { metricId } : {}), ...(momMetricId ? { momMetricId } : {}), ...(children?.length ? { children } : {}),
 });
 
 const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec[]>> = {
@@ -43,7 +44,7 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
         n("food", "Food", "us-cpi-food"),
         n("energy", "Energy", "us-cpi-energy"),
         n("core", "Core CPI", "us-cpi-core", [
-          n("core-goods", "Core Goods", undefined, [
+          n("core-goods", "Core Goods", "us-core-goods-cpi-yoy", [
             n("apparel", "Apparel", "us-cpi-apparel"),
             n("new-vehicles", "New Vehicles", "us-cpi-new-vehicles"),
             n("used-cars", "Used Cars & Trucks", "us-cpi-used-cars"),
@@ -51,15 +52,15 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
             n("recreation-goods", "Recreation Commodities", "us-cpi-recreation-commodities"),
             n("education-goods", "Education & Communication Commodities", "us-cpi-education-commodities"),
             n("other-goods", "Other Core Goods", "us-cpi-other-goods"),
-          ]),
-          n("core-services", "Core Services", undefined, [
+          ], "us-core-goods-cpi-mom"),
+          n("core-services", "Core Services", "us-services-cpi-yoy", [
             n("shelter", "Shelter", "us-cpi-shelter"),
             n("medical", "Medical Care", "us-cpi-medical-services"),
             n("transport", "Transportation Services", "us-cpi-transport-services"),
             n("recreation-services", "Recreation Services", "us-cpi-recreation-services"),
             n("education-services", "Education & Communication", "us-cpi-education-services"),
             n("other-services", "Other Services", "us-cpi-other-services"),
-          ]),
+          ], "us-services-cpi-mom"),
         ]),
       ],
     },
@@ -69,7 +70,7 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
       metricId: "us-cpi-core",
       title: "Core CPI",
       components: [
-        n("core-goods", "Core Goods", undefined, [
+        n("core-goods", "Core Goods", "us-core-goods-cpi-yoy", [
           n("apparel", "Apparel", "us-cpi-apparel"),
           n("new-vehicles", "New Vehicles", "us-cpi-new-vehicles"),
           n("used-cars", "Used Cars & Trucks", "us-cpi-used-cars"),
@@ -77,15 +78,15 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
           n("recreation-goods", "Recreation Commodities", "us-cpi-recreation-commodities"),
           n("education-goods", "Education & Communication Commodities", "us-cpi-education-commodities"),
           n("other-goods", "Other Core Goods", "us-cpi-other-goods"),
-        ]),
-        n("core-services", "Core Services", undefined, [
+        ], "us-core-goods-cpi-mom"),
+        n("core-services", "Core Services", "us-services-cpi-yoy", [
           n("shelter", "Shelter", "us-cpi-shelter"),
           n("medical", "Medical Care", "us-cpi-medical-services"),
           n("transport", "Transportation Services", "us-cpi-transport-services"),
           n("recreation-services", "Recreation Services", "us-cpi-recreation-services"),
           n("education-services", "Education & Communication", "us-cpi-education-services"),
           n("other-services", "Other Services", "us-cpi-other-services"),
-        ]),
+        ], "us-services-cpi-mom"),
       ],
     },
 
@@ -1093,6 +1094,51 @@ export const DASHBOARD: Record<Region, Record<MacroCategory, IndicatorSpec[]>> =
     if (remaining.size) {
       throw new Error(`Unmapped ${region} dashboard cards: ${[...remaining.keys()].join(", ")}`);
     }
+
+    // Put the expenditure-side GDP components beneath the GDP headline so
+    // they remain available in its detail card without taking front-row slots.
+    const componentCardIds: Record<Region, string[]> = {
+      US: ["us-pce-growth-card", "us-investment-card", "us-government-card", "us-net-exports-card"],
+      UK: ["uk-consumption-card", "uk-capital-card", "uk-net-trade-card"],
+      EA: ["ea-household-card", "ea-capital-card", "ea-government-card", "ea-exports-card", "ea-imports-card"],
+    };
+    const gdpCard = categories.activity.find((spec) => spec.id === `${region.toLowerCase()}-gdp-card`);
+    if (gdpCard) {
+      const cardsById = new Map(categories.activity.map((spec) => [spec.id, spec]));
+      const movedNodes: UiNode[] = [];
+      for (const cardId of componentCardIds[region]) {
+        const card = cardsById.get(cardId);
+        if (!card) continue;
+
+        if (region === "UK") {
+          // The UK cards publish distinct household, government, investment,
+          // business-investment and net-trade series rather than one combined
+          // measure for each topic. Keep those series as separate GDP children.
+          movedNodes.push(...(card.components ?? []).map((node) => ({
+            ...node,
+            children: node.children?.map((child) => ({ ...child })),
+          })));
+          continue;
+        }
+
+        const root = (card.components ?? []).find((node) => node.metricId === card.metricId);
+        if (root) {
+          movedNodes.push({
+            id: `${card.id}-gdp-component`,
+            label: card.title ?? root.label,
+            metricId: card.metricId,
+            children: (card.components ?? [])
+              .filter((node) => node !== root)
+              .map((node) => ({ ...node, children: node.children?.map((child) => ({ ...child })) })),
+          });
+        } else {
+          movedNodes.push(...(card.components ?? []).map((node) => ({ ...node })));
+        }
+      }
+      gdpCard.components = [...(gdpCard.components ?? []), ...movedNodes];
+      categories.activity = categories.activity.filter((spec) => !componentCardIds[region].includes(spec.id));
+    }
+
     grouped[region] = categories;
   }
 

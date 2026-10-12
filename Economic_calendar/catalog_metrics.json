@@ -403,7 +403,7 @@
       "id": "ea-spf-current-year",
       "name": "ECB SPF HICP Current-Year Forecast",
       "source": "ecb",
-      "frequency": "quarterly",
+      "frequency": "annual",
       "official_url": "https://data.ecb.europa.eu/data/datasets/SPF"
     },
     {
@@ -501,7 +501,7 @@
       "id": "us-gdp-now",
       "name": "Atlanta Fed GDPNow",
       "source": "fred",
-      "frequency": "monthly",
+      "frequency": "quarterly",
       "official_url": "https://www.atlantafed.org/cqer/research/gdpnow"
     },
     {
@@ -978,7 +978,7 @@
       "name": "UK Real GDP QoQ",
       "source": "ons",
       "frequency": "quarterly",
-      "official_url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp/timeseries/ihyq/pn2"
+      "official_url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp/timeseries/ihyq/qna"
     },
     {
       "id": "uk-net-trade-qoq",
@@ -1042,6 +1042,20 @@
       "source": "ons",
       "frequency": "monthly",
       "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peoplenotinwork/unemployment"
+    },
+    {
+      "id": "uk-unemployed-persons",
+      "name": "UK Unemployed Persons (aged 16+, seasonally adjusted)",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peoplenotinwork/unemployment/timeseries/mgsc/unem"
+    },
+    {
+      "id": "uk-long-term-unemployed",
+      "name": "UK Unemployed over 12 Months (aged 16+, seasonally adjusted)",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peoplenotinwork/unemployment/timeseries/ybwh/lms"
     },
     {
       "id": "uk-employment-level",
@@ -1290,7 +1304,7 @@
     },
     {
       "id": "ea-long-term-unemployment",
-      "name": "Euro Area Long-Term Unemployment",
+      "name": "Euro Area Long-Term Unemployment Rate",
       "source": "eurostat",
       "frequency": "quarterly",
       "official_url": "https://ec.europa.eu/eurostat/web/labour-market"
@@ -1334,7 +1348,7 @@
       "id": "ea-inflation-exp-1y",
       "name": "ECB SPF HICP 1-Year Expectation",
       "source": "ecb",
-      "frequency": "monthly",
+      "frequency": "quarterly",
       "official_url": "https://data.ecb.europa.eu/data/datasets/SPF"
     },
     {
@@ -1418,7 +1432,7 @@
       "id": "ea-spf-wage-exp-1y",
       "name": "ECB SPF Wage Growth Assumption 1Y",
       "source": "ecb",
-      "frequency": "quarterly",
+      "frequency": "annual",
       "official_url": "https://data.ecb.europa.eu/data/datasets/SPF"
     },
     {
@@ -1670,7 +1684,7 @@
       "id": "uk-inflation-comp-1y",
       "name": "UK 1-Year Inflation Swap",
       "source": "boe",
-      "frequency": "daily",
+      "frequency": "monthly",
       "official_url": "https://www.bankofengland.co.uk/statistics"
     },
     {
@@ -1689,10 +1703,10 @@
     },
     {
       "id": "uk-inflation-comp-5y5y",
-      "name": "UK 5Y5Y Inflation Swap",
+      "name": "UK 5Y5Y Inflation Compensation",
       "source": "boe",
       "frequency": "daily",
-      "official_url": "https://www.bankofengland.co.uk/statistics"
+      "official_url": "https://www.bankofengland.co.uk/statistics/yield-curves"
     },
     {
       "id": "ea-ces-inflation-exp-3y",
@@ -1983,7 +1997,7 @@
     },
     {
       "id": "us-long-term-unemployed",
-      "name": "Long-Term Unemployed",
+      "name": "Long-Term Unemployment Share",
       "source": "bls",
       "frequency": "monthly",
       "official_url": "https://www.bls.gov/cps"
@@ -2292,28 +2306,28 @@
     {
       "id": "us-ism-manufacturing-pmi",
       "name": "US ISM Manufacturing PMI",
-      "source": "pmi_scrape",
+      "source": "lseg",
       "frequency": "monthly",
       "official_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/"
     },
     {
       "id": "us-ism-services-pmi",
       "name": "US ISM Services PMI",
-      "source": "pmi_scrape",
+      "source": "lseg",
       "frequency": "monthly",
       "official_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/"
     },
     {
       "id": "us-sp-global-manufacturing-pmi",
       "name": "US S&P Global Manufacturing PMI",
-      "source": "pmi_scrape",
+      "source": "lseg",
       "frequency": "monthly",
       "official_url": "https://www.pmi.spglobal.com/PUBLIC/HOME?language=en"
     },
     {
       "id": "us-sp-global-services-pmi",
       "name": "US S&P Global Services PMI",
-      "source": "pmi_scrape",
+      "source": "lseg",
       "frequency": "monthly",
       "official_url": "https://www.pmi.spglobal.com/PUBLIC/HOME?language=en"
     },
@@ -2355,21 +2369,21 @@
     {
       "id": "uk-sp-global-manufacturing-pmi",
       "name": "UK S&P Global Manufacturing PMI",
-      "source": "pmi_scrape",
+      "source": "lseg",
       "frequency": "monthly",
       "official_url": "https://www.pmi.spglobal.com/PUBLIC/HOME?language=en"
     },
     {
       "id": "uk-sp-global-services-pmi",
       "name": "UK S&P Global Services PMI",
-      "source": "pmi_scrape",
+      "source": "lseg",
       "frequency": "monthly",
       "official_url": "https://www.pmi.spglobal.com/PUBLIC/HOME?language=en"
     },
     {
       "id": "uk-sp-global-composite-pmi",
       "name": "UK S&P Global Composite PMI",
-      "source": "pmi_scrape",
+      "source": "lseg",
       "frequency": "monthly",
       "official_url": "https://www.pmi.spglobal.com/PUBLIC/HOME?language=en"
     },
@@ -2404,21 +2418,21 @@
     {
       "id": "ea-sp-global-manufacturing-pmi",
       "name": "Euro Area S&P Global Manufacturing PMI",
-      "source": "pmi_scrape",
+      "source": "lseg",
       "frequency": "monthly",
       "official_url": "https://www.pmi.spglobal.com/PUBLIC/HOME?language=en"
     },
     {
       "id": "ea-sp-global-services-pmi",
       "name": "Euro Area S&P Global Services PMI",
-      "source": "pmi_scrape",
+      "source": "lseg",
       "frequency": "monthly",
       "official_url": "https://www.pmi.spglobal.com/PUBLIC/HOME?language=en"
     },
     {
       "id": "ea-sp-global-composite-pmi",
       "name": "Euro Area S&P Global Composite PMI",
-      "source": "pmi_scrape",
+      "source": "lseg",
       "frequency": "monthly",
       "official_url": "https://www.pmi.spglobal.com/PUBLIC/HOME?language=en"
     },
@@ -2442,6 +2456,111 @@
       "source": "ons",
       "frequency": "monthly",
       "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peoplenotinwork/economicinactivity"
+    },
+    {
+      "id": "uk-employee-jobs",
+      "name": "UK Employee Jobs",
+      "source": "ons",
+      "frequency": "quarterly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/timeseries/bcaj"
+    },
+    {
+      "id": "uk-inactive-persons",
+      "name": "UK Economically Inactive Persons (16–64)",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peoplenotinwork/economicinactivity/timeseries/lf2m/lms"
+    },
+    {
+      "id": "uk-inactivity-change",
+      "name": "UK Economic Inactivity Annual Change (16–64)",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/timeseries/fv28/lms"
+    },
+    {
+      "id": "uk-inactivity-student",
+      "name": "UK Economic Inactivity: Student",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peoplenotinwork/economicinactivity/timeseries/lf63/lms"
+    },
+    {
+      "id": "uk-inactivity-family",
+      "name": "UK Economic Inactivity: Looking after family or home",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peoplenotinwork/economicinactivity/timeseries/lf65/lms"
+    },
+    {
+      "id": "uk-inactivity-temporary-sick",
+      "name": "UK Economic Inactivity: Temporary sickness",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peoplenotinwork/economicinactivity/timeseries/lf67/lms"
+    },
+    {
+      "id": "uk-inactivity-long-term-sick",
+      "name": "UK Economic Inactivity: Long-term sickness",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peoplenotinwork/economicinactivity/timeseries/lf69/lms"
+    },
+    {
+      "id": "uk-inactivity-discouraged",
+      "name": "UK Economic Inactivity: Discouraged workers",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peoplenotinwork/economicinactivity/timeseries/lfl8/lms"
+    },
+    {
+      "id": "uk-inactivity-retired",
+      "name": "UK Economic Inactivity: Retired",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peoplenotinwork/economicinactivity/timeseries/lf6b/lms"
+    },
+    {
+      "id": "uk-inactivity-other",
+      "name": "UK Economic Inactivity: Other reasons",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peoplenotinwork/economicinactivity/timeseries/lf6d/lms"
+    },
+    {
+      "id": "uk-vacancy-rate",
+      "name": "UK Job Openings Rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peoplenotinwork/unemployment/datasets/vacanciesbyindustryvacs02"
+    },
+    {
+      "id": "uk-vacancy-change",
+      "name": "UK Vacancy Change",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/timeseries/ap2y/unem"
+    },
+    {
+      "id": "uk-awe-real-total-yoy",
+      "name": "UK Real AWE Total Pay Growth",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/timeseries/a3ww/lms"
+    },
+    {
+      "id": "uk-awe-real-regular-yoy",
+      "name": "UK Real AWE Regular Pay Growth",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/timeseries/a2fa/lms"
+    },
+    {
+      "id": "uk-payrolled-employees-annual-change",
+      "name": "UK Payrolled Employees Annual Change",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/bulletins/earningsandemploymentfrompayasyouearnrealtimeinformationuk/latest"
     }
   ]
 }

@@ -20,7 +20,8 @@ async function main() {
     "ea-sp-global-manufacturing-pmi", "ea-sp-global-services-pmi", "ea-sp-global-composite-pmi",
   ];
   for (const id of pmiIds) {
-    assert.equal(getSourceConfig(id)?.adapter, "pipeline", `${id} must use the official PMI fetcher locally`);
+    assert.equal(getSourceConfig(id)?.adapter, "lseg", `${id} must use the authenticated local LSEG worker`);
+    assert.ok(getSourceConfig(id)?.sourceId.endsWith("=ECI"), `${id} must have an LSEG economic-series RIC`);
     assert.equal(getCloudSourceConfig(id), null, `${id} must remain excluded from D1 runtimes without a browser`);
   }
 

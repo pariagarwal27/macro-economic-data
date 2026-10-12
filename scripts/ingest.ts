@@ -81,6 +81,7 @@ import {
 } from "../src/ingest/boe-dmp";
 import { fetchOnsPpiBulletin } from "../src/ingest/ons-ppi-bulletin";
 import { fetchBlsSeries, fetchBlsSeriesFullHistory } from "../src/ingest/bls";
+import { fetchLsegHistory } from "../src/ingest/adapters/lseg";
 
 import {
   blsReleaseFallbackPoints,
@@ -1040,6 +1041,9 @@ if (metric.source === "census") {
   }
   if (metric.source === "nyfed") {
     return fetchNyfedSeries(metric.seriesId as NyfedSeriesId);
+  }
+  if (metric.source === "lseg") {
+    return fetchLsegHistory(metric.seriesId, { start: "1990-01-01" });
   }
   if (metric.source === "atlanta" && metric.seriesId === "BIE_EXPECTED_PRICE_1Y") {
     return fetchAtlantaBieSeries();

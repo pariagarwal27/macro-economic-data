@@ -13,10 +13,6 @@ import {
 } from "./census-retail";
 
 import {
-  fetchPmiMetric,
-  type PmiMetricKey,
-} from "./pmi-scraper";
-import {
   DESK_SMOOTHED_ROWS,
   SMOOTH_METHOD_LABELS,
   SMOOTH_METHOD_SHORT,
@@ -33,7 +29,7 @@ import {
   sql,
 } from "drizzle-orm";
 import { LIVE_MAP } from "@/catalog/live-map";
-import { fetchLsegLatest } from "./adapters/lseg";
+import { fetchLsegHistory, fetchLsegLatest } from "./adapters/lseg";
 import { investingToCatalogScale } from "@/catalog/investing-map";
 import { getClient, getDb, getD1Database } from "@/db";
 import {
@@ -1030,14 +1026,6 @@ async function loadLiveRaw(
       };
     }
 
-    if (metric.source === "pmi_scrape") {
-      return {
-        points: await fetchPmiMetric(
-          metric.id as PmiMetricKey
-        ),
-        note: `Live PMI scrape ${metric.id}`,
-      };
-    }
     if (metric.source === "ons") {
       await new Promise((r) => setTimeout(r, 2000));
       return {
@@ -1301,11 +1289,6 @@ async function loadOfficialHistory(metric: MetricDef): Promise<RawPoint[]> {
     return fetchCensusRetailSeries(metric.id);
   }
 
-  if (metric.source === "pmi_scrape") {
-    return fetchPmiMetric(
-      metric.id as PmiMetricKey
-    );
-  }
   if (metric.source === "bls") {
     const map = await fetchBlsSeriesFullHistory([metric.seriesId], {
       startYear: 1947,
@@ -1343,10 +1326,8 @@ async function loadOfficialHistory(metric: MetricDef): Promise<RawPoint[]> {
     return fetchNyfedSeries(metric.seriesId as NyfedSeriesId);
   }
 
-  // LSEG adapter is intentionally latest-value only. Do not pretend it
-  // provides historical backfill.
   if (metric.source === "lseg") {
-    return [];
+    return fetchLsegHistory(metric.seriesId, { start: "1990-01-01" });
   }
 
   if (metric.source === "atlanta" && metric.seriesId === "BIE_EXPECTED_PRICE_1Y") {

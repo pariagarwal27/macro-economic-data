@@ -10,6 +10,7 @@
     "lint": "eslint",
     "ingest": "tsx scripts/ingest.ts",
     "backfill": "tsx scripts/ingest.ts backfill",
+    "backfill:pmi": "tsx scripts/backfill-pmi.ts",
     "refresh": "tsx scripts/ingest.ts refresh",
     "simulate:releases": "tsx scripts/simulate-release-updates.ts",
     "capture:investing": "tsx scripts/capture-investing-month.ts",

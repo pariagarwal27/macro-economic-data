@@ -9,6 +9,7 @@ import {
   YAxis,
 } from "recharts";
 import { getNiceTickDomain, getNiceTicks } from "@/lib/chart-axis";
+import { HistoryChartViewport } from "@/components/HistoryChartViewport";
 
 type Point = {
   date: string;
@@ -97,12 +98,15 @@ function fullMonthLabel(value: string) {
   }).format(date);
 }
 
-function percent(value: unknown) {
+function percent(value: unknown, maximumFractionDigits = 1) {
   const n = Number(value);
 
-  return Number.isFinite(n)
-    ? `${n.toFixed(1)}%`
-    : "—";
+  if (!Number.isFinite(n)) return "—";
+
+  return `${new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits,
+  }).format(n)}%`;
 }
 
 export function ExpectationComparisonChart({
@@ -128,7 +132,6 @@ export function ExpectationComparisonChart({
   const hasDailySeries = series.some((item) => item.frequency === "daily" || item.frequency === "hourly");
   const today = new Date();
   const todayKey = today.toISOString().slice(0, 10);
-  const dayCutoff = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
   const valid = series
     .map((item) => {
@@ -145,8 +148,7 @@ export function ExpectationComparisonChart({
         }
 
         const pointYear = Number(date.slice(0, 4));
-        const firstYear = item.frequency === "quarterly" ? currentYear - 1 : currentYear;
-        if (isDaily ? date < dayCutoff || date > todayKey : pointYear < firstYear || pointYear > currentYear || !month) {
+        if (isDaily ? date > todayKey : pointYear > currentYear || !month) {
           continue;
         }
 
@@ -185,7 +187,7 @@ export function ExpectationComparisonChart({
 
         </div>
         <div className="expectation-comparison-empty">
-          {hasDailySeries ? "No observations in the last 30 days." : `No ${currentYear} observations available.`}
+          {hasDailySeries ? "No observations available." : `No ${currentYear} observations available.`}
         </div>
       </div>
     );
@@ -225,15 +227,6 @@ export function ExpectationComparisonChart({
     return row;
   });
 
-  /*
-   * Calculate the Y-axis only from the observations actually
-   * displayed on this chart.
-   */
-  const allValues = valid.flatMap((item) =>
-    item.data.map((point) => point.value)
-  );
-  const yTicks = getNiceTicks(allValues);
-
   return (
     <div className="expectation-comparison-card">
       <div className="expectation-comparison-heading mb-3">
@@ -248,13 +241,10 @@ export function ExpectationComparisonChart({
         ) : null}
       </div>
 
-      <div className="expectation-comparison-plot h-80 w-full">
-        <ResponsiveContainer
-          width="100%"
-          height="100%"
-        >
+      <HistoryChartViewport dates={rows.map(row => String(row.date))} frequency={hasDailySeries ? "daily" : "monthly"} height={320} label={title}>
+        {(plotWidth, year) => { const yearRows = rows.filter(row => String(row.date).slice(0, 4) === String(year)); const yearValues = valid.flatMap(item => item.data.filter(point => point.date.slice(0, 4) === String(year)).map(point => point.value)); const yearTicks = getNiceTicks(yearValues, 5, 0.05); const yearStep = yearTicks.length > 1 ? Math.abs(yearTicks[1]! - yearTicks[0]!) : 0.1; const yearDigits = yearStep < 0.1 ? 2 : 1; return <div className="expectation-comparison-plot h-80 w-full" style={{ width: plotWidth }}><ResponsiveContainer width={plotWidth} height="100%">
           <LineChart
-            data={rows}
+            data={yearRows}
             margin={{
               top: 8,
               right: 18,
@@ -286,9 +276,9 @@ export function ExpectationComparisonChart({
             />
 
             <YAxis
-              domain={getNiceTickDomain(yTicks)}
-              ticks={yTicks}
-              tickFormatter={percent}
+              domain={getNiceTickDomain(yearTicks)}
+              ticks={yearTicks}
+              tickFormatter={(value) => percent(value, yearDigits)}
               tick={{
                 fontSize: 11,
                 fill: "var(--muted)",
@@ -350,8 +340,8 @@ export function ExpectationComparisonChart({
               />
             ))}
           </LineChart>
-        </ResponsiveContainer>
-      </div>
+        </ResponsiveContainer></div>; }}
+      </HistoryChartViewport>
     </div>
   );
 }

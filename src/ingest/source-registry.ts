@@ -18,9 +18,15 @@ export type MetricSourceConfig = {
 
 // Authoritative LSEG routes supplied for the project. The 15 PCE-family
 // routes are deliberately excluded from this array and are routed to BEA.
-// PMI series use the official ISM/S&P release-page fetcher instead: the LSEG
-// worker requires a separate desktop session that is not present on Render.
+// PMI series use LSEG Economic Indicators locally; cloud configuration keeps
+// all Workspace-only data excluded from D1 runtimes.
 const LSEG: MetricSourceConfig[] = [
+  ["us-ism-manufacturing-pmi","USPMI=ECI"],["us-ism-services-pmi","USNPMI=ECI"],
+  ["us-sp-global-manufacturing-pmi","USMPMF=ECI"],["us-sp-global-services-pmi","USMPSF=ECI"],
+  ["uk-sp-global-manufacturing-pmi","GBPMIM=ECI"],["uk-sp-global-services-pmi","GBPMIS=ECI"],
+  ["uk-sp-global-composite-pmi","GBCPMI=ECI"],
+  ["ea-sp-global-manufacturing-pmi","EUPMI=ECI"],["ea-sp-global-services-pmi","EUPMIS=ECI"],
+  ["ea-sp-global-composite-pmi","EUPMIP=ECI"],
   ["us-cpi","USCPNY=ECI"],["us-cpi-mom","USCPI=ECI"],["us-cpi-core","USCPFY=ECI"],
   ["us-core-goods-cpi-yoy","USCPOY=ECI"],["us-core-goods-cpi-mom","USCPOF=ECI"],
   ["us-services-cpi-yoy","USCPS=ECI"],["us-services-cpi-mom","USCPSM=ECI"],

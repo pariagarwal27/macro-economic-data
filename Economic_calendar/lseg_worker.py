@@ -23,7 +23,7 @@ from urllib.parse import parse_qs, unquote, urlparse
 import lseg.data as ld
 
 HOST = os.getenv("LSEG_HOST", "127.0.0.1")
-PORT = int(os.getenv("LSEG_PORT", "8787"))
+PORT = int(os.getenv("LSEG_PORT", "8765"))
 
 _session_open = False
 
@@ -51,26 +51,24 @@ def _numeric_columns(df):
 def fetch_latest_from_lseg(ric: str):
     ensure_session()
 
-    # For economic RICs, get_data exposes the current actual value and
-    # observation period. We prefer those real-time fields. If unavailable,
-    # fall back to get_history and use its newest numeric observation.
+    # LSEG's cross-economic-data field set defines ECON_ACT as the actual,
+    # FCAST_PRD as the observation period, and ECI_ACT_DT as the GMT release
+    # date. ACT_VAL_NS is the release time, so it must never be used as value.
     try:
         df = ld.get_data(
             universe=[ric],
             fields=[
-                "CF_DATE",
-                "ACT_END_DT",
-                "ACT_VAL_NS",
-                "REF_PRD",
+                "ECI_ACT_DT",
+                "FCAST_PRD",
                 "ECON_ACT",
             ],
         )
 
         if df is not None and not df.empty:
             row = df.iloc[0]
-            value = row.get("ACT_VAL_NS")
-            period = row.get("ACT_END_DT") or row.get("REF_PRD")
-            release = row.get("CF_DATE")
+            value = row.get("ECON_ACT")
+            period = row.get("FCAST_PRD")
+            release = row.get("ECI_ACT_DT")
 
             try:
                 value = float(value)
@@ -91,45 +89,66 @@ def fetch_latest_from_lseg(ric: str):
     except Exception:
         pass
 
-    # Fallback: latest time-series observation. LSEG notes that get_history
-    # is the supported historical-timeseries access layer.
+    # Fallback to the same explicitly named economic-actual field used for
+    # history, never an arbitrary numeric column from the response.
+    points = fetch_history_from_lseg(
+        ric,
+        "2020-01-01",
+        datetime.now(timezone.utc).date().isoformat(),
+    )
+    if not points:
+        return None
+    latest = points[-1]
+    return {
+        "periodDate": latest["date"],
+        "value": latest["value"],
+        "rawValue": str(latest["value"]),
+        "releasedAt": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+def fetch_history_from_lseg(ric: str, start: str, end: str):
+    ensure_session()
+    # LSEG's history endpoint returns the economic series as Date/Value. ECI
+    # history does not accept the snapshot field ECON_ACT in a fields list.
     df = ld.get_history(
         universe=[ric],
-        start="-120D",
-        end="0D",
-        interval="1d",
+        start=start,
+        end=end,
+        interval="monthly",
     )
     if df is None or df.empty:
-        return None
+        return []
 
     numeric = list(_numeric_columns(df))
     if not numeric:
-        return None
+        return []
+    value_col, values = next(
+        ((col, values) for col, values in numeric if str(col).upper() == "VALUE"),
+        numeric[0],
+    )
 
-    value_col, values = numeric[0]
-    row = df.iloc[-1]
-    value = values.iloc[-1]
-    if value is None or not math.isfinite(float(value)):
-        return None
+    points = []
+    for position, (idx, row) in enumerate(df.iterrows()):
+        value = values.iloc[position]
+        if value is None:
+            continue
+        if not math.isfinite(value) or value < 0 or value > 100:
+            continue
 
-    idx = df.index[-1]
-    period_date = normalize_period(str(idx))
-    if not period_date:
-        for col in df.columns:
-            if "date" in str(col).lower():
-                period_date = normalize_period(str(row[col]))
-                if period_date:
-                    break
+        period = normalize_period(str(idx))
+        if not period:
+            for col in df.columns:
+                if str(col).lower() in {"date", "timestamp", "time"}:
+                    period = normalize_period(str(row[col]))
+                    if period:
+                        break
+        if period:
+            points.append({"date": period, "value": value})
 
-    if not period_date:
-        return None
-
-    return {
-        "periodDate": period_date,
-        "value": float(value),
-        "rawValue": str(value),
-        "releasedAt": datetime.now(timezone.utc).isoformat(),
-    }
+    # Keep one published observation per period and return chronological data.
+    by_period = {point["date"]: point for point in points}
+    return [by_period[key] for key in sorted(by_period)]
 
 
 def normalize_period(value: str):
@@ -182,7 +201,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         parsed = urlparse(self.path)
-        if parsed.path != "/latest":
+        if parsed.path not in {"/latest", "/history"}:
             self.send_json(404, {"ok": False, "error": "Not found"})
             return
 
@@ -193,11 +212,24 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         try:
-            result = fetch_latest_from_lseg(ric)
-            if result is None:
-                self.send_json(200, {"ok": True, "available": False})
+            if parsed.path == "/history":
+                params = parse_qs(parsed.query)
+                start = params.get("start", ["1990-01-01"])[0]
+                end = params.get("end", [datetime.now(timezone.utc).date().isoformat()])[0]
+                if not all(
+                    len(value) == 10 and value[4] == "-" and value[7] == "-"
+                    for value in (start, end)
+                ):
+                    self.send_json(400, {"ok": False, "error": "start and end must use YYYY-MM-DD"})
+                    return
+                observations = fetch_history_from_lseg(ric, start, end)
+                self.send_json(200, {"ok": True, "observations": observations})
             else:
-                self.send_json(200, {"ok": True, **result})
+                result = fetch_latest_from_lseg(ric)
+                if result is None:
+                    self.send_json(200, {"ok": True, "available": False})
+                else:
+                    self.send_json(200, {"ok": True, **result})
         except Exception as exc:
             self.send_json(500, {"ok": False, "error": str(exc)})
 
