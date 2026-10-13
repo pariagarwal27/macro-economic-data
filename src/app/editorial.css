@@ -279,6 +279,8 @@ html[data-theme="dark"] .editorial-dashboard .detail-button {
 .editorial-dashboard .economic-calendar-head h2 { font: 500 28px/1.2 var(--font-display); letter-spacing: -.03em; }
 .editorial-dashboard .economic-calendar-subtitle { font-size: 11px; }
 .editorial-dashboard .economic-calendar-refresh { border-radius: 2px; background: transparent; width: 30px; height: 30px; }
+.editorial-dashboard .economic-calendar-country-filter { padding: 9px 14px; font-size: 10px; }
+.editorial-dashboard .economic-calendar-country-filter select { border-radius: 2px; padding-block: 6px; font-size: 10px; }
 .editorial-dashboard .economic-calendar-tabs { padding: 0 14px; gap: 8px; }
 .editorial-dashboard .economic-calendar-tabs button {
   font-size: 10px;
@@ -364,7 +366,12 @@ html[data-theme="dark"] .editorial-dashboard .detail-button {
 .site-header .site-brand { flex-shrink: 0; }
 .site-header .editorial-primary-nav a { padding-block: 8px; }
 .site-header .editorial-primary-nav a[aria-current="page"] { border-bottom-color: var(--country-ea); }
-.overview-page { max-width: 1680px; margin-inline: auto; padding: 28px clamp(20px, 3vw, 48px) 36px; }
+.overview-page { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 318px); align-items: start; gap: 24px; max-width: 1900px; margin-inline: auto; padding: 28px clamp(20px, 3vw, 48px) 36px; }
+.overview-main { min-width: 0; }
+.overview-release-sidebar { position: sticky; top: 12px; height: calc(100dvh - 24px); min-height: 480px; padding-top: 8px; }
+.overview-release-sidebar .economic-calendar-sidebar { height: 100%; min-height: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 2px; box-shadow: none; }
+.overview-release-sidebar .economic-calendar-list, .overview-release-sidebar .economic-calendar-week { min-height: 0; flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain; }
+.overview-release-sidebar .economic-calendar-footer { flex-shrink: 0; }
 .overview-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
 .overview-heading h1 { font: 600 clamp(38px, 4vw, 56px)/1.06 var(--font-display); letter-spacing: -.045em; margin: 0 0 8px; }
 .overview-heading p { margin: 0; font-size: 14px; line-height: 1.6; color: var(--muted); }
@@ -372,25 +379,44 @@ html[data-theme="dark"] .editorial-dashboard .detail-button {
 .overview-comparison { margin-bottom: 22px; scroll-margin-top: 16px; }
 .overview-comparison-scroll { overflow-x: auto; scrollbar-width: thin; }
 .overview-comparison table { width: 100%; table-layout: fixed; border-collapse: collapse; }
-.overview-comparison th, .overview-comparison td { text-align: left; vertical-align: middle; padding: 12px 20px; border-bottom: 1px solid var(--line); }
-.overview-comparison tr > :first-child { width: 25%; padding-left: 4px; }
+.overview-comparison th, .overview-comparison td { text-align: left; vertical-align: middle; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+.overview-comparison tr > :first-child { width: 22%; padding-left: 4px; }
 .overview-comparison tr > :not(:first-child) { border-left: 1px solid var(--line-strong); }
-.overview-comparison thead th { vertical-align: bottom; padding-top: 0; padding-bottom: 14px; }
+.overview-comparison thead th { vertical-align: bottom; padding-top: 0; padding-bottom: 9px; }
 .overview-comparison h2 { font: 600 21px/1.2 var(--font-display); letter-spacing: -.025em; margin: 0; }
-.overview-country-heading { display: flex; align-items: flex-start; gap: 14px; }
-.overview-country-flag { font-size: 27px; line-height: 1.25; font-weight: 400; }
-.overview-country-heading h3 { font: 600 18px/1.25 var(--font-display); margin: 0 0 5px; letter-spacing: -.02em; }
-.overview-country-heading a { font-size: 11px; font-weight: 600; text-decoration: none; color: var(--country-us); }
+.overview-country-heading { display: flex; align-items: center; gap: 7px; }
+.overview-country-flag { font-size: 17px; line-height: 1; font-weight: 400; }
+.overview-country-heading h3 { font: 600 16px/1.25 var(--font-display); margin: 0; letter-spacing: -.02em; }
+.overview-country-heading a { display: none; font-size: 11px; font-weight: 600; text-decoration: none; color: var(--country-us); }
 .overview-comparison [data-country="uk"] a { color: var(--country-uk); }
 .overview-comparison [data-country="ea"] a { color: var(--country-ea); }
 .overview-country-heading a:hover { text-decoration: underline; }
-.overview-comparison tbody th strong { font: 600 17px/1.25 var(--font-display); display: block; }
-.overview-comparison tbody th > span { display: block; color: var(--muted); font-size: 10px; line-height: 1.5; font-weight: 400; margin-top: 3px; }
+.overview-comparison tbody th strong { font: 600 16px/1.25 var(--font-display); display: block; }
+.overview-comparison tbody th > span { display: none; color: var(--muted); font-size: 10px; line-height: 1.5; font-weight: 400; margin-top: 3px; }
 .overview-reading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 16px; }
 .overview-reading > strong { font: 600 27px/1.1 var(--font-display); letter-spacing: -.025em; font-variant-numeric: tabular-nums; }
 .overview-reading > span { color: var(--muted); font-size: 11px; }
 .overview-reading-source { display: block; margin-top: 4px; color: var(--muted); font-size: 9px; }
+.overview-reading-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; }
+.overview-reading-pair > div { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 0; }
+.overview-reading-pair > div + div { border-left: 1px solid var(--line); padding-left: 9px; margin-left: 8px; }
+.overview-reading-pair strong { font: 600 20px/1.1 var(--font-display); letter-spacing: -.025em; font-variant-numeric: tabular-nums; }
+.overview-reading-pair span { color: var(--muted); font-size: 11px; white-space: nowrap; }
+.overview-reading-value { display: flex; align-items: baseline; flex-wrap: nowrap; gap: 5px; }
+.overview-reading-pair .overview-change-cue { display: inline-flex; align-items: center; gap: 4px; margin: 0; color: var(--muted); font-size: 14px; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; letter-spacing: -.01em; white-space: nowrap; }
+.overview-change-cue[data-signal="favorable"] { color: var(--up); }
+.overview-change-cue[data-signal="unfavorable"] { color: var(--down); }
+.overview-change-cue[data-signal="flat"] { color: var(--muted); }
+.overview-change-cue b { font-size: 15px; font-weight: 800; line-height: 1; }
+.overview-reading-source { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; }
+.overview-inflation-cell { padding-block: 8px !important; }
+.overview-inflation-reading-block + .overview-inflation-reading-block { border-top: 1px solid var(--line); margin-top: 7px; padding-top: 7px; }
+.overview-inflation-kind { display: block; margin-bottom: 5px; color: var(--ink); font-size: 13px; line-height: 1.2; font-weight: 800; letter-spacing: .025em; text-transform: uppercase; }
+.overview-inflation-reading-block .overview-reading-source { margin-top: 3px; }
 .overview-supporting-charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.overview-wage-expectations { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; gap: 12px; }
+.overview-wage-expectations .overview-expectations { margin-top: 0; }
+.overview-wage-expectations .overview-expectations .history-chart-viewport { height: 292px; }
 .overview-chart { min-width: 0; margin: 0 0 12px; padding: 14px 18px 10px; border: 1px solid var(--line); background: var(--panel); }
 .overview-chart-heading { display: flex; align-items: baseline; flex-wrap: wrap; justify-content: space-between; gap: 10px 20px; }
 .overview-chart-heading > div:first-child { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
@@ -399,12 +425,41 @@ html[data-theme="dark"] .editorial-dashboard .detail-button {
 .overview-chart-legend { display: flex; flex-wrap: wrap; gap: 7px 16px; font-size: 10px; color: var(--ink); }
 .overview-chart-legend > span { display: inline-flex; gap: 6px; align-items: center; }
 .overview-chart-legend i { width: 13px; height: 2px; display: inline-block; }
+.overview-chart-legend i.is-core { height: 0; border-top: 2px dashed; }
 .overview-chart-gdp .overview-chart-legend i { width: 8px; height: 8px; }
 .overview-chart-unit { margin-top: 10px; color: var(--muted); font-size: 9px; }
 .overview-chart-plot { height: 220px; width: 100%; min-width: 0; }
+.overview-chart:not(.overview-chart-inflation):not(.overview-expectations) .history-chart-viewport { height: 292px; }
+.overview-chart:not(.overview-chart-inflation):not(.overview-expectations) .history-chart-viewport .overview-chart-plot { height: 100%; }
+.overview-expectations .history-chart-viewport { height: 332px; }
+.overview-expectations .overview-expectations-plot { height: 100%; }
+.overview-chart-inflation .overview-chart-unit { margin-top: 8px; }
+.overview-chart-inflation .history-chart-viewport { height: 292px; }
+.overview-chart-inflation .overview-chart-plot { height: 100%; }
+.overview-inflation-controls { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.overview-inflation-period, .overview-inflation-series { display: flex; align-items: center; gap: 5px; }
+.overview-inflation-period button { padding: 6px 10px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 10px; cursor: pointer; }
+.overview-inflation-period button[aria-pressed="true"] { color: var(--panel); background: var(--country-us); border-color: var(--country-us); }
+.overview-inflation-period button:focus-visible, .overview-inflation-series input:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.overview-inflation-series { gap: 12px; color: var(--muted); font-size: 10px; }
+.overview-inflation-series label { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+.overview-inflation-series input { accent-color: var(--country-us); margin: 0; }
 .overview-supporting-charts .overview-chart-plot { height: 180px; }
+.overview-supporting-charts .history-chart-viewport { height: 252px; }
 .overview-chart-note { color: var(--muted); font-size: 9px; line-height: 1.6; margin: 4px 0 0; }
 .overview-chart-empty { height: 100%; display: grid; place-items: center; color: var(--muted); font-size: 12px; text-align: center; padding: 20px; }
+.overview-expectations { margin-top: 12px; }
+.overview-expectations-controls { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 18px; margin-top: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.overview-expectations-categories { display: flex; flex-wrap: wrap; gap: 6px; }
+.overview-expectations-categories button { padding: 7px 11px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 10px; cursor: pointer; }
+.overview-expectations-categories button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--panel); }
+.overview-expectations-categories button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.overview-expectations-measure { color: var(--muted); font-size: 10px; }
+.overview-expectations-legend { justify-content: flex-start; gap: 12px 28px; margin-top: 12px; }
+.overview-expectations-legend > span { display: inline-grid; grid-template-columns: 13px auto; align-items: center; gap: 2px 7px; font-size: 10px; }
+.overview-expectations-legend i { grid-row: span 2; width: 13px; height: 2px; }
+.overview-expectations-legend small { grid-column: 2; color: var(--muted); font-size: 9px; }
+.overview-expectations-plot { height: 260px; }
 .overview-calendar { border: 1px solid var(--line); background: var(--panel); padding: 14px 18px 10px; margin-top: 0; }
 .overview-calendar-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
 .overview-calendar-heading > div:first-child { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
@@ -436,10 +491,13 @@ html[data-theme="dark"] .editorial-dashboard .detail-button {
 .overview-error button { color: var(--accent); text-decoration: underline; border: 0; background: transparent; margin-left: 10px; }
 .overview-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding-top: 18px; color: var(--muted); font-size: 10px; line-height: 1.7; }
 @media (max-width: 1100px) {
+  .overview-page { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .overview-release-sidebar { position: relative; top: auto; height: 520px; min-height: 0; padding-top: 0; }
   .site-header { gap: 20px; }
-  .overview-country-heading { gap: 8px; }
-  .overview-country-flag { font-size: 20px; }
-  .overview-comparison th, .overview-comparison td { padding-inline: 14px; }
+  .overview-country-heading { gap: 6px; }
+  .overview-country-flag { font-size: 16px; }
+  .overview-comparison th, .overview-comparison td { padding-inline: 10px; }
+  .overview-reading-pair strong { font-size: 18px; }
   .overview-chart-heading > div:first-child { gap: 5px 10px; }
 }
 @media (max-width: 760px) {
@@ -449,15 +507,20 @@ html[data-theme="dark"] .editorial-dashboard .detail-button {
   .site-header .editorial-primary-nav { gap: 18px; }
   .overview-heading { flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
   .overview-heading p { font-size: 12px; }
-  .overview-comparison table { min-width: 720px; }
+  .overview-comparison table { min-width: 900px; }
   .overview-comparison th, .overview-comparison td { padding-inline: 12px; }
   .overview-comparison tr > :first-child { width: 22%; }
   .overview-supporting-charts { grid-template-columns: minmax(0, 1fr); }
+  .overview-wage-expectations { grid-template-columns: minmax(0, 1fr); }
   .overview-chart { padding: 14px 12px 10px; }
   .overview-chart-heading > div:first-child { display: block; }
   .overview-chart-heading p { margin-top: 5px; }
   .overview-chart-legend { gap: 8px 12px; font-size: 9px; }
   .overview-chart-plot, .overview-supporting-charts .overview-chart-plot { height: 210px; }
+  .overview-expectations-controls { align-items: flex-start; }
+  .overview-expectations-categories { width: 100%; }
+  .overview-expectations-categories button { flex: 1 1 auto; }
+  .overview-expectations-plot { height: 230px; }
   .overview-calendar { padding: 14px 12px 10px; }
   .overview-calendar-controls { gap: 18px; }
 }
@@ -582,12 +645,14 @@ html[data-theme="dark"] .editorial-dashboard .detail-button {
 .expectation-studio-chart { min-width:0; padding:14px; border-right:1px solid var(--line); }
 .expectation-studio-panel > aside { min-width:0; padding:16px; }
 .expectation-studio-panel > aside h3 { margin:0 0 8px; font:500 18px var(--font-display); }
-.expectation-reading { display:grid; grid-template-columns:minmax(0,1fr) auto 24px; gap:8px; align-items:center; padding:10px 0; border-top:1px solid var(--line); }
+.expectation-reading { display:grid; width:100%; grid-template-columns:minmax(0,1fr) auto 24px; gap:8px; align-items:center; padding:10px 0; border:0; border-top:1px solid var(--line); background:transparent; color:inherit; font:inherit; text-align:left; cursor:pointer; }
 .expectation-reading div { display:flex; min-width:0; flex-direction:column; gap:4px; }
 .expectation-reading strong { overflow:hidden; color:var(--ink); font-size:10px; text-overflow:ellipsis; white-space:nowrap; }
 .expectation-reading span { color:var(--muted); font-size:9px; }
 .expectation-reading > b { font:500 16px var(--font-display); white-space:nowrap; }
-.expectation-reading button { border:0; background:transparent; color:var(--country-series); cursor:pointer; }
+.expectation-reading > svg { color:var(--country-series); }
+.expectation-reading:hover { background:var(--accent-soft); }
+.expectation-reading:focus-visible { outline:2px solid var(--country-series); outline-offset:-2px; }
 .expectation-studio-note { color:var(--muted); font-size:10px; }
 .is-release-highlighted { outline:2px solid var(--country-series); outline-offset:-2px; }
 .is-component-link { cursor:pointer; }

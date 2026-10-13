@@ -2,12 +2,23 @@ import type { MetricDef } from "@/catalog/metrics";
 import type { ScheduledCalendarRow } from "./economic-calendar-db";
 
 export const CALENDAR_TIME_ZONE = "Europe/London";
-export type CalendarActual = { id?: number; metricId: string; releasedAt: string; value: number | null; expectedValue: number | null; priorPeriodValue: number | null };
+export type CalendarActual = { id?: number; metricId: string; periodDate?: string | null; releasedAt: string; value: number | null; expectedValue: number | null; priorPeriodValue: number | null };
 export type CalendarCompletion = { metricId: string; scheduledAt: string; processedAt: string; releaseId: number | null };
+export type CalendarReleaseHistory = ReadonlyMap<string, readonly { periodDate: string; value: number | null }[]>;
+export type CalendarRegionFilter = "ALL" | "US" | "UK" | "EA";
 const dayKey = (date: Date) => new Intl.DateTimeFormat("en-CA", { timeZone: CALENDAR_TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit" }).format(date);
 const addDays = (key: string, days: number) => { const value = new Date(`${key}T12:00:00Z`); value.setUTCDate(value.getUTCDate() + days); return value.toISOString().slice(0, 10); };
 
-export function buildEconomicCalendar(schedule: ScheduledCalendarRow[], actuals: CalendarActual[], catalog: MetricDef[], now = new Date(), options: { history?: ScheduledCalendarRow[]; completions?: CalendarCompletion[]; latestValues?: ReadonlyMap<string, number | null> } = {}) {
+/** Keep continuous daily/hourly observations out of the release diary. */
+export function filterScheduledCalendarEvents<T extends { scheduleType: string; region: string }>(events: readonly T[], region: CalendarRegionFilter = "ALL"): T[] {
+  return events.filter(event => event.scheduleType === "scheduled" && (region === "ALL" || event.region === region));
+}
+
+export function isWithinLastSevenCalendarDays(scheduledDate: string | null, scheduleType: string, today: string) {
+  return scheduleType === "scheduled" && !!scheduledDate && scheduledDate >= addDays(today, -6) && scheduledDate <= today;
+}
+
+export function buildEconomicCalendar(schedule: ScheduledCalendarRow[], actuals: CalendarActual[], catalog: MetricDef[], now = new Date(), options: { history?: ScheduledCalendarRow[]; completions?: CalendarCompletion[]; latestValues?: ReadonlyMap<string, number | null>; releaseHistory?: CalendarReleaseHistory } = {}) {
   const today = dayKey(now);
   const weekday = new Date(`${today}T12:00:00Z`).getUTCDay();
   const weekStart = addDays(today, -((weekday + 6) % 7));
@@ -44,10 +55,16 @@ export function buildEconomicCalendar(schedule: ScheduledCalendarRow[], actuals:
     const scheduleNote = continuous ? `${metric.frequency === "hourly" ? "Hourly" : "Daily"}-frequency series; no discrete announced release time.` : row?.status === "source_error" ? "Source fetch or parsing failed; an official schedule could not be confirmed." : !row ? "No release schedule has been fetched for this catalog metric." : !scheduledDate ? `No confirmed next release date was fetched.${row.officialEvidence ? ` ${row.officialEvidence}` : ""}` : row.nextReleaseAt && !hasZone ? "The source timestamp has no confirmed timezone; no exact time is shown." : !scheduledAt ? `An official date is available, but no confirmed exact time was fetched.${row.officialEvidence ? ` ${row.officialEvidence}` : ""}` : row.officialEvidence;
     return {
       metricId: metric.id, metricName: metric.name, region: metric.region as "US" | "UK" | "EA",
+      unit: metric.unit,
       source: row?.source ?? metric.source, family: row?.family ?? null,
       scheduledDate, scheduledTime, scheduledTimeLabel, scheduledAt, deadlineAt, scheduleType, scheduleNote,
       status, actual: actual?.value ?? null, forecast: actual?.expectedValue ?? null,
-      previous: actual ? actual.priorPeriodValue : options.latestValues?.get(metric.id) ?? null, releasedAt: scheduledAt,
+      previous: actual
+        ? actual.priorPeriodValue ?? (actual.periodDate
+          ? options.releaseHistory?.get(metric.id)?.find(item => item.periodDate < actual.periodDate!)?.value ?? null
+          : null)
+        : options.latestValues?.get(metric.id) ?? null,
+      releasedAt: scheduledAt,
       actualReleasedAt: actual?.releasedAt ?? null, officialSource: row?.officialSource ?? metric.officialUrl,
       updatedAt: row?.updatedAt ?? null,
     };
@@ -63,12 +80,14 @@ export function buildEconomicCalendar(schedule: ScheduledCalendarRow[], actuals:
   }
   for (const event of allEvents) combined.set(eventKey(event),event);
   const events = [...combined.values()].filter(event => event.scheduleType === "scheduled" && event.scheduledDate! >= weekStart && event.scheduledDate! < weekEnd).sort(compare);
+  const recentEvents = [...combined.values()].filter(event => isWithinLastSevenCalendarDays(event.scheduledDate, event.scheduleType, today)).sort(compare);
   const week: Record<string, typeof events> = {};
   for (const event of events) (week[event.scheduledDate!] ??= []).push(event);
   return {
     today, weekStart, weekEnd, timeZone: CALENDAR_TIME_ZONE,
     todayEvents: events.filter(event => event.scheduledDate === today),
     dailyEvents: allEvents.filter(event => event.scheduleType === "daily" || event.scheduleType === "hourly"), week, allEvents,
+    recentEvents,
     coverage: {
       totalMetrics: catalog.length,
       exactTime: allEvents.filter(event => !!event.scheduledAt).length,

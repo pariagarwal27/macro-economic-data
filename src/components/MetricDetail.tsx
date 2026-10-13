@@ -227,9 +227,9 @@ export function MetricDetail({ id }: { id: string }) {
       </section>
 
       <section className="mt-6 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 sm:p-6">
-        <h2 className="font-[family-name:var(--font-display)] text-xl">{meta.frequency === "quarterly" ? "2025–2026 series" : "2026 series"}</h2>
+        <h2 className="font-[family-name:var(--font-display)] text-xl">Published trend</h2>
         <p className="mb-4 text-xs text-[var(--muted)]">
-          Published observations for {meta.frequency === "quarterly" ? "2025–2026" : "2026"} · {meta.frequency}
+          Last 12 months by default · {meta.frequency}; use the year range to inspect earlier observations.
         </p>
         <SeriesChart data={history} unit={meta.unit} frequency={meta.frequency} />
       </section>

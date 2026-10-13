@@ -1,7 +1,8 @@
 import { METRICS } from '@/catalog/metrics';
 import { DASHBOARD } from '@/components/macro-ui-hierarchy';
+import { calendarMetricName, shouldShowCalendarMetric } from './economic-calendar-metrics';
 
-/** Dashboard series plus every daily/hourly metric, which publishes continuously. */
+/** Top-level dashboard series plus daily/hourly metrics, which publish continuously. */
 export function getDashboardCalendarMetrics() {
   const displayed = new Set<string>();
   const titles = new Map<string, string>();
@@ -13,7 +14,12 @@ export function getDashboardCalendarMetrics() {
       if (spec.title) titles.set(spec.metricId, spec.title);
     }
   }
-  return METRICS.filter(metric => displayed.has(metric.id) || metric.frequency === "daily" || metric.frequency === "hourly").map(metric => ({
-    ...metric, name: titles.get(metric.id) ?? metric.name,
+  const visibleMetrics = METRICS.filter(metric =>
+    (displayed.has(metric.id) || metric.frequency === "daily" || metric.frequency === "hourly") &&
+    shouldShowCalendarMetric(metric, METRICS),
+  );
+  return visibleMetrics.map(metric => ({
+    ...metric,
+    name: titles.get(metric.id) ?? calendarMetricName(metric),
   }));
 }

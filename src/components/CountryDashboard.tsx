@@ -14,6 +14,7 @@ import {
   YAxis,
 } from "recharts";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { stableDetailNodes } from "@/lib/detail-drawer-nodes";
 import { CalendarDays, ChevronDown, ChevronRight, X, Search } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
@@ -30,12 +31,19 @@ import { formatEconomicLevel, formatObsDate } from "@/lib/format";
 import { formatLiveSourceLabel } from "@/lib/live-source-label";
 import { latestQuarterPair, quarterlyGrowthPoints } from "@/lib/quarterly-gdp";
 import { claimsChartPoints, formatClaimsCount } from "@/lib/claims-display";
+import { mergeClaimsChartData } from "@/lib/claims-chart";
+import { selectComponentMiniSeries } from "@/lib/component-mini-series";
 import { RefreshDataButton } from "@/components/RefreshDataButton";
 import { ExpectationComparisonChart } from "@/components/ExpectationComparisonChart";
+import { EXPECTATION_CHART_GROUPS, EXPANDED_EXPECTATION_GROUP_IDS, MARKERLESS_EXPECTATION_GROUP_IDS } from "@/lib/expectation-chart-groups";
+import { createExpectationMetricSelection } from "@/lib/expectation-selection";
+import { formatExpectationValue } from "@/lib/expectation-format";
 import { HistoryChartViewport } from "@/components/HistoryChartViewport";
+import { filterHistoryByYearRange, filterHistoryToTrailing12Months, retainHistoryRangeIdentity } from "@/lib/history-range";
 import { EconomicCalendarSidebar } from "@/components/EconomicCalendarSidebar";
 import { resolveStudioSelection } from "@/lib/chart-studio";
-import { getNiceTickDomain, getNiceTicks } from "@/lib/chart-axis";
+import { getExpectationAxisTicks, getNiceTickDomain, getNiceTicks } from "@/lib/chart-axis";
+import { getPublishedExpectationReadings } from "@/lib/expectation-series";
 import {
   formatOfficialComponentWeight,
   getOfficialComponentWeight,
@@ -96,17 +104,9 @@ function specContainsMetric(spec: IndicatorSpec, metricId: string): boolean {
   return contains(spec.components);
 }
 
-const YEAR = 2026;
-function chartStartYear(frequency?: string) {
-  return frequency === "quarterly" ? YEAR - 1 : YEAR;
-}
-
-function isInChartYearRange(date: string, frequency?: string) {
-  return Number(date.slice(0, 4)) >= chartStartYear(frequency);
-}
-
-function chartDataForYear<T extends { date: string }>(data: T[], year: number) {
-  return data.filter(point => point.date.slice(0, 4) === String(year));
+const YEAR = new Date().getFullYear();
+function chartDataForRange<T extends { date: string }>(data: T[], fromYear: number, toYear: number, isDefaultWindow = false) {
+  return isDefaultWindow ? filterHistoryToTrailing12Months(data) : filterHistoryByYearRange(data, fromYear, toYear);
 }
 
 function claimsTrendPoints(metric: DetailPayload | undefined) {
@@ -143,9 +143,7 @@ function QuarterlyGdpChart({
   const latestQuarter = Math.floor(monthLimit / 3);
   // Keep a full decade for the year selector (10 quarters only shows ~2.5 years).
   const data = quarterlyGrowthPoints(metric?.history ?? [], 40)
-    .filter(point => compact
-      ? Number(point.date.slice(0, 4)) === YEAR && Number(point.quarter.slice(1, 2)) <= latestQuarter
-      : Number(point.date.slice(0, 4)) < YEAR || (Number(point.date.slice(0, 4)) === YEAR && Number(point.quarter.slice(1, 2)) <= latestQuarter));
+    .filter(point => Number(point.date.slice(0, 4)) < YEAR || (Number(point.date.slice(0, 4)) === YEAR && Number(point.quarter.slice(1, 2)) <= latestQuarter));
   if (!data.length) {
     return compact ? null : <div className="spark-chart-empty">No quarterly data</div>;
   }
@@ -160,7 +158,7 @@ function QuarterlyGdpChart({
       style={{ width: "100%", height: compact ? 76 : height, minHeight: 0 }}
       aria-label={seriesLabel}
     >
-      {compact ? <ResponsiveContainer width="100%" height="100%">{renderQuarterlyGrowthChart(data, chartType, seriesLabel, formatValue, compact)}</ResponsiveContainer> : <HistoryChartViewport dates={data.map(point => point.date)} frequency="quarterly" height={height} label={seriesLabel}>{(plotWidth, year) => <ResponsiveContainer width={plotWidth || "100%"} height="100%">{renderQuarterlyGrowthChart(data.filter(point => Number(point.date.slice(0, 4)) === year), chartType, seriesLabel, formatValue, compact)}</ResponsiveContainer>}</HistoryChartViewport>}
+      {compact ? <ResponsiveContainer width="100%" height="100%">{renderQuarterlyGrowthChart(filterHistoryToTrailing12Months(data), chartType, seriesLabel, formatValue, compact)}</ResponsiveContainer> : <HistoryChartViewport dates={data.map(point => point.date)} frequency="quarterly" height={height} label={seriesLabel}>{(plotWidth, fromYear, toYear, isDefaultWindow) => <ResponsiveContainer width={plotWidth || "100%"} height="100%">{renderQuarterlyGrowthChart(chartDataForRange(data, fromYear, toYear, isDefaultWindow), chartType, seriesLabel, formatValue, compact)}</ResponsiveContainer>}</HistoryChartViewport>}
     </div>
   );
 }
@@ -253,7 +251,7 @@ function ClaimsTrendChart({
       aria-label={`${seriesName} weekly trend`}
     >
       <HistoryChartViewport dates={data.map(point => point.date)} frequency="weekly" height={compact ? 52 : height} label={`${seriesName} history`} compact={compact}>
-        {compact ? render(data, "100%") : (width, year) => render(data.filter(point => point.date.slice(0, 4) === String(year)), width || "100%")}
+        {compact ? render(filterHistoryToTrailing12Months(data), "100%") : (width, fromYear, toYear, isDefaultWindow) => render(chartDataForRange(data, fromYear, toYear, isDefaultWindow), width || "100%")}
       </HistoryChartViewport>
     </div>
   );
@@ -276,17 +274,36 @@ function ClaimsMiniCharts({ initial, continuing }: { initial: DetailPayload | un
 }
 
 function ClaimsDetailCharts({ initial, continuing, height }: { initial: DetailPayload | undefined; continuing: DetailPayload | undefined; height: number }) {
+  const data = mergeClaimsChartData(
+    normalizeHistory(initial?.history ?? []),
+    normalizeHistory(continuing?.history ?? []),
+  );
+  if (!data.length) return <div className="spark-chart-empty">No weekly claims data</div>;
+  const initialColor = "var(--country-series, var(--accent))";
+  const continuingColor = "var(--country-uk)";
+  const chartHeight = Math.max(180, height - 34);
+
   return (
-    <div className="claims-detail-pair">
-      {[
-        { name: "Initial Claims" as const, data: normalizeHistory(initial?.history ?? []), color: "var(--country-series)" },
-        { name: "Continuing Claims" as const, data: normalizeHistory(continuing?.history ?? []), color: "var(--up)" },
-      ].map((series) => (
-        <section className="claims-detail-series" key={series.name}>
-          <h4>{series.name} · Weekly · {YEAR}</h4>
-          <ClaimsTrendChart data={series.data} seriesName={series.name} color={series.color} height={height - 34} />
-        </section>
-      ))}
+    <div className="claims-detail-combined" style={{ width: "100%", height: chartHeight, minHeight: 0 }}>
+      <HistoryChartViewport dates={data.map(point => point.date)} frequency="weekly" height={chartHeight} label="Initial and continuing claims history">
+        {(plotWidth, fromYear, toYear, isDefaultWindow) => {
+          const yearData = chartDataForRange(data, fromYear, toYear, isDefaultWindow);
+          const initialTicks = getNiceTicks(yearData.flatMap(point => point.initial == null ? [] : [point.initial]), 5, 1_000);
+          const continuingTicks = getNiceTicks(yearData.flatMap(point => point.continuing == null ? [] : [point.continuing]), 5, 10_000);
+          return <ResponsiveContainer width={plotWidth || "100%"} height="100%">
+            <LineChart data={yearData} margin={{ top: 12, right: 12, left: 4, bottom: 20 }}>
+              <CartesianGrid vertical={false} stroke="var(--line)" strokeDasharray="3 5" />
+              <XAxis dataKey="date" tickFormatter={value => formatChartDate(String(value), "weekly")} tickLine={false} axisLine={{ stroke: "var(--line-strong)" }} tickMargin={8} minTickGap={22} interval="preserveStartEnd" tick={{ fill: "var(--muted)", fontSize: 11 }} />
+              <YAxis yAxisId="initial" orientation="left" width={74} domain={getNiceTickDomain(initialTicks)} ticks={initialTicks} tickFormatter={value => formatClaimsCount(Number(value))} tick={{ fill: initialColor, fontSize: 10 }} tickLine={false} axisLine={false} />
+              <YAxis yAxisId="continuing" orientation="right" width={82} domain={getNiceTickDomain(continuingTicks)} ticks={continuingTicks} tickFormatter={value => formatClaimsCount(Number(value))} tick={{ fill: continuingColor, fontSize: 10 }} tickLine={false} axisLine={false} />
+              <Tooltip cursor={false} contentStyle={{ borderRadius: 8, border: "1px solid var(--line)", background: "var(--panel)", fontSize: 12 }} labelFormatter={label => formatChartDate(String(label), "weekly", true)} formatter={(value, name) => [formatClaimsCount(Number(value)), String(name)]} />
+              <Legend verticalAlign="top" align="center" height={28} iconType="line" />
+              <Line yAxisId="initial" type="monotone" dataKey="initial" name="Initial Claims" stroke={initialColor} strokeWidth={2.5} strokeLinecap="round" dot={{ r: 3, fill: "var(--panel)", stroke: initialColor, strokeWidth: 2 }} activeDot={{ r: 6 }} connectNulls={false} isAnimationActive={false} />
+              <Line yAxisId="continuing" type="monotone" dataKey="continuing" name="Continuing Claims" stroke={continuingColor} strokeWidth={2.5} strokeLinecap="round" dot={{ r: 3, fill: "var(--panel)", stroke: continuingColor, strokeWidth: 2 }} activeDot={{ r: 6 }} connectNulls={false} isAnimationActive={false} />
+            </LineChart>
+          </ResponsiveContainer>;
+        }}
+      </HistoryChartViewport>
     </div>
   );
 }
@@ -323,29 +340,6 @@ function isInflationExpectationSpecId(spec: IndicatorSpec) {
   );
 }
 
-function formatExpectationValue(
-  payload: DetailPayload | undefined,
-  value: number | null | undefined
-) {
-  if (value == null || !Number.isFinite(value)) return "—";
-
-  const unit = payload?.meta.unit?.toLowerCase() ?? "";
-
-  if (
-    unit.includes("%") ||
-    unit.includes("percent") ||
-    unit.includes("percentage")
-  ) {
-    return `${value.toFixed(1)}%`;
-  }
-
-  if (unit.includes("basis") || unit.includes("bp")) {
-    return `${value > 0 ? "+" : ""}${value.toFixed(1)} bp`;
-  }
-
-  return value.toFixed(1);
-}
-
 function Spark({
   data,
   tone = "blue",
@@ -360,10 +354,7 @@ function Spark({
   metricId?: string;
 }) {
   const [selectedPoint, setSelectedPoint] = useState<{ date: string; value: number } | null>(null);
-  const points = [...data]
-  .filter((p) =>
-    isInChartYearRange(p.date, frequency)
-  )
+  const points = filterHistoryToTrailing12Months([...data])
   .sort((a, b) =>
     a.date.localeCompare(b.date)
   )
@@ -597,6 +588,11 @@ function RateChart({
   chartType?: "line" | "bar";
 }) {
   const useBarChart = chartType === "bar" || ACTIVITY_BAR_SPEC_IDS.has(spec.id);
+  const isExpectationMetric = Boolean(
+    isInflationExpectationSpecId(spec) ||
+    root?.meta.subcategory?.toLowerCase().includes("expect") ||
+    root?.meta.name.toLowerCase().includes("expect")
+  );
   const rootHistory = normalizeHistory(
     root?.history ?? []
   );
@@ -604,6 +600,41 @@ function RateChart({
   const sortedRootHistory = [...rootHistory].sort(
     (a, b) => a.date.localeCompare(b.date)
   );
+
+  // Inflation expectations are already published as percent levels (for
+  // example, UMich's 4.8%). They must be charted directly rather than passed
+  // through the generic YoY/MoM derivation used for index series.
+  if (isExpectationMetric && root) {
+    const data = getPublishedExpectationReadings(root.history ?? []);
+    if (!data.length) {
+      return <div className="spark-chart-empty">No published observations</div>;
+    }
+
+    return (
+      <div style={{ width: "100%", height, minHeight: 0 }}>
+        <HistoryChartViewport dates={data.map((point) => point.date)} frequency={root.meta.frequency} height={height} label={displayMetricTitle(spec, root)}>
+          {(plotWidth, fromYear, toYear, isDefaultWindow) => {
+            const yearData = chartDataForRange(data, fromYear, toYear, isDefaultWindow);
+            const ticks = getExpectationAxisTicks(yearData.map((point) => point.value));
+            const step = ticks.length > 1 ? Math.abs(ticks[1]! - ticks[0]!) : 0.1;
+            const digits = step < 0.1 ? 2 : 1;
+
+            return (
+              <ResponsiveContainer width={plotWidth || "100%"} height="100%">
+                <LineChart data={yearData} margin={{ top: 12, right: 20, left: 4, bottom: 16 }}>
+                  <CartesianGrid stroke="var(--line)" strokeDasharray="2 4" vertical />
+                  <XAxis dataKey="date" tickFormatter={(value) => formatChartDate(value, root.meta.frequency)} tickLine={false} axisLine={{ stroke: "var(--line-strong)" }} tickMargin={8} minTickGap={24} interval="preserveStartEnd" tick={{ fill: "var(--muted)", fontSize: 10 }} />
+                  <YAxis width={58} ticks={ticks} domain={getNiceTickDomain(ticks)} tickFormatter={(value) => `${Number(value).toFixed(digits)}%`} tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={false} tickLine={false} />
+                  <Tooltip labelFormatter={(label) => `Date: ${formatChartDate(String(label), root.meta.frequency, true)}`} formatter={(value) => [formatExpectationValue(root, Number(value)), root.meta.shortName || root.meta.name]} contentStyle={{ border: "1px solid var(--line)", background: "var(--panel)", fontSize: 11 }} />
+                  <Line dataKey="value" name={root.meta.shortName || root.meta.name} type="monotone" stroke="var(--country-series)" strokeWidth={2.5} dot={{ r: 3, fill: "var(--country-series)" }} activeDot={{ r: 5 }} isAnimationActive={false} connectNulls={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            );
+          }}
+        </HistoryChartViewport>
+      </div>
+    );
+  }
 
   if (isQuarterlyGdpMetric(root?.meta.id)) {
     return <QuarterlyGdpChart metric={root} height={height} chartType={useBarChart ? "bar" : "line"} />;
@@ -679,13 +710,13 @@ function RateChart({
             color: "var(--muted)",
           }}
         >
-          No current-year data
+          No published observations
         </div>
       );
     }
 
     if (useBarChart) {
-      return <div style={{ width: "100%", height, minHeight: 0 }}><HistoryChartViewport dates={data.map(point => point.date)} frequency={root?.meta.frequency} height={height} label="Net Exports">{(plotWidth, year) => { const yearData = chartDataForYear(data, year); const yearTicks = getNiceTicks(yearData.map(point => point.value)); return <ResponsiveContainer width={plotWidth} height="100%"><BarChart data={yearData} margin={{ top: 10, right: 18, left: 8, bottom: 18 }}>
+      return <div style={{ width: "100%", height, minHeight: 0 }}><HistoryChartViewport dates={data.map(point => point.date)} frequency={root?.meta.frequency} height={height} label="Net Exports">{(plotWidth, fromYear, toYear, isDefaultWindow) => { const yearData = chartDataForRange(data, fromYear, toYear, isDefaultWindow); const yearTicks = getNiceTicks(yearData.map(point => point.value)); return <ResponsiveContainer width={plotWidth} height="100%"><BarChart data={yearData} margin={{ top: 10, right: 18, left: 8, bottom: 18 }}>
         <CartesianGrid stroke="var(--line)" strokeDasharray="2 4" vertical />
         <XAxis dataKey="date" tickFormatter={(value) => formatChartDate(value, root?.meta.frequency)} tickLine={false} axisLine={{ stroke: "var(--line-strong)" }} tickMargin={8} minTickGap={24} interval="preserveStartEnd" tick={{ fill: "var(--muted)", fontSize: 10 }} />
         <YAxis width={74} ticks={yearTicks} domain={getNiceTickDomain(yearTicks)} tickFormatter={(value) => formatUsNetExportsValue(Number(value))} tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={false} tickLine={false} />
@@ -707,9 +738,9 @@ function RateChart({
     boxSizing: "border-box",
   }}
 >
-        <HistoryChartViewport dates={data.map(point => point.date)} frequency={root?.meta.frequency} height={height} label="Net Exports">{(plotWidth, year) => { const yearData = chartDataForYear(data, year); const yearTicks = getNiceTicks(yearData.map(point => point.value)); return <ResponsiveContainer width={plotWidth} height="100%">
+        <HistoryChartViewport dates={data.map(point => point.date)} frequency={root?.meta.frequency} height={height} label="Net Exports">{(plotWidth, fromYear, toYear, isDefaultWindow) => { const yearData = chartDataForRange(data, fromYear, toYear, isDefaultWindow); const yearTicks = getNiceTicks(yearData.map(point => point.value)); return <ResponsiveContainer width={plotWidth} height="100%">
           <LineChart
-            data={chartDataForYear(data, year)}
+            data={yearData}
             margin={{
   top: 8,
   right: 24,
@@ -830,7 +861,7 @@ function RateChart({
             color: "var(--muted)",
           }}
         >
-          No current-year data
+          No published observations
         </div>
       );
     }
@@ -845,7 +876,7 @@ function RateChart({
     boxSizing: "border-box",
   }}
 >
-        <HistoryChartViewport dates={data.map(point => point.date)} frequency={root?.meta.frequency} height={height} label={root?.meta.name ?? "Indicator history"}>{(plotWidth, year) => { const yearData = chartDataForYear(data, year); const yearTicks = getNiceTicks(yearData.map(point => point.value)); return <ResponsiveContainer width={plotWidth} height="100%">
+        <HistoryChartViewport dates={data.map(point => point.date)} frequency={root?.meta.frequency} height={height} label={root?.meta.name ?? "Indicator history"}>{(plotWidth, fromYear, toYear, isDefaultWindow) => { const yearData = chartDataForRange(data, fromYear, toYear, isDefaultWindow); const yearTicks = getNiceTicks(yearData.map(point => point.value)); return <ResponsiveContainer width={plotWidth} height="100%">
           {useBarChart ? <BarChart
             data={yearData}
             margin={{
@@ -979,7 +1010,7 @@ function RateChart({
     });
   }
 
-  const data = [...chartDates]
+  const data = filterHistoryToTrailing12Months([...chartDates]
     .sort((a, b) => a.localeCompare(b))
     .map((date) => {
       let yoy: number | null =
@@ -1034,7 +1065,7 @@ function RateChart({
       (point) =>
         Number.isFinite(point.yoy ?? NaN) ||
         Number.isFinite(point.mom ?? NaN)
-    );
+    ));
 
   if (!data.length) {
     return (
@@ -1093,7 +1124,7 @@ function RateChart({
   <div
     style={{
       width: "100%",
-      height: "100%",
+      height: isExpectationMetric ? 300 : height,
       minWidth: 0,
       minHeight: 0,
       display: "flex",
@@ -1119,7 +1150,7 @@ function RateChart({
 
     <div style={{ flex: "1 1 auto", minHeight: 0, width: "100%", overflow: "visible" }}>
       <HistoryChartViewport dates={data.map(point => point.date)} frequency={root?.meta.frequency} height={Math.max(160, height - 30)} label={`${label} history`}>
-      {(plotWidth, year) => { const yearData = chartDataForYear(data, year); const yearTicks = getNiceTicks(yearData.flatMap(point => [point.yoy, point.mom]).filter((value): value is number => value != null && Number.isFinite(value))); return <ResponsiveContainer width={plotWidth} height="100%">
+      {(plotWidth, fromYear, toYear, isDefaultWindow) => { const yearData = chartDataForRange(data, fromYear, toYear, isDefaultWindow); const yearTicks = getNiceTicks(yearData.map(point => point[series]).filter((value): value is number => value != null && Number.isFinite(value)), 7, 0.05); const axisDecimals = yearTicks.length > 1 && yearTicks[1] - yearTicks[0] < 0.1 ? 2 : 1; return <ResponsiveContainer width={plotWidth} height="100%">
         {useBarChart ? <BarChart
           data={yearData}
           margin={{
@@ -1157,16 +1188,11 @@ function RateChart({
             tickLine={false}
             axisLine={false}
             width={68}
-            tickFormatter={(value) =>
-              `${Number(value).toFixed(1)}${
-                isPercentagePointRate
-                  ? " pp"
-                  : "%"
-              }`
-            }
             ticks={yearTicks}
             domain={getNiceTickDomain(yearTicks)}
+            interval={0}
             tick={{ fill: "var(--muted)", fontSize: 10 }}
+            tickFormatter={value => `${Number(value).toFixed(axisDecimals)}${isPercentagePointRate ? " pp" : "%"}`}
           />
           <Tooltip labelFormatter={(value) => `Date: ${formatTooltipDate(String(value))}`} formatter={(value) => [formatValue(Number(value)), label.replace(/\s*·\s*\d{4}$/, "")]} />
           <Bar dataKey={series} name={label} fill={series === "yoy" ? stroke : "var(--country-series-secondary, #478ab5)"} maxBarSize={34} radius={[3, 3, 0, 0]} isAnimationActive={false}>
@@ -1178,7 +1204,7 @@ function RateChart({
         >
           <CartesianGrid stroke="var(--line)" strokeDasharray="2 4" vertical />
           <XAxis dataKey="date" tickFormatter={(value) => formatChartDate(value, root?.meta.frequency)} tickLine={false} axisLine={{ stroke: "var(--line-strong)" }} tickMargin={8} height={38} minTickGap={24} interval="preserveStartEnd" padding={{ left: 8, right: 8 }} tick={{ fill: "var(--muted)", fontSize: 10 }} />
-          <YAxis tickLine={false} axisLine={false} width={68} tickFormatter={(value) => `${Number(value).toFixed(1)}${isPercentagePointRate ? " pp" : "%"}`} ticks={yearTicks} domain={getNiceTickDomain(yearTicks)} tick={{ fill: "var(--muted)", fontSize: 10 }} />
+          <YAxis tickLine={false} axisLine={false} width={68} tickFormatter={(value) => `${Number(value).toFixed(axisDecimals)}${isPercentagePointRate ? " pp" : "%"}`} ticks={yearTicks} domain={getNiceTickDomain(yearTicks)} interval={0} tick={{ fill: "var(--muted)", fontSize: 10 }} />
           <Tooltip labelFormatter={(value) => `Date: ${formatTooltipDate(String(value))}`} contentStyle={{ background: "var(--panel)", border: "1px solid var(--line)", borderRadius: 8, color: "var(--text)" }} formatter={(value) => [formatValue(Number(value)), label.replace(/\s*·\s*\d{4}$/, "")]} />
           <Line type="monotone" dataKey={series} name={label} stroke={stroke} strokeWidth={2.5} dot={{ r: 3, fill: stroke, strokeWidth: 0 }} activeDot={{ r: 5 }} connectNulls={false} isAnimationActive={false} />
         </LineChart>}
@@ -1192,13 +1218,13 @@ function RateChart({
   <div
     style={{
       width: "100%",
-      height,
+      height: "auto",
       minHeight: 0,
       display: "grid",
-      gridTemplateColumns:
-        hasYoYData && hasSecondData
-          ? "repeat(2, minmax(0, 1fr))"
-          : "1fr",
+      gridTemplateColumns: hasYoYData && hasSecondData
+        ? "repeat(2, minmax(0, 1fr))"
+        : "minmax(0, 1fr)",
+      gridAutoRows: isExpectationMetric ? "300px" : `${height}px`,
       gap: 16,
       overflow: "visible",
       boxSizing: "border-box",
@@ -1280,10 +1306,9 @@ function MiniRateChart({
   // as generic index levels and calculating YoY/MoM rates creates misleading
   // synthetic changes, so the card sparkline shows the published series.
   if (spec.expectationGroup) {
-    const data = sortedRootHistory
-      .filter((point) => isInChartYearRange(point.date, root?.meta.frequency))
+    const data = filterHistoryToTrailing12Months(sortedRootHistory
       .map((point) => ({ date: point.date.slice(0, 10), value: Number(point.value) }))
-      .filter((point) => Number.isFinite(point.value));
+      .filter((point) => Number.isFinite(point.value)));
 
     if (!data.length) return null;
 
@@ -1335,15 +1360,14 @@ function MiniRateChart({
    * contribution rather than a YoY/MoM rate pair.
    */
   if (isUSNetExportsMetric(root)) {
-    const data = sortedRootHistory
-      .filter((point) => isInChartYearRange(point.date, root?.meta.frequency))
+    const data = filterHistoryToTrailing12Months(sortedRootHistory
       .map((point) => ({
         date: point.date.slice(0, 10),
         value: Number(point.value),
       }))
       .filter((point) =>
         Number.isFinite(point.value)
-      );
+      ));
 
     if (!data.length) {
       return null;
@@ -1435,17 +1459,16 @@ function MiniRateChart({
     kpis.showRight);
 
   if (isLatestPriorMetric) {
-    const data = sortedRootHistory
+    const data = filterHistoryToTrailing12Months(sortedRootHistory
       .map((point, index, history) => ({
         date: point.date.slice(0, 10),
         value: isPayrollLevel
           ? index > 0 ? Number(point.value) - Number(history[index - 1].value) : NaN
           : Number(point.value),
       }))
-      .filter((point) => isInChartYearRange(point.date, root?.meta.frequency))
       .filter((point) =>
         Number.isFinite(point.value)
-      );
+      ));
 
     if (!data.length) {
       return null;
@@ -1574,9 +1597,7 @@ function MiniRateChart({
     yoyHistory.forEach((point) => {
       const date = point.date.slice(0, 10);
 
-      if (isInChartYearRange(date, spec.yoyMetricId ? allMetrics[spec.yoyMetricId]?.meta.frequency : root?.meta.frequency)) {
-        chartDates.add(date);
-      }
+      chartDates.add(date);
     });
   }
 
@@ -1584,9 +1605,7 @@ function MiniRateChart({
     momHistory.forEach((point) => {
       const date = point.date.slice(0, 10);
 
-      if (isInChartYearRange(date, spec.momMetricId ? allMetrics[spec.momMetricId]?.meta.frequency : root?.meta.frequency)) {
-        chartDates.add(date);
-      }
+      chartDates.add(date);
     });
   }
 
@@ -1594,9 +1613,7 @@ function MiniRateChart({
     sortedRootHistory.forEach((point) => {
       const date = point.date.slice(0, 10);
 
-      if (isInChartYearRange(date, root?.meta.frequency)) {
-        chartDates.add(date);
-      }
+      chartDates.add(date);
     });
   }
 
@@ -2144,6 +2161,10 @@ function isUSNetExportsMetric(
     name.includes("net exports")
   );
 }
+function isPublishedExpectationMetric(metric: DetailPayload | undefined) {
+  return metric?.meta.subcategory?.toLowerCase().startsWith("expectations_") ?? false;
+}
+
 function getMetricKpis(
   metric: DetailPayload | undefined
 ) {
@@ -2160,6 +2181,18 @@ function getMetricKpis(
 
   const id = metric.meta.id;
   const mode = getDisplayMode(id);
+
+  if (isPublishedExpectationMetric(metric)) {
+    const history = getPublishedExpectationReadings(metric.history ?? []);
+    return {
+      mode: "rate" as const,
+      leftLabel: "Latest",
+      leftValue: history.at(-1)?.value ?? null,
+      rightLabel: "Previous",
+      rightValue: history.at(-2)?.value ?? null,
+      showRight: true,
+    };
+  }
 
   if (isQuarterlyGdpMetric(id)) {
     const { latest, prior } = latestQuarterPair(metric.history ?? []);
@@ -2851,6 +2884,18 @@ function getCardKpis(
 
   const id = metric.meta.id;
 
+  if (spec.id === "uk-wages-card") {
+    const rates = ratesForSpec(spec, { ...allMetrics, [spec.metricId]: metric });
+    return {
+      mode: "normal" as const,
+      leftLabel: "YoY",
+      leftValue: rates.yoy,
+      rightLabel: "MoM",
+      rightValue: rates.mom,
+      showRight: true,
+    };
+  }
+
   if (isQuarterlyGdpMetric(id)) {
     return getMetricKpis(metric);
   }
@@ -3374,7 +3419,7 @@ function LabourChartStudio({ category, specs, metrics, onOpen, highlightedMetric
     <div id="labour-studio-chart" data-category={category} className="labour-studio-stage" aria-label={`${displayMetricTitle(active, metric)} chart and published readings`}>
       <div className="labour-studio-plot">
         <h3>{category === "activity" && isQuarterlyGdpMetric(metric?.meta.id) ? `${displayMetricTitle(active, metric)} Growth` : displayMetricTitle(active, metric)}</h3>
-        <p>{metric ? `${metric.meta.frequency} · ${metric.meta.unit}` : "Awaiting published observations"} · {YEAR}</p>
+        <p>{metric ? metric.meta.frequency : "Awaiting published observations"} · {YEAR}</p>
         <RateChart key={active.id} spec={active} root={metric} allMetrics={metrics} height={240} chartType={category === "activity" ? "bar" : "line"} />
       </div>
       <aside className="labour-studio-reading">
@@ -3436,7 +3481,12 @@ function categoryMeasurePair(spec: IndicatorSpec, root: DetailPayload | undefine
 function InflationComparisonStudio({ region, specs, metrics, highlightedMetricId, onOpen }: { region: Region; specs: IndicatorSpec[]; metrics: Record<string, DetailPayload | undefined>; highlightedMetricId: string | null; onOpen: (spec: IndicatorSpec) => void }) {
   const [selectedIds, setSelectedIds] = useState<string[]>(specs.length ? [specs[0].id] : []);
   const [measure, setMeasure] = useState<"YoY" | "MoM">("YoY");
-  const [chartYear, setChartYear] = useState(2026);
+  const [chartRange, setChartRange] = useState({ from: 2025, to: 2026 });
+  const [isDefaultChartRange, setIsDefaultChartRange] = useState(true);
+  const handleChartRangeChange = useCallback((range: { from: number; to: number }, isDefault: boolean) => {
+    setChartRange(current => retainHistoryRangeIdentity(current, range));
+    setIsDefaultChartRange(current => current === isDefault ? current : isDefault);
+  }, []);
   const colors = ["#17634e", "#426d95", "#a65c3c", "#8170a7", "#b27a38", "#567c6c", "#9a5669"];
   const selected = specs.filter(spec => selectedIds.includes(spec.id));
   const series = selected.map(spec => {
@@ -3495,14 +3545,14 @@ function InflationComparisonStudio({ region, specs, metrics, highlightedMetricId
     <div className="inflation-studio-controls" role="group" aria-label="Inflation indicators">{specs.map((spec, index) => { const active = selectedIds.includes(spec.id); return <button key={spec.id} type="button" aria-pressed={active} className={clsx("inflation-chip", active && "is-active", highlightedMetricId && specContainsMetric(spec, highlightedMetricId) && "is-release-highlighted")} style={{ "--series-color": colors[index % colors.length] } as React.CSSProperties} onClick={() => setSelectedIds(current => active ? current.filter(id => id !== spec.id) : [...current, spec.id])}><i />{displayMetricTitle(spec, metrics[spec.metricId])}</button>; })}
       <div className="inflation-measure-toggle" role="group" aria-label="Inflation measure">{(["YoY", "MoM"] as const).map(value => <button key={value} aria-pressed={measure === value} onClick={() => setMeasure(value)}>{value}</button>)}</div>
     </div>
-    <div className="inflation-chart-heading"><div className="inflation-chart-title"><h3>{region === "EA" ? "HICP" : "Inflation"} comparison</h3><span>{measure} change · {chartYear}</span></div><div className="inflation-chart-legend" aria-label="Chart series">{selected.map(spec => { const color = colors[specs.findIndex(item => item.id === spec.id) % colors.length]; return <span key={spec.id}><i style={{ backgroundColor: color }} />{seriesTitle(spec.id)}</span>; })}</div></div>
-    <div className="inflation-plot">{selected.length ? <HistoryChartViewport dates={points.map(point => point.period)} frequency="monthly" height={269} label="Inflation comparison" onYearChange={setChartYear}>{(plotWidth, year) => { const yearPoints = chartDataForYear(points, year); const yearTicks = getNiceTicks(yearPoints.flatMap(point => selected.map(spec => point[spec.id]).filter((value): value is number => value != null && Number.isFinite(value)))); return <ResponsiveContainer width={plotWidth} height="100%"><LineChart data={yearPoints} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}><CartesianGrid stroke="var(--line)" strokeDasharray="2 4" vertical /><XAxis dataKey="label" tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={{ stroke: "var(--line-strong)" }} tickLine={false} minTickGap={18} interval="preserveStartEnd" /><YAxis unit="%" width={52} ticks={yearTicks} domain={getNiceTickDomain(yearTicks)} tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={false} tickLine={false} /><Tooltip formatter={(value, name) => [`${Number(value).toFixed(1)}%`, seriesTitle(name ?? "")] } labelFormatter={(label) => String(label)} /><Line connectNulls={false} type="linear" dataKey={selected[0]?.id ?? ""} name={selected[0]?.id ?? ""} stroke={colors[specs.findIndex(spec => spec.id === selected[0]?.id) % colors.length]} strokeWidth={2.5} dot={{ r: 3, fill: colors[specs.findIndex(spec => spec.id === selected[0]?.id) % colors.length], strokeWidth: 0 }} activeDot={{ r: 5 }} isAnimationActive={false} />{selected.slice(1).map(spec => <Line key={spec.id} connectNulls={false} type="linear" dataKey={spec.id} name={spec.id} stroke={colors[specs.findIndex(item => item.id === spec.id) % colors.length]} strokeWidth={2.5} dot={{ r: 3, fill: colors[specs.findIndex(item => item.id === spec.id) % colors.length], strokeWidth: 0 }} activeDot={{ r: 5 }} isAnimationActive={false} />)}</LineChart></ResponsiveContainer>; }}</HistoryChartViewport> : <div className="inflation-no-selection">Select an indicator to plot its published history.</div>}</div>
+    <div className="inflation-chart-heading"><div className="inflation-chart-title"><h3>{region === "EA" ? "HICP" : "Inflation"} comparison</h3><span>{measure} change · {isDefaultChartRange ? "last 12 months" : chartRange.from === chartRange.to ? chartRange.from : `${chartRange.from}–${chartRange.to}`}</span></div><div className="inflation-chart-legend" aria-label="Chart series">{selected.map(spec => { const color = colors[specs.findIndex(item => item.id === spec.id) % colors.length]; return <span key={spec.id}><i style={{ backgroundColor: color }} />{seriesTitle(spec.id)}</span>; })}</div></div>
+    <div className="inflation-plot">{selected.length ? <HistoryChartViewport dates={points.map(point => point.period)} frequency="monthly" height={269} label="Inflation comparison" onRangeChange={handleChartRangeChange}>{(plotWidth, fromYear, toYear, isDefaultWindow) => { const yearPoints = isDefaultWindow ? filterHistoryToTrailing12Months(points) : filterHistoryByYearRange(points, fromYear, toYear); const yearTicks = getNiceTicks(yearPoints.flatMap(point => selected.map(spec => point[spec.id]).filter((value): value is number => value != null && Number.isFinite(value)))); return <ResponsiveContainer width={plotWidth} height="100%"><LineChart data={yearPoints} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}><CartesianGrid stroke="var(--line)" strokeDasharray="2 4" vertical /><XAxis dataKey="label" tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={{ stroke: "var(--line-strong)" }} tickLine={false} minTickGap={18} interval="preserveStartEnd" /><YAxis unit="%" width={52} ticks={yearTicks} domain={getNiceTickDomain(yearTicks)} tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={false} tickLine={false} /><Tooltip formatter={(value, name) => [`${Number(value).toFixed(1)}%`, seriesTitle(name ?? "")] } labelFormatter={(label) => String(label)} /><Line connectNulls={false} type="linear" dataKey={selected[0]?.id ?? ""} name={selected[0]?.id ?? ""} stroke={colors[specs.findIndex(spec => spec.id === selected[0]?.id) % colors.length]} strokeWidth={2.5} dot={{ r: 3, fill: colors[specs.findIndex(spec => spec.id === selected[0]?.id) % colors.length], strokeWidth: 0 }} activeDot={{ r: 5 }} isAnimationActive={false} />{selected.slice(1).map(spec => <Line key={spec.id} connectNulls={false} type="linear" dataKey={spec.id} name={spec.id} stroke={colors[specs.findIndex(item => item.id === spec.id) % colors.length]} strokeWidth={2.5} dot={{ r: 3, fill: colors[specs.findIndex(item => item.id === spec.id) % colors.length], strokeWidth: 0 }} activeDot={{ r: 5 }} isAnimationActive={false} />)}</LineChart></ResponsiveContainer>; }}</HistoryChartViewport> : <div className="inflation-no-selection">Select an indicator to plot its published history.</div>}</div>
     <div className="inflation-reading-heading"><h3>Latest inflation readings</h3><span>Published release date and observation period are shown separately.</span></div>
     <div className="inflation-reading-wrap" role="region" aria-label="Latest inflation readings" tabIndex={0}><table className="inflation-reading-table"><thead><tr><th>Indicator</th><th>{measure}</th><th>{measure === "YoY" ? "MoM" : "YoY"}</th><th>Release date</th><th>Period</th><th>Source</th><th aria-label="Details" /></tr></thead><tbody>{specs.map((spec, index) => { const reading = readingFor(spec); const active = selectedIds.includes(spec.id); const secondValue = reading.otherReading; return <tr key={spec.id} className={clsx(active && "selected-reading", highlightedMetricId && specContainsMetric(spec, highlightedMetricId) && "is-release-highlighted")} style={{ "--series-color": colors[index % colors.length] } as React.CSSProperties}><th scope="row"><i />{displayMetricTitle(spec, metrics[spec.metricId])}</th><td>{reading.fmtRate(reading.selectedReading)}</td><td>{reading.hasSecond ? reading.fmtRate(secondValue) : "—"}</td><td>{reading.releaseDate}{reading.hasSecond && reading.secondReleaseDate !== reading.releaseDate ? <small className="reading-meta">{measure === "YoY" ? "MoM" : "YoY"}: {reading.secondReleaseDate}</small> : null}</td><td>{reading.latestPeriod ? formatObsDate(reading.latestPeriod) : "—"}</td><td>{reading.source}{reading.hasSecond && reading.secondSource !== reading.source ? <small className="reading-meta">{measure === "YoY" ? "MoM" : "YoY"}: {reading.secondSource}</small> : null}</td><td><button type="button" aria-label={`View ${displayMetricTitle(spec, metrics[spec.metricId])} details`} onClick={() => onOpen(spec)}><ChevronRight size={15} /></button></td></tr>; })}</tbody></table></div>
   </div>;
 }
 
-function ExpectationGroupStudio({ region, specs, metrics, onOpen, highlightedMetricId }: { region: Region; specs: IndicatorSpec[]; metrics: Record<string, DetailPayload | undefined>; onOpen: (spec: IndicatorSpec) => void; highlightedMetricId: string | null }) {
+function ExpectationGroupStudio({ region, specs, metrics, onMetricOpen, highlightedMetricId }: { region: Region; specs: IndicatorSpec[]; metrics: Record<string, DetailPayload | undefined>; onMetricOpen: (metricId: string) => void; highlightedMetricId: string | null }) {
   const groups = Array.from(new Set(specs.map(spec => spec.expectationGroup).filter((group): group is NonNullable<IndicatorSpec["expectationGroup"]> => Boolean(group))));
   const [group, setGroup] = useState<string>(groups[0] ?? "consumer");
   const active = specs.find(spec => spec.expectationGroup === group) ?? specs[0];
@@ -3511,7 +3561,7 @@ function ExpectationGroupStudio({ region, specs, metrics, onOpen, highlightedMet
   const entries = candidateIds.map(id => metrics[id]).filter((item): item is DetailPayload => Boolean(item));
   return <div className="expectation-studio">
     <div className="expectation-group-tabs" role="tablist" aria-label="Expectation groups">{groups.map(item => <button key={item} type="button" role="tab" aria-selected={group === item} onClick={() => setGroup(item)}>{item === "consumer" ? "Consumer" : item === "wage" ? "Household & wage" : item === "business" ? "Business" : item === "market" ? "Market-based" : item === "professional" ? (region === "UK" ? "Professional" : "Professional") : "Model-based"}</button>)}</div>
-    <div className="expectation-studio-panel"><div className="expectation-studio-chart"><ExpectationCharts spec={active} allMetrics={metrics} /></div><aside><h3>Latest published readings</h3>{entries.map(metric => <div key={metric.meta.id} className={clsx("expectation-reading", highlightedMetricId === metric.meta.id && "is-release-highlighted")}><div><strong>{metric.meta.shortName || metric.meta.name}</strong><span>{metric.displayReleasedAt ? formatObsDate(metric.displayReleasedAt) : "—"} · {formatLiveSourceLabel(metric.meta.liveSource)}</span></div><b>{formatExpectationValue(metric, metric.history?.at(-1)?.value)}</b><button type="button" aria-label={`View ${metric.meta.shortName || metric.meta.name} details`} onClick={() => { const specForMetric = specs.find(spec => specContainsMetric(spec, metric.meta.id)) ?? active; onOpen(specForMetric); }}><ChevronRight size={15} /></button></div>)}{entries.length === 0 && <p>No published readings are available for this group.</p>}</aside></div><p className="expectation-studio-note">Historical published expectations by source and horizon.</p>
+    <div className="expectation-studio-panel"><div className="expectation-studio-chart"><ExpectationCharts spec={active} allMetrics={metrics} /></div><aside><h3>Latest published readings</h3>{entries.map(metric => <button key={metric.meta.id} type="button" className={clsx("expectation-reading", highlightedMetricId === metric.meta.id && "is-release-highlighted")} aria-label={`Open chart for ${metric.meta.shortName || metric.meta.name}`} onClick={() => onMetricOpen(metric.meta.id)}><div><strong>{metric.meta.shortName || metric.meta.name}</strong><span>{metric.displayReleasedAt ? formatObsDate(metric.displayReleasedAt) : "—"} · {formatLiveSourceLabel(metric.meta.liveSource)}</span></div><b>{formatExpectationValue(metric, metric.history?.at(-1)?.value)}</b><ChevronRight size={15} aria-hidden="true" /></button>)}{entries.length === 0 && <p>No published readings are available for this group.</p>}</aside></div><p className="expectation-studio-note">Historical published expectations by source and horizon.</p>
   </div>;
 }
 function expectationHorizon(metricId: string, label: string) {
@@ -3561,17 +3611,7 @@ function expectationSeries(
     metric?.name ??
     id;
 
-  const data = (allMetrics[id]?.history ?? [])
-    .map((point) => ({
-      date: point.date.slice(0, 10),
-      value: Number(point.value),
-    }))
-    .filter(
-      (point) =>
-        point.date &&
-        Number.isFinite(point.value)
-    )
-    .sort((a, b) => a.date.localeCompare(b.date));
+  const data = getPublishedExpectationReadings(allMetrics[id]?.history ?? []);
 
   const displayData = id === "uk-inflation-comp-5y5y" && data.length
     ? (() => {
@@ -3609,6 +3649,36 @@ function ExpectationCharts({
   allMetrics: Record<string, DetailPayload | undefined>;
 }) {
   if (!spec.expectationGroup) return null;
+
+  const configuredGroups = EXPECTATION_CHART_GROUPS[spec.id];
+  if (configuredGroups) {
+    const expanded = EXPANDED_EXPECTATION_GROUP_IDS.has(spec.id);
+    return (
+      <div className={expanded ? "grid gap-4 expectation-comparison-grid--expanded" : "grid gap-4 xl:grid-cols-2"}>
+        {configuredGroups.map((group) => {
+          const series = group.series
+            .filter(({ id }) => Boolean(allMetrics[id]))
+            .map(({ id, axis }) => ({
+              ...expectationSeries(allMetrics, id),
+              axis,
+            }));
+
+          if (!series.length) return null;
+
+          return (
+            <ExpectationComparisonChart
+              key={`${spec.id}-${group.key}`}
+              title={group.title}
+              note={group.note}
+              series={series}
+              expanded={expanded}
+              hideMarkers={MARKERLESS_EXPECTATION_GROUP_IDS.has(spec.id)}
+            />
+          );
+        })}
+      </div>
+    );
+  }
 
   /*
    * US Wage Expectations has a fixed structure:
@@ -4286,9 +4356,11 @@ function ComponentDetailDrawer({
   };
 
   const cardKpis = getMetricKpis(metric);
+  const isExpectation = isPublishedExpectationMetric(metric);
   const latestPeriodDate = getLatestPeriodDate(metric);
 
   const renderKpi = (value: number | null | undefined) => {
+    if (isExpectation) return formatExpectationValue(metric, value);
     if (cardKpis.mode === "normal") {
       return percentagePointIds.has(metric.meta.id)
         ? pp(value)
@@ -4539,9 +4611,7 @@ function ComponentDetailDrawer({
                   {displayMetricTitle(spec, metric)}
                 </h3>
                 <span style={{ whiteSpace: "nowrap", color: "var(--muted)" }}>
-                  {metric.meta.frequency === "daily" || metric.meta.frequency === "hourly"
-                    ? "Last 30 days"
-                    : `${YEAR} trend`}
+                  Last 12 months
                 </span>
               </div>
 
@@ -4557,7 +4627,7 @@ function ComponentDetailDrawer({
     spec={spec}
     root={metric}
     allMetrics={allMetrics}
-      height={200}
+      height={360}
   />
 </div>
             </section>
@@ -4595,7 +4665,7 @@ function DetailDrawer({
   const [selectedSeriesId, setSelectedSeriesId] = useState(spec.metricId);
 
   const cardKpis = getCardKpis(spec, root, allMetrics, "detail");
-  const allNodes = spec.components ?? [];
+  const allNodes = stableDetailNodes(spec.components);
   const flightDeckRows: Array<{ node: UiNode; depth: number; group: string; parentIds: string[]; hasChildren: boolean }> = [];
   const collectFlightDeckRows = (nodes: UiNode[], depth = 0, group = "", parentIds: string[] = []) => {
     nodes.forEach((node) => {
@@ -5150,7 +5220,7 @@ function DetailDrawer({
                   {isUSClaimsCard ? "Jobless Claims" : displayMetricTitle(spec, root)}
                 </h3>
                 <span style={{ whiteSpace: "nowrap", color: "var(--muted)" }}>
-                  {isExpectation ? "Historical observations" : `${YEAR} trend`}
+                  {isExpectation ? "Historical observations" : "Last 12 months"}
                 </span>
               </div>
 
@@ -5178,7 +5248,7 @@ function DetailDrawer({
       spec={spec}
       root={root}
       allMetrics={allMetrics}
-      height={180}
+      height={420}
     />
   </div>
 )}
@@ -5193,19 +5263,25 @@ function DetailDrawer({
               <section className="flight-deck-field">
                 <div className="flight-deck-field-head">
                   <div><h3>The component field</h3><p>Small multiples make the published series easy to compare</p></div>
-                  <span>{YEAR} trend · {flightDeckRows.length} series</span>
+                  <span>Last 12 months · {flightDeckRows.length} series</span>
                 </div>
-                <div className="flight-deck-columns"><span>Series</span><span>2026 trend</span><span>Published measures</span><span></span></div>
+                <div className="flight-deck-columns"><span>Series</span><span>Last 12 months</span><span>Published measures</span><span></span></div>
                 <div className="flight-deck-rows">
                   {flightDeckRows.filter(({ parentIds }) => parentIds.every((id) => open[id])).map(({ node, depth, group, hasChildren }, index) => {
                     const payload = node.metricId ? allMetrics[node.metricId] : undefined;
                     const kpis = payload ? getMetricKpis(payload) : null;
                     const current = payload?.history?.at(-1)?.value;
-                    const trendPoints = (payload?.history ?? []).filter((point) => isInChartYearRange(point.date, payload?.meta.frequency));
-                    const trendSpan = trendPoints.length
-                      ? `${formatChartDate(trendPoints[0].date, payload?.meta.frequency, true)} — ${formatChartDate(trendPoints.at(-1)!.date, payload?.meta.frequency, true)}`
-                      : `${YEAR} trend`;
                     const pair = getNodeMetricKpis(node, payload, allMetrics);
+                    const miniMeasure = pair?.leftLabel === "MoM" || (pair?.leftLabel === "YoY" && pair.rightLabel === "MoM" && pair.rightValue != null)
+                      ? "mom"
+                      : pair?.leftLabel === "YoY"
+                        ? "yoy"
+                        : "raw";
+                    const miniSeries = payload ? selectComponentMiniSeries(node, payload, allMetrics, miniMeasure) : null;
+                    const trendPoints = filterHistoryToTrailing12Months(miniSeries?.data ?? []);
+                    const trendSpan = trendPoints.length
+                      ? `${formatChartDate(trendPoints[0].date, miniSeries?.frequency, true)} — ${formatChartDate(trendPoints.at(-1)!.date, miniSeries?.frequency, true)}`
+                      : "Last 12 months";
                     const formatPairValue = (value: number | null | undefined) => {
                       if (value == null || !Number.isFinite(value)) return "—";
                       if (pair?.mode === "normal" || pair?.mode === "published-growth") {
@@ -5225,7 +5301,7 @@ function DetailDrawer({
                         </button>
                         <button type="button" className="flight-deck-name-copy" onClick={() => payload && setSelectedSeriesId(payload.meta.id)}><b>{node.label}</b>{payload && <small>{group}{payload.meta.unit ? ` · ${payload.meta.unit}` : ""}</small>}</button>
                       </span>
-                      <span className="flight-deck-spark">{payload ? <><Spark data={payload.history} frequency={payload.meta.frequency} compact /><small>{trendSpan}</small></> : <small>{hasChildren ? "Select to expand category" : "Official category"}</small>}</span>
+                      <span className="flight-deck-spark">{payload && miniSeries?.data.length ? <><Spark data={miniSeries.data} frequency={miniSeries.frequency} compact /><small>{trendSpan}</small></> : <small>{hasChildren ? "Select to expand category" : "Published trend unavailable"}</small>}</span>
                       <span className="flight-deck-measures" style={{ gridColumn: "3 / 5" }}>
                         <span className="flight-deck-value">{leftValue}<small>{leftLabel}</small></span>
                         {rightLabel && <span className="flight-deck-value">{rightValue}<small>{rightLabel}</small></span>}
@@ -5757,7 +5833,7 @@ const specs = categorySpecs;
               </div>
 
               <div className="macro-band-content">
-  {category === "prices" ? <InflationComparisonStudio key={r} region={r} specs={orderedSpecs} metrics={metrics} highlightedMetricId={highlightedMetricId} onOpen={setSelected} /> : category === "labour" || category === "activity" ? <LabourChartStudio key={`${r}-${category}`} category={category} specs={orderedSpecs} metrics={metrics} highlightedMetricId={highlightedMetricId} selectedId={studioSelections[category] ?? null} onSelectionChange={(id) => setStudioSelections(current => ({ ...current, [category]: id }))} onOpen={setSelected} /> : category === "expectations" ? <ExpectationGroupStudio key={r} region={r} specs={orderedSpecs.filter(spec => spec.expectationGroup)} metrics={metrics} onOpen={setSelected} highlightedMetricId={highlightedMetricId} /> :
+  {category === "prices" ? <InflationComparisonStudio key={r} region={r} specs={orderedSpecs} metrics={metrics} highlightedMetricId={highlightedMetricId} onOpen={setSelected} /> : category === "labour" || category === "activity" ? <LabourChartStudio key={`${r}-${category}`} category={category} specs={orderedSpecs} metrics={metrics} highlightedMetricId={highlightedMetricId} selectedId={studioSelections[category] ?? null} onSelectionChange={(id) => setStudioSelections(current => ({ ...current, [category]: id }))} onOpen={setSelected} /> : category === "expectations" ? <ExpectationGroupStudio key={r} region={r} specs={orderedSpecs.filter(spec => spec.expectationGroup)} metrics={metrics} onMetricOpen={(metricId) => { setSelected(null); setSelectedComponent(createExpectationMetricSelection(metricId)); }} highlightedMetricId={highlightedMetricId} /> :
   <div
     className="cards-grid"
   >

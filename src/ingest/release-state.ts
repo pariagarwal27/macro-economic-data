@@ -194,7 +194,7 @@ export async function getCompletedCalendarReleases(since: string) {
   await ensureReleaseStateTable();
   const result = await executeSql({
     sql: `SELECT s.metric_id,s.scheduled_at,s.processed_at,s.release_id,
-      r.released_at,r.value,r.expected_value,r.prior_period_value
+      r.period_date,r.released_at,r.value,r.expected_value,r.prior_period_value
       FROM release_dispatch_state s LEFT JOIN releases r ON r.id=s.release_id
       WHERE s.status='processed' AND s.processed_at>=? AND s.scheduled_at NOT LIKE 'safety:%'`,
     args: [since],
@@ -203,7 +203,7 @@ export async function getCompletedCalendarReleases(since: string) {
     metricId: String(row.metric_id), scheduledAt: String(row.scheduled_at),
     processedAt: String(row.processed_at), releaseId: row.release_id == null ? null : Number(row.release_id),
     actual: row.released_at == null ? null : {
-      id: Number(row.release_id), metricId: String(row.metric_id), releasedAt: String(row.released_at),
+      id: Number(row.release_id), metricId: String(row.metric_id), periodDate: String(row.period_date), releasedAt: String(row.released_at),
       value: row.value == null ? null : Number(row.value), expectedValue: row.expected_value == null ? null : Number(row.expected_value),
       priorPeriodValue: row.prior_period_value == null ? null : Number(row.prior_period_value),
     },

@@ -113,6 +113,22 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
     provider: "bls",
     seriesId: "CUSR0000SA0",
   },
+  "us-cpi-yoy": {
+    provider: "bls",
+    seriesId: "CUUR0000SA0",
+  },
+  "us-cpi-mom": {
+    provider: "bls",
+    seriesId: "CUSR0000SA0",
+  },
+  "us-core-cpi-mom": {
+    provider: "bls",
+    seriesId: "CUSR0000SA0L1E",
+  },
+  "us-core-cpi-yoy": {
+    provider: "bls",
+    seriesId: "CUUR0000SA0L1E",
+  },
   "us-core-goods-cpi-yoy": {
     provider: "bls",
     seriesId: "CUSR0000SACL1E",

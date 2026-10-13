@@ -10,6 +10,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { HistoryChartViewport } from "@/components/HistoryChartViewport";
+import { filterHistoryByYearRange, filterHistoryToTrailing12Months } from "@/lib/history-range";
 
 export function SeriesChart({
   data,
@@ -20,15 +21,15 @@ export function SeriesChart({
   unit: string;
   frequency?: string;
 }) {
-  const visibleData = data.filter((point) => Number(point.date.slice(0, 4)) <= 2026);
+  const visibleData = data;
   if (!visibleData.length) {
     return <div className="series-chart-empty">No observations available for the selected chart window.</div>;
   }
   return (
     <div className="series-chart h-72 w-full">
       <HistoryChartViewport dates={visibleData.map(point => point.date)} frequency={frequency} height={288} label="Series history">
-      {(plotWidth, year) => <ResponsiveContainer width={plotWidth} height="100%">
-        <LineChart data={visibleData.filter(point => point.date.slice(0, 4) === String(year))} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
+      {(plotWidth, fromYear, toYear, isDefaultWindow) => <ResponsiveContainer width={plotWidth} height="100%">
+        <LineChart data={isDefaultWindow ? filterHistoryToTrailing12Months(visibleData) : filterHistoryByYearRange(visibleData, fromYear, toYear)} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
           <CartesianGrid stroke="rgba(28,36,41,0.08)" vertical={false} />
           <XAxis
             dataKey="date"

@@ -38,6 +38,7 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
  {
   id: "us-cpi-card",
   metricId: "us-cpi",
+  yoyMetricId: "us-cpi-yoy",
   momMetricId: "us-cpi-mom",
   title: "CPI (Headline)",
   components: [
@@ -68,6 +69,8 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
     {
       id: "us-core-cpi-card",
       metricId: "us-cpi-core",
+      yoyMetricId: "us-core-cpi-yoy",
+      momMetricId: "us-core-cpi-mom",
       title: "Core CPI",
       components: [
         n("core-goods", "Core Goods", "us-core-goods-cpi-yoy", [
@@ -215,8 +218,6 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
     "us-5y5y-forward",
     "us-breakeven-5y",
     "us-breakeven-10y",
-    "us-breakeven-1y",
-    "us-breakeven-2y",
   ],
 },
 
@@ -751,10 +752,10 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
         ],
       },
       {
-        id: "uk-wages-card", metricId: "uk-awe-total-yoy", title: "Wage Growth",
+        id: "uk-wages-card", metricId: "uk-awe-regular-yoy", yoyMetricId: "uk-awe-regular-yoy", momMetricId: "uk-awe-regular-mom", title: "Wage Growth",
         components: [
           n("total", "AWE Total Pay", "uk-awe-total-yoy"),
-          n("regular", "AWE Regular Pay", "uk-awe-regular-yoy"),
+          n("regular", "AWE Regular Pay", "uk-awe-regular-yoy", undefined, "uk-awe-regular-mom"),
           n("real-total", "Real AWE Total Pay Growth", "uk-awe-real-total-yoy"),
           n("real-regular", "Real AWE Regular Pay Growth", "uk-awe-real-regular-yoy"),
         ],
@@ -1097,13 +1098,13 @@ export const DASHBOARD: Record<Region, Record<MacroCategory, IndicatorSpec[]>> =
 
     // Put the expenditure-side GDP components beneath the GDP headline so
     // they remain available in its detail card without taking front-row slots.
-    const componentCardIds: Record<Region, string[]> = {
-      US: ["us-pce-growth-card", "us-investment-card", "us-government-card", "us-net-exports-card"],
-      UK: ["uk-consumption-card", "uk-capital-card", "uk-net-trade-card"],
-      EA: ["ea-household-card", "ea-capital-card", "ea-government-card", "ea-exports-card", "ea-imports-card"],
-    };
     const gdpCard = categories.activity.find((spec) => spec.id === `${region.toLowerCase()}-gdp-card`);
     if (gdpCard) {
+      const componentCardIds: Record<Region, string[]> = {
+        US: ["us-pce-growth-card", "us-investment-card", "us-government-card", "us-net-exports-card"],
+        UK: ["uk-consumption-card", "uk-capital-card", "uk-net-trade-card"],
+        EA: ["ea-household-card", "ea-capital-card", "ea-government-card", "ea-exports-card", "ea-imports-card"],
+      };
       const cardsById = new Map(categories.activity.map((spec) => [spec.id, spec]));
       const movedNodes: UiNode[] = [];
       for (const cardId of componentCardIds[region]) {
@@ -1137,6 +1138,63 @@ export const DASHBOARD: Record<Region, Record<MacroCategory, IndicatorSpec[]>> =
       }
       gdpCard.components = [...(gdpCard.components ?? []), ...movedNodes];
       categories.activity = categories.activity.filter((spec) => !componentCardIds[region].includes(spec.id));
+    }
+
+    if (region === "UK") {
+      const employmentCard = categories.labour.find((spec) => spec.id === "uk-employment-card");
+      const inactivityCard = categories.labour.find((spec) => spec.id === "uk-inactivity-card");
+      if (employmentCard && inactivityCard) {
+        const inactivityRate = (inactivityCard.components ?? []).find((node) => node.metricId === inactivityCard.metricId);
+        const inactivityDetails = (inactivityCard.components ?? [])
+          .filter((node) => node !== inactivityRate)
+          .map((node) => ({ ...node, children: node.children?.map((child) => ({ ...child })) }));
+        employmentCard.components = [
+          ...(employmentCard.components ?? []),
+          { id: "economic-inactivity", label: inactivityCard.title ?? "Economic Inactivity", metricId: inactivityCard.metricId, children: inactivityDetails },
+        ];
+        categories.labour = categories.labour.filter((spec) => spec.id !== inactivityCard.id);
+      }
+    }
+
+    if (region === "EA") {
+      const headline = categories.prices.find((spec) => spec.id === "ea-hicp-card");
+      const componentCardIds = ["ea-food-card", "ea-energy-card", "ea-neig-card"];
+      const cardsById = new Map(categories.prices.map((spec) => [spec.id, spec]));
+
+      if (headline) {
+        const movedComponents: UiNode[] = [];
+
+        for (const cardId of componentCardIds) {
+          const card = cardsById.get(cardId);
+          if (!card) continue;
+
+          const root = (card.components ?? []).find((node) => node.metricId === card.metricId);
+          if (root) {
+            movedComponents.push({
+              ...root,
+              id: `${card.id}-headline-component`,
+              label: card.title ?? root.label,
+              children: (card.components ?? [])
+                .filter((node) => node !== root)
+                .map((node) => ({ ...node, children: node.children?.map((child) => ({ ...child })) })),
+            });
+          } else {
+            movedComponents.push(...(card.components ?? []).map((node) => ({ ...node })));
+          }
+        }
+
+        // Services remains a dedicated front-row card by design. Core HICP
+        // also stays separate because it is an overlapping exclusion measure.
+        headline.components = [
+          ...(headline.components ?? []).filter(
+            (node) => node.metricId !== "ea-hicp-yoy" &&
+              node.metricId !== "ea-goods-hicp-yoy" &&
+              node.metricId !== "ea-services-hicp-yoy",
+          ),
+          ...movedComponents,
+        ];
+        categories.prices = categories.prices.filter((spec) => !componentCardIds.includes(spec.id));
+      }
     }
 
     grouped[region] = categories;

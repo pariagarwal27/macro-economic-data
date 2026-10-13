@@ -29,3 +29,8 @@ export function getNiceTicks(values: number[], target = 5, minimumStep = 0.1): n
 export function getNiceTickDomain(ticks: number[]): [number, number] {
   return [ticks[0] ?? 0, ticks.at(-1) ?? 1];
 }
+
+/** Use finer, data-driven spacing for expectation series measured in percent. */
+export function getExpectationAxisTicks(values: number[]): number[] {
+  return getNiceTicks(values, 13, 0.05);
+}
