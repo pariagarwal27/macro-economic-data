@@ -27,7 +27,9 @@ const LSEG: MetricSourceConfig[] = [
   ["uk-sp-global-composite-pmi","GBCPMI=ECI"],
   ["ea-sp-global-manufacturing-pmi","EUPMI=ECI"],["ea-sp-global-services-pmi","EUPMIS=ECI"],
   ["ea-sp-global-composite-pmi","EUPMIP=ECI"],
-  ["us-cpi","USCPNY=ECI"],["us-cpi-mom","USCPI=ECI"],["us-cpi-core","USCPFY=ECI"],
+  ["us-cpi","USCPN=ECI"],["us-cpi-yoy","USCPNY=ECI"],["us-cpi-mom","USCPI=ECI"],
+  ["us-cpi-core","USCPNX=ECI"],["us-core-cpi-mom","USCPF=ECI"],["us-core-cpi-yoy","USCPFY=ECI"],
+  ["us-cpi-nsa","USCPN=ECI"],
   ["us-core-goods-cpi-yoy","USCPOY=ECI"],["us-core-goods-cpi-mom","USCPOF=ECI"],
   ["us-services-cpi-yoy","USCPS=ECI"],["us-services-cpi-mom","USCPSM=ECI"],
   ["us-cpi-food","USCPFOD=ECI"],["us-cpi-energy","USCPNRG=ECI"],["us-cpi-apparel","aUSCPICL/A"],
@@ -92,8 +94,21 @@ const PCE_FAMILY = new Set([
   "us-real-pce-nondurable-goods", "us-real-pce-services",
 ]);
 
+const US_CPI_BLS_COMPONENTS = new Set([
+  "us-cpi-core-nsa",
+  "us-cpi-new-vehicles",
+  "us-cpi-used-cars",
+  "us-cpi-medical-commodities",
+  "us-cpi-recreation-commodities",
+  "us-cpi-education-commodities",
+  "us-cpi-recreation-services",
+  "us-cpi-education-services",
+  "us-cpi-other-services",
+]);
+
 const CATALOG_FALLBACK: MetricSourceConfig[] = METRICS
   .filter((m) => !PCE_FAMILY.has(m.id))
+  .filter((m) => !isUsCpiLsegOnlyMetric(m.id))
   .filter((m) => !LSEG.some((x) => x.metricId === m.id))
   .map((m) => ({
     metricId: m.id,
@@ -131,12 +146,42 @@ export const SOURCE_REGISTRY_MAP = new Map(
 );
 
 export function getSourceConfig(metricId: string) {
-  return SOURCE_REGISTRY_MAP.get(metricId) ?? null;
+  const config = SOURCE_REGISTRY_MAP.get(metricId) ?? null;
+  if (isUsCpiLsegOnlyMetric(metricId) && config?.adapter !== "lseg") return null;
+  return config;
 }
 
-// Desktop-only routes stay intact locally. Hosted execution uses the official
-// mapping already defined by this project, without silently switching to FRED.
+/** Detect metrics belonging to the US CPI/Core CPI family. */
+export function isUsCpiMetric(metricId: string) {
+  const metric = METRICS.find((item) => item.id === metricId);
+  return Boolean(
+    metric?.region === "US" &&
+      metric.category === "inflation" &&
+      ["us_inflation_core", "us_inflation_support", "us_cpi_component"].includes(metric.subcategory ?? "") &&
+      !PCE_FAMILY.has(metricId)
+  );
+}
+
+/** Components without a verified LSEG RIC intentionally use official BLS data. */
+export function isUsCpiBlsComponent(metricId: string) {
+  return US_CPI_BLS_COMPONENTS.has(metricId);
+}
+
+/** CPI family metrics except the explicit BLS exceptions remain LSEG-only. */
+export function isUsCpiLsegOnlyMetric(metricId: string) {
+  return isUsCpiMetric(metricId) && !isUsCpiBlsComponent(metricId);
+}
+
+// Local and hosted CPI paths use LSEG where mapped; the nine explicitly
+// designated component series use the BLS API.
 export function getCloudSourceConfig(metricId: string): MetricSourceConfig | null {
+  if (isUsCpiLsegOnlyMetric(metricId)) {
+    const config = SOURCE_REGISTRY_MAP.get(metricId);
+    return config?.adapter === "lseg"
+      ? { ...config, releaseStrategy: "scheduled-poll", pollSeconds: 60 }
+      : null;
+  }
+
   const metric = METRICS.find(m => m.id === metricId);
   if (!metric) return null;
   const live = LIVE_MAP[metricId];
@@ -165,6 +210,18 @@ export function getActiveLiveSource(metricId: string, isCloud: boolean): string 
   return mapped && mapped.provider !== "lseg" ? mapped.provider : config.source;
 }
 
+/** Return only the live mapping active in the selected runtime. */
+export function getActiveLiveMapping(metricId: string, isCloud: boolean) {
+  if (isUsCpiLsegOnlyMetric(metricId)) {
+    const config = isCloud ? getCloudSourceConfig(metricId) : getSourceConfig(metricId);
+    return config?.adapter === "lseg"
+      ? { provider: "lseg" as const, seriesId: config.sourceId }
+      : undefined;
+  }
+  const mapped = LIVE_MAP[metricId];
+  return isCloud && mapped?.provider === "lseg" ? undefined : mapped;
+}
+
 export function assertRegistryIsValid() {
   const catalogIds = new Set(METRICS.map((m) => m.id));
   const seen = new Set<string>();
@@ -175,7 +232,7 @@ export function assertRegistryIsValid() {
     seen.add(x.metricId);
     if (!catalogIds.has(x.metricId)) extras.push(x.metricId);
   }
-  const missing = [...catalogIds].filter((id) => !seen.has(id));
+  const missing = [...catalogIds].filter((id) => !seen.has(id) && !isUsCpiMetric(id));
   if (duplicates.length || extras.length || missing.length) {
     throw new Error(
       `Source registry invalid. duplicates=${duplicates.join(",")} extras=${extras.join(",")} missing=${missing.join(",")}`

@@ -16,6 +16,51 @@ export const MARKERLESS_EXPECTATION_GROUP_IDS = new Set([
   "us-inflation-expectations-market",
 ]);
 
+/** Axis assignments for the NY Fed household, wage, and labor comparisons. */
+export const NYFED_EXPECTATION_AXIS_BY_METRIC_ID: Record<string, ExpectationAxis> = {
+  "us-nyfed-sce-finance-income-1y": "left",
+  "us-nyfed-sce-finance-spending-1y": "right",
+  "us-nyfed-sce-labor-earnings-1y": "left",
+  "us-nyfed-sce-labor-job-separation-1y": "left",
+  "us-nyfed-sce-labor-job-finding-1y": "right",
+  "us-nyfed-sce-labor-unemployment-1y": "right",
+};
+
+export const NYFED_OVERVIEW_CHART_GROUPS = {
+  payGrowth: {
+    key: "pay-growth",
+    title: "Atlanta Fed Wage Growth Tracker",
+    note: "Atlanta Fed median nominal wage growth (3-month overall series).",
+    ids: ["us-atlanta-wage"],
+  },
+  inflation: {
+    key: "nyfed-inflation",
+    title: "NY Fed SCE Inflation Expectations",
+    note: "1Y, 3Y and 5Y household inflation expectations.",
+    ids: ["us-nyfed-sce-1y", "us-nyfed-sce-3y", "us-nyfed-sce-5y"],
+  },
+  household: {
+    key: "nyfed-household",
+    title: "NY Fed SCE Household Financial Expectations",
+    note: "Expected household income, nominal spending and earnings growth.",
+    ids: [
+      "us-nyfed-sce-finance-income-1y",
+      "us-nyfed-sce-finance-spending-1y",
+      "us-nyfed-sce-labor-earnings-1y",
+    ],
+  },
+  laborMarket: {
+    key: "labor-market-probabilities",
+    title: "NY Fed SCE Labor Market Probabilities",
+    note: "Job-finding probability within three months after job loss, job separation risk and higher-unemployment expectations.",
+    ids: [
+      "us-nyfed-sce-labor-job-separation-1y",
+      "us-nyfed-sce-labor-job-finding-1y",
+      "us-nyfed-sce-labor-unemployment-1y",
+    ],
+  },
+} as const;
+
 /** Explicit pairings for expectation tabs where unlike horizons need separate scales. */
 export const EXPECTATION_CHART_GROUPS: Record<string, ExpectationChartGroup[]> = {
   "us-inflation-expectations-business": [

@@ -32,6 +32,7 @@ type Props = {
   series: Series[];
   expanded?: boolean;
   hideMarkers?: boolean;
+  showAlternateMonthlyTicks?: boolean;
 };
 
 const SERIES_COLORS = ["#176b56", "#3e78a8", "#b75d3d", "#8065a8", "#b1832d", "#3d8790", "#b45472"];
@@ -78,6 +79,14 @@ function monthLabel(value: string) {
   }).format(date);
 }
 
+function compactMonthLabel(value: string, includeYear: boolean) {
+  const match = value.match(/^(\d{4})-(\d{2})$/);
+  if (!match) return value;
+  const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, 1));
+  const month = new Intl.DateTimeFormat("en-US", { month: "short", timeZone: "UTC" }).format(date);
+  return includeYear ? `${month} '${match[1]!.slice(-2)}` : month;
+}
+
 function fullMonthLabel(value: string) {
   const match = value.match(/^(\d{4})-(\d{2})$/);
 
@@ -119,6 +128,7 @@ export function ExpectationComparisonChart({
   series,
   expanded = false,
   hideMarkers = false,
+  showAlternateMonthlyTicks = false,
 }: Props) {
   /*
    * Expectations are monthly economic observations.
@@ -267,15 +277,20 @@ export function ExpectationComparisonChart({
 
             <XAxis
               dataKey="date"
-              tickFormatter={hasDailySeries ? dayLabel : monthLabel}
+              tickFormatter={(value) => {
+                if (hasDailySeries) return dayLabel(value);
+                if (!showAlternateMonthlyTicks) return monthLabel(value);
+                const month = String(value).slice(5, 7);
+                return compactMonthLabel(String(value), month === "01" || yearRows[0]?.date === value);
+              }}
               tick={{
-                fontSize: 10,
+                fontSize: showAlternateMonthlyTicks ? 9 : 10,
                 fill: "var(--muted)",
               }}
               axisLine={false}
               tickLine={false}
-              minTickGap={hasDailySeries ? 28 : 18}
-              interval="preserveStartEnd"
+              minTickGap={hasDailySeries ? 28 : showAlternateMonthlyTicks ? 0 : 18}
+              interval={showAlternateMonthlyTicks ? 1 : "preserveStartEnd"}
               padding={{
                 left: 8,
                 right: 8,

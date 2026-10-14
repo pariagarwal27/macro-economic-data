@@ -35,7 +35,7 @@ import { mergeClaimsChartData } from "@/lib/claims-chart";
 import { selectComponentMiniSeries } from "@/lib/component-mini-series";
 import { RefreshDataButton } from "@/components/RefreshDataButton";
 import { ExpectationComparisonChart } from "@/components/ExpectationComparisonChart";
-import { EXPECTATION_CHART_GROUPS, EXPANDED_EXPECTATION_GROUP_IDS, MARKERLESS_EXPECTATION_GROUP_IDS } from "@/lib/expectation-chart-groups";
+import { EXPECTATION_CHART_GROUPS, EXPANDED_EXPECTATION_GROUP_IDS, MARKERLESS_EXPECTATION_GROUP_IDS, NYFED_EXPECTATION_AXIS_BY_METRIC_ID, NYFED_OVERVIEW_CHART_GROUPS } from "@/lib/expectation-chart-groups";
 import { createExpectationMetricSelection } from "@/lib/expectation-selection";
 import { formatExpectationValue } from "@/lib/expectation-format";
 import { HistoryChartViewport } from "@/components/HistoryChartViewport";
@@ -3559,9 +3559,12 @@ function ExpectationGroupStudio({ region, specs, metrics, onMetricOpen, highligh
   if (!active) return null;
   const candidateIds = active.chartMetricIds?.length ? active.chartMetricIds : collectMetricIds(active.components);
   const entries = candidateIds.map(id => metrics[id]).filter((item): item is DetailPayload => Boolean(item));
+  const orderedEntries = active.id === "us-inflation-expectations-wage"
+    ? [...entries].sort((a, b) => Number(b.meta.id === "us-atlanta-wage") - Number(a.meta.id === "us-atlanta-wage"))
+    : entries;
   return <div className="expectation-studio">
     <div className="expectation-group-tabs" role="tablist" aria-label="Expectation groups">{groups.map(item => <button key={item} type="button" role="tab" aria-selected={group === item} onClick={() => setGroup(item)}>{item === "consumer" ? "Consumer" : item === "wage" ? "Household & wage" : item === "business" ? "Business" : item === "market" ? "Market-based" : item === "professional" ? (region === "UK" ? "Professional" : "Professional") : "Model-based"}</button>)}</div>
-    <div className="expectation-studio-panel"><div className="expectation-studio-chart"><ExpectationCharts spec={active} allMetrics={metrics} /></div><aside><h3>Latest published readings</h3>{entries.map(metric => <button key={metric.meta.id} type="button" className={clsx("expectation-reading", highlightedMetricId === metric.meta.id && "is-release-highlighted")} aria-label={`Open chart for ${metric.meta.shortName || metric.meta.name}`} onClick={() => onMetricOpen(metric.meta.id)}><div><strong>{metric.meta.shortName || metric.meta.name}</strong><span>{metric.displayReleasedAt ? formatObsDate(metric.displayReleasedAt) : "—"} · {formatLiveSourceLabel(metric.meta.liveSource)}</span></div><b>{formatExpectationValue(metric, metric.history?.at(-1)?.value)}</b><ChevronRight size={15} aria-hidden="true" /></button>)}{entries.length === 0 && <p>No published readings are available for this group.</p>}</aside></div><p className="expectation-studio-note">Historical published expectations by source and horizon.</p>
+    <div className={clsx("expectation-studio-panel", active.id === "us-inflation-expectations-wage" && "expectation-studio-panel--nyfed-wide")}><div className="expectation-studio-chart"><ExpectationCharts spec={active} allMetrics={metrics} /></div><aside><h3>Latest published readings</h3>{orderedEntries.map(metric => <button key={metric.meta.id} type="button" className={clsx("expectation-reading", highlightedMetricId === metric.meta.id && "is-release-highlighted")} aria-label={`Open chart for ${metric.meta.shortName || metric.meta.name}`} onClick={() => onMetricOpen(metric.meta.id)}><div><strong>{metric.meta.shortName || metric.meta.name}</strong><span>{metric.displayReleasedAt ? formatObsDate(metric.displayReleasedAt) : "—"} · {formatLiveSourceLabel(metric.meta.liveSource)}</span></div><b>{formatExpectationValue(metric, metric.history?.at(-1)?.value)}</b><ChevronRight size={15} aria-hidden="true" /></button>)}{entries.length === 0 && <p>No published readings are available for this group.</p>}</aside></div><p className="expectation-studio-note">Historical published expectations by source and horizon.</p>
   </div>;
 }
 function expectationHorizon(metricId: string, label: string) {
@@ -3696,49 +3699,7 @@ function ExpectationCharts({
     spec.id === "us-inflation-expectations-wage";
 
   if (isUsWageExpectations) {
-    const chartGroups = [
-      {
-        key: "nyfed-inflation",
-        title: "NY Fed SCE Inflation Expectations",
-        note: "1Y, 3Y and 5Y household inflation expectations.",
-        ids: [
-          "us-nyfed-sce-1y",
-          "us-nyfed-sce-3y",
-          "us-nyfed-sce-5y",
-        ],
-      },
-
-      {
-        key: "nyfed-household",
-        title: "NY Fed SCE Household Financial Expectations",
-        note: "Household income, spending and tax expectations.",
-        ids: [
-          "us-nyfed-sce-finance-income-1y",
-          "us-nyfed-sce-finance-spending-1y",
-          "us-nyfed-sce-finance-tax-1y",
-        ],
-      },
-
-      {
-        key: "pay-growth",
-        title: "Household Pay Growth Expectations",
-        note: "NY Fed SCE expected earnings growth and Atlanta Fed wage growth tracker.",
-        ids: [
-          "us-nyfed-sce-labor-earnings-1y",
-          "us-atlanta-wage",
-        ],
-      },
-      {
-        key: "labor-market-probabilities",
-        title: "NY Fed SCE Labor Market Probabilities",
-        note: "Expected probabilities of finding a job, job separation and higher unemployment.",
-        ids: [
-          "us-nyfed-sce-labor-job-separation-1y",
-          "us-nyfed-sce-labor-job-finding-1y",
-          "us-nyfed-sce-labor-unemployment-1y",
-        ],
-      },
-    ];
+    const chartGroups = Object.values(NYFED_OVERVIEW_CHART_GROUPS);
 
     return (
       <div className="grid gap-4 xl:grid-cols-2">
@@ -3747,12 +3708,18 @@ function ExpectationCharts({
             .filter((id) =>
               Boolean(allMetrics[id])
             )
-            .map((id) =>
-              expectationSeries(
-                allMetrics,
-                id
-              )
-            )
+            .map((id) => {
+              const item = expectationSeries(allMetrics, id);
+              if (group.key === "nyfed-inflation") return item;
+
+              if (group.key === "pay-growth") return item;
+              const axis = NYFED_EXPECTATION_AXIS_BY_METRIC_ID[id] ?? "left";
+              return {
+                ...item,
+                axis,
+                label: `${item.label} (${axis})`,
+              };
+            })
           if (!series.length) {
             return null;
           }
@@ -3763,6 +3730,7 @@ function ExpectationCharts({
               title={group.title}
               note={group.note}
               series={series}
+              showAlternateMonthlyTicks
             />
           );
         })}

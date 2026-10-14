@@ -7,7 +7,7 @@ import { OverviewChart } from "./OverviewChart";
 import { InflationOverviewChart } from "./InflationOverviewChart";
 import { ExpectationsOverviewChart } from "./ExpectationsOverviewChart";
 import { EconomicCalendarSidebar } from "./EconomicCalendarSidebar";
-import { buildOverviewSeries, latestOverviewInflationMovement, latestOverviewMovement, OVERVIEW_METRICS, OVERVIEW_REGIONS, overviewPeriodLabel, overviewWindow, type OverviewIndicator, type OverviewPayload } from "@/lib/overview-data";
+import { buildOverviewSeries, latestOverviewInflationMovement, latestOverviewMovement, OVERVIEW_METRICS, OVERVIEW_REGIONS, overviewPeriodLabel, type OverviewIndicator, type OverviewPayload } from "@/lib/overview-data";
 import { formatLiveSourceLabel } from "@/lib/live-source-label";
 
 const INDICATORS: { id: OverviewIndicator; label: string; detail: string }[] = [
@@ -46,11 +46,9 @@ export function HomeDashboard() {
     return () => { controller.abort(); window.clearInterval(timer); };
   }, [load]);
   const charts = useMemo(() => ({ gdp: buildOverviewSeries(payload, "gdp", now), unemployment: buildOverviewSeries(payload, "unemployment", now), wage: buildOverviewSeries(payload, "wage", now) }), [payload, now]);
-  const chartWindow = overviewWindow(now, payload);
 
   return <div className="overview-page">
     <div className="overview-main">
-    <header className="overview-heading"><span className="overview-period">{chartWindow.label} · published data</span></header>
     {error && <div className="overview-error" role="status">{error} {Object.keys(payload).length > 0 && "Showing the last successfully loaded observations."} <button type="button" onClick={() => void load()}>Try again</button></div>}
     <section className="overview-comparison" id="country-comparison" aria-labelledby="overview-comparison-title" aria-busy={loading}>
       <div className="overview-comparison-scroll" tabIndex={0} role="region" aria-label="Three-country key indicator comparison">

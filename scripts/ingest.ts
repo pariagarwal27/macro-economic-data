@@ -25,7 +25,7 @@ import {
   lt,
   sql,
 } from "drizzle-orm";
-import { LIVE_MAP } from "@/catalog/live-map";
+import { getActiveLiveMapping, getSourceConfig, isUsCpiLsegOnlyMetric, isUsCpiMetric } from "../src/ingest/source-registry";
 import { investingToCatalogScale } from "@/catalog/investing-map";
 import { getClient, getDb } from "@/db";
 import {
@@ -81,7 +81,7 @@ import {
 } from "../src/ingest/boe-dmp";
 import { fetchOnsPpiBulletin } from "../src/ingest/ons-ppi-bulletin";
 import { fetchBlsSeries, fetchBlsSeriesFullHistory } from "../src/ingest/bls";
-import { fetchLsegHistory } from "../src/ingest/adapters/lseg";
+import { fetchLsegHistory, fetchLsegLatest } from "../src/ingest/adapters/lseg";
 
 import {
   blsReleaseFallbackPoints,
@@ -588,6 +588,7 @@ async function persistMetricMerge(
 
 type LiveCaches = {
   bls: Map<string, RawPoint[]>;
+  lseg: Map<string, Awaited<ReturnType<typeof fetchLsegLatest>>>;
   empsit?: Awaited<ReturnType<typeof fetchBlsEmpsitRelease>>;
   cpiRelease?: Awaited<ReturnType<typeof fetchBlsCpiRelease>> | null;
 
@@ -613,6 +614,7 @@ async function warmLiveCaches(
 ): Promise<LiveCaches> {
   const caches: LiveCaches = {
     bls: new Map(),
+    lseg: new Map(),
 
     adp: {
       level: [],
@@ -634,11 +636,11 @@ async function warmLiveCaches(
   const providers = new Set<string>();
 
   for (const metric of targets) {
-    const ref = LIVE_MAP[metric.id];
+    const ref = getActiveLiveMapping(metric.id, false);
 
     if (ref) {
       providers.add(ref.provider);
-    } else if (metric.source) {
+    } else if (metric.source && !isUsCpiLsegOnlyMetric(metric.id)) {
       providers.add(metric.source);
     }
   }
@@ -671,9 +673,11 @@ async function warmLiveCaches(
           ...new Set(
             targets
               .map((metric) => {
-                const ref = LIVE_MAP[metric.id];
+                const ref = getActiveLiveMapping(metric.id, false);
                 if (ref?.provider === "bls") return ref.seriesId;
-                return metric.source === "bls" ? metric.seriesId : null;
+                return !isUsCpiLsegOnlyMetric(metric.id) && !ref && metric.source === "bls"
+                  ? metric.seriesId
+                  : null;
               })
               .filter((id): id is string => Boolean(id))
           ),
@@ -701,7 +705,7 @@ async function warmLiveCaches(
     ["us-nfp", "us-unemployment"].includes(metric.id)
   );
   const needsCpiFallback = targets.some((metric) =>
-    ["us-cpi-mom", "us-cpi-yoy", "us-core-cpi-mom", "us-core-cpi-yoy"].includes(metric.id)
+    !isUsCpiMetric(metric.id) && ["us-cpi-mom", "us-cpi-yoy", "us-core-cpi-mom", "us-core-cpi-yoy"].includes(metric.id)
   );
   if (providers.has("bls") && needsEmpsitFallback) {
     try {
@@ -793,8 +797,9 @@ async function loadLiveRaw(
     };
   }
 
-  const ref = LIVE_MAP[metric.id];
+  const ref = getActiveLiveMapping(metric.id, false);
   if (!ref) {
+    if (isUsCpiLsegOnlyMetric(metric.id)) return null;
     if (metric.source === "bls") {
       const points = caches.bls.get(metric.seriesId);
       if (points?.length) {
@@ -973,6 +978,17 @@ async function loadLiveRaw(
     note: `Live NY Fed SCE ${ref.seriesId}`,
   };
 }
+    case "lseg": {
+      const latest = caches.lseg.has(ref.seriesId)
+        ? caches.lseg.get(ref.seriesId)
+        : await fetchLsegLatest(ref.seriesId);
+      caches.lseg.set(ref.seriesId, latest ?? null);
+      if (!latest) return null;
+      return {
+        points: [{ date: latest.periodDate, value: latest.value }],
+        note: latest.note,
+      };
+    }
     default:
       return null;
   }
@@ -1003,6 +1019,13 @@ async function loadFredRaw(
 
 async function loadOfficialHistory(metric: MetricDef): Promise<RawPoint[]> {
   const endYear = new Date().getFullYear();
+
+  if (isUsCpiLsegOnlyMetric(metric.id)) {
+    const config = getSourceConfig(metric.id);
+    return config?.adapter === "lseg"
+      ? fetchLsegHistory(config.sourceId, { start: "1990-01-01" })
+      : [];
+  }
 
   if (metric.source === "bls") {
     const map = await fetchBlsSeriesFullHistory([metric.seriesId], {
@@ -1370,6 +1393,7 @@ const liveCaches: LiveCaches =
     ? await warmLiveCaches(targets)
     : {
         bls: new Map(),
+        lseg: new Map(),
 
         adp: {
           level: [],
@@ -1396,6 +1420,7 @@ const liveCaches: LiveCaches =
           if (live?.points.length) {
             const headline =
               metric.id === "us-eci-wages" ||
+              (live.note.startsWith("Official LSEG") && metric.transform !== "level") ||
               live.note.includes("(change)") ||
               live.note.includes("release page") ||
               live.note.includes("PPI bulletin");
@@ -1687,7 +1712,7 @@ export async function getDashboardData(filters?: {
     const actualValue = latest?.value ?? displayRelease?.value ?? null;
     const surprise = computeSurprise(actualValue, expectedValue, m.unit);
 
-    const live = LIVE_MAP[m.id];
+    const live = getActiveLiveMapping(m.id, false);
 
     cards.push({
       id: m.id,
@@ -1705,7 +1730,7 @@ export async function getDashboardData(filters?: {
       earliestAvailable: m.earliestAvailable,
       observationCount: m.observationCount,
       lastIngestedAt: m.lastIngestedAt,
-      liveProvider: live?.provider ?? (m.source === "fred" ? "fred-fallback" : m.source),
+      liveProvider: live?.provider ?? (isUsCpiLsegOnlyMetric(m.id) ? "unavailable" : m.source === "fred" ? "fred-fallback" : m.source),
       feedNote: release?.notes ?? null,
       latest: latest ? { date: latest.date, value: latest.value } : null,
       prior: prior ? { date: prior.date, value: prior.value } : null,
@@ -1784,7 +1809,7 @@ export async function getSeriesHistory(metricId: string, limit = 240) {
   return {
     meta: {
       ...meta,
-      liveProvider: LIVE_MAP[metricId]?.provider ?? meta.source,
+      liveProvider: getActiveLiveMapping(metricId, false)?.provider ?? (isUsCpiLsegOnlyMetric(metricId) ? "unavailable" : meta.source),
     },
     history,
     releases: releasesDeduped,
@@ -2072,7 +2097,7 @@ export async function getSeriesHistories(
       meta: {
         ...meta,
         liveProvider:
-          LIVE_MAP[metricId]?.provider ?? meta.source,
+          getActiveLiveMapping(metricId, false)?.provider ?? (isUsCpiLsegOnlyMetric(metricId) ? "unavailable" : meta.source),
       },
       history,
       releases: releasesDeduped,

@@ -22,6 +22,10 @@ import {
 import { METRICS } from "@/catalog/metrics";
 import type { MetricDef } from "@/catalog/metrics";
 import { mapConcurrent } from "./release-concurrency";
+import {
+  CPI_CALENDAR_DEPENDENT_METRIC_IDS,
+  cpiReleaseCandidates,
+} from "./cpi-release-schedule";
 
 function sourceTimeZone(metricId: string) {
   if (
@@ -151,6 +155,10 @@ async function buildCandidates(now: Date): Promise<Candidate[]> {
   const candidates: Candidate[] = [];
 
   for (const row of calendarRows) {
+    // These metrics share the official BLS CPI release, but some have no
+    // calendar row of their own (or a stale Cleveland Fed date). Their
+    // schedule is derived from the BLS CPI event below.
+    if (CPI_CALENDAR_DEPENDENT_METRIC_IDS.has(row.metricId)) continue;
     if (!row.metricId || !isDue(row, now)) continue;
     const scheduled = Date.parse(row.nextReleaseAt ?? `${row.nextReleaseDate!.slice(0, 10)}T23:59:59Z`);
     if (now.getTime() - scheduled > 3 * 24 * 60 * 60_000) continue;
@@ -164,6 +172,8 @@ async function buildCandidates(now: Date): Promise<Candidate[]> {
       mode: "scheduled",
     });
   }
+
+  candidates.push(...cpiReleaseCandidates(calendarRows, now));
 
   // Safety net for official metrics with no future calendar date. This keeps
   // the system live without pretending that an official release time exists.

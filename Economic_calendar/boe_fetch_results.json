@@ -1,6 +1,6 @@
 {
   "source": "Bank of England / official publisher pages only",
-  "generated_at": "2026-10-07T07:30:20.150481+00:00",
+  "generated_at": "2026-10-14T07:49:35.641492+00:00",
   "rule": "next_release is populated only when an official source explicitly publishes the future release/publication date; no dates are calculated or inferred",
   "total_metrics": 20,
   "successful": 10,

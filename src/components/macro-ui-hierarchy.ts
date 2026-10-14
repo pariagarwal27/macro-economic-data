@@ -153,7 +153,7 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
 
 {
   id: "us-inflation-expectations-wage",
-  metricId: "us-nyfed-sce-labor-earnings-1y",
+  metricId: "us-atlanta-wage",
   title: "Household & Wage Expectations",
   expectationGroup: "wage",
   components: [
@@ -161,14 +161,13 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
     n("sce-inflation-3y", "NY Fed SCE Inflation — 3-Year", "us-nyfed-sce-3y"),
     n("sce-inflation-5y", "NY Fed SCE Inflation — 5-Year", "us-nyfed-sce-5y"),
 
-    n("sce-earnings-1y", "NY Fed SCE Earnings Growth — 1-Year", "us-nyfed-sce-labor-earnings-1y"),
     n("sce-job-separation-1y", "NY Fed SCE Job Separation — 1-Year", "us-nyfed-sce-labor-job-separation-1y"),
-    n("sce-job-finding-1y", "NY Fed SCE Job Finding — 1-Year", "us-nyfed-sce-labor-job-finding-1y"),
+    n("sce-job-finding-1y", "NY Fed SCE Job Finding — 3-Month Conditional", "us-nyfed-sce-labor-job-finding-1y"),
     n("sce-unemployment-1y", "NY Fed SCE Unemployment Expectations — 1-Year", "us-nyfed-sce-labor-unemployment-1y"),
 
     n("sce-income-1y", "NY Fed SCE Household Income Growth — 1-Year", "us-nyfed-sce-finance-income-1y"),
     n("sce-spending-1y", "NY Fed SCE Household Spending Growth — 1-Year", "us-nyfed-sce-finance-spending-1y"),
-    n("sce-tax-1y", "NY Fed SCE Tax Change — 1-Year", "us-nyfed-sce-finance-tax-1y"),
+    n("sce-earnings-1y", "NY Fed SCE Earnings Growth — 1-Year", "us-nyfed-sce-labor-earnings-1y"),
 
     n("atlanta-wage", "Atlanta Fed Wage Growth Tracker", "us-atlanta-wage"),
   ],
@@ -182,7 +181,6 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
     "us-nyfed-sce-labor-unemployment-1y",
     "us-nyfed-sce-finance-income-1y",
     "us-nyfed-sce-finance-spending-1y",
-    "us-nyfed-sce-finance-tax-1y",
     "us-atlanta-wage",
   ],
 },

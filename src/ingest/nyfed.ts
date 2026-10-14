@@ -940,7 +940,9 @@ async function fetchWorkbookForSeries(
 }
 
 type NyfedOfficialSeriesConfig = {
-  aliases: string[];
+  aliases?: string[];
+  sheetName?: string;
+  valueColumn?: string;
   label: string;
 };
 
@@ -967,22 +969,14 @@ const NYFED_OFFICIAL_SERIES: Record<
   },
 
   SCE_LABOR_JOB_SEPARATION_1Y: {
-    aliases: [
-      "mean perceived probability of losing one's job in the next 12 months",
-      "mean perceived probability of losing one’s job in the next 12 months",
-      "probability of a job separation",
-      "probability of losing one's job",
-    ],
+    sheetName: "Job separation expectation",
+    valueColumn: "Mean probability of losing a job",
     label: "NY Fed SCE job separation probability",
   },
 
   SCE_LABOR_JOB_FINDING_1Y: {
-    aliases: [
-      "mean perceived probability of finding a job if one's current job was lost",
-      "mean perceived probability of finding a job if one’s current job was lost",
-      "probability of finding a job",
-      "job finding probability",
-    ],
+    sheetName: "Job finding expectations",
+    valueColumn: "Mean probability of finding a job in the next three months if one loses a job today",
     label: "NY Fed SCE job finding probability",
   },
 
@@ -1033,6 +1027,43 @@ SCE_INFLATION_UNCERTAINTY_1Y: {
   label: "NY Fed SCE one-year inflation uncertainty",
 },
 };
+
+function extractSeriesFromOfficialSheet(
+  workbook: XLSX.WorkBook,
+  sheetName: string,
+  valueColumn: string
+): RawPoint[] {
+  const sheet = findSheetByName(workbook, sheetName);
+  if (!sheet) return [];
+
+  const rows = readMatrix(sheet);
+  const targetColumn = normalizeHeader(valueColumn);
+
+  for (let headerRowIndex = 0; headerRowIndex < rows.length; headerRowIndex++) {
+    const headerRow = rows[headerRowIndex] ?? [];
+    const valueColumnIndex = headerRow.findIndex(
+      (cell) => typeof cell === "string" && normalizeHeader(cell) === targetColumn
+    );
+    if (valueColumnIndex === -1) continue;
+
+    const dateColumnIndex = findDateColumnIndex(rows, headerRowIndex);
+    if (dateColumnIndex === -1 || dateColumnIndex === valueColumnIndex) continue;
+
+    const points: RawPoint[] = [];
+    for (let rowIndex = headerRowIndex + 1; rowIndex < rows.length; rowIndex++) {
+      const row = rows[rowIndex] ?? [];
+      const date = normalizeSceDate(row[dateColumnIndex]);
+      const value = normalizeNumber(row[valueColumnIndex]);
+      if (!date || value === null || isSceDateValue(row[valueColumnIndex])) continue;
+      points.push({ date, value });
+    }
+
+    const cleaned = dedupeAndSort(points);
+    if (cleaned.length) return cleaned;
+  }
+
+  return [];
+}
 
 function extractHouseholdFinanceSeries(
   workbook: XLSX.WorkBook,
@@ -1324,7 +1355,7 @@ async function fetchLatestSceReleasePoints(
     const m = text.match(/Median one-year-ahead earnings growth expectations[^%]{0,220}?(?:to|at)\s*([0-9]+(?:\.[0-9]+)?)%/i);
     value = m ? Number(m[1]) : null;
   } else {
-    const m = text.match(/mean perceived probability of finding a job if one[’']s current job was lost[^%]{0,220}?(?:to|at)\s*([0-9]+(?:\.[0-9]+)?)%/i);
+    const m = text.match(/mean perceived probability of finding a job if one[’']s current job was lost[^%]{0,220}?(?:to|at)\s*([0-9]+(?:\.[0-9]+)?)\s*(?:%|percent)(?![a-z])/i);
     value = m ? Number(m[1]) : null;
   }
 
@@ -1405,10 +1436,9 @@ export async function fetchNyfedSeries(
         ? extractHouseholdFinanceSeries(workbook, seriesId)
         : seriesId === "SCE_LABOR_EARNINGS_1Y"
           ? extractEarningsGrowthSeriesFromWorkbook(workbook)
-          : extractSeriesByAliasesFromWorkbook(
-              workbook,
-              config.aliases
-            );
+          : config.sheetName && config.valueColumn
+            ? extractSeriesFromOfficialSheet(workbook, config.sheetName, config.valueColumn)
+            : extractSeriesByAliasesFromWorkbook(workbook, config.aliases ?? []);
 
       if (points.length) return points;
 

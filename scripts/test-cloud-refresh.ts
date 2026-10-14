@@ -10,7 +10,33 @@ import { processFetchedRelease } from "../src/ingest/release-processor";
 
 async function main() {
   assert.equal(getSourceConfig("us-cpi")?.adapter, "lseg", "Local LSEG mapping must remain intact");
-  assert.equal(getCloudSourceConfig("us-cpi")?.adapter, "pipeline", "Cloud CPI must use its official mapping");
+  assert.equal(getCloudSourceConfig("us-cpi")?.adapter, "lseg", "Hosted CPI must use the LSEG worker");
+  assert.equal(getCloudSourceConfig("us-cpi")?.sourceId, "USCPN=ECI");
+  assert.equal(getCloudSourceConfig("us-cpi-yoy")?.sourceId, "USCPNY=ECI");
+  assert.equal(getCloudSourceConfig("us-cpi-mom")?.sourceId, "USCPI=ECI");
+  assert.equal(getCloudSourceConfig("us-cpi-core")?.sourceId, "USCPNX=ECI");
+  assert.equal(getCloudSourceConfig("us-core-cpi-mom")?.sourceId, "USCPF=ECI");
+  assert.equal(getCloudSourceConfig("us-core-cpi-yoy")?.sourceId, "USCPFY=ECI");
+  assert.equal(getCloudSourceConfig("us-cpi-energy")?.adapter, "lseg");
+  const blsCpiComponents: Record<string, string> = {
+    "us-cpi-core-nsa": "CUUR0000SA0L1E",
+    "us-cpi-new-vehicles": "CUSR0000SETA01",
+    "us-cpi-used-cars": "CUSR0000SETA02",
+    "us-cpi-medical-commodities": "CUSR0000SAM1",
+    "us-cpi-recreation-commodities": "CUSR0000SARC",
+    "us-cpi-education-commodities": "CUSR0000SAEC",
+    "us-cpi-recreation-services": "CUSR0000SARS",
+    "us-cpi-education-services": "CUSR0000SAES",
+    "us-cpi-other-services": "CUSR0000SAS367",
+  };
+  for (const [id, seriesId] of Object.entries(blsCpiComponents)) {
+    const config = getCloudSourceConfig(id);
+    assert.equal(config?.source, "bls", `${id} should use the explicit BLS exception`);
+    assert.equal(config?.sourceId, seriesId, `${id} should use its official BLS series ID`);
+  }
+  assert.equal(getCloudSourceConfig("us-cleveland-median-cpi")?.source, "fred");
+  assert.equal(getCloudSourceConfig("us-cleveland-median-cpi")?.sourceId, "MEDCPIM158SFRBCLE");
+  assert.equal(getCloudSourceConfig("us-cleveland-trimmed-cpi")?.sourceId, "TRMMEANCPIM158SFRBCLE");
   assert.equal(getCloudSourceConfig("us-pce")?.source, "bea");
   assert.equal(getCloudSourceConfig("ea-inflation-comp-5y5y"), null, "Desktop-only source must not claim cloud support");
   const pmiIds = [

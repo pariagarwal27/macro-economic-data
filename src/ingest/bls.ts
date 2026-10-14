@@ -1,6 +1,7 @@
 import type { RawPoint } from "./transforms";
 import { METRICS } from "@/catalog/metrics";
 import { LIVE_MAP } from "@/catalog/live-map";
+import { isUsCpiLsegOnlyMetric } from "./source-registry";
 import { getD1Database } from "@/db";
 import { getSourceSnapshot } from "./cloud-source-cache";
 
@@ -19,8 +20,15 @@ export async function fetchBlsSeries(
   seriesIds: string[],
   opts: BlsFetchOptions = {}
 ): Promise<Map<string, RawPoint[]>> {
-  if (!getD1Database()) return fetchBlsSeriesUncached(seriesIds, opts);
-  const allIds = [...new Set([...seriesIds, ...METRICS.flatMap(metric => {
+  const cpiSeriesIds = new Set(METRICS.filter(metric => isUsCpiLsegOnlyMetric(metric.id)).flatMap(metric => {
+    const live = LIVE_MAP[metric.id];
+    return [metric.seriesId, ...(live?.provider === "bls" ? [live.seriesId] : [])];
+  }));
+  const requestedIds = [...new Set(seriesIds)].filter(id => !cpiSeriesIds.has(id));
+  if (!requestedIds.length) return new Map();
+  if (!getD1Database()) return fetchBlsSeriesUncached(requestedIds, opts);
+  const allIds = [...new Set([...requestedIds, ...METRICS.flatMap(metric => {
+    if (isUsCpiLsegOnlyMetric(metric.id)) return [];
     const live = LIVE_MAP[metric.id];
     if (live?.provider === "bls") return [live.seriesId];
     return metric.source === "bls" ? [metric.seriesId] : [];
@@ -30,7 +38,7 @@ export async function fetchBlsSeries(
     10 * 60_000,
     async () => Object.fromEntries(await fetchBlsSeriesUncached(allIds, opts)),
   );
-  return new Map(seriesIds.map(id => [id, snapshot[id] ?? []]));
+  return new Map(requestedIds.map(id => [id, snapshot[id] ?? []]));
 }
 
 async function fetchBlsSeriesUncached(

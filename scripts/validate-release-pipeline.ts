@@ -1,5 +1,5 @@
 import { METRICS } from "../src/catalog/metrics";
-import { SOURCE_REGISTRY, assertRegistryIsValid } from "../src/ingest/source-registry";
+import { SOURCE_REGISTRY, assertRegistryIsValid, isUsCpiMetric } from "../src/ingest/source-registry";
 import { getEconomicCalendarRows } from "../src/lib/economic-calendar-db";
 
 async function main() {
@@ -7,7 +7,8 @@ async function main() {
 
   const catalog = new Set(METRICS.map((m) => m.id));
   const registry = new Set(SOURCE_REGISTRY.map((m) => m.metricId));
-  const missing = [...catalog].filter((id) => !registry.has(id));
+  const intentionallyUnrouted = [...catalog].filter((id) => !registry.has(id) && isUsCpiMetric(id));
+  const missing = [...catalog].filter((id) => !registry.has(id) && !isUsCpiMetric(id));
   const duplicates = SOURCE_REGISTRY.length - registry.size;
 
   const calendar = await getEconomicCalendarRows();
@@ -24,6 +25,7 @@ async function main() {
     registry: SOURCE_REGISTRY.length,
     duplicateRegistryEntries: duplicates,
     missingRegistryEntries: missing,
+    intentionallyUnroutedCpiMetrics: intentionallyUnrouted,
     calendarMetrics: calendarIds.size,
     metricsWithoutCalendarEntry: noCalendar,
     registryBySource: counts,

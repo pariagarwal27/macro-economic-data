@@ -23,9 +23,8 @@ import {
   sql,
   lt,
 } from "drizzle-orm";
-import { LIVE_MAP } from "@/catalog/live-map";
 import { executeRead, getD1Database, getDb } from "@/db";
-import { getActiveLiveSource } from "@/ingest/source-registry";
+import { getActiveLiveMapping, getActiveLiveSource, isUsCpiLsegOnlyMetric } from "@/ingest/source-registry";
 import {
   calendarEvents,
   ingestRuns,
@@ -293,7 +292,7 @@ export async function getDashboardData(filters?: {
     const actualValue = latest?.value ?? displayRelease?.value ?? null;
     const surprise = computeSurprise(actualValue, expectedValue, m.unit);
 
-    const live = LIVE_MAP[m.id];
+    const live = getActiveLiveMapping(m.id, Boolean(getD1Database()));
 
     cards.push({
       id: m.id,
@@ -311,7 +310,7 @@ export async function getDashboardData(filters?: {
       earliestAvailable: m.earliestAvailable,
       observationCount: m.observationCount,
       lastIngestedAt: m.lastIngestedAt,
-      liveProvider: live?.provider ?? (m.source === "fred" ? "fred-fallback" : m.source),
+      liveProvider: live?.provider ?? (isUsCpiLsegOnlyMetric(m.id) ? "unavailable" : m.source === "fred" ? "fred-fallback" : m.source),
       liveSource: getActiveLiveSource(m.id, isCloud),
       feedNote: release?.notes ?? null,
       latest: latest ? { date: latest.date, value: latest.value } : null,
@@ -392,7 +391,7 @@ export async function getSeriesHistory(metricId: string, limit = 240) {
   return {
     meta: {
       ...meta,
-      liveProvider: LIVE_MAP[metricId]?.provider ?? meta.source,
+      liveProvider: getActiveLiveMapping(metricId, isCloud)?.provider ?? (isUsCpiLsegOnlyMetric(metricId) ? "unavailable" : meta.source),
       liveSource: getActiveLiveSource(metricId, isCloud),
     },
     history,
@@ -705,7 +704,7 @@ const latestPeriod =
       meta: {
         ...meta,
         liveProvider:
-          LIVE_MAP[metricId]?.provider ?? meta.source,
+          getActiveLiveMapping(metricId, Boolean(getD1Database()))?.provider ?? (isUsCpiLsegOnlyMetric(metricId) ? "unavailable" : meta.source),
         liveSource: getActiveLiveSource(metricId, isCloud),
       },
       history,

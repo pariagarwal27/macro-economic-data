@@ -15,8 +15,29 @@
       "official_url": "https://www.bls.gov/cpi"
     },
     {
+      "id": "us-cpi-yoy",
+      "name": "CPI — Headline YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
       "id": "us-cpi-core",
       "name": "CPI — Core Index",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-core-cpi-mom",
+      "name": "Core CPI MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/cpi"
+    },
+    {
+      "id": "us-core-cpi-yoy",
+      "name": "Core CPI YoY",
       "source": "bls",
       "frequency": "monthly",
       "official_url": "https://www.bls.gov/cpi"
