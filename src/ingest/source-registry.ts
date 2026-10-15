@@ -36,7 +36,7 @@ const LSEG: MetricSourceConfig[] = [
   ["us-cpi-other-goods","aUSCPOF/C"],["us-cpi-shelter","USCPSHL=ECI"],
   ["us-cpi-medical-services","aUSCWSMF/C"],["us-cpi-transport-services","aUSCWSTF/C"],
   ["us-ppi-final-demand","USPPFD=ECI"],["us-ppi-core","USPPIE=ECI"],
-  ["us-cleveland-median-cpi","aUSCPIM12"],["us-umich-inflation-exp-1y","USUM1P=ECI"],
+  ["us-umich-inflation-exp-1y","USUM1P=ECI"],
   ["us-umich-sentiment","USUMSF=ECI"],["us-import-prices","USIPI=ECI"],
   ["us-manufacturers-new-orders","USDGN=ECI"],["us-eci-wages","USECIW=ECI"],
   ["us-eci-total","USECI=ECI"],["us-ahe","USAHEY=ECI"],["us-ahe-mom","USAHE=ECI"],
@@ -106,6 +106,15 @@ const US_CPI_BLS_COMPONENTS = new Set([
   "us-cpi-other-services",
 ]);
 
+const CLEVELAND_EXPECTATION_METRICS = new Set([
+  "us-cleveland-exp-inf-1y",
+  "us-cleveland-exp-inf-2y",
+  "us-cleveland-exp-inf-3y",
+  "us-cleveland-exp-inf-5y",
+  "us-cleveland-exp-inf-10y",
+  "us-cleveland-exp-inf-30y",
+]);
+
 const CATALOG_FALLBACK: MetricSourceConfig[] = METRICS
   .filter((m) => !PCE_FAMILY.has(m.id))
   .filter((m) => !isUsCpiLsegOnlyMetric(m.id))
@@ -113,7 +122,7 @@ const CATALOG_FALLBACK: MetricSourceConfig[] = METRICS
   .map((m) => ({
     metricId: m.id,
     adapter: m.source === "philadelphia" ? "philadelphia" : "pipeline",
-    source: m.source,
+    source: CLEVELAND_EXPECTATION_METRICS.has(m.id) ? "cleveland" : m.source,
     sourceId: m.seriesId,
     releaseStrategy: "release-day-poll",
     pollSeconds: m.source === "fred" ? 30 : 15,
@@ -172,6 +181,11 @@ export function isUsCpiLsegOnlyMetric(metricId: string) {
   return isUsCpiMetric(metricId) && !isUsCpiBlsComponent(metricId);
 }
 
+/** CPI backfills may return a shorter LSEG history than the database already has. */
+export function shouldMergeHistoricalBackfill(metricId: string) {
+  return isUsCpiLsegOnlyMetric(metricId);
+}
+
 // Local and hosted CPI paths use LSEG where mapped; the nine explicitly
 // designated component series use the BLS API.
 export function getCloudSourceConfig(metricId: string): MetricSourceConfig | null {
@@ -186,7 +200,7 @@ export function getCloudSourceConfig(metricId: string): MetricSourceConfig | nul
   if (!metric) return null;
   const live = LIVE_MAP[metricId];
   const source = live && live.provider !== "lseg" ? live.provider : metric.source;
-  if (source === "lseg" || source === "pmi_scrape" || source === "atlanta") return null;
+  if (source === "lseg" || source === "pmi_scrape" || (source === "atlanta" && !live)) return null;
   if (source === "ecb" && /^EA_INFL_COMP_/.test(metric.seriesId)) return null;
   return {
     metricId, source,

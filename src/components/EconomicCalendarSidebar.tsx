@@ -360,8 +360,18 @@ function CalendarDiary({ groups, onSelect, emptyText }: {
       <h3>{group.date}</h3>
       {group.events.map((event, index) => {
         const canOpen = event.region !== "OTHER" && event.status !== "unscheduled";
+        const timeLabel = event.scheduleType === "daily"
+          ? "Daily"
+          : event.scheduleType === "hourly"
+            ? "Hourly"
+            : event.scheduledDate
+              ? event.scheduledTimeLabel ?? formatTime(event.scheduledTime)
+              : "—";
+        const timeUnavailable = timeLabel === "Time unavailable";
         return <div key={`${event.metricId}-${event.scheduledAt ?? event.scheduledDate ?? index}`} className={`release-diary-row ${event.status} ${canOpen ? "is-component-link" : ""}`} role={canOpen ? "button" : undefined} tabIndex={canOpen ? 0 : undefined} onClick={() => { if (canOpen) onSelect?.(event); }} onKeyDown={keyboardEvent => { if (canOpen && (keyboardEvent.key === "Enter" || keyboardEvent.key === " ")) { keyboardEvent.preventDefault(); onSelect?.(event); } }}>
-          <span className="release-diary-time">{event.scheduleType === "daily" ? "Daily" : event.scheduleType === "hourly" ? "Hourly" : event.scheduledDate ? event.scheduledTimeLabel ?? formatTime(event.scheduledTime) : "—"}</span>
+          <span className={`release-diary-time${timeUnavailable ? " unavailable" : ""}`}>
+            {timeUnavailable ? <>Time<br />unavailable</> : timeLabel}
+          </span>
           <span className="release-diary-name"><i>{FLAG[event.region]}</i><span>{event.metricName}</span></span>
           <span className="release-diary-value">{formatValue(event.previous, event.unit)}</span>
           <span className="release-diary-value">{formatValue(event.actual, event.unit)}</span>

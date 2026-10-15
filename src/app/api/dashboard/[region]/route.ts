@@ -7,6 +7,7 @@ import {
 } from "@/components/macro-ui-hierarchy";
 import { getSeriesHistories } from "@/data/dashboard";
 import { METRICS } from "@/catalog/metrics";
+import { contributionMetricIds } from "@/lib/inflation-contributions";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -59,10 +60,27 @@ export async function GET(
       spec.chartMetricIds ?? []
     );
 
+    // CPI YoY must use NSA indexes when a published rate series is missing.
+    // The headline and core CPI charts/cards derive rates from these source
+    // series so an empty standalone rate metric does not erase the display.
+    const inflationRateFallbackIds = r === "US"
+      ? ["us-cpi-nsa", "us-cpi-core-nsa"]
+      : [];
+    const underlyingInflationIds = r === "US"
+      ? [
+          "us-sticky-cpi", "us-sticky-cpi-mom",
+          "us-core-sticky-cpi", "us-core-sticky-cpi-mom",
+          "us-flexible-cpi", "us-flexible-cpi-mom",
+          "us-cleveland-median-cpi", "us-cleveland-median-cpi-mom",
+          "us-cleveland-trimmed-cpi", "us-cleveland-trimmed-cpi-mom",
+        ]
+      : [];
+
     const continuousIds = METRICS
       .filter((metric) => metric.region === r && (metric.frequency === "daily" || metric.frequency === "hourly"))
       .map((metric) => metric.id);
-    const ids = [...new Set([...rootIds, ...componentIds, ...chartIds, ...continuousIds])];
+    const driverIds = contributionMetricIds().filter(id => METRICS.some(metric => metric.id === id && metric.region === r));
+    const ids = [...new Set([...rootIds, ...componentIds, ...chartIds, ...inflationRateFallbackIds, ...underlyingInflationIds, ...continuousIds, ...driverIds])];
 
     // Include the prior year so 2026 charts can calculate YoY values from
     // the underlying published levels while the visible chart stays scoped

@@ -16,6 +16,12 @@ const CLEVELAND_CPI_METRICS = [
   "us-cleveland-median-cpi",
   "us-cleveland-trimmed-cpi",
 ];
+const ATLANTA_STICKY_METRICS = ["us-sticky-cpi", "us-core-sticky-cpi", "us-flexible-cpi"];
+const UNDERLYING_CPI_METRICS = [...ATLANTA_STICKY_METRICS, ...CLEVELAND_CPI_METRICS];
+const UNDERLYING_CPI_REFRESH_METRICS = [
+  ...UNDERLYING_CPI_METRICS,
+  ...UNDERLYING_CPI_METRICS.map(metricId => `${metricId}-mom`),
+];
 
 const MAX_RELEASE_WINDOW_MS = 3 * 24 * 60 * 60_000;
 
@@ -44,9 +50,9 @@ function isWithinReleaseWindow(scheduledAt: Date, now: Date) {
 }
 
 /**
- * Some BLS CPI sub-series are absent from the release calendar. Cleveland
- * Fed's Median and Trimmed-Mean CPI share the CPI release date but publish at
- * 10:00 a.m. US Central time, so schedule those dependent fetches explicitly.
+ * CPI-linked releases that do not have a dependable standalone calendar row
+ * share the CPI release date. Atlanta Sticky CPI publishes by 11:00 a.m. ET;
+ * the Cleveland Fed measures are polled on the same CPI-release-day window.
  */
 export function cpiReleaseCandidates(
   rows: Pick<ScheduledCalendarRow, "metricId" | "nextReleaseDate" | "nextReleaseAt">[],
@@ -60,12 +66,12 @@ export function cpiReleaseCandidates(
     : utcAtLocalTime(cpi.nextReleaseDate, 8, 30, "America/New_York");
   if (!blsAt || !Number.isFinite(blsAt.getTime())) return [];
 
-  const clevelandAt = utcAtLocalTime(cpi.nextReleaseDate, 10, 0, "America/Chicago");
-  if (!clevelandAt) return [];
+  const underlyingAt = utcAtLocalTime(cpi.nextReleaseDate, 11, 0, "America/New_York");
+  if (!underlyingAt) return [];
 
   return [
     ...BLS_CPI_DEPENDENTS.map((metricId) => ({ metricId, scheduledAt: blsAt })),
-    ...CLEVELAND_CPI_METRICS.map((metricId) => ({ metricId, scheduledAt: clevelandAt })),
+    ...UNDERLYING_CPI_REFRESH_METRICS.map((metricId) => ({ metricId, scheduledAt: underlyingAt })),
   ]
     .filter(({ scheduledAt }) => isWithinReleaseWindow(scheduledAt, now))
     .map(({ metricId, scheduledAt }) => ({
@@ -78,4 +84,21 @@ export function cpiReleaseCandidates(
 export const CPI_CALENDAR_DEPENDENT_METRIC_IDS = new Set([
   ...BLS_CPI_DEPENDENTS,
   ...CLEVELAND_CPI_METRICS,
+  ...ATLANTA_STICKY_METRICS,
+  ...UNDERLYING_CPI_METRICS.map(metricId => `${metricId}-mom`),
 ]);
+
+/** Derive separate economic-calendar rows from the confirmed CPI date. */
+export function cpiUnderlyingScheduleRows(cpi: Pick<ScheduledCalendarRow, "nextReleaseDate" | "nextReleaseAt">) {
+  if (!cpi.nextReleaseDate) return [];
+  const scheduledAt = utcAtLocalTime(cpi.nextReleaseDate, 11, 0, "America/New_York");
+  if (!scheduledAt) return [];
+  return UNDERLYING_CPI_METRICS.map(metricId => ({
+    metricId, metricName: null, source: metricId.startsWith("us-cleveland") ? "cleveland" : "atlanta",
+    family: "US CPI dependent", nextReleaseDate: cpi.nextReleaseDate, nextReleaseAt: scheduledAt.toISOString(),
+    status: "scheduled", officialSource: metricId.startsWith("us-cleveland")
+      ? "https://www.clevelandfed.org/indicators-and-data/median-cpi"
+      : "https://www.atlantafed.org/research-and-data/data/sticky-price-cpi",
+    updatedAt: null,
+  }));
+}

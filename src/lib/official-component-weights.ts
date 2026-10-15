@@ -2,6 +2,7 @@ export type OfficialComponentWeight = {
   /** Share of the all-items consumer price basket, expressed as percent. */
   value: number;
   year: 2026;
+  validFrom: string;
   basis: string;
   source: string;
 };
@@ -12,12 +13,14 @@ const ONS_CPIH_2026 = "ONS CPIH, February–December 2026 weights (ppt converted
 const EUROSTAT_2026 = "Eurostat euro-area HICP 2026 weights (‰ converted to percent)";
 
 const BLS_URL = "https://www.bls.gov/cpi/tables/relative-importance/2025.htm";
+const BLS_DEC_2025_RELEASE_URL = "https://www.bls.gov/news.release/archives/cpi_01132026.htm";
 const ONS_URL = "https://www.ons.gov.uk/economy/inflationandpriceindices/articles/consumerpriceinflationupdatingweights/2026";
 const EUROSTAT_URL = "https://ec.europa.eu/eurostat/statistics-explained/SEPDF/cache/18881.pdf?v=1250650036640850";
 
 const weight = (value: number, basis: string, source: string): OfficialComponentWeight => ({
   value,
   year: 2026,
+  validFrom: basis === ONS_CPI_2026 || basis === ONS_CPIH_2026 ? "2026-02" : "2026-01",
   basis,
   source,
 });
@@ -27,6 +30,8 @@ const officialWeights: Record<string, OfficialComponentWeight> = {
   // expenditure weights, the official weight set applied to 2026.
   "us-cpi": weight(100, BLS_2026, BLS_URL),
   "us-cpi-core": weight(79.919, BLS_2026, BLS_URL),
+  "us-core-goods-cpi-yoy": weight(19.176, BLS_2026, BLS_URL),
+  "us-services-cpi-yoy": weight(60.744, BLS_2026, BLS_URL),
   "us-cpi-food": weight(13.698, BLS_2026, BLS_URL),
   "us-cpi-energy": weight(6.383, BLS_2026, BLS_URL),
   "us-cpi-shelter": weight(35.625, BLS_2026, BLS_URL),
@@ -36,6 +41,13 @@ const officialWeights: Record<string, OfficialComponentWeight> = {
   "us-cpi-medical-commodities": weight(1.489, BLS_2026, BLS_URL),
   "us-cpi-medical-services": weight(6.935, BLS_2026, BLS_URL),
   "us-cpi-recreation-commodities": weight(1.821, BLS_2026, BLS_URL),
+  // Detailed component weights published in BLS's December 2025 CPI release.
+  // The relative-importance page does not expose these intermediate groups.
+  "us-cpi-education-commodities": weight(0.716, BLS_2026, BLS_DEC_2025_RELEASE_URL),
+  "us-cpi-recreation-services": weight(3.425, BLS_2026, BLS_DEC_2025_RELEASE_URL),
+  "us-cpi-education-services": weight(4.951, BLS_2026, BLS_DEC_2025_RELEASE_URL),
+  "us-cpi-other-goods": weight(1.299, BLS_2026, BLS_DEC_2025_RELEASE_URL),
+  "us-cpi-other-services": weight(9.845, BLS_2026, BLS_URL),
   "us-cpi-transport-services": weight(6.315, BLS_2026, BLS_URL),
 
   // ONS CPI division weights: published in parts per thousand; converted to %.

@@ -1,5 +1,6 @@
 // @ts-ignore OpenNext creates this module during the production build.
 import handler from "./.open-next/worker.js";
+import { publicApiCacheMaxAge } from "./src/lib/worker-cache-policy";
 
 export default {
   async fetch(request: Request, env: CloudflareEnv, ctx: ExecutionContext) {
@@ -8,19 +9,25 @@ export default {
     if (!publicData) return handler.fetch(request, env, ctx);
     const cache = await caches.open("macro-public-data");
     const key = new Request(request.url);
-    const cached = await cache.match(key);
+    // The release diary changes as ingestion completes and must bypass both
+    // reads and writes in edge cache, including entries created by older code.
+    const bypassEdgeCache = url.pathname === "/api/economic-calendar";
+    const cached = bypassEdgeCache ? null : await cache.match(key);
     if (cached) return cached;
     let response: Response;
     try { response = await handler.fetch(request, env, ctx); }
     catch { response = new Response(null, { status: 500 }); }
     if (response.ok) {
       response = new Response(response.body, response);
-      // Bound repeated history reads on the free D1 plan while keeping daily
-      // series and their calendar listing fresh during the trading day.
       const refreshableData = url.pathname.startsWith("/api/dashboard/") || url.pathname === "/api/economic-calendar";
-      response.headers.set("Cache-Control", `public, max-age=${refreshableData ? 300 : 1800}`);
       response.headers.set("X-Macro-Data", "live");
-      ctx.waitUntil(cache.put(key, response.clone()));
+      const maxAge = bypassEdgeCache ? null : publicApiCacheMaxAge(response, refreshableData);
+      if (maxAge !== null) {
+        // Bound repeated history reads while honoring dynamic endpoints that
+        // explicitly opt out of edge caching (such as the release diary).
+        response.headers.set("Cache-Control", `public, max-age=${maxAge}`);
+        ctx.waitUntil(cache.put(key, response.clone()));
+      }
       return response;
     }
     if (!env.ASSETS) return response;

@@ -17,7 +17,7 @@ async function main() {
     await ensureSchema(); await seedCatalog();
     await calendar.execute(`CREATE TABLE calendar(metric_id TEXT PRIMARY KEY,metric TEXT,source TEXT,family TEXT,next_release_date TEXT,next_release_at TEXT,status TEXT,official_source TEXT,official_evidence TEXT,updated_at TEXT)`);
     const scheduledAt = new Date(Date.now()-3_600_000).toISOString();
-    await calendar.execute({sql:"INSERT INTO calendar VALUES (?,?,?,?,?,?,?,?,?,?)",args:['us-cpi','CPI','BLS','CPI',scheduledAt.slice(0,10),scheduledAt,'official_date','https://www.bls.gov/cpi/',null,new Date().toISOString()]});
+    await calendar.execute({sql:"INSERT INTO calendar VALUES (?,?,?,?,?,?,?,?,?,?)",args:['us-cpi-yoy','CPI YoY','BLS','CPI',scheduledAt.slice(0,10),scheduledAt,'official_date','https://www.bls.gov/cpi/',null,new Date().toISOString()]});
     const { GET } = appRequire('../src/app/api/economic-calendar/route');
     const { NextRequest } = await import('next/server');
     const read = async () => {
@@ -26,28 +26,37 @@ async function main() {
       return response.json();
     };
     let payload = await read();
-    assert.equal(payload.allEvents.find((event:{metricId:string})=>event.metricId==='us-cpi').status,'pending');
+    assert.equal(payload.allEvents.find((event:{metricId:string})=>event.metricId==='us-cpi-yoy').status,'pending');
     const { claimRelease, getReleaseAttempt, markReleaseProcessed, markReleaseRetry } = appRequire('../src/ingest/release-state');
     const { processFetchedRelease } = appRequire('../src/ingest/release-processor');
-    assert.equal(await claimRelease('us-cpi',scheduledAt),true);
-    const firstAttempt = await getReleaseAttempt('us-cpi',scheduledAt);
+    assert.equal(await claimRelease('us-cpi-yoy',scheduledAt),true);
+    const firstAttempt = await getReleaseAttempt('us-cpi-yoy',scheduledAt);
     assert.equal(firstAttempt.attempt,1,'The first source fetch must be logged as attempt 1');
     assert.ok(firstAttempt.startedAt, 'The worker log attempt timestamp must come from the claimed dispatch record');
-    await markReleaseRetry('us-cpi',scheduledAt,'First fetch had not yet published a new value.');
-    const staleAttemptAt = new Date(Date.now()-3*60_000).toISOString();
-    await getClient().execute({sql:"UPDATE release_dispatch_state SET last_attempt_at = ? WHERE metric_id = ? AND scheduled_at = ?",args:[staleAttemptAt,'us-cpi',scheduledAt]});
-    await getClient().execute({sql:"UPDATE release_poll_state SET last_attempt_at = ? WHERE metric_id = ? AND scheduled_at = ?",args:[staleAttemptAt,'us-cpi',scheduledAt]});
-    assert.equal(await claimRelease('us-cpi',scheduledAt),true,'A retry becomes claimable after the two-minute cooldown');
-    assert.equal((await getReleaseAttempt('us-cpi',scheduledAt)).attempt,2,'The next log must be numbered attempt 2');
-    const committed = await processFetchedRelease({metricId:'us-cpi',result:{periodDate:'2026-09-01',value:3.4,rawValue:330,releasedAt:new Date(Date.now()-86_400_000).toISOString()}});
+    await markReleaseRetry('us-cpi-yoy',scheduledAt,'First fetch had not yet published a new value.');
+    assert.equal(await claimRelease('us-cpi-yoy',scheduledAt),true,'A completed failed attempt is immediately retryable');
+    assert.equal((await getReleaseAttempt('us-cpi-yoy',scheduledAt)).attempt,2,'The next log must be numbered attempt 2');
+    const committed = await processFetchedRelease({metricId:'us-cpi-yoy',result:{periodDate:'2026-09-01',value:3.4,rawValue:330,releasedAt:new Date(Date.now()-86_400_000).toISOString()}});
     assert.equal(committed.updated,true);
     assert.ok('releaseId' in committed && committed.releaseId);
-    await markReleaseProcessed('us-cpi',scheduledAt,'releaseId' in committed ? committed.releaseId : null);
+    await markReleaseProcessed('us-cpi-yoy',scheduledAt,'releaseId' in committed ? committed.releaseId : null);
     payload = await read();
-    const event = payload.allEvents.find((event:{metricId:string})=>event.metricId==='us-cpi');
+    const event = payload.allEvents.find((event:{metricId:string})=>event.metricId==='us-cpi-yoy');
     assert.equal(event.status,'released'); assert.equal(event.actual,3.4);
-    const unchanged = await processFetchedRelease({metricId:'us-cpi',result:{periodDate:'2026-09-01',value:3.4}});
+    const unchanged = await processFetchedRelease({metricId:'us-cpi-yoy',result:{periodDate:'2026-09-01',value:3.4}});
     assert.equal(unchanged.updated,false,'Unchanged source data must not create a new release');
+    const refreshedAt = new Date().toISOString();
+    await getClient().execute({
+      sql:"INSERT INTO releases(metric_id,period_date,released_at,value) VALUES(?,?,?,?)",
+      args:['us-cpi-yoy','2026-09-01',refreshedAt,3.4],
+    });
+    const alreadyRecorded = await processFetchedRelease({
+      metricId:'us-cpi-yoy', scheduledAt,
+      result:{periodDate:'2026-09-01',value:3.4,releasedAt:refreshedAt},
+    });
+    assert.equal(alreadyRecorded.updated,false);
+    assert.equal(alreadyRecorded.reason,'already-recorded','An unchanged value recorded after this scheduled release completes its retry');
+    assert.ok('releaseId' in alreadyRecorded && alreadyRecorded.releaseId);
     console.log('Real SQLite → committed release ID → calendar API Pending-to-Released flow passed');
   } finally {
     calendar.close(); getClient().close();

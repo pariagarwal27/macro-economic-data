@@ -34,9 +34,9 @@ async function main() {
     assert.equal(config?.source, "bls", `${id} should use the explicit BLS exception`);
     assert.equal(config?.sourceId, seriesId, `${id} should use its official BLS series ID`);
   }
-  assert.equal(getCloudSourceConfig("us-cleveland-median-cpi")?.source, "fred");
-  assert.equal(getCloudSourceConfig("us-cleveland-median-cpi")?.sourceId, "MEDCPIM158SFRBCLE");
-  assert.equal(getCloudSourceConfig("us-cleveland-trimmed-cpi")?.sourceId, "TRMMEANCPIM158SFRBCLE");
+  assert.equal(getCloudSourceConfig("us-cleveland-median-cpi")?.source, "cleveland_cpi");
+  assert.equal(getCloudSourceConfig("us-cleveland-median-cpi")?.sourceId, "us-cleveland-median-cpi");
+  assert.equal(getCloudSourceConfig("us-cleveland-trimmed-cpi")?.sourceId, "us-cleveland-trimmed-cpi");
   assert.equal(getCloudSourceConfig("us-pce")?.source, "bea");
   assert.equal(getCloudSourceConfig("ea-inflation-comp-5y5y"), null, "Desktop-only source must not claim cloud support");
   const pmiIds = [
@@ -96,7 +96,8 @@ async function main() {
   assert.equal(await claimRelease("us-cpi", "2026-10-06"), true);
   assert.equal(await claimRelease("us-cpi", "2026-10-06"), false, "Concurrent claim must fail");
   await markReleaseRetry("us-cpi", "2026-10-06", "not released yet");
-  assert.equal(await claimRelease("us-cpi", "2026-10-06"), false, "Retry cooldown must survive across cycles");
+  assert.equal(await claimRelease("us-cpi", "2026-10-06"), true, "Finished attempts must be immediately retryable across cycles");
+  assert.equal(await claimRelease("us-cpi", "2026-10-06"), false, "Immediate retries must still protect in-flight requests");
   sqlite.prepare("UPDATE release_dispatch_state SET last_attempt_at = ?").run("2000-01-01T00:00:00.000Z");
   assert.equal(await claimRelease("us-cpi", "2026-10-06"), true);
   await markReleaseProcessed("us-cpi", "2026-10-06");
@@ -118,6 +119,6 @@ async function main() {
   await assert.rejects(processFetchedRelease({ metricId: "test-metric", result: { periodDate: "2026-10-01", value: -2000 } }));
   assert.equal(sqlite.prepare("SELECT count(*) AS n FROM observations").get()!.n, 2, "A failed release insert must roll back the observation write");
   assert.equal(sqlite.prepare("SELECT is_latest FROM observations WHERE date='2026-10-01'").get()!.is_latest, 1);
-  console.log("Cloud source routing, D1 claims, retry cooldown and completed-claim checks passed");
+  console.log("Cloud source routing, D1 claims, immediate retries and completed-claim checks passed");
 }
 void main();

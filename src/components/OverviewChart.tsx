@@ -1,6 +1,6 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, LabelList, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { COUNTRY_META } from "@/catalog/hierarchy";
 import { HistoryChartViewport } from "@/components/HistoryChartViewport";
 import { filterHistoryByYearRange, filterHistoryToTrailing12Months } from "@/lib/history-range";
@@ -41,8 +41,8 @@ export function OverviewChart({ indicator, data, loading }: { indicator: Overvie
         return <div className="overview-chart-plot">
           {loading ? <div className="overview-chart-empty">Loading published observations…</div> : !hasData ? <div className="overview-chart-empty">No published observations available for this period.</div> : <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             {indicator === "gdp" ? <BarChart data={visibleData} margin={{ top: 12, right: 12, bottom: 6, left: 0 }} accessibilityLayer>
-              {axes}<ReferenceLine y={0} stroke="var(--line-strong)" />
-              {OVERVIEW_REGIONS.map(region => <Bar key={region} dataKey={region} name={COUNTRY_META[region].name} fill={color(region)} maxBarSize={26} isAnimationActive={false} />)}
+              {axes}<ReferenceLine yAxisId="left" y={0} stroke="var(--line-strong)" />
+              {OVERVIEW_REGIONS.map(region => <Bar key={region} yAxisId="left" dataKey={region} name={COUNTRY_META[region].name} fill={color(region)} maxBarSize={26} minPointSize={value => value === 0 ? 3 : 0} isAnimationActive={false}><LabelList dataKey={region} position="top" formatter={value => value === 0 ? "0.0%" : ""} style={{ fill: color(region), fontSize: 9 }} /></Bar>)}
             </BarChart> : <LineChart data={visibleData} margin={{ top: 12, right: 16, bottom: 6, left: 0 }} accessibilityLayer>
               {axes}
               {OVERVIEW_REGIONS.map(region => <Line key={region} yAxisId={indicator === "unemployment" && region === "EA" ? "right" : "left"} dataKey={region} name={COUNTRY_META[region].name} type="linear" stroke={color(region)} strokeWidth={2} dot={{ r: 2, strokeWidth: 0, fill: color(region) }} activeDot={{ r: 4 }} connectNulls={indicator === "wage" && region === "EA"} isAnimationActive={false} />)}

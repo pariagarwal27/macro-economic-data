@@ -116,12 +116,6 @@ export const EXPECTATION_CHART_GROUPS: Record<string, ExpectationChartGroup[]> =
         { id: "us-cleveland-exp-inf-10y", axis: "right" },
       ],
     },
-    {
-      key: "cleveland-30y",
-      title: "Cleveland Fed Expectations · 30Y",
-      note: "30-Year expectations.",
-      series: [{ id: "us-cleveland-exp-inf-30y" }],
-    },
   ],
   "uk-inflation-expectations-professional": [
     {

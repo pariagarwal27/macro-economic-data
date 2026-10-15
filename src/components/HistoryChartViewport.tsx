@@ -9,6 +9,7 @@ export function HistoryChartViewport({
   children,
   label = "Chart history",
   compact = false,
+  fullHistoryByDefault = false,
   onRangeChange,
 }: {
   dates: string[];
@@ -17,6 +18,7 @@ export function HistoryChartViewport({
   children: ReactNode | ((plotWidth: number, fromYear: number, toYear: number, isDefaultWindow: boolean) => ReactNode);
   label?: string;
   compact?: boolean;
+  fullHistoryByDefault?: boolean;
   onRangeChange?: (range: HistoryYearRange, isDefaultWindow: boolean) => void;
 }) {
   const [plotWidth, setPlotWidth] = useState(0);
@@ -25,8 +27,12 @@ export function HistoryChartViewport({
   const years = useMemo(() => getHistoryYears(dates), [dates]);
   const latestYear = years.at(-1) ?? 2026;
   const [selectedRange, setSelectedRange] = useState<HistoryYearRange | null>(null);
-  const initialHandleRange = getInitialHistoryHandleRange(years);
-  const initialPlotRange = getInitialHistoryPlotRange(years);
+  const initialHandleRange = fullHistoryByDefault && years.length
+    ? { from: years[0]!, to: latestYear }
+    : getInitialHistoryHandleRange(years);
+  const initialPlotRange = fullHistoryByDefault && years.length
+    ? { from: years[0]!, to: latestYear }
+    : getInitialHistoryPlotRange(years);
   const handleRange = normalizeHistoryYearRange(selectedRange ?? initialHandleRange, years);
   const fromIndex = Math.max(0, years.indexOf(handleRange.from));
   const toIndex = Math.max(0, years.indexOf(handleRange.to));

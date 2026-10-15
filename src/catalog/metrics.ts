@@ -22,6 +22,7 @@ export type Source =
   | "nyfed"
   | "atlanta"
   | "cleveland_sofie"
+  | "cleveland"
   | "umich"
   | "philadelphia"
   | "census"
@@ -480,9 +481,9 @@ export const METRICS: MetricDef[] = [
     name: "Cleveland Fed Median CPI YoY",
     shortName: "Median CPI",
     description: "Median CPI — less noisy underlying inflation measure.",
-    source: "fred",
-    seriesId: "MEDCPIM158SFRBCLE",
-    transform: "level",
+    source: "cleveland",
+    seriesId: "MEDIAN_CPI_12M",
+    transform: "published_rate",
     frequency: "monthly",
     unit: "percent",
     importance: "high",
@@ -498,9 +499,9 @@ export const METRICS: MetricDef[] = [
     name: "Cleveland Fed 16% Trimmed-Mean CPI",
     shortName: "Trimmed CPI",
     description: "16% trimmed-mean CPI from Cleveland Fed.",
-    source: "fred",
-    seriesId: "TRMMEANCPIM158SFRBCLE",
-    transform: "level",
+    source: "cleveland",
+    seriesId: "TRIMMED_MEAN_CPI_12M",
+    transform: "published_rate",
     frequency: "monthly",
     unit: "percent",
     importance: "high",
@@ -516,9 +517,9 @@ export const METRICS: MetricDef[] = [
     name: "Atlanta Fed Sticky CPI YoY",
     shortName: "Sticky CPI",
     description: "Sticky-price CPI — slowly changing prices.",
-    source: "fred",
-    seriesId: "STICKCPIM159SFRBATL",
-    transform: "level",
+    source: "atlanta",
+    seriesId: "STICKY_CPI_12M",
+    transform: "published_rate",
     frequency: "monthly",
     unit: "percent",
     importance: "high",
@@ -534,9 +535,9 @@ export const METRICS: MetricDef[] = [
     name: "Atlanta Fed Core Sticky CPI YoY",
     shortName: "Core Sticky CPI",
     description: "Sticky-price CPI excluding food and energy.",
-    source: "fred",
-    seriesId: "CORESTICKM159SFRBATL",
-    transform: "level",
+    source: "atlanta",
+    seriesId: "CORE_STICKY_CPI_12M",
+    transform: "published_rate",
     frequency: "monthly",
     unit: "percent",
     importance: "high",
@@ -552,14 +553,14 @@ export const METRICS: MetricDef[] = [
     name: "Atlanta Fed Flexible CPI YoY",
     shortName: "Flexible CPI",
     description: "Flexible-price CPI — frequently changing prices.",
-    source: "fred",
-    seriesId: "FLEXCPIM159SFRBATL",
-    transform: "level",
+    source: "atlanta",
+    seriesId: "FLEXIBLE_CPI_12M",
+    transform: "published_rate",
     frequency: "monthly",
     unit: "percent",
     importance: "medium",
-    officialUrl: `${ATL}/chcs/stickyprice`,
-    docsUrl: `${ATL}/chcs/stickyprice`,
+    officialUrl: `${ATL}/research-and-data/data/sticky-price-cpi`,
+    docsUrl: `${ATL}/research-and-data/data/sticky-price-cpi`,
     releaseName: "Flexible-Price CPI",
   },
   {
@@ -706,7 +707,7 @@ export const METRICS: MetricDef[] = [
     unit: "percent",
     importance: "high",
     officialUrl: "https://www.clevelandfed.org/indicators-and-data/inflation-expectations",
-    docsUrl: fred("EXPINF30YR"),
+    docsUrl: "https://www.clevelandfed.org/indicators-and-data/inflation-expectations",
     releaseName: "Inflation Expectations",
   },
   {
@@ -987,8 +988,8 @@ id: "ea-safe-input-cost-exp-1y",
     name: "Atlanta Fed Wage Growth Tracker",
     shortName: "Wage Tracker",
     description: "Median wage growth of continuously employed workers.",
-    source: "fred",
-    seriesId: "FRBATLWGT3MMAUMHWGO",
+    source: "atlanta",
+    seriesId: "WGT_OVERALL_3M_UNWEIGHTED",
     transform: "level",
     frequency: "monthly",
     unit: "percent",
@@ -3770,7 +3771,7 @@ id: "ea-safe-input-cost-exp-1y",
     source: "fred", seriesId: "EXPINF3YR",
     transform: "level", frequency: "monthly", unit: "percent", importance: "high",
     officialUrl: "https://www.clevelandfed.org/indicators-and-data/inflation-expectations",
-    docsUrl: fred("EXPINF3YR"), releaseName: "Inflation Expectations",
+    docsUrl: "https://www.clevelandfed.org/indicators-and-data/inflation-expectations", releaseName: "Inflation Expectations",
   },
   {
     id: "us-cleveland-exp-inf-10y",
@@ -3781,7 +3782,7 @@ id: "ea-safe-input-cost-exp-1y",
     source: "fred", seriesId: "EXPINF10YR",
     transform: "level", frequency: "monthly", unit: "percent", importance: "high",
     officialUrl: "https://www.clevelandfed.org/indicators-and-data/inflation-expectations",
-    docsUrl: fred("EXPINF10YR"), releaseName: "Inflation Expectations",
+    docsUrl: "https://www.clevelandfed.org/indicators-and-data/inflation-expectations", releaseName: "Inflation Expectations",
   },
 
   // ─── INFLATION EXPECTATIONS — UK ───────────────────────────
@@ -5419,6 +5420,30 @@ releaseName: "GDP Quarterly National Accounts",
   },
 
 ];
+
+// Publisher-native one-month rates for the underlying CPI measures. The
+// corresponding YoY series is already stored on each base metric.
+for (const baseId of [
+  "us-sticky-cpi",
+  "us-core-sticky-cpi",
+  "us-flexible-cpi",
+  "us-cleveland-median-cpi",
+  "us-cleveland-trimmed-cpi",
+] as const) {
+  const base = METRICS.find(metric => metric.id === baseId);
+  if (!base) continue;
+  METRICS.push({
+    ...base,
+    id: `${baseId}-mom`,
+    name: `${base.name.replace(/ YoY$/, "")} MoM`,
+    shortName: `${base.shortName} MoM`,
+    description: base.source === "atlanta"
+      ? `${base.description} The source's one-month annualized change is converted to its equivalent monthly rate.`
+      : `${base.description} Official seasonally adjusted one-month change.`,
+    seriesId: `${base.seriesId}_1M`,
+    transform: "published_rate",
+  });
+}
 
 export const X_HANDLES = [
   { id: "adp", handle: "@ADP_Employment", displayName: "ADP Employment Report", region: "US", role: "official", notes: "ADP National Employment Report (private payrolls)" },

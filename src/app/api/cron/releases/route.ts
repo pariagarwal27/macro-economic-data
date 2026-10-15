@@ -5,6 +5,7 @@ import { seedCatalog } from "@/ingest/pipeline";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 export async function GET(request: Request) {
   let secret = process.env.CRON_SECRET;
@@ -20,7 +21,7 @@ export async function GET(request: Request) {
       metricIds: ["uk-unemployed-persons", "uk-long-term-unemployed"],
       cleanupOrphans: false,
     });
-    const result = await dispatchDueReleases();
+    const result = await dispatchDueReleases({ retryForMs: 50_000 });
     return NextResponse.json({ ok: true, ...result }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("[cron/releases]", error);

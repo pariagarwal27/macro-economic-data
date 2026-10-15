@@ -12,7 +12,6 @@ test("model-based and UK professional expectations use the requested paired axes
     [
       { ids: ["us-cleveland-exp-inf-1y", "us-cleveland-exp-inf-3y"], axes: ["left", "right"] },
       { ids: ["us-cleveland-exp-inf-5y", "us-cleveland-exp-inf-10y"], axes: ["left", "right"] },
-      { ids: ["us-cleveland-exp-inf-30y"], axes: [undefined] },
     ],
   );
 

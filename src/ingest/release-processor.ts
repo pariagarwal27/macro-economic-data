@@ -1,10 +1,12 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
-import { metrics, observations } from "@/db/schema";
+import { metrics, observations, releases } from "@/db/schema";
 import { persistRelease } from "./db-writer";
+import { wasRecordedAfterSchedule } from "./release-schedule-retries";
 
 export async function processFetchedRelease(input: {
   metricId: string;
+  scheduledAt?: string;
   result: {
     periodDate: string;
     value: number;
@@ -112,6 +114,30 @@ export async function processFetchedRelease(input: {
     input.result.periodDate === latest[0].date &&
     Number(input.result.value) === Number(latest[0].value)
   ) {
+    if (input.scheduledAt && Number.isFinite(Date.parse(input.scheduledAt))) {
+      const committed = await db
+        .select({ id: releases.id, releasedAt: releases.releasedAt })
+        .from(releases)
+        .where(and(
+          eq(releases.metricId, input.metricId),
+          eq(releases.periodDate, input.result.periodDate),
+          eq(releases.value, input.result.value),
+        ))
+        .orderBy(desc(releases.releasedAt))
+        .limit(1);
+      const committedAfterSchedule = committed[0] && wasRecordedAfterSchedule(committed[0].releasedAt, input.scheduledAt);
+      if (committedAfterSchedule) {
+        return {
+          updated: false,
+          reason: "already-recorded",
+          releaseId: committed[0].id,
+          latestDbPeriod: latest[0].date,
+          latestDbValue: latest[0].value,
+          sourcePeriod: input.result.periodDate,
+          sourceValue: input.result.value,
+        };
+      }
+    }
     return {
       updated: false,
       reason: "no-new-release",

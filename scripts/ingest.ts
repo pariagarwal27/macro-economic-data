@@ -25,7 +25,7 @@ import {
   lt,
   sql,
 } from "drizzle-orm";
-import { getActiveLiveMapping, getSourceConfig, isUsCpiLsegOnlyMetric, isUsCpiMetric } from "../src/ingest/source-registry";
+import { getActiveLiveMapping, getSourceConfig, isUsCpiLsegOnlyMetric, isUsCpiMetric, shouldMergeHistoricalBackfill } from "../src/ingest/source-registry";
 import { investingToCatalogScale } from "@/catalog/investing-map";
 import { getClient, getDb } from "@/db";
 import {
@@ -104,6 +104,9 @@ import {
   fetchClevelandSofieSeries,
   fetchUmichPx5Series,
 } from "../src/ingest/us-expectations";
+import { fetchAtlantaStickyCpi } from "../src/ingest/atlanta-sticky-cpi";
+import { fetchAtlantaWageTracker } from "../src/ingest/atlanta-wage-tracker";
+import { fetchClevelandCpiMeasure } from "../src/ingest/cleveland-cpi-measures";
 export interface IngestSummary {
   runId: number;
   mode: "backfill" | "refresh";
@@ -927,6 +930,24 @@ async function loadLiveRaw(
       if (!caches.gdpNow?.length) return null;
       return { points: caches.gdpNow, note: "Live Atlanta Fed GDPNow" };
     }
+    case "atlanta_sticky": {
+      return {
+        points: await fetchAtlantaStickyCpi(metric.id),
+        note: "Live Atlanta Fed official Sticky-Price CPI workbook",
+      };
+    }
+    case "atlanta_wage": {
+      return {
+        points: await fetchAtlantaWageTracker(),
+        note: "Live Atlanta Fed official Wage Growth Tracker workbook (3-month overall unweighted)",
+      };
+    }
+    case "cleveland_cpi": {
+      return {
+        points: await fetchClevelandCpiMeasure(metric.id),
+        note: "Live Cleveland Fed official CPI measures download",
+      };
+    }
     case "bea": {
       if (!process.env.BEA_API_KEY) return null;
       const [table, line] = ref.seriesId.split(":");
@@ -1070,6 +1091,21 @@ if (metric.source === "census") {
   }
   if (metric.source === "atlanta" && metric.seriesId === "BIE_EXPECTED_PRICE_1Y") {
     return fetchAtlantaBieSeries();
+  }
+  if (metric.id === "us-atlanta-wage" && metric.source === "atlanta") {
+    return fetchAtlantaWageTracker();
+  }
+  if (metric.source === "atlanta" && [
+    "us-sticky-cpi", "us-core-sticky-cpi", "us-flexible-cpi",
+    "us-sticky-cpi-mom", "us-core-sticky-cpi-mom", "us-flexible-cpi-mom",
+  ].includes(metric.id)) {
+    return fetchAtlantaStickyCpi(metric.id);
+  }
+  if (metric.source === "cleveland" && [
+    "us-cleveland-median-cpi", "us-cleveland-trimmed-cpi",
+    "us-cleveland-median-cpi-mom", "us-cleveland-trimmed-cpi-mom",
+  ].includes(metric.id)) {
+    return fetchClevelandCpiMeasure(metric.id);
   }
   if (metric.source === "cleveland_sofie") {
     return fetchClevelandSofieSeries(metric.seriesId === "SOFIE_5Y" ? "5y" : "1y");
@@ -1451,13 +1487,12 @@ const liveCaches: LiveCaches =
       }
 
       const primary = await loadPrimaryOrFallback(metric, fredCache);
-      const count = await persistMetricReplace(
-        metric,
-        primary.points,
-        primary.via === "primary"
-          ? `Historical backfill — ${metric.source.toUpperCase()}`
-          : "Historical backfill — FRED fallback"
-      );
+      const sourceNote = primary.via === "primary"
+        ? `Historical backfill — ${metric.source.toUpperCase()}`
+        : "Historical backfill — FRED fallback";
+      const count = shouldMergeHistoricalBackfill(metric.id)
+        ? await persistMetricMerge(metric, primary.points, sourceNote)
+        : await persistMetricReplace(metric, primary.points, sourceNote);
       return {
         ok: true as const,
         metricId: metric.id,

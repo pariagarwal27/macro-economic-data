@@ -1,0 +1,252 @@
+﻿region,metricId,name,adapter,sourceId,result,sourcePeriod,sourceValue,databasePeriod,freshness,detail,auditStatus
+US,us-cpi-core-nsa,CPI — Core Index (NSA),bls,CUUR0000SA0L1E,NO_VALUE,,,2026-09-01,,Source request completed without a numeric latest reading,NO_VALUE
+US,us-cpi-new-vehicles,CPI — New Vehicles,bls,CUSR0000SETA01,FETCHED,2026-09-01,179.615,2026-09-01,MATCHES_DB_LATEST,Live BLS API CUSR0000SETA01,PASS
+US,us-cpi-used-cars,CPI — Used Cars and Trucks,bls,CUSR0000SETA02,FETCHED,2026-09-01,182.176,2026-09-01,MATCHES_DB_LATEST,Live BLS API CUSR0000SETA02,PASS
+US,us-cpi-medical-commodities,CPI — Medical Care Commodities,bls,CUSR0000SAM1,FETCHED,2026-09-01,402.832,2026-09-01,MATCHES_DB_LATEST,Live BLS API CUSR0000SAM1,PASS
+US,us-cpi-recreation-commodities,CPI — Recreation Commodities,bls,CUSR0000SARC,FETCHED,2026-09-01,87.51,2026-09-01,MATCHES_DB_LATEST,Live BLS API CUSR0000SARC,PASS
+US,us-cpi-education-commodities,CPI — Education & Communication Commodities,bls,CUSR0000SAEC,FETCHED,2026-09-01,50.983,2026-09-01,MATCHES_DB_LATEST,Live BLS API CUSR0000SAEC,PASS
+US,us-cpi-recreation-services,CPI — Recreation Services,bls,CUSR0000SARS,FETCHED,2026-09-01,159.848,2026-09-01,MATCHES_DB_LATEST,Live BLS API CUSR0000SARS,PASS
+US,us-cpi-education-services,CPI — Education & Communication Services,bls,CUSR0000SAES,FETCHED,2026-09-01,128.561,2026-09-01,MATCHES_DB_LATEST,Live BLS API CUSR0000SAES,PASS
+US,us-cpi-other-services,CPI — Other Services,bls,CUSR0000SAS367,FETCHED,2026-09-01,441.728,2026-09-01,MATCHES_DB_LATEST,Live BLS API CUSR0000SAS367,PASS
+US,us-pce,PCE — Headline Price Index,bea,T20804:1,FETCHED,2026-08-01,131.579,2026-08-01,MATCHES_DB_LATEST,Live BEA T20804:1,PASS
+US,us-core-pce,PCE — Core Price Index,bea,T20804:25,FETCHED,2026-08-01,130.455,2026-08-01,MATCHES_DB_LATEST,Live BEA T20804:25,PASS
+US,us-pce-goods,PCE — Goods,bea,T20804:2,FETCHED,2026-08-01,119.746,2026-08-01,MATCHES_DB_LATEST,Live BEA T20804:2,PASS
+US,us-pce-durable-goods,PCE — Durable Goods,bea,T20804:3,FETCHED,2026-08-01,110.083,2026-08-01,MATCHES_DB_LATEST,Live BEA T20804:3,PASS
+US,us-pce-furnishings,PCE — Furnishings & Durable Household Equipment,bea,T20804:5,FETCHED,2026-08-01,113.35,2026-08-01,MATCHES_DB_LATEST,Live BEA T20804:5,PASS
+US,us-pce-clothing,PCE — Clothing & Footwear,bea,T20804:10,FETCHED,2026-08-01,107.179,2026-08-01,MATCHES_DB_LATEST,Live BEA T20804:10,PASS
+US,us-pce-food,PCE — Food & Beverages,bea,T20804:9,FETCHED,2026-08-01,132.167,2026-08-01,MATCHES_DB_LATEST,Live BEA T20804:9,PASS
+US,us-pce-energy,PCE — Gasoline & Other Energy Goods,bea,T20804:11,FETCHED,2026-08-01,164.878,2026-08-01,MATCHES_DB_LATEST,Live BEA T20804:11,PASS
+US,us-pce-services,PCE — Services,bea,T20804:13,FETCHED,2026-08-01,137.415,2026-08-01,MATCHES_DB_LATEST,Live BEA T20804:13,PASS
+US,us-pce-household-services,PCE — Household Services,bea,T20804:14,FETCHED,2026-08-01,136.856,2026-08-01,MATCHES_DB_LATEST,Live BEA T20804:14,PASS
+US,us-pce-healthcare,PCE — Health Care,bea,T20804:16,FETCHED,2026-08-01,125.148,2026-08-01,MATCHES_DB_LATEST,Live BEA T20804:16,PASS
+US,us-pce-food-services,PCE — Food Services & Accommodations,bea,T20804:19,FETCHED,2026-08-01,143.015,2026-08-01,MATCHES_DB_LATEST,Live BEA T20804:19,PASS
+US,us-pce-housing,PCE — Housing,bea,T20804:29,FETCHED,2026-08-01,145.566,2026-08-01,MATCHES_DB_LATEST,Live BEA T20804:29,PASS
+US,us-core-pce-mom,Core PCE Month-over-Month,bea,T20804:25,FETCHED,2026-08-01,0.408,2026-08-01,MATCHES_DB_LATEST,Live BEA T20804:24,PASS
+US,us-cleveland-median-cpi,Cleveland Fed Median CPI YoY,cleveland_cpi,MEDIAN_CPI_12M,FETCHED,2026-09-01,2.6104,2026-09-01,MATCHES_DB_LATEST,Live Cleveland Fed official Median CPI download,PASS
+US,us-cleveland-trimmed-cpi,Cleveland Fed 16% Trimmed-Mean CPI,cleveland_cpi,TRIMMED_MEAN_CPI_12M,FETCHED,2026-09-01,2.6649,2026-09-01,MATCHES_DB_LATEST,Live Cleveland Fed official Median CPI download,PASS
+US,us-sticky-cpi,Atlanta Fed Sticky CPI YoY,atlanta_sticky,STICKY_CPI_12M,FETCHED,2026-09-01,2.8155,2026-09-01,MATCHES_DB_LATEST,Live Atlanta Fed Sticky-Price CPI official workbook,PASS
+US,us-core-sticky-cpi,Atlanta Fed Core Sticky CPI YoY,atlanta_sticky,CORE_STICKY_CPI_12M,FETCHED,2026-09-01,2.7765,2026-09-01,MATCHES_DB_LATEST,Live Atlanta Fed Sticky-Price CPI official workbook,PASS
+US,us-flexible-cpi,Atlanta Fed Flexible CPI YoY,atlanta_sticky,FLEXIBLE_CPI_12M,FETCHED,2026-09-01,6.1232,2026-09-01,MATCHES_DB_LATEST,Live Atlanta Fed Sticky-Price CPI official workbook,PASS
+US,us-nyfed-sce-inflation-exp-1y,NY Fed SCE Inflation Expectations (1-Year),nyfed,SCE_INFLATION_1Y,FAILED,,,2026-09-01,,NY Fed SCE 5Y inflation expectation series is empty,FAILED
+US,us-nyfed-sce-inflation-exp-3y,NY Fed SCE Inflation Expectations (3-Year),nyfed,SCE_INFLATION_3Y,FAILED,,,2026-09-01,,NY Fed SCE 5Y inflation expectation series is empty,FAILED
+US,us-nyfed-sce-inflation-exp-5y,NY Fed SCE Inflation Expectations (5-Year),nyfed,SCE_INFLATION_5Y,FAILED,,,2026-09-01,,NY Fed SCE 5Y inflation expectation series is empty,FAILED
+US,us-cleveland-exp-inf-1y,Cleveland Fed Expected Inflation (1-Year),cleveland,EXPINF1YR,FETCHED,2026-10-01,2.9754,2026-10-01,MATCHES_DB_LATEST,Live Cleveland Fed model output EXPINF1YR,PASS
+US,us-cleveland-exp-inf-2y,Cleveland Fed Expected Inflation (2-Year),cleveland,EXPINF2YR,FETCHED,2026-10-01,2.8712,2026-10-01,MATCHES_DB_LATEST,Live Cleveland Fed model output EXPINF2YR,PASS
+US,us-cleveland-exp-inf-5y,Cleveland Fed Expected Inflation (5-Year),cleveland,EXPINF5YR,FETCHED,2026-10-01,2.7703,2026-10-01,MATCHES_DB_LATEST,Live Cleveland Fed model output EXPINF5YR,PASS
+US,us-cleveland-exp-inf-30y,Cleveland Fed Expected Inflation (30-Year),cleveland,EXPINF30YR,FETCHED,2026-10-01,2.6964,2026-10-01,MATCHES_DB_LATEST,Live Cleveland Fed model output EXPINF30YR,PASS
+US,us-breakeven-5y,5-Year Breakeven Inflation Rate,fred,T5YIE,FETCHED,2026-10-14,2.36,2026-10-14,MATCHES_DB_LATEST,Live FRED T5YIE,PASS
+US,us-breakeven-10y,10-Year Breakeven Inflation Rate,fred,T10YIE,FETCHED,2026-10-14,2.35,2026-10-14,MATCHES_DB_LATEST,Live FRED T10YIE,PASS
+US,us-5y5y-forward,5Y5Y Forward Inflation Expectation,fred,T5YIFR,FETCHED,2026-10-14,2.34,2026-10-14,MATCHES_DB_LATEST,Live FRED T5YIFR,PASS
+US,us-atlanta-wage,Atlanta Fed Wage Growth Tracker,atlanta_wage,WGT_OVERALL_3M_UNWEIGHTED,FETCHED,2026-09-01,3.9,2026-09-01,MATCHES_DB_LATEST,Live Atlanta Fed official Wage Growth Tracker workbook (3-month overall unweighted),PASS
+US,us-unit-labor-cost,Nonfarm Unit Labor Costs YoY,fred,ULCNFB,FETCHED,2026-04-01,1.3977,2026-04-01,MATCHES_DB_LATEST,Live FRED ULCNFB,PASS
+US,us-gdp-real,Real GDP (QoQ SAAR),bea,T10101:1,FETCHED,2026-04-01,2.2,2026-04-01,MATCHES_DB_LATEST,Live BEA T10101:1,PASS
+US,us-retail-sales,Retail Sales MoM,fred,RSAFS,FETCHED,2026-08-01,1.1274,2026-08-01,MATCHES_DB_LATEST,Live FRED RSAFS,PASS
+US,us-mfg-employment,Manufacturing Employment Level,bls,MANEMP,FETCHED,2026-09-01,12652,2026-09-01,MATCHES_DB_LATEST,Live BLS API CES3000000001,PASS
+US,us-adp-level,ADP Nonfarm Private Employment Level,adp,ADPMNUSNERSA,NO_VALUE,,,2026-09-01,,Source request completed without a numeric latest reading,NO_VALUE
+US,us-payrolls-level,Total Nonfarm Payrolls Level,bls,CES0000000001,FETCHED,2026-09-01,159044,2026-09-01,MATCHES_DB_LATEST,Live BLS API CES0000000001,PASS
+US,us-participation,Labor Force Participation Rate,bls,LNS11300000,FETCHED,2026-09-01,61.8,2026-09-01,MATCHES_DB_LATEST,Live BLS API LNS11300000,PASS
+US,us-initial-claims,Initial Jobless Claims,dol,ICSA,FETCHED,2026-10-03,197000,2026-10-03,MATCHES_DB_LATEST,Live DOL ETA claims,PASS
+US,us-continuing-claims,Continuing Jobless Claims,dol,CCSA,FETCHED,2026-09-26,1716000,2026-09-26,MATCHES_DB_LATEST,Live DOL ETA claims,PASS
+US,us-nyfed-sce-1y,NY Fed SCE Inflation Expectations 1-Year,nyfed,SCE_INFLATION_1Y,FAILED,,,2026-09-01,,NY Fed SCE 5Y inflation expectation series is empty,FAILED
+US,us-nyfed-sce-3y,NY Fed SCE Inflation Expectations 3-Year,nyfed,SCE_INFLATION_3Y,FAILED,,,2026-09-01,,NY Fed SCE 5Y inflation expectation series is empty,FAILED
+US,us-nyfed-sce-5y,NY Fed SCE Inflation Expectations 5-Year,nyfed,SCE_INFLATION_5Y,FAILED,,,2026-09-01,,NY Fed SCE 5Y inflation expectation series is empty,FAILED
+US,us-nyfed-sce-1y-uncertainty,NY Fed SCE Inflation Uncertainty 1-Year,nyfed,SCE_INFLATION_UNCERTAINTY_1Y,FETCHED,2026-09-01,31.3802,2026-09-01,MATCHES_DB_LATEST,Live NY Fed SCE SCE_INFLATION_UNCERTAINTY_1Y,PASS
+US,us-cleveland-exp-inf-5-10y,Cleveland Fed Expected Inflation 5–10 Year,fred,EXPINF5YR,FETCHED,2026-10-01,2.7703,2026-10-01,MATCHES_DB_LATEST,Live FRED EXPINF5YR,PASS
+US,us-atlanta-bie-1y,Atlanta Fed Business Inflation Expectations 1-Year,atlanta,BIE_EXPECTED_PRICE_1Y,FETCHED,2026-08-01,3.7,2026-09-01,OLDER_THAN_DB,Live Atlanta Fed BIE price expectations,STALE
+US,us-atlanta-bie-unit-cost-1y,Atlanta Fed BIE Expected Unit-Cost Growth 1-Year,atlanta,BIE_EXPECTED_UNIT_COST_1Y,FETCHED,2026-09-01,2.4,2026-09-01,MATCHES_DB_LATEST,Live Atlanta Fed BIE unit-cost expectations,PASS
+US,us-cleveland-sofie-1y,Cleveland Fed SoFIE Expected CPI Inflation (1-Year),cleveland_sofie,SOFIE_1Y,FETCHED,2026-07-01,3.3,2026-07-01,MATCHES_DB_LATEST,Live Cleveland Fed SoFIE SOFIE_1Y,PASS
+US,us-cleveland-sofie-5y,Cleveland Fed SoFIE Expected CPI Inflation (5-Year),cleveland_sofie,SOFIE_5Y,FETCHED,2026-07-01,2,2026-07-01,MATCHES_DB_LATEST,Live Cleveland Fed SoFIE SOFIE_5Y,PASS
+US,us-philly-spf-cpi-1y,Philadelphia Fed SPF CPI 1-Year,philadelphia,CPI,FETCHED,2026-07-01,2.6033,2026-07-01,MATCHES_DB_LATEST,Official Philadelphia Fed SPF CPI,PASS
+US,us-philly-spf-core-cpi-1y,Philadelphia Fed SPF Core CPI 1-Year,philadelphia,CORECPI,FETCHED,2026-07-01,2.68,2026-07-01,MATCHES_DB_LATEST,Official Philadelphia Fed SPF CORECPI,PASS
+US,us-philly-spf-pce-1y,Philadelphia Fed SPF PCE 1-Year,philadelphia,PCE,FETCHED,2026-07-01,2.6111,2026-07-01,MATCHES_DB_LATEST,Official Philadelphia Fed SPF PCE,PASS
+US,us-philly-spf-core-pce-1y,Philadelphia Fed SPF Core PCE 1-Year,philadelphia,COREPCE,FETCHED,2026-07-01,2.6654,2026-07-01,MATCHES_DB_LATEST,Official Philadelphia Fed SPF COREPCE,PASS
+US,us-philly-spf-cpi-5y,Philadelphia Fed SPF CPI 5-Year,philadelphia,CPI5YR,FETCHED,2026-07-01,2.6144,2026-07-01,MATCHES_DB_LATEST,Official Philadelphia Fed SPF CPI5YR,PASS
+US,us-philly-spf-pce-5y,Philadelphia Fed SPF PCE 5-Year,philadelphia,PCE5YR,FETCHED,2026-07-01,2.4977,2026-07-01,MATCHES_DB_LATEST,Official Philadelphia Fed SPF PCE5YR,PASS
+US,us-philly-spf-cpi-10y,Philadelphia Fed SPF CPI 10-Year,philadelphia,CPI10,FETCHED,2026-07-01,2.4294,2026-07-01,MATCHES_DB_LATEST,Official Philadelphia Fed SPF CPI10,PASS
+US,us-philly-spf-pce-10y,Philadelphia Fed SPF PCE 10-Year,philadelphia,PCE10,FETCHED,2026-07-01,2.2889,2026-07-01,MATCHES_DB_LATEST,Official Philadelphia Fed SPF PCE10,PASS
+US,us-philly-spf-5y5y-cpi,Philadelphia Fed SPF 5Y5Y Forward CPI,philadelphia,CPI05YF05,FETCHED,2026-07-01,2.2448,2026-07-01,MATCHES_DB_LATEST,Official Philadelphia Fed SPF CPI05YF05,PASS
+US,us-philly-spf-5y5y-pce,Philadelphia Fed SPF 5Y5Y Forward PCE,philadelphia,PCE05YF05,FETCHED,2026-07-01,2.0807,2026-07-01,MATCHES_DB_LATEST,Official Philadelphia Fed SPF PCE05YF05,PASS
+US,us-breakeven-1y,1-Year Breakeven Inflation Rate,fred,T1YIE,FAILED,,,,,FRED CSV 404 for T1YIE,FAILED
+US,us-breakeven-2y,2-Year Breakeven Inflation Rate,fred,T2YIE,FAILED,,,,,FRED CSV 404 for T2YIE,FAILED
+US,us-cleveland-exp-inf-3y,Cleveland Fed Expected Inflation 3-Year,cleveland,EXPINF3YR,FETCHED,2026-10-01,2.8211,2026-10-01,MATCHES_DB_LATEST,Live Cleveland Fed model output EXPINF3YR,PASS
+US,us-cleveland-exp-inf-10y,Cleveland Fed Expected Inflation 10-Year,cleveland,EXPINF10YR,FETCHED,2026-10-01,2.7255,2026-10-01,MATCHES_DB_LATEST,Live Cleveland Fed model output EXPINF10YR,PASS
+US,us-real-pce-growth,Real Personal Consumption Expenditures,bea,T10106:2,FETCHED,2026-04-01,16788685,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:2,PASS
+US,us-real-pce-goods,Real PCE Goods,bea,T10106:3,FETCHED,2026-04-01,5727518,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:3,PASS
+US,us-real-pce-durable-goods,Real PCE Durable Goods,bea,T10106:4,FETCHED,2026-04-01,2181508,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:4,PASS
+US,us-real-pce-nondurable-goods,Real PCE Nondurable Goods,bea,T10106:5,FETCHED,2026-04-01,3559558,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:5,PASS
+US,us-real-pce-services,Real PCE Services,bea,T10106:6,FETCHED,2026-04-01,11084757,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:6,PASS
+US,us-real-private-investment,Real Gross Private Domestic Investment,bea,T10106:7,FETCHED,2026-04-01,4615141,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:7,PASS
+US,us-real-fixed-investment,Real Fixed Investment,bea,T10106:8,FETCHED,2026-04-01,4645786,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:8,PASS
+US,us-real-nonresidential-investment,Real Nonresidential Investment,bea,T10106:9,FETCHED,2026-04-01,3985726,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:9,PASS
+US,us-real-structures,Real Structures Investment,bea,T10106:10,FETCHED,2026-04-01,654367,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:10,PASS
+US,us-real-equipment,Real Equipment Investment,bea,T10106:11,FETCHED,2026-04-01,1598303,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:11,PASS
+US,us-real-ipp,Real Intellectual Property Products Investment,bea,T10106:12,FETCHED,2026-04-01,1760515,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:12,PASS
+US,us-real-residential-investment,Real Residential Investment,bea,T10106:13,FETCHED,2026-04-01,746154,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:13,PASS
+US,us-real-inventories,Change in Private Inventories,bea,T10106:14,FETCHED,2026-04-01,-63438,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:14,PASS
+US,us-real-net-exports,Real Net Exports of Goods and Services,bea,T10106:15,FETCHED,2026-04-01,-1099295,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:15,PASS
+US,us-real-exports,Real Exports,bea,T10106:16,FETCHED,2026-04-01,2814538,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:16,PASS
+US,us-real-export-goods,Real Exports of Goods,bea,T10106:17,FETCHED,2026-04-01,1868076,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:17,PASS
+US,us-real-export-services,Real Exports of Services,bea,T10106:18,FETCHED,2026-04-01,951004,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:18,PASS
+US,us-real-imports,Real Imports,bea,T10106:19,FETCHED,2026-04-01,3913833,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:19,PASS
+US,us-real-import-goods,Real Imports of Goods,bea,T10106:20,FETCHED,2026-04-01,3179506,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:20,PASS
+US,us-real-import-services,Real Imports of Services,bea,T10106:21,FETCHED,2026-04-01,733223,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:21,PASS
+US,us-real-government,Real Government Consumption and Investment,bea,T10106:22,FETCHED,2026-04-01,4086608,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:22,PASS
+US,us-real-federal-government,Real Federal Government,bea,T10106:23,FETCHED,2026-04-01,1489792,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:23,PASS
+US,us-real-defense,Real National Defense,bea,T10106:24,FETCHED,2026-04-01,880994,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:24,PASS
+US,us-real-nondefense,Real Federal Nondefense,bea,T10106:25,FETCHED,2026-04-01,607769,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:25,PASS
+US,us-real-state-local,Real State and Local Government,bea,T10106:26,FETCHED,2026-04-01,2592226,2026-04-01,MATCHES_DB_LATEST,Live BEA T10106:26,PASS
+US,us-not-in-labor-force,Not in Labor Force,bls,LNS15000000,FETCHED,2026-09-01,105292,2026-09-01,MATCHES_DB_LATEST,Live BLS API LNS15000000,PASS
+US,us-nyfed-sce-labor-earnings-1y,NY Fed SCE Earnings Growth Expectations (1-Year),nyfed,SCE_LABOR_EARNINGS_1Y,FETCHED,2026-09-01,2.6137,2026-09-01,MATCHES_DB_LATEST,Live NY Fed SCE SCE_LABOR_EARNINGS_1Y,PASS
+US,us-nyfed-sce-labor-job-separation-1y,NY Fed SCE Job Separation Probability (1-Year),nyfed,SCE_LABOR_JOB_SEPARATION_1Y,FETCHED,2026-09-01,13.5177,2026-09-01,MATCHES_DB_LATEST,Live NY Fed SCE SCE_LABOR_JOB_SEPARATION_1Y,PASS
+US,us-nyfed-sce-labor-job-finding-1y,NY Fed SCE Job Finding Probability (3-Month Conditional),nyfed,SCE_LABOR_JOB_FINDING_1Y,FETCHED,2026-09-01,46.1146,2026-09-01,MATCHES_DB_LATEST,Live NY Fed SCE SCE_LABOR_JOB_FINDING_1Y,PASS
+US,us-nyfed-sce-labor-unemployment-1y,NY Fed SCE Unemployment Expectations (1-Year),nyfed,SCE_LABOR_UNEMPLOYMENT_1Y,FETCHED,2026-09-01,43.866,2026-09-01,MATCHES_DB_LATEST,Live NY Fed SCE SCE_LABOR_UNEMPLOYMENT_1Y,PASS
+US,us-nyfed-sce-finance-income-1y,NY Fed SCE Household Income Growth Expectations (1-Year),nyfed,SCE_FINANCE_INCOME_1Y,FETCHED,2026-09-01,3.1212,2026-09-01,MATCHES_DB_LATEST,Live NY Fed SCE SCE_FINANCE_INCOME_1Y,PASS
+US,us-nyfed-sce-finance-spending-1y,NY Fed SCE Household Spending Growth Expectations (1-Year),nyfed,SCE_FINANCE_SPENDING_1Y,FETCHED,2026-09-01,5.5085,2026-09-01,MATCHES_DB_LATEST,Live NY Fed SCE SCE_FINANCE_SPENDING_1Y,PASS
+US,us-nyfed-sce-finance-tax-1y,NY Fed SCE Tax Change Expectations (1-Year),nyfed,SCE_FINANCE_TAX_1Y,FETCHED,2026-09-01,3.6504,2026-09-01,MATCHES_DB_LATEST,Live NY Fed SCE SCE_FINANCE_TAX_1Y,PASS
+US,us-retail-motor-vehicles,US Retail Sales — Motor Vehicles,census,441,FETCHED,2026-08-01,0.4649,2026-08-01,MATCHES_DB_LATEST,Live Census MARTS 441,PASS
+US,us-retail-sales-total,US Retail Sales — Total,census,44X72,FETCHED,2026-08-01,1.1274,2026-08-01,MATCHES_DB_LATEST,Live Census MARTS 44X72,PASS
+US,us-sticky-cpi-mom,Atlanta Fed Sticky CPI MoM,atlanta_sticky,STICKY_CPI_12M_1M,FETCHED,2026-09-01,0.2791,2026-09-01,MATCHES_DB_LATEST,Live Atlanta Fed Sticky-Price CPI official workbook,PASS
+US,us-core-sticky-cpi-mom,Atlanta Fed Core Sticky CPI MoM,atlanta_sticky,CORE_STICKY_CPI_12M_1M,FETCHED,2026-09-01,0.2864,2026-09-01,MATCHES_DB_LATEST,Live Atlanta Fed Sticky-Price CPI official workbook,PASS
+US,us-flexible-cpi-mom,Atlanta Fed Flexible CPI MoM,atlanta_sticky,FLEXIBLE_CPI_12M_1M,FETCHED,2026-09-01,1.6862,2026-09-01,MATCHES_DB_LATEST,Live Atlanta Fed Sticky-Price CPI official workbook,PASS
+US,us-cleveland-median-cpi-mom,Cleveland Fed Median CPI MoM,cleveland_cpi,MEDIAN_CPI_12M_1M,FETCHED,2026-09-01,0.2311,2026-09-01,MATCHES_DB_LATEST,Live Cleveland Fed official Median CPI download,PASS
+US,us-cleveland-trimmed-cpi-mom,Cleveland Fed 16% Trimmed-Mean CPI MoM,cleveland_cpi,TRIMMED_MEAN_CPI_12M_1M,FETCHED,2026-09-01,0.2898,2026-09-01,MATCHES_DB_LATEST,Live Cleveland Fed official Median CPI download,PASS
+UK,uk-cpih-yoy,UK CPIH YoY,ons,L55O,FETCHED,2026-08-01,3.3,2026-08-01,MATCHES_DB_LATEST,Live ONS L55O,PASS
+UK,uk-clothing-cpi-yoy,UK Clothing & Footwear CPI YoY,ons,D7GA,FETCHED,2026-08-01,0.2,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-furniture-cpi-yoy,UK Furniture & Household Goods CPI YoY,ons,D7GC,FETCHED,2026-08-01,0.8,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-health-cpi-yoy,UK Health CPI YoY,ons,D7GD,FETCHED,2026-08-01,3.7,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-transport-cpi-yoy,UK Transport CPI YoY,ons,D7GE,FETCHED,2026-08-01,4.6,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-communication-cpi-yoy,UK Communication CPI YoY,ons,D7GF,FETCHED,2026-08-01,5.3,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-recreation-cpi-yoy,UK Recreation & Culture CPI YoY,ons,D7GG,FETCHED,2026-08-01,1.6,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-education-cpi-yoy,UK Education CPI YoY,ons,D7GH,FETCHED,2026-08-01,5.1,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-restaurants-hotels-cpi-yoy,UK Restaurants & Hotels CPI YoY,ons,D7GI,FETCHED,2026-08-01,4.1,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-miscellaneous-cpi-yoy,UK Miscellaneous Goods & Services CPI YoY,ons,D7GJ,FETCHED,2026-08-01,2.9,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-alcohol-cpih-yoy,UK Alcohol & Tobacco CPIH YoY,ons,L55Q,FETCHED,2026-08-01,2.7,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-clothing-cpih-yoy,UK Clothing & Footwear CPIH YoY,ons,L55R,FETCHED,2026-08-01,0.2,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-furniture-cpih-yoy,UK Furniture & Household Goods CPIH YoY,ons,L55T,FETCHED,2026-08-01,0.8,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-health-cpih-yoy,UK Health CPIH YoY,ons,L55U,FETCHED,2026-08-01,3.7,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-transport-cpih-yoy,UK Transport CPIH YoY,ons,L55V,FETCHED,2026-08-01,4.6,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-communication-cpih-yoy,UK Communication CPIH YoY,ons,L55W,FETCHED,2026-08-01,5.3,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-recreation-cpih-yoy,UK Recreation & Culture CPIH YoY,ons,L55X,FETCHED,2026-08-01,1.6,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-education-cpih-yoy,UK Education CPIH YoY,ons,L55Y,FETCHED,2026-08-01,5.1,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-restaurants-hotels-cpih-yoy,UK Restaurants & Hotels CPIH YoY,ons,L55Z,FETCHED,2026-08-01,4.1,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-miscellaneous-cpih-yoy,UK Miscellaneous Goods & Services CPIH YoY,ons,L562,FETCHED,2026-08-01,2.9,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-core-cpi-yoy,UK Core CPI YoY,ons,DKO8,FETCHED,2026-08-01,2.6,2026-08-01,MATCHES_DB_LATEST,Live ONS DKO8,PASS
+UK,uk-services-cpi-mom,UK Services CPI MoM,ons,D7MV,FETCHED,2026-08-01,0.2,2026-08-01,MATCHES_DB_LATEST,Live ONS D7MV,PASS
+UK,uk-goods-cpi-yoy,UK Goods CPI YoY,ons,D7NM,FETCHED,2026-08-01,2.7,2026-08-01,MATCHES_DB_LATEST,Live ONS D7NM,PASS
+UK,uk-goods-cpi-mom,UK Goods CPI MoM,ons,D7MU,FETCHED,2026-08-01,0.9,2026-08-01,MATCHES_DB_LATEST,Live ONS D7MU,PASS
+UK,uk-food-cpi-yoy,UK Food CPI YoY,ons,D7G8,FETCHED,2026-08-01,1.3,2026-08-01,MATCHES_DB_LATEST,Live ONS D7G8,PASS
+UK,uk-energy-cpi-yoy,UK Energy CPI YoY,ons,D7GT,FETCHED,2026-08-01,6,2026-08-01,MATCHES_DB_LATEST,Live ONS D7GT,PASS
+UK,uk-paye-median-pay-mom,UK PAYE Median Pay MoM,ons,PAYE_MEDIAN_PAY,FETCHED,2026-08-01,0.4157,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-awe-regular-mom,UK Average Weekly Earnings (Regular Pay) MoM,ons,KAI7,FETCHED,2026-07-01,0.2845,2026-07-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-gdp-qoq,UK Real GDP QoQ,ons,IHYQ,FETCHED,2026-04-01,0.5,2026-04-01,MATCHES_DB_LATEST,Live ONS IHYQ,PASS
+UK,uk-net-trade-qoq,UK Net Trade Contribution QoQ,ons,ZZ5U,FETCHED,2026-04-01,-0.01,2026-04-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-net-trade-yoy,UK Net Trade Contribution YoY,ons,ZZ6D,FETCHED,2026-04-01,-0.24,2026-04-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-gdp-mom,UK Monthly GDP MoM,ons,ECYX,FETCHED,2026-08-01,0.1,2026-08-01,MATCHES_DB_LATEST,Live ONS ECYX,PASS
+UK,uk-gdp-3m-yoy,UK Monthly GDP 3m YoY,ons,ED9T,FETCHED,2026-08-01,1.8,2026-08-01,MATCHES_DB_LATEST,Live ONS ED9T,PASS
+UK,uk-unemployed-persons,"UK Unemployed Persons (aged 16+, seasonally adjusted)",ons,MGSC,FETCHED,2026-06-01,1778,2026-06-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-long-term-unemployed,"UK Unemployed over 12 Months (aged 16+, seasonally adjusted)",ons,YBWH,FETCHED,2026-06-01,463,2026-06-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-employment-level,UK Employment Level,ons,MGRZ,FETCHED,2026-06-01,34478,2026-06-01,MATCHES_DB_LATEST,Live ONS MGRZ,PASS
+UK,uk-inflation-exp-1y,UK Inflation Expectations 1-Year,boe,IAS_Q2A,FETCHED,2026-08-01,3.2,2026-08-01,MATCHES_DB_LATEST,Live BoE IAS_Q2A,PASS
+UK,uk-inflation-exp-5y,UK Inflation Expectations 5-Year,boe,IAS_Q2C,FETCHED,2026-08-01,3.2,2026-08-01,MATCHES_DB_LATEST,Live BoE IAS_Q2C,PASS
+UK,uk-dmp-wage-growth-3m,UK DMP Realised Wage Growth (3m avg),boe,DMP_WAGE_REALISED_3M,FETCHED,2026-08-01,3.955,2026-08-01,MATCHES_DB_LATEST,Live BoE DMP_WAGE_REALISED_3M,PASS
+UK,uk-dmp-wage-exp-1y-3m,UK DMP Expected Wage Growth 1Y (3m avg),boe,DMP_WAGE_EXPECTED_3M,FETCHED,2026-08-01,3.408,2026-08-01,MATCHES_DB_LATEST,Live BoE DMP_WAGE_EXPECTED_3M,PASS
+UK,uk-dmp-wage-exp-1y,UK DMP Expected Wage Growth 1-Year,boe,DMP_WAGE_EXPECTED_1Y,FETCHED,2026-08-01,3.408,2026-08-01,MATCHES_DB_LATEST,Live BoE DMP_WAGE_EXPECTED_1Y,PASS
+UK,uk-agents-pay-settlement-exp-1y,BoE Agents Expected Pay Settlement 1-Year,boe,AGENTS_PAY_SETTLEMENT_EXPECTED_1Y,NO_VALUE,,,2026-02-01,,Source request completed without a numeric latest reading,NO_VALUE
+UK,uk-inflation-exp-2y,UK Inflation Expectations 2-Year,boe,IAS_Q2B,FETCHED,2026-08-01,2.9,2026-08-01,MATCHES_DB_LATEST,Live BoE IAS_Q2B,PASS
+UK,uk-citi-yougov-inflation-exp-1y,Citi/YouGov UK Inflation Expectations 1-Year,boe,CITI_YOUGOV_INFLATION_1Y,FETCHED,2026-09-01,4.5,2026-09-01,MATCHES_DB_LATEST,Live BoE CITI_YOUGOV_INFLATION_1Y,PASS
+UK,uk-citi-yougov-inflation-exp-5-10y,Citi/YouGov UK Inflation Expectations 5–10-Year,boe,CITI_YOUGOV_INFLATION_5_10Y,FETCHED,2026-09-01,4.3,2026-09-01,MATCHES_DB_LATEST,Live BoE CITI_YOUGOV_INFLATION_5_10Y,PASS
+UK,uk-dmp-inflation-exp-1y,UK DMP CPI Inflation Expectation 1-Year,boe,DMP_CPI_EXPECTED_1Y,FETCHED,2026-08-01,3.1,2026-08-01,MATCHES_DB_LATEST,Live BoE DMP_CPI_EXPECTED_1Y,PASS
+UK,uk-dmp-inflation-exp-3y,UK DMP CPI Inflation Expectation 3-Year,boe,DMP_CPI_EXPECTED_3Y,FETCHED,2026-08-01,2.8,2026-08-01,MATCHES_DB_LATEST,Live BoE DMP_CPI_EXPECTED_3Y,PASS
+UK,uk-dmp-own-price-exp-1y,UK DMP Own-Price Inflation Expectation 1-Year,boe,DMP_OWN_PRICE_EXPECTED_1Y,FETCHED,2026-08-01,3.8,2026-08-01,MATCHES_DB_LATEST,Live BoE DMP_OWN_PRICE_EXPECTED_1Y,PASS
+UK,uk-maps-inflation-1y,BoE MaPS CPI Inflation 1-Year,boe,MAPS_CPI_1Y,NO_VALUE,,,2026-09-01,,Source request completed without a numeric latest reading,NO_VALUE
+UK,uk-maps-inflation-2y,BoE MaPS CPI Inflation 2-Year,boe,MAPS_CPI_2Y,NO_VALUE,,,2026-09-01,,Source request completed without a numeric latest reading,NO_VALUE
+UK,uk-maps-inflation-3y,BoE MaPS CPI Inflation 3-Year,boe,MAPS_CPI_3Y,NO_VALUE,,,2026-09-01,,Source request completed without a numeric latest reading,NO_VALUE
+UK,uk-maps-inflation-5y,BoE MaPS CPI Inflation 5-Year,boe,MAPS_CPI_5Y,NO_VALUE,,,2026-09-01,,Source request completed without a numeric latest reading,NO_VALUE
+UK,uk-inflation-comp-1y,UK 1-Year Inflation Swap,boe,UK_INFL_COMP_1Y,FAILED,,,2026-07-31,,BoE MPR chart-data series UK_INFL_COMP_1Y returned no observations,FAILED
+UK,uk-inflation-comp-5y,UK 5-Year Inflation Compensation,boe,UK_INFL_COMP_5Y,FAILED,,,,,Unknown BoE series UK_INFL_COMP_5Y,FAILED
+UK,uk-inflation-comp-10y,UK 10-Year Inflation Compensation,boe,UK_INFL_COMP_10Y,FAILED,,,,,Unknown BoE series UK_INFL_COMP_10Y,FAILED
+UK,uk-inflation-comp-5y5y,UK 5Y5Y Inflation Compensation,boe,UK_INFL_COMP_5Y5Y,FAILED,,,2026-10-14,,BoE daily inflation archive HTTP 403,FAILED
+UK,uk-cpih-mom,UK CPIH MoM,ons,L59C,FETCHED,2026-08-01,0.5,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-core-cpih-yoy,UK Core CPIH YoY,ons,L5LQ,FETCHED,2026-08-01,2.9,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-food-cpih-yoy,UK Food CPIH YoY,ons,L55P,FETCHED,2026-08-01,1.3,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-food-cpih-mom,UK Food CPIH MoM,ons,L59D,FETCHED,2026-08-01,0.4,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-housing-cpih-yoy,UK Housing CPIH YoY,ons,L55S,FETCHED,2026-08-01,4.3,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-housing-cpih-mom,UK Housing CPIH MoM,ons,L5PG,FETCHED,2026-08-01,0.411,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-household-consumption-level,UK Real Household Final Consumption,ons,ABJR,FETCHED,2026-04-01,420380,2026-04-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-gfcf-level,UK Real Gross Fixed Capital Formation,ons,NPQT,FETCHED,2026-04-01,144517,2026-04-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-gfcf-yoy,UK Gross Fixed Capital Formation YoY,ons,KG7T,FETCHED,2026-04-01,3.1,2026-04-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-gfcf-qoq,UK Gross Fixed Capital Formation QoQ,ons,KG7Q,FETCHED,2026-04-01,0.9,2026-04-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-business-investment-qoq,UK Business Investment QoQ,ons,KG7P,FETCHED,2026-04-01,1.7,2026-04-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-business-investment-yoy,UK Business Investment YoY,ons,KG7S,FETCHED,2026-04-01,0.8,2026-04-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-government-consumption-level,UK Government Final Consumption,ons,NMRY,FETCHED,2026-04-01,150653,2026-04-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-retail-non-food-stores,UK Retail Sales — Non-Food Stores,ons,EAPV,FETCHED,2026-08-01,0.4766,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-retail-nonstore,UK Retail Sales — Non-Store,ons,J5DZ,FETCHED,2026-08-01,1.6979,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-retail-sales-total-ex-fuel,UK Retail Sales — Total ex Fuel,ons,J5EC,FETCHED,2026-08-01,0.5,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-employee-jobs,UK Employee Jobs,ons,BCAJ,FETCHED,2026-04-01,32352,2026-04-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-inactive-persons,UK Economically Inactive Persons (16–64),ons,LF2M,FETCHED,2026-06-01,9121,2026-06-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-inactivity-change,UK Economic Inactivity Annual Change (16–64),ons,FV28,FETCHED,2026-06-01,12,2026-06-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-inactivity-student,UK Economic Inactivity: Student,ons,LF63,FETCHED,2026-06-01,2460,2026-06-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-inactivity-family,UK Economic Inactivity: Looking after family or home,ons,LF65,FETCHED,2026-06-01,1535,2026-06-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-inactivity-temporary-sick,UK Economic Inactivity: Temporary sickness,ons,LF67,FETCHED,2026-06-01,201,2026-06-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-inactivity-long-term-sick,UK Economic Inactivity: Long-term sickness,ons,LF69,FETCHED,2026-06-01,2780,2026-06-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-inactivity-discouraged,UK Economic Inactivity: Discouraged workers,ons,LFL8,FETCHED,2026-06-01,35,2026-06-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-inactivity-retired,UK Economic Inactivity: Retired,ons,LF6B,FETCHED,2026-06-01,1049,2026-06-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-inactivity-other,UK Economic Inactivity: Other reasons,ons,LF6D,FETCHED,2026-06-01,1061,2026-06-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-vacancy-rate,UK Job Openings Rate,ons,N4JE,FETCHED,2026-08-01,2.1,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-vacancy-change,UK Vacancy Change,ons,AP2Y,FETCHED,2026-07-01,-9,2026-07-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-awe-real-total-yoy,UK Real AWE Total Pay Growth,ons,A3WW,FETCHED,2026-07-01,0.9,2026-07-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-awe-real-regular-yoy,UK Real AWE Regular Pay Growth,ons,A2FA,FETCHED,2026-07-01,0.6,2026-07-01,MATCHES_DB_LATEST,Live ONS,PASS
+UK,uk-payrolled-employees-annual-change,UK Payrolled Employees Annual Change,ons,PAYE_EMP_LEVEL,FETCHED,2026-08-01,-0.4769,2026-08-01,MATCHES_DB_LATEST,Live ONS,PASS
+EA,ea-wage-tracker,ECB Wage Tracker,ecb,EWT.M.U2.N.WT.INWS._T.4F0.GY,FETCHED,2027-06,2.8514,2027-06,MATCHES_DB_LATEST,Live ECB EWT.M.U2.N.WT.INWS._T.4F0.GY,PASS
+EA,ea-wage-tracker-ex-oneoff,ECB Wage Tracker Excluding One-Off Payments,ecb,EWT.M.U2.N.WT.INWX._T.4F0.GY,FETCHED,2027-06,2.9013,2027-06,MATCHES_DB_LATEST,Live ECB EWT.M.U2.N.WT.INWX._T.4F0.GY,PASS
+EA,ea-safe-selling-price-exp-1y,ECB SAFE Selling Price Expectations,ecb,SAFE_SELLING_PRICE_EXP_1Y,FETCHED,2026-06-01,3.173,2026-06-01,MATCHES_DB_LATEST,Live ECB SAFE_SELLING_PRICE_EXP_1Y,PASS
+EA,ea-safe-input-cost-exp-1y,ECB SAFE Input Cost Expectations,ecb,SAFE_INPUT_COST_EXP_1Y,FETCHED,2026-06-01,5.192,2026-06-01,MATCHES_DB_LATEST,Live ECB SAFE_INPUT_COST_EXP_1Y,PASS
+EA,ea-spf-current-year,ECB SPF HICP Current-Year Forecast,ecb,SPF_HICP_CURRENT_YEAR,FETCHED,2026,2.6613,2026,MATCHES_DB_LATEST,Live ECB SPF_HICP_CURRENT_YEAR,PASS
+EA,ea-core-hicp-mom,Euro Area Core HICP MoM,eurostat,prc_hicp_mmor_core,FETCHED,2026-09-01,0.2,2026-09-01,MATCHES_DB_LATEST,Live Eurostat prc_hicp_mmor_core,PASS
+EA,ea-services-hicp-yoy,Euro Area Services HICP YoY,eurostat,prc_hicp_minr_serv,FETCHED,2026-09-01,3.2,2026-09-01,MATCHES_DB_LATEST,Live Eurostat prc_hicp_minr_serv,PASS
+EA,ea-services-hicp-mom,Euro Area Services HICP MoM,eurostat,prc_hicp_mmor_serv,FETCHED,2026-09-01,-0.7,2026-09-01,MATCHES_DB_LATEST,Live Eurostat prc_hicp_mmor_serv,PASS
+EA,ea-goods-hicp-yoy,Euro Area Goods HICP YoY,eurostat,prc_hicp_minr_goods,FETCHED,2026-08-01,3.4,2026-08-01,MATCHES_DB_LATEST,Live Eurostat prc_hicp_minr_goods,PASS
+EA,ea-food-hicp-yoy,Euro Area Food HICP YoY,eurostat,prc_hicp_minr_food,FETCHED,2026-09-01,1.4,2026-09-01,MATCHES_DB_LATEST,Live Eurostat prc_hicp_minr_food,PASS
+EA,ea-energy-hicp-yoy,Euro Area Energy HICP YoY,eurostat,prc_hicp_minr_nrg,FETCHED,2026-09-01,18.8,2026-09-01,MATCHES_DB_LATEST,Live Eurostat prc_hicp_minr_nrg,PASS
+EA,ea-unemployed-persons,Euro Area Unemployed Persons,eurostat,ei_lmhu_m,FETCHED,2026-08-01,11357,2026-08-01,MATCHES_DB_LATEST,Live Eurostat ei_lmhu_m,PASS
+EA,ea-gdp-yoy,Euro Area Real GDP YoY,eurostat,ea_gdp_real,FETCHED,2026-04-01,1.1717,2026-04-01,MATCHES_DB_LATEST,Live Eurostat,PASS
+EA,ea-gdp-qoq,Euro Area Real GDP QoQ,eurostat,ea_gdp_real,FETCHED,2026-04-01,0.633,2026-04-01,MATCHES_DB_LATEST,Live Eurostat,PASS
+EA,ea-business-confidence,Euro Area Industrial Confidence,eurostat,ei_bssi_ici,FETCHED,2026-09-01,-3.8,2026-09-01,MATCHES_DB_LATEST,Live Eurostat ei_bssi_ici,PASS
+EA,ea-youth-unemployment,Euro Area Youth Unemployment Rate,eurostat,une_rt_m_youth,FETCHED,2026-08-01,15,2026-08-01,MATCHES_DB_LATEST,Live Eurostat une_rt_m_youth,PASS
+EA,ea-youth-unemployed-persons,Euro Area Youth Unemployed Persons,eurostat,ea-youth-unemployed-persons,FETCHED,2026-08-01,2391,2026-08-01,MATCHES_DB_LATEST,Live Eurostat,PASS
+EA,ea-employment-rate,Euro Area Employment Rate,eurostat,ea-employment-rate,FETCHED,2026-04-01,62,2026-04-01,MATCHES_DB_LATEST,Live Eurostat,PASS
+EA,ea-inactive-population,Euro Area Inactive Population,eurostat,ea_inactive_population,FETCHED,2026-04-01,90336.2,2026-04-01,MATCHES_DB_LATEST,Live Eurostat,PASS
+EA,ea-inactivity-change,Euro Area Inactivity Change,eurostat,ea_inactive_population,FETCHED,2026-04-01,-783.8,2026-04-01,MATCHES_DB_LATEST,Live Eurostat,PASS
+EA,ea-vacant-posts,Euro Area Vacant Posts,eurostat,ea_vacant_posts,FAILED,,,,,Eurostat returned zero observations for jvs_q_r21,FAILED
+EA,ea-vacancy-change,Euro Area Vacancy Change,eurostat,ea_vacant_posts,FAILED,,,,,Eurostat returned zero observations for jvs_q_r21,FAILED
+EA,ea-long-term-unemployment,Euro Area Long-Term Unemployment Rate,eurostat,ea_long_term_unemployment,FETCHED,2026-04-01,1.1,2026-04-01,MATCHES_DB_LATEST,Live Eurostat,PASS
+EA,ea-employment-change,Euro Area Employment Change,eurostat,lfsi_emp_q_ea,FETCHED,2026-04-01,162,2026-04-01,MATCHES_DB_LATEST,Live Eurostat,PASS
+EA,ea-wage-growth,Euro Area Wage Growth YoY,eurostat,lc_lci_wage_yoy,FETCHED,2026-04-01,3.1,2026-04-01,MATCHES_DB_LATEST,Live Eurostat,PASS
+EA,ea-wage-growth-qoq,Euro Area Wage Growth QoQ,eurostat,lc_lci_wage_qoq,FETCHED,2026-04-01,0.8,2026-04-01,MATCHES_DB_LATEST,Live Eurostat,PASS
+EA,ea-inflation-exp-1y,ECB SPF HICP 1-Year Expectation,ecb,SPF_HICP_P12M,FETCHED,2027-06-01,2.0957,2027-06-01,MATCHES_DB_LATEST,Live ECB SPF_HICP_P12M,PASS
+EA,ea-safe-wage-exp-1y,EA SAFE Expected Wage Growth 1Y,ecb,SAFE_WAGE_EXP_1Y,FETCHED,2026-06-01,2.548,2026-06-01,MATCHES_DB_LATEST,Live ECB SAFE_WAGE_EXP_1Y,PASS
+EA,ea-ces-inflation-exp-1y,ECB CES Consumer Inflation 1Y,ecb,CES_HICP_1Y,FETCHED,2026-08-01,3,2026-08-01,MATCHES_DB_LATEST,Live ECB CES_HICP_1Y,PASS
+EA,ea-core-inflation-exp-1y,ECB SPF Core HICP 1-Year,ecb,SPF_CORE_P12M,FETCHED,2027-06-01,2.2605,2027-06-01,MATCHES_DB_LATEST,Live ECB SPF_CORE_P12M,PASS
+EA,ea-spf-wage-exp-1y,ECB SPF Wage Growth Assumption 1Y,ecb,SPF_ASSU_LAB_P12M,FETCHED,2026-01-01,3.0199,2026-01-01,MATCHES_DB_LATEST,Live ECB SPF_ASSU_LAB_P12M,PASS
+EA,ea-inflation-exp-lt,ECB SPF HICP Longer-Term,ecb,SPF_HICP_LT,FETCHED,2026-07-01,2.0369,2026-07-01,MATCHES_DB_LATEST,Live ECB SPF_HICP_LT,PASS
+EA,ea-ces-inflation-exp-3y,ECB CES Consumer Inflation 3-Year,ecb,CES_HICP_3Y,FETCHED,2026-08-01,2.9,2026-08-01,MATCHES_DB_LATEST,Live ECB CES_HICP_3Y,PASS
+EA,ea-ces-inflation-exp-5y,ECB CES Consumer Inflation 5-Year,ecb,CES_HICP_5Y,FETCHED,2026-08-01,2.5,2026-08-01,MATCHES_DB_LATEST,Live ECB CES_HICP_5Y,PASS
+EA,ea-ces-inflation-uncertainty,ECB CES Inflation Uncertainty,ecb,CES_HICP_UNCERTAINTY,FAILED,,,,,Unknown ECB series CES_HICP_UNCERTAINTY,FAILED
+EA,ea-safe-inflation-exp-1y,ECB SAFE Business Inflation Expectation 1-Year,ecb,SAFE_INFL_EXP_1Y,FAILED,,,,,Unknown ECB series SAFE_INFL_EXP_1Y,FAILED
+EA,ea-safe-inflation-exp-3y,ECB SAFE Business Inflation Expectation 3-Year,ecb,SAFE_INFL_EXP_3Y,FAILED,,,,,Unknown ECB series SAFE_INFL_EXP_3Y,FAILED
+EA,ea-safe-inflation-exp-5y,ECB SAFE Business Inflation Expectation 5-Year,ecb,SAFE_INFL_EXP_5Y,FAILED,,,,,Unknown ECB series SAFE_INFL_EXP_5Y,FAILED
+EA,ea-spf-hicp-1y,ECB SPF HICP 1-Year,ecb,SPF_HICP_P12M,FETCHED,2027-06-01,2.0957,2027-06-01,MATCHES_DB_LATEST,Live ECB SPF_HICP_P12M,PASS
+EA,ea-spf-hicp-2y,ECB SPF HICP 2-Year,ecb,SPF_HICP_P24M,FETCHED,2028-06,1.9613,2028-06,MATCHES_DB_LATEST,Live ECB SPF_HICP_P24M,PASS
+EA,ea-spf-hicp-lt,ECB SPF HICP Long-Term,ecb,SPF_HICP_LT,FETCHED,2026-07-01,2.0369,2026-07-01,MATCHES_DB_LATEST,Live ECB SPF_HICP_LT,PASS
+EA,ea-spf-hicpx-1y,ECB SPF Core HICP 1-Year,ecb,SPF_CORE_P12M,FETCHED,2027-06-01,2.2605,2027-06-01,MATCHES_DB_LATEST,Live ECB SPF_CORE_P12M,PASS
+EA,ea-household-consumption,Euro Area Household and NPISH Consumption,eurostat,ea_household_consumption,FETCHED,2026-04-01,1759904.2,2026-04-01,MATCHES_DB_LATEST,Live Eurostat,PASS
+EA,ea-gfcf,Euro Area Gross Fixed Capital Formation,eurostat,ea_gfcf,FETCHED,2026-04-01,703082.6,2026-04-01,MATCHES_DB_LATEST,Live Eurostat,PASS
+EA,ea-government-consumption,Euro Area Government Final Consumption,eurostat,ea_government_consumption,FETCHED,2026-04-01,743006.8,2026-04-01,MATCHES_DB_LATEST,Live Eurostat,PASS
+EA,ea-exports,Euro Area Exports,eurostat,ea_exports,FETCHED,2026-04-01,1646240.7,2026-04-01,MATCHES_DB_LATEST,Live Eurostat,PASS
+EA,ea-imports,Euro Area Imports,eurostat,ea_imports,FETCHED,2026-04-01,1496308.9,2026-04-01,MATCHES_DB_LATEST,Live Eurostat,PASS
+EA,ea-inactivity,Euro Area Inactivity Rate,eurostat,ea_inactivity_rate,FAILED,,,2026-04-01,,Eurostat lfsi_act_q request failed (404),FAILED
+EA,ea-job-vacancies,Euro Area Job Vacancy Rate,eurostat,ea_job_vacancy_rate,FAILED,,,2026-04-01,,Eurostat jvs_q_r21 request failed (400),FAILED
+EA,ea-retail-food-drinks-tobacco,Euro Area Retail Sales — Food / Drinks / Tobacco,eurostat,ea_retail_food_drinks_tobacco,FETCHED,2026-08-01,0.1018,2026-08-01,MATCHES_DB_LATEST,Live Eurostat,PASS
+EA,ea-retail-non-food-ex-fuel,Euro Area Retail Sales — Non-Food ex Fuel,eurostat,ea_retail_non_food_ex_fuel,FETCHED,2026-08-01,0.4562,2026-08-01,MATCHES_DB_LATEST,Live Eurostat,PASS
+EA,ea-retail-automotive-fuel,Euro Area Retail Sales — Automotive Fuel,eurostat,ea_retail_automotive_fuel,FETCHED,2026-08-01,-1.9455,2026-08-01,MATCHES_DB_LATEST,Live Eurostat,PASS
+EA,ea-retail-sales-total-ex-motor-vehicles,Euro Area Retail Sales — Total ex Motor Vehicles,eurostat,ea_retail_sales_total_ex_motor_vehicles,FETCHED,2026-08-01,0.096,2026-08-01,MATCHES_DB_LATEST,Live Eurostat,PASS

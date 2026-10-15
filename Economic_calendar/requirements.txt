@@ -3,3 +3,4 @@ requests>=2.31,<3
 icalendar>=6,<8
 pypdf>=5,<7
 tzdata>=2025.1
+lseg-data>=2.1.1,<3

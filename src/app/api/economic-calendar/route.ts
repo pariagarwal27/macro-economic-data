@@ -8,6 +8,7 @@ import { getDb } from "@/db";
 import { observations, releases } from "@/db/schema";
 import { getCompletedCalendarReleases } from "@/ingest/release-state";
 import { applyTransform } from "@/ingest/transforms";
+import { cpiUnderlyingScheduleRows } from "@/ingest/cpi-release-schedule";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -31,7 +32,13 @@ export async function GET() {
     const catalog = getDashboardCalendarMetrics();
     const displayed = new Set(catalog.map(metric => metric.id));
     const rawSchedule = (await getEconomicCalendarRows({ includeUnscheduled: true })).filter(row => displayed.has(row.metricId));
-    const schedule = inheritSharedReleaseSchedules(rawSchedule, catalog);
+    const inheritedSchedule = inheritSharedReleaseSchedules(rawSchedule, catalog);
+    const cpiSchedule = inheritedSchedule.find(row => row.metricId === "us-cpi");
+    const alreadyScheduled = new Set(inheritedSchedule.map(row => row.metricId));
+    const derivedUnderlying = cpiSchedule
+      ? cpiUnderlyingScheduleRows(cpiSchedule).filter(row => !alreadyScheduled.has(row.metricId))
+      : [];
+    const schedule = [...inheritedSchedule, ...derivedUnderlying];
     const now = new Date();
     const windowStart = new Date(now.getTime() - 8 * 86_400_000).toISOString();
     const windowEnd = new Date(now.getTime() + 86_400_000).toISOString();
@@ -79,7 +86,12 @@ export async function GET() {
         if (latest && Number.isFinite(latest.value)) latestValues.set(metric.id, latest.value);
       }
     }
-    const history = inheritSharedReleaseSchedules(await getEconomicCalendarRows({ history: true }), catalog);
+    const rawHistory = inheritSharedReleaseSchedules(await getEconomicCalendarRows({ history: true }), catalog);
+    const historyCpiRows = rawHistory.filter(row => row.metricId === "us-cpi");
+    const historyScheduledKeys = new Set(rawHistory.map(row => `${row.metricId}:${row.nextReleaseDate}`));
+    const derivedUnderlyingHistory = historyCpiRows.flatMap(cpiUnderlyingScheduleRows)
+      .filter(row => !historyScheduledKeys.has(`${row.metricId}:${row.nextReleaseDate}`));
+    const history = [...rawHistory, ...derivedUnderlyingHistory];
     const completions = await getCompletedCalendarReleases(windowStart);
     for (const completion of completions) if (completion.actual && !actuals.some(item=>item.id===completion.actual!.id)) actuals.push(completion.actual);
     return NextResponse.json(buildEconomicCalendar(schedule, actuals, catalog, now, {history,completions,latestValues,releaseHistory}), {

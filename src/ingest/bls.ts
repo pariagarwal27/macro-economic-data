@@ -4,6 +4,7 @@ import { LIVE_MAP } from "@/catalog/live-map";
 import { isUsCpiLsegOnlyMetric } from "./source-registry";
 import { getD1Database } from "@/db";
 import { getSourceSnapshot } from "./cloud-source-cache";
+import { isFreshReleaseFetch } from "./release-fetch-context.js";
 
 const BLS_URL = "https://api.bls.gov/publicAPI/v2/timeseries/data/";
 
@@ -26,7 +27,7 @@ export async function fetchBlsSeries(
   }));
   const requestedIds = [...new Set(seriesIds)].filter(id => !cpiSeriesIds.has(id));
   if (!requestedIds.length) return new Map();
-  if (!getD1Database()) return fetchBlsSeriesUncached(requestedIds, opts);
+  if (isFreshReleaseFetch() || !getD1Database()) return fetchBlsSeriesUncached(requestedIds, opts);
   const allIds = [...new Set([...requestedIds, ...METRICS.flatMap(metric => {
     if (isUsCpiLsegOnlyMetric(metric.id)) return [];
     const live = LIVE_MAP[metric.id];

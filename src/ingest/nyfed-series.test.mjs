@@ -75,3 +75,48 @@ test("job finding release fallback accepts the NY Fed's published 'percent' word
   const series = await fetchNyfedSeries("SCE_LABOR_JOB_FINDING_1Y");
   assert.deepEqual(series, [{ date: "2026-09-01", value: 46.1 }]);
 });
+
+test("inflation horizons parse from the current combined NY Fed worksheet", async (t) => {
+  mockNyfedWorkbook(t, [
+    ["Inflation expectations", [
+      ["Source: Federal Reserve Bank of New York"],
+      ["Inflation expectations"],
+      [null],
+      [
+        null,
+        "Median one-year ahead expected inflation rate",
+        "Median three-year ahead expected inflation rate",
+        "25th Percentile five-year ahead expected inflation rate",
+        "Median five-year ahead expected inflation rate",
+        "75th Percentile five-year ahead expected inflation rate",
+        "Median point prediction five-year ahead inflation rate",
+      ],
+      [202608, 3.6, 3.1, 1.5, 3.0, 4.8, 3.2],
+      [202609, 3.9, 3.3, 1.4, 3.0, 4.7, 3.1],
+    ]],
+  ]);
+
+  for (const [seriesId, expected] of [
+    ["SCE_INFLATION_1Y", 3.9],
+    ["SCE_INFLATION_3Y", 3.3],
+    ["SCE_INFLATION_5Y", 3.0],
+  ]) {
+    const series = await fetchNyfedSeries(seriesId);
+    assert.deepEqual(series.at(-1), { date: "2026-09-01", value: expected });
+  }
+});
+
+test("an absent 5Y column does not make the available 1Y series fail", async (t) => {
+  mockNyfedWorkbook(t, [
+    ["Inflation expectations", [
+      [null],
+      [null],
+      [null],
+      [null, "Median one-year ahead expected inflation rate", "Median three-year ahead expected inflation rate"],
+      [202609, 3.9, 3.3],
+    ]],
+  ]);
+
+  const series = await fetchNyfedSeries("SCE_INFLATION_1Y");
+  assert.deepEqual(series.at(-1), { date: "2026-09-01", value: 3.9 });
+});

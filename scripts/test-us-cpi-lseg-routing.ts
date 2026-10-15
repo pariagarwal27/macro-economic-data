@@ -7,6 +7,7 @@ import {
   getCloudSourceConfig,
   getSourceConfig,
   isUsCpiMetric,
+  shouldMergeHistoricalBackfill,
 } from "../src/ingest/source-registry";
 
 const expectedLsegRoutes: Record<string, string> = {
@@ -30,6 +31,7 @@ const expectedBlsRoutes: Record<string, string> = {
 };
 
 for (const [metricId, ric] of Object.entries(expectedLsegRoutes)) {
+  assert.equal(shouldMergeHistoricalBackfill(metricId), true, `${metricId} backfill must preserve existing observations`);
   for (const [runtime, config] of [
     ["local", getSourceConfig(metricId)],
     ["hosted", getCloudSourceConfig(metricId)],
@@ -45,6 +47,7 @@ const cpiMetrics = METRICS.filter((metric) => isUsCpiMetric(metric.id));
 assert.ok(cpiMetrics.length > 0, "The US CPI family should be detected");
 for (const metric of cpiMetrics) {
   const isBlsException = Object.hasOwn(expectedBlsRoutes, metric.id);
+  assert.equal(shouldMergeHistoricalBackfill(metric.id), !isBlsException, `${metric.id} must merge only when routed through LSEG`);
   for (const [runtime, config] of [
     ["local", getSourceConfig(metric.id)],
     ["hosted", getCloudSourceConfig(metric.id)],

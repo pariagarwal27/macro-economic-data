@@ -2,7 +2,7 @@ import { METRICS } from '@/catalog/metrics';
 import { DASHBOARD } from '@/components/macro-ui-hierarchy';
 import { calendarMetricName, shouldShowCalendarMetric } from './economic-calendar-metrics';
 
-/** Top-level dashboard series plus daily/hourly metrics, which publish continuously. */
+/** Top-level dashboard series, the paired claims readings, and continuous metrics. */
 export function getDashboardCalendarMetrics() {
   const displayed = new Set<string>();
   const titles = new Map<string, string>();
@@ -13,6 +13,18 @@ export function getDashboardCalendarMetrics() {
       }
       if (spec.title) titles.set(spec.metricId, spec.title);
     }
+  }
+  // The claims card displays two separately published weekly readings.
+  // Keep both in the release diary rather than only the card's primary metric.
+  for (const id of ['us-initial-claims', 'us-continuing-claims']) {
+    displayed.add(id);
+    const metric = METRICS.find(item => item.id === id);
+    if (metric) titles.set(id, metric.name);
+  }
+  for (const id of ["us-sticky-cpi", "us-core-sticky-cpi", "us-flexible-cpi", "us-cleveland-median-cpi", "us-cleveland-trimmed-cpi"]) {
+    displayed.add(id);
+    const metric = METRICS.find(item => item.id === id);
+    if (metric) titles.set(id, metric.name);
   }
   const visibleMetrics = METRICS.filter(metric =>
     (displayed.has(metric.id) || metric.frequency === "daily" || metric.frequency === "hourly") &&

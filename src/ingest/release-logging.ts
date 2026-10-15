@@ -1,4 +1,8 @@
-export const RELEASE_RETRY_COOLDOWN_MS = 2 * 60_000;
+// Keep release-day polling responsive while avoiding a tight request loop
+// when an official source has not published the observation yet.
+export const RELEASE_RETRY_COOLDOWN_MS = 5_000;
+// This lease protects an unfinished request; it is not a retry delay.
+export const RELEASE_PROCESSING_LEASE_MS = 2 * 60_000;
 
 export type ReleaseLogFields = Record<string, unknown> & {
   event: string;

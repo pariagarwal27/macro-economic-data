@@ -33,8 +33,9 @@ const checks = [
     if (!/spec\.id\s*===\s*"us-inflation-expectations-wage"/.test(dashboard)) throw new Error("US wage chart group is not connected to its dashboard card");
     if (!/spec\.id\s*===\s*"us-inflation-expectations-business"/.test(dashboard)) throw new Error("US business chart group is not connected to its dashboard card");
   }],
-  ["previously surfaced US long-run model series and BoE Agents wage series remain in the detail taxonomy", () => {
-    for (const id of ["us-cleveland-exp-inf-3y", "us-cleveland-exp-inf-10y", "us-cleveland-exp-inf-30y", "uk-agents-pay-settlement-exp-1y"]) {
+  ["US model-based detail taxonomy hides Cleveland 30Y while retaining other long-run series", () => {
+    if (hierarchy.includes('"us-cleveland-exp-inf-30y"')) throw new Error("Cleveland 30Y remains in US inflation expectations UI taxonomy");
+    for (const id of ["us-cleveland-exp-inf-3y", "us-cleveland-exp-inf-10y", "uk-agents-pay-settlement-exp-1y"]) {
       if (!hierarchy.includes(`"${id}"`)) throw new Error(`series ${id} was dropped during consolidation`);
     }
   }],

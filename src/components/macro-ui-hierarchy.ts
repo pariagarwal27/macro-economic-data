@@ -38,6 +38,7 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
  {
   id: "us-cpi-card",
   metricId: "us-cpi",
+  chartMetricIds: ["us-sticky-cpi", "us-core-sticky-cpi", "us-flexible-cpi", "us-cleveland-median-cpi"],
   yoyMetricId: "us-cpi-yoy",
   momMetricId: "us-cpi-mom",
   title: "CPI (Headline)",
@@ -229,14 +230,12 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
     n("cleveland-3y", "Cleveland Fed — 3-Year", "us-cleveland-exp-inf-3y"),
     n("cleveland-5y", "Cleveland Fed — 5-Year", "us-cleveland-exp-inf-5y"),
     n("cleveland-10y", "Cleveland Fed — 10-Year", "us-cleveland-exp-inf-10y"),
-    n("cleveland-30y", "Cleveland Fed — 30-Year", "us-cleveland-exp-inf-30y"),
   ],
   chartMetricIds: [
     "us-cleveland-exp-inf-1y",
     "us-cleveland-exp-inf-3y",
     "us-cleveland-exp-inf-5y",
     "us-cleveland-exp-inf-10y",
-    "us-cleveland-exp-inf-30y",
   ],
 },
   ],

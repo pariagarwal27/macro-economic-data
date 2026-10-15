@@ -4,7 +4,7 @@ import {
   getEconomicCalendarRows,
   type ScheduledCalendarRow,
 } from "@/lib/economic-calendar-db";
-import { getCloudSourceConfig, getSourceConfig } from "./source-registry";
+import { getActiveLiveSource, getCloudSourceConfig, getSourceConfig } from "./source-registry";
 import { fetchMetricFromOfficialSource } from "./source-adapter";
 import { processFetchedRelease } from "./release-processor";
 import {
@@ -18,6 +18,7 @@ import {
   logReleaseEvent,
   nextReleaseRetryAt,
   RELEASE_RETRY_COOLDOWN_MS,
+  RELEASE_PROCESSING_LEASE_MS,
 } from "./release-logging";
 import { METRICS } from "@/catalog/metrics";
 import type { MetricDef } from "@/catalog/metrics";
@@ -26,6 +27,10 @@ import {
   CPI_CALENDAR_DEPENDENT_METRIC_IDS,
   cpiReleaseCandidates,
 } from "./cpi-release-schedule";
+import { retryableHistoricalSchedules } from "./release-schedule-retries";
+import { createReleaseAttemptRunner } from "./release-attempt-runner";
+
+const attemptRunner = createReleaseAttemptRunner();
 
 function sourceTimeZone(metricId: string) {
   if (
@@ -134,6 +139,10 @@ type Candidate = {
 
 async function buildCandidates(now: Date): Promise<Candidate[]> {
   const calendarRows = await getEconomicCalendarRows();
+  const historyRows = await getEconomicCalendarRows({ history: true });
+  // Keep polling a release for up to three days after its date even if the
+  // calendar has already rolled that metric forward to its next release.
+  const dueRows = [...calendarRows, ...retryableHistoricalSchedules(calendarRows, historyRows, now)];
   const byMetric = new Map(
     calendarRows
       .filter((row) => row.metricId)
@@ -154,7 +163,7 @@ async function buildCandidates(now: Date): Promise<Candidate[]> {
 
   const candidates: Candidate[] = [];
 
-  for (const row of calendarRows) {
+  for (const row of dueRows) {
     // These metrics share the official BLS CPI release, but some have no
     // calendar row of their own (or a stale Cleveland Fed date). Their
     // schedule is derived from the BLS CPI event below.
@@ -230,6 +239,7 @@ async function processCandidate(candidate: Candidate) {
       metricId: candidate.metricId,
       status: "skipped",
       reason: "already-processing-or-processed",
+      retryEligible: false,
     };
   }
 
@@ -241,7 +251,8 @@ async function processCandidate(candidate: Candidate) {
     metricId: candidate.metricId,
     metricName: metric?.shortName ?? metric?.name ?? candidate.metricId,
     region: metric?.region,
-    source: metric?.source?.toUpperCase(),
+    source: getActiveLiveSource(candidate.metricId, Boolean(getD1Database()))?.toUpperCase()
+      ?? metric?.source?.toUpperCase(),
     seriesId: metric?.seriesId,
     adapter: config?.adapter,
     sourceSeries: config?.sourceId,
@@ -284,19 +295,21 @@ async function processCandidate(candidate: Candidate) {
         ...context,
         status: "waiting_for_source",
         reason: "Official source has not published a new value yet.",
-        retryEligibleAt: nextReleaseRetryAt(attemptStartedAt, RELEASE_RETRY_COOLDOWN_MS),
+        retryEligibleAt: nextReleaseRetryAt(new Date().toISOString(), RELEASE_RETRY_COOLDOWN_MS),
         retryDelaySeconds: RELEASE_RETRY_COOLDOWN_MS / 1000,
         elapsedMs: Date.now() - Date.parse(attemptStartedAt),
       });
       return {
         metricId: candidate.metricId,
         status: "waiting",
+        retryEligible: true,
       };
     }
 
     stage = "database_update";
     const processed = await processFetchedRelease({
       metricId: candidate.metricId,
+      scheduledAt: candidate.scheduledAt,
       result: {
         periodDate: result.periodDate,
         value: result.value,
@@ -306,12 +319,13 @@ async function processCandidate(candidate: Candidate) {
       },
     });
 
-    if (processed.updated) {
+    const alreadyRecorded = processed.reason === "already-recorded";
+    if (processed.updated || alreadyRecorded) {
   /*
-   * The source returned a genuinely new observation or a revision,
-   * and persistRelease() successfully wrote it to the database.
+   * The source returned a genuinely new observation, or an earlier refresh
+   * already persisted this scheduled release.
    *
-   * Only NOW do we mark this scheduled release as processed.
+   * Only a committed value completes the scheduled release.
    */
   await markReleaseProcessed(
     candidate.metricId,
@@ -344,13 +358,14 @@ async function processCandidate(candidate: Candidate) {
       await markReleaseProcessed(candidate.metricId, candidate.scheduledAt);
     }
 
+    const successfulCheck = processed.updated || alreadyRecorded;
     const safetyCheckComplete = candidate.mode === "safety" &&
       !processed.updated && processed.reason === "no-new-release";
-    const retryEligible = !processed.updated && !safetyCheckComplete;
+    const retryEligible = !processed.updated && !alreadyRecorded && !safetyCheckComplete;
     logReleaseEvent({
-      event: processed.updated ? "attempt_updated" : safetyCheckComplete ? "attempt_checked_unchanged" : "attempt_retry_scheduled",
+      event: processed.updated ? "attempt_updated" : successfulCheck || safetyCheckComplete ? "attempt_checked_unchanged" : "attempt_retry_scheduled",
       ...context,
-      status: processed.updated ? "updated" : safetyCheckComplete ? "unchanged_safety_check" : "no_new_release_yet",
+      status: processed.updated ? "updated" : alreadyRecorded ? "already_recorded" : safetyCheckComplete ? "unchanged_safety_check" : "no_new_release_yet",
       fetchedPeriod: result.periodDate,
       fetchedValue: result.value,
       previousPeriod: "latestDbPeriod" in processed ? processed.latestDbPeriod : null,
@@ -359,7 +374,7 @@ async function processCandidate(candidate: Candidate) {
       releaseId: "releaseId" in processed ? processed.releaseId ?? null : null,
       reason: processed.reason ?? null,
       retryEligibleAt: retryEligible
-        ? nextReleaseRetryAt(attemptStartedAt, RELEASE_RETRY_COOLDOWN_MS)
+        ? nextReleaseRetryAt(new Date().toISOString(), RELEASE_RETRY_COOLDOWN_MS)
         : null,
       retryDelaySeconds: retryEligible ? RELEASE_RETRY_COOLDOWN_MS / 1000 : null,
       elapsedMs: Date.now() - Date.parse(attemptStartedAt),
@@ -370,6 +385,7 @@ async function processCandidate(candidate: Candidate) {
       status: "checked",
       processed,
       mode: candidate.mode,
+      retryEligible,
     };
   } catch (error) {
     const message =
@@ -387,7 +403,7 @@ async function processCandidate(candidate: Candidate) {
       stage,
       status: "error",
       error: message,
-      retryEligibleAt: nextReleaseRetryAt(attemptStartedAt, RELEASE_RETRY_COOLDOWN_MS),
+      retryEligibleAt: nextReleaseRetryAt(new Date().toISOString(), RELEASE_RETRY_COOLDOWN_MS),
       retryDelaySeconds: RELEASE_RETRY_COOLDOWN_MS / 1000,
       elapsedMs: Date.now() - Date.parse(attemptStartedAt),
     });
@@ -397,29 +413,43 @@ async function processCandidate(candidate: Candidate) {
       status: "error",
       error: message,
       mode: candidate.mode,
+      retryEligible: true,
     };
   }
 }
 
 export async function dispatchDueReleases(options?: {
   metricIds?: string[];
+  /** Infinity for the local worker; bounded to the invocation window in cron. */
+  retryForMs?: number;
 }) {
   const now = new Date();
+  const retryDeadline = now.getTime() + (options?.retryForMs ?? 0);
   const allCandidates = await buildCandidates(now);
   const pollState = await getPollState();
   const candidates = allCandidates.filter(candidate => {
     if (options?.metricIds && !options.metricIds.includes(candidate.metricId)) return false;
+    if (attemptRunner.isRunning(candidate.metricId)) return false;
     const state = pollState.get(candidate.metricId);
     if (!state) return true;
     if (state.scheduledAt === candidate.scheduledAt && state.status === "processed") return false;
-    return now.getTime() - Date.parse(state.lastAttemptAt) >= RELEASE_RETRY_COOLDOWN_MS;
+    return state.status !== "processing" ||
+      now.getTime() - Date.parse(state.lastAttemptAt) >= RELEASE_PROCESSING_LEASE_MS;
   }).sort((a, b) => {
     if (a.mode !== b.mode) return a.mode === "scheduled" ? -1 : 1;
     return (pollState.get(a.metricId)?.lastAttemptAt ?? "").localeCompare(pollState.get(b.metricId)?.lastAttemptAt ?? "");
   });
   // Start every eligible release request together. This avoids delaying a
   // metric behind earlier candidates when multiple releases share a timestamp.
-  const results = await mapConcurrent(candidates, processCandidate);
+  const results = (await mapConcurrent(candidates, candidate => attemptRunner.run(
+    candidate.metricId,
+    () => processCandidate(candidate),
+    async () => {
+      if (candidate.mode !== "scheduled" || Date.now() >= retryDeadline) return false;
+      await new Promise(resolve => setTimeout(resolve, RELEASE_RETRY_COOLDOWN_MS));
+      return Date.now() < retryDeadline;
+    },
+  ))).filter(result => result !== null);
 
   if (getD1Database()) {
     const outcomes = results as { metricId: string; status: string; error?: string; processed?: { updated: boolean } }[];

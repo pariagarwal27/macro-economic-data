@@ -35,6 +35,8 @@ import { mergeClaimsChartData } from "@/lib/claims-chart";
 import { selectComponentMiniSeries } from "@/lib/component-mini-series";
 import { RefreshDataButton } from "@/components/RefreshDataButton";
 import { ExpectationComparisonChart } from "@/components/ExpectationComparisonChart";
+import { InflationContributions } from "@/components/InflationContributions";
+import { CONTRIBUTION_CONFIGS } from "@/lib/inflation-contributions";
 import { EXPECTATION_CHART_GROUPS, EXPANDED_EXPECTATION_GROUP_IDS, MARKERLESS_EXPECTATION_GROUP_IDS, NYFED_EXPECTATION_AXIS_BY_METRIC_ID, NYFED_OVERVIEW_CHART_GROUPS } from "@/lib/expectation-chart-groups";
 import { createExpectationMetricSelection } from "@/lib/expectation-selection";
 import { formatExpectationValue } from "@/lib/expectation-format";
@@ -44,6 +46,11 @@ import { EconomicCalendarSidebar } from "@/components/EconomicCalendarSidebar";
 import { resolveStudioSelection } from "@/lib/chart-studio";
 import { getExpectationAxisTicks, getNiceTickDomain, getNiceTicks } from "@/lib/chart-axis";
 import { getPublishedExpectationReadings } from "@/lib/expectation-series";
+import { inflationRateHistory } from "@/lib/inflation-rate-history";
+import {
+  getUnderlyingInflationPublishedRates,
+  normalizeUnderlyingInflationDetailSpec,
+} from "@/lib/underlying-inflation-detail";
 import {
   formatOfficialComponentWeight,
   getOfficialComponentWeight,
@@ -172,7 +179,7 @@ function renderQuarterlyGrowthChart(data: Array<{ date: string; quarter: string;
           <YAxis width={42} ticks={axisTicks} domain={getNiceTickDomain(axisTicks)} tickFormatter={(value) => `${Number(value).toFixed(1)}%`} tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={false} tickLine={false} />
           <XAxis dataKey="quarter" tickLine={false} axisLine={{ stroke: "var(--line-strong)" }} tickMargin={8} interval="preserveStartEnd" tick={{ fill: "var(--muted)", fontSize: 10 }} />
           <Tooltip cursor={{ fill: "var(--accent-soft)", opacity: .45 }} contentStyle={{ border: "1px solid var(--line)", background: "var(--panel)", fontSize: 11 }} labelFormatter={(label) => String(label)} formatter={(value) => [formatValue(Number(value)), seriesLabel]} />
-          <Bar dataKey="value" name={seriesLabel} fill="var(--country-series)" maxBarSize={48} radius={[3, 3, 0, 0]} isAnimationActive={false}>
+          <Bar dataKey="value" name={seriesLabel} fill="var(--country-series)" maxBarSize={48} minPointSize={value => value === 0 ? 3 : 0} radius={[3, 3, 0, 0]} isAnimationActive={false}>
             <LabelList dataKey="value" position="top" formatter={(value) => formatValue(Number(value))} style={{ fill: "var(--ink)", fontSize: 10 }} />
           </Bar>
         </BarChart> : <LineChart data={data} margin={compact ? { top: 5, right: 5, left: 5, bottom: 3 } : { top: 8, right: 22, left: 8, bottom: 18 }}>
@@ -596,6 +603,9 @@ function RateChart({
   const rootHistory = normalizeHistory(
     root?.history ?? []
   );
+  const isRetailSalesMetric =
+    root?.meta.id === "us-retail-sales-total" ||
+    root?.meta.id === "uk-retail-sales-total-ex-fuel";
 
   const sortedRootHistory = [...rootHistory].sort(
     (a, b) => a.date.localeCompare(b.date)
@@ -1010,7 +1020,7 @@ function RateChart({
     });
   }
 
-  const data = filterHistoryToTrailing12Months([...chartDates]
+  const chartHistory = [...chartDates]
     .sort((a, b) => a.localeCompare(b))
     .map((date) => {
       let yoy: number | null =
@@ -1047,11 +1057,17 @@ function RateChart({
         );
 
         if (!hasDedicatedYoY) {
-          yoy = rates.yoy;
+          yoy = UNDERLYING_INFLATION_METRIC_IDS.has(spec.metricId)
+            ? throughDate.at(-1)?.value ?? null
+            : rates.yoy;
         }
 
         if (!hasDedicatedMoM) {
-          mom = rates.mom;
+          mom = UNDERLYING_INFLATION_METRIC_IDS.has(spec.metricId)
+            ? getUnderlyingInflationPublishedRates(spec, Object.fromEntries(
+                Object.entries(allMetrics).map(([id, payload]) => [id, payload?.history])
+              ))?.mom ?? null
+            : rates.mom;
         }
       }
 
@@ -1065,7 +1081,10 @@ function RateChart({
       (point) =>
         Number.isFinite(point.yoy ?? NaN) ||
         Number.isFinite(point.mom ?? NaN)
-    ));
+    );
+  const data = isRetailSalesMetric
+    ? chartHistory
+    : filterHistoryToTrailing12Months(chartHistory);
 
   if (!data.length) {
     return (
@@ -1093,6 +1112,7 @@ function RateChart({
     (point) =>
       Number.isFinite(point.mom ?? NaN)
   );
+  const showMomOnly = isRetailSalesMetric;
 
   const formatValue = (
     value: number | null | undefined
@@ -1150,7 +1170,7 @@ function RateChart({
 
     <div style={{ flex: "1 1 auto", minHeight: 0, width: "100%", overflow: "visible" }}>
       <HistoryChartViewport dates={data.map(point => point.date)} frequency={root?.meta.frequency} height={Math.max(160, height - 30)} label={`${label} history`}>
-      {(plotWidth, fromYear, toYear, isDefaultWindow) => { const yearData = chartDataForRange(data, fromYear, toYear, isDefaultWindow); const yearTicks = getNiceTicks(yearData.map(point => point[series]).filter((value): value is number => value != null && Number.isFinite(value)), 7, 0.05); const axisDecimals = yearTicks.length > 1 && yearTicks[1] - yearTicks[0] < 0.1 ? 2 : 1; return <ResponsiveContainer width={plotWidth} height="100%">
+      {(plotWidth, fromYear, toYear, isDefaultWindow) => { const yearData = showMomOnly ? isDefaultWindow ? filterHistoryToTrailing12Months(data) : filterHistoryByYearRange(data, fromYear, toYear) : chartDataForRange(data, fromYear, toYear, isDefaultWindow); const yearTicks = getNiceTicks(yearData.map(point => point[series]).filter((value): value is number => value != null && Number.isFinite(value)), 7, 0.05); const axisDecimals = yearTicks.length > 1 && yearTicks[1] - yearTicks[0] < 0.1 ? 2 : 1; return <ResponsiveContainer width={plotWidth} height="100%">
         {useBarChart ? <BarChart
           data={yearData}
           margin={{
@@ -1221,7 +1241,7 @@ function RateChart({
       height: "auto",
       minHeight: 0,
       display: "grid",
-      gridTemplateColumns: hasYoYData && hasSecondData
+      gridTemplateColumns: hasYoYData && hasSecondData && !showMomOnly
         ? "repeat(2, minmax(0, 1fr))"
         : "minmax(0, 1fr)",
       gridAutoRows: isExpectationMetric ? "300px" : `${height}px`,
@@ -1230,7 +1250,7 @@ function RateChart({
       boxSizing: "border-box",
     }}
   >
-    {hasYoYData &&
+    {hasYoYData && !showMomOnly &&
       renderChart(
         "yoy",
         `YoY · ${YEAR}`,
@@ -1240,7 +1260,7 @@ function RateChart({
     {hasSecondData &&
       renderChart(
         "mom",
-        `${secondLabel} · ${YEAR}`,
+        showMomOnly ? `${secondLabel} · Last 12 months` : `${secondLabel} · ${YEAR}`,
         "var(--country-series)"
       )}
   </div>
@@ -2830,7 +2850,17 @@ const yoyMetric = spec.yoyMetricId
   ? metrics[spec.yoyMetricId]
   : undefined;
 
-const yoy = yoyHistory.length
+const isUnderlyingPublishedInflation = UNDERLYING_INFLATION_METRIC_IDS.has(spec.metricId);
+const publishedUnderlyingRates = isUnderlyingPublishedInflation
+  ? getUnderlyingInflationPublishedRates(spec, Object.fromEntries(
+      Object.entries(metrics).map(([id, payload]) => [id, payload?.history])
+    ))
+  : null;
+const yoy = publishedUnderlyingRates
+  ? publishedUnderlyingRates.yoy
+  : isUnderlyingPublishedInflation
+  ? yoyHistory.at(-1)?.value ?? null
+  : yoyHistory.length
   ? yoyMetric?.meta.transform === "level"
     ? calculateRates(
         yoyHistory,
@@ -2845,7 +2875,11 @@ const cpiMomLatest = isUsHeadlineCpi
   ? metrics["us-cpi-mom"]?.meta.latest?.value ?? null
   : null;
 
-const mom = isUsHeadlineCpi
+const mom = publishedUnderlyingRates
+  ? publishedUnderlyingRates.mom
+  : isUnderlyingPublishedInflation
+  ? momHistory.at(-1)?.value ?? null
+  : isUsHeadlineCpi
   ? cpiMomLatest ??
     (momHistory.length
       ? momHistory[momHistory.length - 1].value
@@ -3420,7 +3454,7 @@ function LabourChartStudio({ category, specs, metrics, onOpen, highlightedMetric
       <div className="labour-studio-plot">
         <h3>{category === "activity" && isQuarterlyGdpMetric(metric?.meta.id) ? `${displayMetricTitle(active, metric)} Growth` : displayMetricTitle(active, metric)}</h3>
         <p>{metric ? metric.meta.frequency : "Awaiting published observations"} · {YEAR}</p>
-        <RateChart key={active.id} spec={active} root={metric} allMetrics={metrics} height={240} chartType={category === "activity" ? "bar" : "line"} />
+        <RateChart key={active.id} spec={active} root={metric} allMetrics={metrics} height={active.id === "us-retail-sales-card" || active.id === "uk-retail-sales-card" ? 360 : 240} chartType={category === "activity" ? "bar" : "line"} />
       </div>
       <aside className="labour-studio-reading">
         <h4>Published readings</h4>
@@ -3479,6 +3513,7 @@ function categoryMeasurePair(spec: IndicatorSpec, root: DetailPayload | undefine
   return { showPair:false, leftLabel:"", leftValue:null, rightLabel:"", rightValue:null, format:formatPercent };
 }
 function InflationComparisonStudio({ region, specs, metrics, highlightedMetricId, onOpen }: { region: Region; specs: IndicatorSpec[]; metrics: Record<string, DetailPayload | undefined>; highlightedMetricId: string | null; onOpen: (spec: IndicatorSpec) => void }) {
+  const [view, setView] = useState<"comparison" | "underlying">("comparison");
   const [selectedIds, setSelectedIds] = useState<string[]>(specs.length ? [specs[0].id] : []);
   const [measure, setMeasure] = useState<"YoY" | "MoM">("YoY");
   const [chartRange, setChartRange] = useState({ from: 2025, to: 2026 });
@@ -3494,14 +3529,22 @@ function InflationComparisonStudio({ region, specs, metrics, highlightedMetricId
     const payload = metrics[sourceId] ?? metrics[spec.metricId];
     const rootMetric = metrics[spec.metricId];
     const history = normalizeHistory(payload?.history ?? []);
+    const indexFallback = measure === "YoY" && spec.id === "us-cpi-card"
+      ? metrics["us-cpi-nsa"] ?? rootMetric
+      : measure === "YoY" && spec.id === "us-core-cpi-card"
+        ? metrics["us-cpi-core-nsa"] ?? rootMetric
+        : rootMetric;
+    const rootHistory = normalizeHistory(indexFallback?.history ?? []);
+    const rateHistory = inflationRateHistory(
+      history,
+      payload?.meta.transform,
+      rootHistory,
+      indexFallback?.meta.transform,
+      measure === "YoY" ? "yoy" : "mom",
+    );
     const values = new Map<string, number>();
-    const pointsForSeries = spec.yoyMetricId || spec.momMetricId ? history : normalizeHistory(rootMetric?.history ?? []);
-    pointsForSeries.forEach((point, index) => {
-      const prefix = pointsForSeries.slice(0, index + 1);
-      const rates = calculateRates(prefix, payload?.meta.transform, payload?.meta.frequency, sourceId);
-      const sourceIsLevel = payload?.meta.transform === "level" || payload?.meta.transform === "index";
-      const value = sourceIsLevel ? measure === "YoY" ? rates.yoy : rates.mom : point.value;
-      if (value != null && Number.isFinite(value)) values.set(point.date.slice(0, 7), value);
+    rateHistory.forEach(point => {
+      if (point.value != null && Number.isFinite(point.value)) values.set(point.date.slice(0, 7), point.value);
     });
     return { spec, payload, values };
   });
@@ -3522,33 +3565,117 @@ function InflationComparisonStudio({ region, specs, metrics, highlightedMetricId
     const sourceId = measure === "YoY" ? spec.yoyMetricId ?? spec.metricId : spec.momMetricId ?? spec.metricId;
     const payload = metrics[sourceId] ?? metric;
     const sourceHistory = normalizeHistory(payload?.history ?? []);
-    const latestPeriod = sourceHistory.filter(point => point.date.slice(0,4) === String(YEAR)).at(-1)?.date ?? getLatestPeriodDate(metric);
     const rootHistory = normalizeHistory(metric?.history ?? []);
+    const rateHistory = (id: string | undefined, mode: "yoy" | "mom") => {
+      const preferred = id ? metrics[id] : metric;
+      const fallback = mode === "yoy" && spec.id === "us-cpi-card"
+        ? metrics["us-cpi-nsa"] ?? metric
+        : mode === "yoy" && spec.id === "us-core-cpi-card"
+          ? metrics["us-cpi-core-nsa"] ?? metric
+          : metric;
+      return inflationRateHistory(
+        normalizeHistory(preferred?.history ?? []),
+        preferred?.meta.transform,
+        mode === "mom" ? rootHistory : normalizeHistory(fallback?.history ?? []),
+        mode === "mom" ? metric?.meta.transform : fallback?.meta.transform,
+        mode,
+      );
+    };
+    const selectedRates = rateHistory(sourceId, measure === "YoY" ? "yoy" : "mom");
+    const latestRate = selectedRates.filter(point => point.date.slice(0, 4) === String(YEAR)).at(-1);
+    const latestPeriod = latestRate?.date ?? getLatestPeriodDate(metric);
     const rootRates = rootHistory.length ? calculateRates(rootHistory, metric?.meta.transform, metric?.meta.frequency, spec.metricId) : { yoy: null, mom: null, secondLabel: "MoM" };
     const alternateId = measure === "YoY" ? spec.momMetricId : spec.yoyMetricId;
+    const alternateMode = measure === "YoY" ? "mom" : "yoy";
+    const alternateRates = rateHistory(alternateId, alternateMode);
+    const alternateRate = alternateRates.findLast(point => point.date.slice(0, 7) === latestRate?.date.slice(0, 7));
+    const selectedReading = latestRate?.value ?? (metric?.meta.transform === "level" || metric?.meta.transform === "index"
+      ? measure === "YoY" ? rootRates.yoy : rootRates.mom
+      : measure === "YoY" ? kpis.leftValue : kpis.showRight ? kpis.rightValue : null);
+    const otherReading = alternateRate?.value ?? (metric?.meta.transform === "level" || metric?.meta.transform === "index"
+      ? measure === "YoY" ? rootRates.mom : rootRates.yoy
+      : measure === "YoY" ? kpis.rightValue : kpis.leftValue);
     const alternatePayload = alternateId ? metrics[alternateId] : undefined;
-    const alternateHistory = normalizeHistory(alternatePayload?.history ?? []);
-    const usesPublishedSeries = Boolean(measure === "YoY" ? spec.yoyMetricId : spec.momMetricId);
-    const selectedReading = usesPublishedSeries
-      ? payload?.meta.transform === "level" ? measure === "YoY" ? calculateRates(sourceHistory, payload.meta.transform, payload.meta.frequency, sourceId).yoy : calculateRates(sourceHistory, payload.meta.transform, payload.meta.frequency, sourceId).mom : sourceHistory.at(-1)?.value ?? null
-      : metric?.meta.transform === "level" ? measure === "YoY" ? rootRates.yoy : rootRates.mom : measure === "YoY" ? kpis.leftValue : kpis.showRight ? kpis.rightValue : null;
-    const otherReading = alternatePayload
-      ? alternatePayload.meta.transform === "level" ? measure === "YoY" ? calculateRates(alternateHistory, alternatePayload.meta.transform, alternatePayload.meta.frequency, alternateId).mom : calculateRates(alternateHistory, alternatePayload.meta.transform, alternatePayload.meta.frequency, alternateId).yoy : alternateHistory.at(-1)?.value ?? null
-      : metric?.meta.transform === "level" ? measure === "YoY" ? rootRates.mom : rootRates.yoy : measure === "YoY" ? kpis.rightValue : kpis.leftValue;
-    const secondSeriesId = measure === "YoY" ? spec.momMetricId ?? spec.metricId : spec.yoyMetricId ?? spec.metricId;
-    const secondPayload = metrics[secondSeriesId] ?? metric;
-    const secondHistory = normalizeHistory(secondPayload?.history ?? []);
-    const secondDate = secondHistory.filter(point => point.date.slice(0,4) === String(YEAR)).at(-1)?.date;
-    return { kpis, fmtRate, selectedReading, otherReading, latestPeriod, releaseDate: payload?.displayReleasedAt ? formatObsDate(payload.displayReleasedAt) : "—", secondReleaseDate: (alternatePayload ?? metric)?.displayReleasedAt ? formatObsDate((alternatePayload ?? metric)?.displayReleasedAt) : "—", source: formatLiveSourceLabel(payload?.meta.liveSource), hasSecond: otherReading != null, secondSource: formatLiveSourceLabel((alternatePayload ?? metric)?.meta.liveSource), secondPeriod: secondDate ?? latestPeriod };
+    const preferredHasLatest = sourceHistory.some(point => point.date.slice(0, 7) === latestRate?.date.slice(0, 7));
+    const fallbackPayload = measure === "YoY" && spec.id === "us-cpi-card"
+      ? metrics["us-cpi-nsa"] ?? metric
+      : measure === "YoY" && spec.id === "us-core-cpi-card"
+        ? metrics["us-cpi-core-nsa"] ?? metric
+        : metric;
+    const readingPayload = preferredHasLatest ? payload : fallbackPayload;
+    const alternateHasLatest = alternatePayload?.history?.some(point => point.date.slice(0, 7) === latestRate?.date.slice(0, 7));
+    const otherFallbackPayload = alternateMode === "yoy" && spec.id === "us-cpi-card"
+      ? metrics["us-cpi-nsa"] ?? metric
+      : alternateMode === "yoy" && spec.id === "us-core-cpi-card"
+        ? metrics["us-cpi-core-nsa"] ?? metric
+        : metric;
+    const otherPayload = alternateHasLatest ? alternatePayload : otherFallbackPayload;
+    return { kpis, fmtRate, selectedReading, otherReading, latestPeriod, releaseDate: readingPayload?.displayReleasedAt ? formatObsDate(readingPayload.displayReleasedAt) : "—", secondReleaseDate: otherPayload?.displayReleasedAt ? formatObsDate(otherPayload.displayReleasedAt) : "—", source: formatLiveSourceLabel(readingPayload?.meta.liveSource), hasSecond: otherReading != null, secondSource: formatLiveSourceLabel(otherPayload?.meta.liveSource), secondPeriod: latestPeriod };
   };
-  return <div className="inflation-studio">
+  const modeTabs = region === "US" ? <div className="inflation-mode-tabs" role="tablist" aria-label="Inflation views">
+    <button type="button" role="tab" aria-selected={view === "comparison"} onClick={() => setView("comparison")}>CPI &amp; PCE</button>
+    <button type="button" role="tab" aria-selected={view === "underlying"} onClick={() => setView("underlying")}>Underlying inflation</button>
+  </div> : null;
+  if (view === "underlying" && region === "US") return <div className="inflation-studio-shell">{modeTabs}<UnderlyingInflationMeasures metrics={metrics} onOpen={onOpen} /></div>;
+  return <div className="inflation-studio-shell">{modeTabs}<div className="inflation-studio">
     <div className="inflation-studio-controls" role="group" aria-label="Inflation indicators">{specs.map((spec, index) => { const active = selectedIds.includes(spec.id); return <button key={spec.id} type="button" aria-pressed={active} className={clsx("inflation-chip", active && "is-active", highlightedMetricId && specContainsMetric(spec, highlightedMetricId) && "is-release-highlighted")} style={{ "--series-color": colors[index % colors.length] } as React.CSSProperties} onClick={() => setSelectedIds(current => active ? current.filter(id => id !== spec.id) : [...current, spec.id])}><i />{displayMetricTitle(spec, metrics[spec.metricId])}</button>; })}
       <div className="inflation-measure-toggle" role="group" aria-label="Inflation measure">{(["YoY", "MoM"] as const).map(value => <button key={value} aria-pressed={measure === value} onClick={() => setMeasure(value)}>{value}</button>)}</div>
     </div>
-    <div className="inflation-chart-heading"><div className="inflation-chart-title"><h3>{region === "EA" ? "HICP" : "Inflation"} comparison</h3><span>{measure} change · {isDefaultChartRange ? "last 12 months" : chartRange.from === chartRange.to ? chartRange.from : `${chartRange.from}–${chartRange.to}`}</span></div><div className="inflation-chart-legend" aria-label="Chart series">{selected.map(spec => { const color = colors[specs.findIndex(item => item.id === spec.id) % colors.length]; return <span key={spec.id}><i style={{ backgroundColor: color }} />{seriesTitle(spec.id)}</span>; })}</div></div>
-    <div className="inflation-plot">{selected.length ? <HistoryChartViewport dates={points.map(point => point.period)} frequency="monthly" height={269} label="Inflation comparison" onRangeChange={handleChartRangeChange}>{(plotWidth, fromYear, toYear, isDefaultWindow) => { const yearPoints = isDefaultWindow ? filterHistoryToTrailing12Months(points) : filterHistoryByYearRange(points, fromYear, toYear); const yearTicks = getNiceTicks(yearPoints.flatMap(point => selected.map(spec => point[spec.id]).filter((value): value is number => value != null && Number.isFinite(value)))); return <ResponsiveContainer width={plotWidth} height="100%"><LineChart data={yearPoints} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}><CartesianGrid stroke="var(--line)" strokeDasharray="2 4" vertical /><XAxis dataKey="label" tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={{ stroke: "var(--line-strong)" }} tickLine={false} minTickGap={18} interval="preserveStartEnd" /><YAxis unit="%" width={52} ticks={yearTicks} domain={getNiceTickDomain(yearTicks)} tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={false} tickLine={false} /><Tooltip formatter={(value, name) => [`${Number(value).toFixed(1)}%`, seriesTitle(name ?? "")] } labelFormatter={(label) => String(label)} /><Line connectNulls={false} type="linear" dataKey={selected[0]?.id ?? ""} name={selected[0]?.id ?? ""} stroke={colors[specs.findIndex(spec => spec.id === selected[0]?.id) % colors.length]} strokeWidth={2.5} dot={{ r: 3, fill: colors[specs.findIndex(spec => spec.id === selected[0]?.id) % colors.length], strokeWidth: 0 }} activeDot={{ r: 5 }} isAnimationActive={false} />{selected.slice(1).map(spec => <Line key={spec.id} connectNulls={false} type="linear" dataKey={spec.id} name={spec.id} stroke={colors[specs.findIndex(item => item.id === spec.id) % colors.length]} strokeWidth={2.5} dot={{ r: 3, fill: colors[specs.findIndex(item => item.id === spec.id) % colors.length], strokeWidth: 0 }} activeDot={{ r: 5 }} isAnimationActive={false} />)}</LineChart></ResponsiveContainer>; }}</HistoryChartViewport> : <div className="inflation-no-selection">Select an indicator to plot its published history.</div>}</div>
-    <div className="inflation-reading-heading"><h3>Latest inflation readings</h3><span>Published release date and observation period are shown separately.</span></div>
-    <div className="inflation-reading-wrap" role="region" aria-label="Latest inflation readings" tabIndex={0}><table className="inflation-reading-table"><thead><tr><th>Indicator</th><th>{measure}</th><th>{measure === "YoY" ? "MoM" : "YoY"}</th><th>Release date</th><th>Period</th><th>Source</th><th aria-label="Details" /></tr></thead><tbody>{specs.map((spec, index) => { const reading = readingFor(spec); const active = selectedIds.includes(spec.id); const secondValue = reading.otherReading; return <tr key={spec.id} className={clsx(active && "selected-reading", highlightedMetricId && specContainsMetric(spec, highlightedMetricId) && "is-release-highlighted")} style={{ "--series-color": colors[index % colors.length] } as React.CSSProperties}><th scope="row"><i />{displayMetricTitle(spec, metrics[spec.metricId])}</th><td>{reading.fmtRate(reading.selectedReading)}</td><td>{reading.hasSecond ? reading.fmtRate(secondValue) : "—"}</td><td>{reading.releaseDate}{reading.hasSecond && reading.secondReleaseDate !== reading.releaseDate ? <small className="reading-meta">{measure === "YoY" ? "MoM" : "YoY"}: {reading.secondReleaseDate}</small> : null}</td><td>{reading.latestPeriod ? formatObsDate(reading.latestPeriod) : "—"}</td><td>{reading.source}{reading.hasSecond && reading.secondSource !== reading.source ? <small className="reading-meta">{measure === "YoY" ? "MoM" : "YoY"}: {reading.secondSource}</small> : null}</td><td><button type="button" aria-label={`View ${displayMetricTitle(spec, metrics[spec.metricId])} details`} onClick={() => onOpen(spec)}><ChevronRight size={15} /></button></td></tr>; })}</tbody></table></div>
+    <div className="inflation-data-layout">
+      <section className="inflation-chart-panel" aria-label="Inflation comparison chart">
+        <div className="inflation-chart-heading"><div className="inflation-chart-title"><h3>{region === "EA" ? "HICP" : "Inflation"} comparison</h3><span>{measure} change · {isDefaultChartRange ? "last 12 months" : chartRange.from === chartRange.to ? chartRange.from : `${chartRange.from}–${chartRange.to}`}</span></div><div className="inflation-chart-legend" aria-label="Chart series">{selected.map(spec => { const color = colors[specs.findIndex(item => item.id === spec.id) % colors.length]; return <span key={spec.id}><i style={{ backgroundColor: color }} />{seriesTitle(spec.id)}</span>; })}</div></div>
+        <div className="inflation-plot">{selected.length ? <HistoryChartViewport dates={points.map(point => point.period)} frequency="monthly" height={269} label="Inflation comparison" onRangeChange={handleChartRangeChange}>{(plotWidth, fromYear, toYear, isDefaultWindow) => { const yearPoints = isDefaultWindow ? filterHistoryToTrailing12Months(points) : filterHistoryByYearRange(points, fromYear, toYear); const yearTicks = getNiceTicks(yearPoints.flatMap(point => selected.map(spec => point[spec.id]).filter((value): value is number => value != null && Number.isFinite(value)))); return <ResponsiveContainer width={plotWidth} height="100%"><LineChart data={yearPoints} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}><CartesianGrid stroke="var(--line)" strokeDasharray="2 4" vertical /><XAxis dataKey="label" tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={{ stroke: "var(--line-strong)" }} tickLine={false} minTickGap={18} interval="preserveStartEnd" /><YAxis unit="%" width={52} ticks={yearTicks} domain={getNiceTickDomain(yearTicks)} tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={false} tickLine={false} /><Tooltip formatter={(value, name) => [`${Number(value).toFixed(1)}%`, seriesTitle(name ?? "")] } labelFormatter={(label) => String(label)} /><Line connectNulls={false} type="linear" dataKey={selected[0]?.id ?? ""} name={selected[0]?.id ?? ""} stroke={colors[specs.findIndex(spec => spec.id === selected[0]?.id) % colors.length]} strokeWidth={2.5} dot={{ r: 3, fill: colors[specs.findIndex(spec => spec.id === selected[0]?.id) % colors.length], strokeWidth: 0 }} activeDot={{ r: 5 }} isAnimationActive={false} />{selected.slice(1).map(spec => <Line key={spec.id} connectNulls={false} type="linear" dataKey={spec.id} name={spec.id} stroke={colors[specs.findIndex(item => item.id === spec.id) % colors.length]} strokeWidth={2.5} dot={{ r: 3, fill: colors[specs.findIndex(item => item.id === spec.id) % colors.length], strokeWidth: 0 }} activeDot={{ r: 5 }} isAnimationActive={false} />)}</LineChart></ResponsiveContainer>; }}</HistoryChartViewport> : <div className="inflation-no-selection">Select an indicator to plot its published history.</div>}</div>
+      </section>
+      <section className="inflation-reading-panel" aria-label="Latest inflation readings table">
+        <div className="inflation-reading-heading"><h3>Latest inflation readings</h3><span>Published release date and observation period are shown separately.</span></div>
+        <div className="inflation-reading-wrap" role="region" aria-label="Latest inflation readings" tabIndex={0}><table className="inflation-reading-table"><thead><tr><th>Indicator</th><th>{measure}</th><th>{measure === "YoY" ? "MoM" : "YoY"}</th><th>Release date</th><th>Period</th><th>Source</th><th aria-label="Details" /></tr></thead><tbody>{specs.map((spec, index) => { const reading = readingFor(spec); const active = selectedIds.includes(spec.id); const secondValue = reading.otherReading; return <tr key={spec.id} className={clsx(active && "selected-reading", highlightedMetricId && specContainsMetric(spec, highlightedMetricId) && "is-release-highlighted")} style={{ "--series-color": colors[index % colors.length] } as React.CSSProperties}><th scope="row"><i />{displayMetricTitle(spec, metrics[spec.metricId])}</th><td>{reading.fmtRate(reading.selectedReading)}</td><td>{reading.hasSecond ? reading.fmtRate(secondValue) : "—"}</td><td>{reading.releaseDate}{reading.hasSecond && reading.secondReleaseDate !== reading.releaseDate ? <small className="reading-meta">{measure === "YoY" ? "MoM" : "YoY"}: {reading.secondReleaseDate}</small> : null}</td><td>{reading.latestPeriod ? formatObsDate(reading.latestPeriod) : "—"}</td><td>{reading.source}{reading.hasSecond && reading.secondSource !== reading.source ? <small className="reading-meta">{measure === "YoY" ? "MoM" : "YoY"}: {reading.secondSource}</small> : null}</td><td><button type="button" aria-label={`View ${displayMetricTitle(spec, metrics[spec.metricId])} details`} onClick={() => onOpen(spec)}><ChevronRight size={15} /></button></td></tr>; })}</tbody></table></div>
+      </section>
+    </div>
+  </div></div>;
+}
+
+const UNDERLYING_INFLATION_MEASURES = [
+  { id: "us-sticky-cpi", title: "Sticky CPI", source: "Atlanta Fed" },
+  { id: "us-core-sticky-cpi", title: "Core Sticky CPI", source: "Atlanta Fed" },
+  { id: "us-flexible-cpi", title: "Flexible CPI", source: "Atlanta Fed" },
+  { id: "us-cleveland-median-cpi", title: "Median CPI", source: "Cleveland Fed" },
+] as const;
+const UNDERLYING_INFLATION_METRIC_IDS = new Set<string>([
+  "us-sticky-cpi",
+  "us-core-sticky-cpi",
+  "us-flexible-cpi",
+  "us-cleveland-median-cpi",
+  "us-cleveland-trimmed-cpi",
+]);
+
+function UnderlyingInflationMeasures({ metrics, onOpen }: { metrics: Record<string, DetailPayload | undefined>; onOpen: (spec: IndicatorSpec) => void }) {
+  const [measure, setMeasure] = useState<"YoY" | "MoM">("YoY");
+  return <div role="tabpanel" aria-label="Underlying inflation measures">
+    <div className="underlying-inflation-toolbar">
+      <span>Published inflation rates · select a measure</span>
+      <div className="inflation-measure-toggle" role="group" aria-label="Underlying inflation measure">{(["YoY", "MoM"] as const).map(value => <button key={value} type="button" aria-pressed={measure === value} onClick={() => setMeasure(value)}>{value}</button>)}</div>
+    </div>
+    <div className="underlying-inflation-grid">
+    {UNDERLYING_INFLATION_MEASURES.map((item, index) => {
+      const payload = metrics[item.id];
+      const momPayload = metrics[`${item.id}-mom`];
+      const selectedPayload = measure === "MoM" ? momPayload : payload;
+      const history = normalizeHistory(selectedPayload?.history ?? []);
+      const latest = history.at(-1);
+      const color = ["#17634e", "#426d95", "#a65c3c", "#8170a7", "#b27a38"][index];
+      const spec: IndicatorSpec = { id: item.id, metricId: item.id, title: item.title, yoyMetricId: item.id, momMetricId: `${item.id}-mom` };
+      return <article className="underlying-inflation-card" key={item.id}>
+        <header><div><h3>{item.title}</h3><span>{item.source} · monthly · {measure === "YoY" ? "12-month change" : item.source === "Atlanta Fed" ? "1-month change · annualized source converted" : "1-month change"}</span></div><b>{latest ? `${latest.value > 0 ? "+" : ""}${latest.value.toFixed(1)}%` : "—"}</b></header>
+        <div className="underlying-inflation-chart">{history.length ? <HistoryChartViewport dates={history.map(point => point.date)} frequency="monthly" height={190} label={`${item.title} ${measure} history`}>{(plotWidth, fromYear, toYear, isDefaultWindow) => {
+          const visibleHistory = isDefaultWindow ? filterHistoryToTrailing12Months(history) : filterHistoryByYearRange(history, fromYear, toYear);
+          const chartData = visibleHistory.map(point => ({ ...point, label: formatObsDate(point.date) }));
+          const axisTicks = getNiceTicks(chartData.map(point => point.value), 5, measure === "MoM" ? 0.05 : 0.1);
+          return <ResponsiveContainer width={plotWidth || "100%"} height="100%"><LineChart data={chartData} margin={{ top: 8, right: 10, left: 0, bottom: 0 }}><CartesianGrid stroke="var(--line)" strokeDasharray="2 4" vertical /><XAxis dataKey="label" tick={{ fill: "var(--muted)", fontSize: 9 }} interval="preserveStartEnd" minTickGap={18} axisLine={{ stroke: "var(--line-strong)" }} tickLine={false} /><YAxis unit="%" width={42} ticks={axisTicks} domain={getNiceTickDomain(axisTicks)} tick={{ fill: "var(--muted)", fontSize: 9 }} axisLine={false} tickLine={false} /><Tooltip formatter={value => [`${Number(value).toFixed(2)}%`, item.title]} /><Line dataKey="value" type="linear" stroke={color} strokeWidth={2.2} dot={{ r: 2.5, fill: color, strokeWidth: 0 }} activeDot={{ r: 4 }} isAnimationActive={false} /></LineChart></ResponsiveContainer>;
+        }}</HistoryChartViewport> : <p>No monthly observations are loaded for this measure yet.</p>}</div>
+        <footer><span>Observation: {latest ? formatObsDate(latest.date) : "—"}</span><span>Source: {formatLiveSourceLabel(selectedPayload?.meta.liveSource ?? item.source)}</span><button type="button" onClick={() => onOpen(spec)}>Details <ChevronRight size={14} /></button></footer>
+      </article>;
+    })}
+    </div>
   </div>;
 }
 
@@ -4313,17 +4440,18 @@ function ComponentDetailDrawer({
   components?: UiNode[];
   onClose: () => void;
 }) {
-  const metric = allMetrics[metricId];
+  const requestedMetric = allMetrics[metricId];
 
-  if (!metric) return null;
+  if (!requestedMetric) return null;
 
-  const spec: IndicatorSpec = {
-    id: `${metric.meta.id}-component`,
-    title: metric.meta.shortName || metric.meta.name,
-    metricId: metric.meta.id,
-  };
+  const spec = normalizeUnderlyingInflationDetailSpec({
+    id: `${requestedMetric.meta.id}-component`,
+    title: requestedMetric.meta.shortName || requestedMetric.meta.name,
+    metricId: requestedMetric.meta.id,
+  });
+  const metric = allMetrics[spec.metricId] ?? requestedMetric;
 
-  const cardKpis = getMetricKpis(metric);
+  const cardKpis = getCardKpis(spec, metric, allMetrics);
   const isExpectation = isPublishedExpectationMetric(metric);
   const latestPeriodDate = getLatestPeriodDate(metric);
 
@@ -4631,8 +4759,12 @@ function DetailDrawer({
 }) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [selectedSeriesId, setSelectedSeriesId] = useState(spec.metricId);
+  const [driverTab, setDriverTab] = useState<"history" | "drivers">("history");
+  const hasContributions = Boolean(CONTRIBUTION_CONFIGS[spec.metricId]);
 
-  const cardKpis = getCardKpis(spec, root, allMetrics, "detail");
+  const rateSpec = normalizeUnderlyingInflationDetailSpec(spec);
+  const rateRoot = allMetrics[rateSpec.metricId] ?? root;
+  const cardKpis = getCardKpis(rateSpec, rateRoot, allMetrics, "detail");
   const allNodes = stableDetailNodes(spec.components);
   const flightDeckRows: Array<{ node: UiNode; depth: number; group: string; parentIds: string[]; hasChildren: boolean }> = [];
   const collectFlightDeckRows = (nodes: UiNode[], depth = 0, group = "", parentIds: string[] = []) => {
@@ -5160,6 +5292,8 @@ function DetailDrawer({
     overflow: "visible",
   }}
 >
+            {hasContributions && <div className="component-card-tabs" role="tablist" aria-label="Component card view"><button type="button" role="tab" aria-selected={driverTab === "history"} onClick={() => setDriverTab("history")}>History &amp; components</button><button type="button" role="tab" aria-selected={driverTab === "drivers"} onClick={() => setDriverTab("drivers")}>What’s driving it?</button></div>}
+            {hasContributions && driverTab === "drivers" ? <InflationContributions metricId={spec.metricId} metrics={allMetrics} /> : <>
             <section
   className="drawer-chart"
   style={{
@@ -5213,8 +5347,8 @@ function DetailDrawer({
 ) : (
   <div className="drawer-chart-content">
     <RateChart
-      spec={spec}
-      root={root}
+      spec={rateSpec}
+      root={rateRoot}
       allMetrics={allMetrics}
       height={420}
     />
@@ -5233,10 +5367,11 @@ function DetailDrawer({
                   <div><h3>The component field</h3><p>Small multiples make the published series easy to compare</p></div>
                   <span>Last 12 months · {flightDeckRows.length} series</span>
                 </div>
-                <div className="flight-deck-columns"><span>Series</span><span>Last 12 months</span><span>Published measures</span><span></span></div>
+                <div className="flight-deck-columns"><span>Series</span><span>Last 12 months</span><span>Weight</span><span>Published measures</span><span></span></div>
                 <div className="flight-deck-rows">
                   {flightDeckRows.filter(({ parentIds }) => parentIds.every((id) => open[id])).map(({ node, depth, group, hasChildren }, index) => {
                     const payload = node.metricId ? allMetrics[node.metricId] : undefined;
+                    const officialWeight = getOfficialComponentWeight(node.metricId);
                     const kpis = payload ? getMetricKpis(payload) : null;
                     const current = payload?.history?.at(-1)?.value;
                     const pair = getNodeMetricKpis(node, payload, allMetrics);
@@ -5270,7 +5405,8 @@ function DetailDrawer({
                         <button type="button" className="flight-deck-name-copy" onClick={() => payload && setSelectedSeriesId(payload.meta.id)}><b>{node.label}</b>{payload && <small>{group}{payload.meta.unit ? ` · ${payload.meta.unit}` : ""}</small>}</button>
                       </span>
                       <span className="flight-deck-spark">{payload && miniSeries?.data.length ? <><Spark data={miniSeries.data} frequency={miniSeries.frequency} compact /><small>{trendSpan}</small></> : <small>{hasChildren ? "Select to expand category" : "Published trend unavailable"}</small>}</span>
-                      <span className="flight-deck-measures" style={{ gridColumn: "3 / 5" }}>
+                      <span className="flight-deck-component-weight">{officialWeight ? <a href={officialWeight.source} target="_blank" rel="noreferrer" title={`${officialWeight.basis}; share of the full basket`}>{formatOfficialComponentWeight(officialWeight.value)}</a> : <span title="No applicable published component weight is mapped">—</span>}</span>
+                      <span className="flight-deck-measures" style={{ gridColumn: "4 / 6" }}>
                         <span className="flight-deck-value">{leftValue}<small>{leftLabel}</small></span>
                         {rightLabel && <span className="flight-deck-value">{rightValue}<small>{rightLabel}</small></span>}
                       </span>
@@ -5278,6 +5414,7 @@ function DetailDrawer({
                     </div>;
                   })}
                 </div>
+                <p className="flight-deck-note">Weight shows the published 2026 share of the full CPI/CPIH/HICP basket. Select a weight to view its source. — means no applicable published weight is mapped.</p>
                 {spec.id === "us-pce-card" && <p className="flight-deck-note">Headline PCE is grouped into goods and services. Core PCE excludes food and energy and remains a separate aggregate.</p>}
                 {(() => {
                   const selectedPayload = allMetrics[effectiveSelectedSeriesId] ?? root;
@@ -5288,6 +5425,7 @@ function DetailDrawer({
                 })()}
               </section>
             )}
+            </>}
           </div>
         </div>
       </aside>

@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { formatReleaseLog, nextReleaseRetryAt } from "../src/ingest/release-logging.ts";
 
+assert.equal(nextReleaseRetryAt("2026-10-07T15:00:00.000Z"), "2026-10-07T15:00:00.000Z", "Retries must have no cooldown");
+
 const output = formatReleaseLog({
   event: "attempt_started",
   attempt: 2,

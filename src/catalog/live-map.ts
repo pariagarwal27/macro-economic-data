@@ -11,7 +11,11 @@ export type LiveProvider =
   | "adp"
   | "dol"
   | "atlanta_gdpnow"
+  | "atlanta_sticky"
+  | "atlanta_wage"
   | "nyfed"
+  | "cleveland"
+  | "cleveland_cpi"
   | "ecb"
   | "boe"
   | "lseg";
@@ -26,6 +30,19 @@ export interface LiveSeriesRef {
 
 /** Map metric id → official live series (release-day source of truth). */
 export const LIVE_MAP: Record<string, LiveSeriesRef> = {
+  // Atlanta and Cleveland Fed underlying-inflation measures use their
+  // publishers' downloadable datasets for both release refresh and history.
+  "us-sticky-cpi": { provider: "atlanta_sticky", seriesId: "us-sticky-cpi" },
+  "us-sticky-cpi-mom": { provider: "atlanta_sticky", seriesId: "us-sticky-cpi-mom" },
+  "us-core-sticky-cpi": { provider: "atlanta_sticky", seriesId: "us-core-sticky-cpi" },
+  "us-core-sticky-cpi-mom": { provider: "atlanta_sticky", seriesId: "us-core-sticky-cpi-mom" },
+  "us-flexible-cpi": { provider: "atlanta_sticky", seriesId: "us-flexible-cpi" },
+  "us-flexible-cpi-mom": { provider: "atlanta_sticky", seriesId: "us-flexible-cpi-mom" },
+  "us-atlanta-wage": { provider: "atlanta_wage", seriesId: "WGT_OVERALL_3M_UNWEIGHTED" },
+  "us-cleveland-median-cpi": { provider: "cleveland_cpi", seriesId: "us-cleveland-median-cpi" },
+  "us-cleveland-median-cpi-mom": { provider: "cleveland_cpi", seriesId: "us-cleveland-median-cpi-mom" },
+  "us-cleveland-trimmed-cpi": { provider: "cleveland_cpi", seriesId: "us-cleveland-trimmed-cpi" },
+  "us-cleveland-trimmed-cpi-mom": { provider: "cleveland_cpi", seriesId: "us-cleveland-trimmed-cpi-mom" },
   // ---------------------------------------------------------------------------
   // LSEG Economic Indicators — PMI survey readings (local Workspace session)
   // ---------------------------------------------------------------------------
@@ -105,6 +122,16 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
     provider: "nyfed",
     seriesId: "SCE_INFLATION_UNCERTAINTY_1Y",
   },
+
+  // ---------------------------------------------------------------------------
+  // Cleveland Fed — model-based inflation expectations
+  // ---------------------------------------------------------------------------
+  "us-cleveland-exp-inf-1y": { provider: "cleveland", seriesId: "EXPINF1YR" },
+  "us-cleveland-exp-inf-2y": { provider: "cleveland", seriesId: "EXPINF2YR" },
+  "us-cleveland-exp-inf-3y": { provider: "cleveland", seriesId: "EXPINF3YR" },
+  "us-cleveland-exp-inf-5y": { provider: "cleveland", seriesId: "EXPINF5YR" },
+  "us-cleveland-exp-inf-10y": { provider: "cleveland", seriesId: "EXPINF10YR" },
+  "us-cleveland-exp-inf-30y": { provider: "cleveland", seriesId: "EXPINF30YR" },
 
   // ---------------------------------------------------------------------------
   // BLS — CPI / PPI / ECI / JOLTS

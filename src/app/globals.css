@@ -6789,10 +6789,12 @@ html[data-theme="dark"]{
   height:20rem;
   min-height:20rem;
 }
-.expectation-comparison-grid--expanded{grid-template-columns:minmax(0,1fr) !important;}
+.expectation-comparison-card > .history-chart-viewport{height:calc(20rem + 72px);}
+.expectation-comparison-grid--expanded{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
 .expectation-comparison-grid--expanded .expectation-comparison-card{padding:12px 16px 9px;}
 .expectation-comparison-grid--expanded .expectation-comparison-heading{min-height:48px;padding-bottom:5px;}
 .expectation-comparison-grid--expanded .expectation-comparison-plot--expanded{height:16rem;min-height:16rem;}
+.expectation-comparison-grid--expanded .expectation-comparison-card > .history-chart-viewport{height:calc(16rem + 72px);}
 .expectation-comparison-plot .recharts-cartesian-grid line{stroke:var(--line) !important;}
 .expectation-comparison-plot .recharts-cartesian-axis-line,
 .expectation-comparison-plot .recharts-cartesian-axis-tick-line{stroke:var(--line-strong) !important;}
@@ -6873,6 +6875,9 @@ html[data-theme="dark"]{
   .expectation-comparison-plot .recharts-legend-item-text{font-size:9px !important;}
   .expectation-series-details{padding:11px !important;}
   .expectation-series-details .drawer-section-head{align-items:flex-start !important;}
+}
+@media(max-width:900px){
+  .expectation-comparison-grid--expanded{grid-template-columns:minmax(0,1fr) !important;}
 }
 @media(max-width:760px){
   .detail-drawer .expectation-release-meta{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}

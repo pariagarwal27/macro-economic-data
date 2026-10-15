@@ -3,8 +3,16 @@ import { getD1Database } from "@/db";
 import { fetchLsegLatest } from "./adapters/lseg";
 import { fetchPhiladelphiaLatest } from "./philadelphia";
 import { fetchOfficialLatestFromPipeline } from "./pipeline";
+import { withFreshReleaseFetch } from "./release-fetch-context.js";
 
 export async function fetchMetricFromOfficialSource(
+  metricId: string,
+  signal?: AbortSignal
+) {
+  return withFreshReleaseFetch(() => fetchMetricFromOfficialSourceUncached(metricId, signal));
+}
+
+async function fetchMetricFromOfficialSourceUncached(
   metricId: string,
   signal?: AbortSignal
 ) {

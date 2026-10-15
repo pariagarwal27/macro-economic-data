@@ -1,5 +1,5 @@
 import { executeSql } from "@/db";
-import { RELEASE_RETRY_COOLDOWN_MS } from "./release-logging";
+import { RELEASE_PROCESSING_LEASE_MS } from "./release-logging";
 
 let tableReady: Promise<void> | null = null;
 
@@ -67,7 +67,7 @@ export async function claimRelease(
    */
   const staleBefore =
     new Date(
-      Date.now() - RELEASE_RETRY_COOLDOWN_MS
+      Date.now() - RELEASE_PROCESSING_LEASE_MS
     ).toISOString();
 
   await client.execute({
@@ -101,8 +101,9 @@ export async function claimRelease(
           AND scheduled_at = ?
           AND status != 'processed'
           AND (
-            last_attempt_at IS NULL
-            OR last_attempt_at < ?
+            status = 'retry'
+            OR last_attempt_at IS NULL
+            OR (status = 'processing' AND last_attempt_at < ?)
           )
       `,
       args: [

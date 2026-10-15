@@ -1,6 +1,14 @@
 import { METRICS } from "../src/catalog/metrics";
 import { SOURCE_REGISTRY, assertRegistryIsValid, isUsCpiMetric } from "../src/ingest/source-registry";
 import { getEconomicCalendarRows } from "../src/lib/economic-calendar-db";
+import { LIVE_MAP } from "../src/catalog/live-map";
+import { DASHBOARD } from "../src/components/macro-ui-hierarchy";
+import { cpiUnderlyingScheduleRows } from "../src/ingest/cpi-release-schedule";
+
+const UNDERLYING_CPI = [
+  "us-sticky-cpi", "us-core-sticky-cpi", "us-flexible-cpi",
+  "us-cleveland-median-cpi", "us-cleveland-trimmed-cpi",
+];
 
 async function main() {
   assertRegistryIsValid();
@@ -20,6 +28,17 @@ async function main() {
     return acc;
   }, {});
 
+  const badUnderlyingRoutes = UNDERLYING_CPI.filter(id => {
+    const expected = id.startsWith("us-cleveland") ? "cleveland_cpi" : "atlanta_sticky";
+    const route = LIVE_MAP[id];
+    const metric = METRICS.find(item => item.id === id);
+    const registryRow = SOURCE_REGISTRY.find(item => item.metricId === id);
+    return route?.provider !== expected || metric?.source === "fred" || registryRow?.source === "fred";
+  });
+  const cpiCard = DASHBOARD.US.prices.find(spec => spec.id === "us-cpi-card");
+  const missingUnderlyingUi = UNDERLYING_CPI.filter(id => !cpiCard?.chartMetricIds?.includes(id));
+  const derivedScheduleCount = cpiUnderlyingScheduleRows({ nextReleaseDate: "2026-11-12", nextReleaseAt: null }).length;
+
   console.log(JSON.stringify({
     metrics: METRICS.length,
     registry: SOURCE_REGISTRY.length,
@@ -29,9 +48,13 @@ async function main() {
     calendarMetrics: calendarIds.size,
     metricsWithoutCalendarEntry: noCalendar,
     registryBySource: counts,
+    underlyingCpiMetrics: UNDERLYING_CPI.length,
+    invalidUnderlyingOfficialRoutes: badUnderlyingRoutes,
+    underlyingMetricsMissingFromUiRequest: missingUnderlyingUi,
+    cpiLinkedUnderlyingCalendarRows: derivedScheduleCount,
   }, null, 2));
 
-  if (missing.length || duplicates) process.exitCode = 1;
+  if (missing.length || duplicates || badUnderlyingRoutes.length || missingUnderlyingUi.length || derivedScheduleCount !== 5) process.exitCode = 1;
 }
 
 main().catch((error) => {

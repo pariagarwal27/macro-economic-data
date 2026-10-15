@@ -108,54 +108,20 @@ export async function fetchNyFedSceInflationExpectations(): Promise<NyFedSceResu
    * 5Y
    * ------------------------------------------------------------
    *
-   * The current NY Fed workbook exposes 5Y through:
-   *
-   *   Five-year ahead Infl Exp
-   *
-   * This sheet can have a slightly different layout,
-   * so we detect the actual header/value column.
+   * The current NY Fed workbook puts the median 5Y column on the same sheet.
+   * Older releases may retain a dedicated 5Y worksheet, which is supported as
+   * a fallback below.
    */
 
-  const fiveYearSheet =
-    findSheetByName(
-      workbook,
-      "Five-year ahead Infl Exp"
-    );
-
-  let fiveYear: RawPoint[] = [];
-
-  if (fiveYearSheet) {
-    const fiveYearRows =
-      readMatrix(fiveYearSheet);
-
-    fiveYear =
-      extractFiveYearSeries(
-        fiveYearRows
-      );
-  }
-
-  /*
-   * ------------------------------------------------------------
-   * Validation
-   * ------------------------------------------------------------
-   */
-
-  if (!oneYear.length) {
-    throw new Error(
-      "NY Fed SCE 1Y inflation expectation series is empty"
-    );
-  }
-
-  if (!threeYear.length) {
-    throw new Error(
-      "NY Fed SCE 3Y inflation expectation series is empty"
-    );
-  }
-
+  // The current official workbook publishes the median 5Y series in the
+  // same "Inflation expectations" worksheet as 1Y and 3Y. Older workbook
+  // versions placed it on a separate worksheet, so retain that as a fallback.
+  let fiveYear = extractFiveYearSeries(inflationRows);
   if (!fiveYear.length) {
-    throw new Error(
-      "NY Fed SCE 5Y inflation expectation series is empty"
-    );
+    const legacyFiveYearSheet = findSheetByName(workbook, "Five-year ahead Infl Exp");
+    if (legacyFiveYearSheet) {
+      fiveYear = extractFiveYearSeries(readMatrix(legacyFiveYearSheet));
+    }
   }
 
   return {
@@ -344,20 +310,20 @@ function extractFiveYearSeries(rows: unknown[][]): RawPoint[] {
       .filter(({ cell, index }) => {
         if (index === dateColumnIndex || typeof cell !== "string") return false;
         const h = normalizeHeader(cell);
-        return (
-          h.includes("inflation") &&
-          (h.includes("five year") || h.includes("five-year") || h.includes("5 year") || h.includes("5-year") || h.includes("expected")) &&
+        return h.includes("inflation") &&
+          (h.includes("five year") || h.includes("5 year")) &&
+          h.includes("expected") &&
           !h.includes("25th percentile") &&
-          !h.includes("75th percentile")
-        );
+          !h.includes("75th percentile") &&
+          !h.includes("point prediction");
       });
 
     if (!candidates.length) continue;
 
-    const preferred =
-      candidates.find(({ cell }) => typeof cell === "string" && normalizeHeader(cell).includes("median")) ??
-      candidates.find(({ cell }) => typeof cell === "string" && normalizeHeader(cell).includes("mean")) ??
-      candidates[0];
+    const preferred = candidates.find(
+      ({ cell }) => typeof cell === "string" && normalizeHeader(cell).includes("median")
+    );
+    if (!preferred) continue;
 
     const points: RawPoint[] = [];
     for (let rowIndex = headerRowIndex + 1; rowIndex < rows.length; rowIndex++) {
@@ -1401,6 +1367,9 @@ export async function fetchNyfedSeries(
         : seriesId === "SCE_INFLATION_3Y"
           ? result.threeYear
           : result.fiveYear;
+      if (!history.length) {
+        throw new Error(`NY Fed SCE ${seriesId} is empty in the official workbook`);
+      }
       try {
         const [latest] = await fetchLatestSceReleasePoints(seriesId);
         return latest ? mergeLatestOfficialPoint(history, latest) : history;

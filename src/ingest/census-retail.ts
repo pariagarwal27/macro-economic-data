@@ -40,7 +40,7 @@ function normalizeDate(year: string, month: string): string {
 
 async function fetchCategory(
   categoryCode: string,
-  startYear = 2020
+  startYear = new Date().getUTCFullYear() - 10
 ): Promise<RawPoint[]> {
   const apiKey = censusApiKey();
   const currentYear = new Date().getUTCFullYear();
@@ -63,6 +63,7 @@ async function fetchCategory(
 for (let attempt = 1; attempt <= 3; attempt++) {
   try {
     response = await fetch(url, {
+      cache: "no-store",
       headers: {
         Accept: "application/json",
         "User-Agent": "MacroHub/1.0",
