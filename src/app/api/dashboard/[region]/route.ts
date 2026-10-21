@@ -2,30 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 
 import {
   DASHBOARD,
+  flattenMetricIds,
   type Region,
-  type UiNode,
 } from "@/components/macro-ui-hierarchy";
 import { getSeriesHistories } from "@/data/dashboard";
 import { METRICS } from "@/catalog/metrics";
 import { contributionMetricIds } from "@/lib/inflation-contributions";
+import { buildThreeMonthMethodMap, buildThreeMonthTrend } from "@/lib/three-month-trend";
+
+const THREE_MONTH_METHODS = buildThreeMonthMethodMap(METRICS);
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-function allLeafMetricIds(nodes: UiNode[] = []) {
-  const ids: string[] = [];
-
-  const walk = (xs: UiNode[]) => {
-    xs.forEach((node) => {
-      if (node.metricId) ids.push(node.metricId);
-      if (node.children) walk(node.children);
-    });
-  };
-
-  walk(nodes);
-
-  return [...new Set(ids)];
-}
 
 export async function GET(
   req: NextRequest,
@@ -53,7 +41,7 @@ export async function GET(
     ]);
 
     const componentIds = allSpecs.flatMap((spec) =>
-      allLeafMetricIds(spec.components)
+      flattenMetricIds(spec.components)
     );
 
     const chartIds = allSpecs.flatMap((spec) =>
@@ -80,12 +68,27 @@ export async function GET(
       .filter((metric) => metric.region === r && (metric.frequency === "daily" || metric.frequency === "hourly"))
       .map((metric) => metric.id);
     const driverIds = contributionMetricIds().filter(id => METRICS.some(metric => metric.id === id && metric.region === r));
-    const ids = [...new Set([...rootIds, ...componentIds, ...chartIds, ...inflationRateFallbackIds, ...underlyingInflationIds, ...continuousIds, ...driverIds])];
+    const threeMonthSourceIds = rootIds.flatMap((id) => THREE_MONTH_METHODS.get(id)?.sourceMetricIds ?? []);
+    const ids = [...new Set([...rootIds, ...componentIds, ...chartIds, ...inflationRateFallbackIds, ...underlyingInflationIds, ...continuousIds, ...driverIds, ...threeMonthSourceIds])];
 
     // Include the prior year so 2026 charts can calculate YoY values from
     // the underlying published levels while the visible chart stays scoped
     // to the current year in the client.
     const result = await getSeriesHistories(ids, 240);
+    if (r === "US" || r === "UK" || r === "EA") {
+      for (const metricId of ids) {
+        const metric = METRICS.find((candidate) => candidate.id === metricId && candidate.region === r);
+        const method = THREE_MONTH_METHODS.get(metricId);
+        const sourceHistory = result[metricId]?.history;
+        if (!metric || !method || !sourceHistory?.length) continue;
+        const companionId = method.sourceMetricIds.find((sourceId) => sourceId !== metricId);
+        const companionHistory = companionId ? result[companionId]?.history : undefined;
+        const threeMonth = buildThreeMonthTrend(metric, sourceHistory, method, companionHistory);
+        if (threeMonth?.history.length && result[metricId]) {
+          Object.assign(result[metricId], { threeMonth });
+        }
+      }
+    }
     const hourlyIds = METRICS
       .filter((metric) => metric.region === r && metric.frequency === "hourly")
       .map((metric) => metric.id);
