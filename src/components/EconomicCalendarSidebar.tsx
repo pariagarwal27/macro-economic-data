@@ -5,7 +5,9 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { filterScheduledCalendarEvents, isWithinLastSevenCalendarDays, type CalendarRegionFilter } from "@/lib/economic-calendar-view";
+import { compareCalendarMetricEvents, filterReleaseDiaryEvents, type CalendarRegionFilter } from "@/lib/economic-calendar-view";
+import { formatLiveSourceLabel } from "@/lib/live-source-label";
+import { getClientJsonCache, refreshClientJson } from "@/lib/client-json-cache";
 
 type CalendarEvent = {
   metricId: string;
@@ -13,6 +15,7 @@ type CalendarEvent = {
   unit: string;
   region: "US" | "UK" | "EA" | "OTHER";
   source: string | null;
+  liveSource: string | null;
   family: string | null;
   scheduledDate: string | null;
   scheduledTime: string | null;
@@ -41,11 +44,12 @@ type CalendarPayload = {
   week: Record<string, CalendarEvent[]>;
   lastUpdated: string | null;
   allEvents: CalendarEvent[];
+  nextReleaseEvents: CalendarEvent[];
   coverage: { totalMetrics: number; exactTime: number; deadline: number; dateOnly: number; daily: number; hourly: number; unannounced: number; sourceErrors: number };
   error?: string;
 };
 
-type Tab = "today" | "week" | "all";
+type Tab = "upcoming" | "history" | "all";
 const COUNTRY_LABEL: Record<CalendarRegionFilter, string> = {
   ALL: "all countries",
   US: "the United States",
@@ -123,32 +127,25 @@ function formatLastUpdated(timestamp: string) {
 }
 
 export function EconomicCalendarSidebar({ onReleaseSelect }: { onReleaseSelect?: (event: { metricId: string; region: string; metricName: string }) => void }) {
-  const [tab, setTab] = useState<Tab>("today");
+  const initialPayload = getClientJsonCache<CalendarPayload>("economic-calendar:sidebar") ?? null;
+  const [tab, setTab] = useState<Tab>("upcoming");
   const [country, setCountry] = useState<CalendarRegionFilter>("ALL");
-  const [payload, setPayload] = useState<CalendarPayload | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [payload, setPayload] = useState<CalendarPayload | null>(initialPayload);
+  const [loading, setLoading] = useState(initialPayload == null);
   const [error, setError] = useState("");
-  const previousPayload = useRef<CalendarPayload | null>(null);
+  const previousPayload = useRef<CalendarPayload | null>(initialPayload);
   const announced = useRef(new Set<string>());
+  const requestInFlight = useRef(false);
 
   const load = useCallback(async () => {
+    if (requestInFlight.current) return;
+    requestInFlight.current = true;
     try {
-      const response = await fetch(
-        `/api/economic-calendar?timezone=${encodeURIComponent(
-          DISPLAY_TIME_ZONE
-        )}`,
-        {
-          cache: "no-store",
-        }
+      const data = await refreshClientJson<CalendarPayload>(
+        "economic-calendar:sidebar",
+        `/api/economic-calendar?timezone=${encodeURIComponent(DISPLAY_TIME_ZONE)}`,
+        "Economic calendar request failed."
       );
-
-      if (!response.ok) {
-        throw new Error(
-          "Economic calendar request failed."
-        );
-      }
-
-      const data = (await response.json()) as CalendarPayload;
 
       if (data.error) {
         throw new Error(data.error);
@@ -212,6 +209,7 @@ export function EconomicCalendarSidebar({ onReleaseSelect }: { onReleaseSelect?:
       );
     } finally {
       setLoading(false);
+      requestInFlight.current = false;
     }
   }, []);
 
@@ -227,40 +225,39 @@ export function EconomicCalendarSidebar({ onReleaseSelect }: { onReleaseSelect?:
     return () => window.clearInterval(timer);
   }, [load]);
 
-  const weekDays = useMemo(() => {
-    if (!payload) return [];
-
-    return Object.entries(payload.week)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, events]) => ({
-        date,
-        events,
-      }));
-  }, [payload]);
-
   const diaryGroups = useMemo(() => {
     if (!payload) return [] as { date: string; events: CalendarEvent[] }[];
-    if (tab === "today") return [
-      ...(filterScheduledCalendarEvents(payload.todayEvents, country).length ? [{ date: formatDay(payload.today), events: filterScheduledCalendarEvents(payload.todayEvents, country) }] : []),
-    ];
-    if (tab === "week") return weekDays.flatMap(({ date, events }) => {
-      const filteredEvents = filterScheduledCalendarEvents(events, country);
-      return filteredEvents.length ? [{ date: formatDay(date), events: filteredEvents }] : [];
-    });
-    const groups = new Map<string, CalendarEvent[]>();
-    for (const event of filterScheduledCalendarEvents(payload.recentEvents, country)) {
-      if (!event.scheduledDate || !isWithinLastSevenCalendarDays(event.scheduledDate, event.scheduleType, payload.today)) continue;
-      const label = formatDay(event.scheduledDate);
-      groups.set(label, [...(groups.get(label) ?? []), event]);
+    if (tab !== "all") {
+      const historyAndUpcoming = [...(payload.recentEvents ?? []), ...(payload.allEvents ?? []), ...(payload.nextReleaseEvents ?? [])];
+      const uniqueEvents = new Map<string, CalendarEvent>();
+      for (const event of filterReleaseDiaryEvents(historyAndUpcoming, tab, payload.today, country)) {
+        uniqueEvents.set(`${event.metricId}:${event.scheduledDate}`, event);
+      }
+      const groups = new Map<string, CalendarEvent[]>();
+      for (const event of [...uniqueEvents.values()].sort(compareCalendarEvents)) {
+        const day = event.scheduledDate!;
+        groups.set(day, [...(groups.get(day) ?? []), event]);
+      }
+      return Array.from(groups, ([date, events]) => ({ date, events }))
+        .sort((a, b) => tab === "history" ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date))
+        .map(({ date, events }) => ({ date: formatDay(date), events }));
     }
-    return Array.from(groups, ([date, events]) => ({ date, events }));
-  }, [payload, tab, weekDays, country]);
+    return [];
+  }, [payload, tab, country]);
 
-  const emptyText = tab === "today"
-    ? `No scheduled releases for ${COUNTRY_LABEL[country]} today.`
-    : tab === "week"
-      ? `No scheduled releases for ${COUNTRY_LABEL[country]} this week.`
-      : `No releases for ${COUNTRY_LABEL[country]} in the last 7 days.`;
+  const allMetricEvents = useMemo(() => {
+    const events = (payload?.nextReleaseEvents ?? []).filter(event => event.region !== "OTHER" && (country === "ALL" || event.region === country));
+    return events.sort((a, b) => regionOrder(a.region) - regionOrder(b.region) ||
+      (a.scheduledDate ?? "9999-12-31").localeCompare(b.scheduledDate ?? "9999-12-31") ||
+      (a.scheduledTime ?? "99:99").localeCompare(b.scheduledTime ?? "99:99") ||
+      compareCalendarMetricEvents(a, b));
+  }, [payload, country]);
+
+  const emptyText = tab === "upcoming"
+    ? `No scheduled releases for ${COUNTRY_LABEL[country]} today or in the next 7 days.`
+    : tab === "history"
+      ? `No published releases for ${COUNTRY_LABEL[country]} in the last 7 days.`
+      : `No metrics are available for ${COUNTRY_LABEL[country]}.`;
 
   return (
     <section className="economic-calendar-sidebar">
@@ -299,21 +296,21 @@ export function EconomicCalendarSidebar({ onReleaseSelect }: { onReleaseSelect?:
       <div className="economic-calendar-tabs">
         <button
           type="button"
-          className={tab === "today" ? "active" : ""}
-          onClick={() => setTab("today")}
+          className={tab === "upcoming" ? "active" : ""}
+          onClick={() => setTab("upcoming")}
         >
-          Today
+          Upcoming
         </button>
 
         <button
           type="button"
-          className={tab === "week" ? "active" : ""}
-          onClick={() => setTab("week")}
+          className={tab === "history" ? "active" : ""}
+          onClick={() => setTab("history")}
         >
-          This Week
+          History
         </button>
         <button type="button" className={tab === "all" ? "active" : ""} onClick={() => setTab("all")}>
-          Last 7 days
+          All Metrics
         </button>
       </div>
 
@@ -334,7 +331,12 @@ export function EconomicCalendarSidebar({ onReleaseSelect }: { onReleaseSelect?:
           </button>
         </div>
       ) : (
-        <CalendarDiary groups={diaryGroups} onSelect={onReleaseSelect} emptyText={emptyText} />
+        <>
+          {tab !== "all" && <div className="release-diary-window-note">{tab === "upcoming" ? "Today and next 7 days" : "Last 7 days · Published releases"}</div>}
+          {tab === "all"
+            ? <AllMetricsDiary events={allMetricEvents} onSelect={onReleaseSelect} emptyText={emptyText} />
+            : <CalendarDiary groups={diaryGroups} onSelect={onReleaseSelect} emptyText={emptyText} />}
+        </>
       )}
 
       {payload?.lastUpdated && (
@@ -346,6 +348,48 @@ export function EconomicCalendarSidebar({ onReleaseSelect }: { onReleaseSelect?:
       )}
     </section>
   );
+}
+
+function compareCalendarEvents(a: CalendarEvent, b: CalendarEvent) {
+  return (a.scheduledDate ?? "9999-12-31").localeCompare(b.scheduledDate ?? "9999-12-31") ||
+    (a.scheduledTime ?? "99:99").localeCompare(b.scheduledTime ?? "99:99") ||
+    compareCalendarMetricEvents(a, b);
+}
+
+function regionOrder(region: CalendarEvent["region"]) {
+  return region === "US" ? 0 : region === "UK" ? 1 : region === "EA" ? 2 : 3;
+}
+
+function regionLabel(region: CalendarEvent["region"]) {
+  return region === "US" ? "United States" : region === "UK" ? "United Kingdom" : region === "EA" ? "Euro Area" : "Other";
+}
+
+function AllMetricsDiary({ events, onSelect, emptyText }: {
+  events: CalendarEvent[];
+  onSelect?: (event: { metricId: string; region: string; metricName: string }) => void;
+  emptyText: string;
+}) {
+  if (!events.length) return <div className="economic-calendar-list release-diary"><div className="economic-calendar-empty">{emptyText}</div></div>;
+  const groups = new Map<CalendarEvent["region"], CalendarEvent[]>();
+  for (const event of events) groups.set(event.region, [...(groups.get(event.region) ?? []), event]);
+  return <div className="economic-calendar-list release-diary all-metrics-diary">
+    <div className="all-metrics-diary-head" aria-hidden="true"><span>Next release</span><span>Metric</span><span>Source</span><span>Status</span></div>
+    {[...groups.entries()].sort(([a], [b]) => regionOrder(a) - regionOrder(b)).map(([region, regionEvents]) => <section className="release-diary-group" key={region}>
+      <h3>{FLAG[region]} {regionLabel(region)} <span>· {regionEvents.length} metrics</span></h3>
+      {regionEvents.map((event, index) => {
+        const dateLabel = event.scheduledDate ? formatDay(event.scheduledDate) : event.scheduleType === "daily" ? "Daily" : event.scheduleType === "hourly" ? "Hourly" : event.scheduleType === "source-error" ? "Schedule unavailable" : "Not announced";
+        const timeLabel = event.scheduledDate ? event.scheduledTimeLabel ?? formatTime(event.scheduledTime) : "";
+        const eventStatusLabel = event.scheduleType === "hourly" ? "Hourly" : event.scheduleType === "daily" ? "Daily" : event.scheduleType === "source-error" ? "Source unavailable" : event.status === "unscheduled" ? "Not announced" : statusLabel(event.status);
+        const canOpen = event.region !== "OTHER";
+        return <div key={`${event.metricId}-${index}`} className={`all-metrics-diary-row ${event.status} ${canOpen ? "is-component-link" : ""}`} role={canOpen ? "button" : undefined} tabIndex={canOpen ? 0 : undefined} title={event.scheduleNote ?? undefined} onClick={() => { if (canOpen) onSelect?.(event); }} onKeyDown={keyboardEvent => { if (canOpen && (keyboardEvent.key === "Enter" || keyboardEvent.key === " ")) { keyboardEvent.preventDefault(); onSelect?.(event); } }}>
+          <span className="all-metrics-next-release"><b>{dateLabel}</b>{timeLabel && <small>{timeLabel}</small>}</span>
+          <span className="all-metrics-name">{event.metricName}</span>
+          <span className="all-metrics-source">{formatLiveSourceLabel(event.liveSource)}</span>
+          <span className={`release-diary-status ${event.status}`}><i />{eventStatusLabel}</span>
+        </div>;
+      })}
+    </section>)}
+  </div>;
 }
 
 function CalendarDiary({ groups, onSelect, emptyText }: {

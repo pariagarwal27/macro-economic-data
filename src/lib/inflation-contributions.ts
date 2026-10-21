@@ -79,8 +79,13 @@ export function buildInflationContributions(config: ContributionConfig, metrics:
     const previous = weight?.year === Number(priorPeriod.slice(0, 4)) && priorPeriod >= weight.validFrom && share != null && priorRate != null ? share * priorRate / 100 : null;
     return { ...item, parent, subtotal: Boolean(item.children?.length), countInTotal: parent === null, weight, share, currentRate, current, previous, change: current != null && previous != null ? current - previous : null };
   };
-  const rows = components.map(item => buildRow(item)).sort((a, b) => (b.current ?? -Infinity) - (a.current ?? -Infinity))
-    .flatMap(row => [row, ...(row.children ?? []).map(child => buildRow(child, row.label)).sort((a, b) => (b.current ?? -Infinity) - (a.current ?? -Infinity))]);
+  // Sort each level by its official basket weight, keeping subdivisions grouped
+  // immediately beneath their parent. Missing weights sort after known weights.
+  const byWeightDescending = <T extends { weight: { value: number } | null }>(a: T, b: T) =>
+    (b.weight?.value ?? -Infinity) - (a.weight?.value ?? -Infinity);
+  const rows = components.map(item => buildRow(item))
+    .sort(byWeightDescending)
+    .flatMap(row => [row, ...(row.children ?? []).map(child => buildRow(child, row.label)).sort(byWeightDescending)]);
   const rootId = core ? config.core! : config.headline;
   const rateId = mode === "mom" ? core ? config.coreMom : config.headlineMom : core ? config.coreYoy : config.headlineYoy;
   const published = contributionRate(metrics[rateId ?? ""], period, mode, mode)

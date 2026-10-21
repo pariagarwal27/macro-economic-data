@@ -22,6 +22,9 @@ const SERIES: Record<string, string> = {
   "us-retail-total-ex-auto-gas": "44W72",
 };
 
+const CONTROL_GROUP_ID = "us-retail-sales-control-group";
+const CONTROL_GROUP_CATEGORIES = ["44X72", "441", "447", "444", "722"] as const;
+
 function censusApiKey(): string {
   const key = process.env.CENSUS_API_KEY?.trim();
 
@@ -155,6 +158,31 @@ if (!response) {
 export async function fetchCensusRetailSeries(
   metricId: string
 ): Promise<RawPoint[]> {
+  if (metricId === CONTROL_GROUP_ID) {
+    const [total, motorVehicles, gasoline, buildingMaterials, foodServices] = await Promise.all(
+      CONTROL_GROUP_CATEGORIES.map((category) => fetchCategory(category, 1992))
+    );
+    const byCategory = [total, motorVehicles, gasoline, buildingMaterials, foodServices].map(
+      (points) => new Map(points.map((point) => [point.date, point.value]))
+    );
+    const [totalByDate, motorByDate, gasolineByDate, buildingByDate, foodByDate] = byCategory;
+    return total
+      .map(({ date }) => {
+        const values = [
+          totalByDate.get(date),
+          motorByDate.get(date),
+          gasolineByDate.get(date),
+          buildingByDate.get(date),
+          foodByDate.get(date),
+        ];
+        if (values.some((value) => value == null || !Number.isFinite(value))) return null;
+        const [allSales, motor, fuel, building, food] = values as number[];
+        const controlGroupSales = allSales - motor - fuel - building - food;
+        return controlGroupSales > 0 ? { date, value: controlGroupSales } : null;
+      })
+      .filter((point): point is RawPoint => point != null);
+  }
+
   const categoryCode = SERIES[metricId];
 
   if (!categoryCode) {

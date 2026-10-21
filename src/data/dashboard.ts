@@ -52,7 +52,8 @@ import {
   addUtcDays,
   releaseTapeWindow,
 } from "@/lib/calendar-tape";
-import { round } from "@/ingest/transforms";`r`
+import { round } from "@/ingest/transforms";
+import { releaseStageFromNote, VINTAGE_TRACKED_METRICS } from "@/ingest/release-stages";
 import { investingToCatalogScale } from "@/catalog/investing-map";
 
 /** Prefer release row for the latest observation period; ignore other periods' calendar dates. */
@@ -276,10 +277,10 @@ export async function getDashboardData(filters?: {
   )`).orderBy(desc(observations.date));
   const recentReleases = await db.select().from(releases).where(sql`${releases.id} IN (
     SELECT id FROM (
-      SELECT id, ROW_NUMBER() OVER (PARTITION BY metric_id ORDER BY period_date DESC) AS rn
+      SELECT id, ROW_NUMBER() OVER (PARTITION BY metric_id ORDER BY released_at DESC) AS rn
       FROM releases
-    ) WHERE rn <= 24
-  )`).orderBy(desc(releases.periodDate));
+    ) WHERE rn <= 48
+  )`).orderBy(desc(releases.periodDate), desc(releases.releasedAt));
   for (const m of filtered) {
     const latestRows = recentObservations.filter(row => row.metricId === m.id);
 
@@ -313,6 +314,7 @@ export async function getDashboardData(filters?: {
       liveProvider: live?.provider ?? (isUsCpiLsegOnlyMetric(m.id) ? "unavailable" : m.source === "fred" ? "fred-fallback" : m.source),
       liveSource: getActiveLiveSource(m.id, isCloud),
       feedNote: release?.notes ?? null,
+      releaseStage: releaseStageFromNote(releaseRows.find(row => row.periodDate === (latest?.date ?? displayRelease?.periodDate))?.notes),
       latest: latest ? { date: latest.date, value: latest.value } : null,
       prior: prior ? { date: prior.date, value: prior.value } : null,
       delta: latest && prior ? round(latest.value - prior.value) : null,
@@ -359,7 +361,9 @@ export async function getSeriesHistory(metricId: string, limit = 240) {
     .orderBy(desc(observations.date), desc(observations.id))
     .limit(limit);
 
-  const history = rows.reverse();
+  const latestObservationByDate = new Map<string, (typeof rows)[number]>();
+  for (const row of rows) if (!latestObservationByDate.has(row.date)) latestObservationByDate.set(row.date, row);
+  const history = [...latestObservationByDate.values()].reverse();
   const releaseRows = await db
     .select()
     .from(releases)
@@ -375,13 +379,19 @@ export async function getSeriesHistory(metricId: string, limit = 240) {
       (r.expectedValue != null ? 4 : 0) +
       (r.priorPeriodValue != null ? 2 : 0) +
       (r.priorReleaseValue != null ? 1 : 0);
-    if (!cur || score(row) >= score(cur)) byPeriod.set(key, row);
+    if (!VINTAGE_TRACKED_METRICS.has(metricId) && (!cur || score(row) >= score(cur))) byPeriod.set(key, row);
   }
-  const releasesDeduped = [...byPeriod.values()].sort((a, b) =>
+  const selectedReleaseRows = VINTAGE_TRACKED_METRICS.has(metricId) ? releaseRows : [...byPeriod.values()];
+  const releasesDeduped = selectedReleaseRows.sort((a, b) =>
     b.releasedAt.localeCompare(a.releasedAt)
   ).slice(0, 12);
   const latestPeriod = history[history.length - 1]?.date ?? null;
   const displayRelease = pickDisplayRelease(releasesDeduped, latestPeriod);
+  const releaseStage = releaseStageFromNote(releasesDeduped.find(row => row.periodDate === latestPeriod)?.notes);
+  const releasesWithStages = releasesDeduped.map(row => ({
+    ...row,
+    releaseStage: releaseStageFromNote(row.notes),
+  }));
   const expectedValue = displayRelease?.expectedValue ?? null;
   const actualValue = latestPeriod
     ? (history[history.length - 1]?.value ?? displayRelease?.value ?? null)
@@ -391,11 +401,13 @@ export async function getSeriesHistory(metricId: string, limit = 240) {
   return {
     meta: {
       ...meta,
+      releaseStage,
       liveProvider: getActiveLiveMapping(metricId, isCloud)?.provider ?? (isUsCpiLsegOnlyMetric(metricId) ? "unavailable" : meta.source),
       liveSource: getActiveLiveSource(metricId, isCloud),
     },
     history,
-    releases: releasesDeduped,
+    releases: releasesWithStages,
+    releaseStage,
     displayReleasedAt: displayRelease?.releasedAt ?? null,
     expectedValue,
     surprise,
@@ -509,7 +521,7 @@ export async function getSeriesHistories(
         FROM releases
         WHERE metric_id IN (${observationPlaceholders})
       )
-      WHERE rn <= 48
+      WHERE rn <= 96
       ORDER BY metric_id, released_at DESC
     `,
     args: ids,
@@ -604,7 +616,9 @@ export async function getSeriesHistories(
     const historyRows =
       observationsByMetric.get(metricId) ?? [];
 
-    const history = [...historyRows].reverse();
+    const latestObservationByDate = new Map<string, ObservationRow>();
+    for (const row of historyRows) if (!latestObservationByDate.has(row.date)) latestObservationByDate.set(row.date, row);
+    const history = [...latestObservationByDate.values()].reverse();
 
     const releaseRows =
       releasesByMetric.get(metricId) ?? [];
@@ -620,16 +634,17 @@ export async function getSeriesHistories(
         (r.priorPeriodValue != null ? 2 : 0) +
         (r.priorReleaseValue != null ? 1 : 0);
 
-      if (!current || score(row) >= score(current)) {
+      if (!VINTAGE_TRACKED_METRICS.has(metricId) && (!current || score(row) >= score(current))) {
         byPeriod.set(key, row);
       }
     }
 
-    const releasesDeduped = [...byPeriod.values()]
+    const selectedReleaseRows = VINTAGE_TRACKED_METRICS.has(metricId) ? releaseRows : [...byPeriod.values()];
+    const releasesDeduped = selectedReleaseRows
   .sort((a, b) =>
     b.releasedAt.localeCompare(a.releasedAt)
   )
-  .slice(0, 12);
+  .slice(0, VINTAGE_TRACKED_METRICS.has(metricId) ? 24 : 12);
 
 // ---------------------------------------------------------
 // Some official series can have a current release available
@@ -680,6 +695,11 @@ const latestPeriod =
       releasesDeduped,
       latestPeriod
     );
+    const releaseStage = releaseStageFromNote(releasesDeduped.find(row => row.periodDate === latestPeriod)?.notes);
+    const releasesWithStages = releasesDeduped.map(row => ({
+      ...row,
+      releaseStage: releaseStageFromNote(row.notes),
+    }));
 
     const expectedValue =
       displayRelease?.expectedValue ?? null;
@@ -703,12 +723,14 @@ const latestPeriod =
     result[metricId] = {
       meta: {
         ...meta,
+        releaseStage,
         liveProvider:
           getActiveLiveMapping(metricId, Boolean(getD1Database()))?.provider ?? (isUsCpiLsegOnlyMetric(metricId) ? "unavailable" : meta.source),
         liveSource: getActiveLiveSource(metricId, isCloud),
       },
       history,
-      releases: releasesDeduped,
+      releases: releasesWithStages,
+      releaseStage,
       displayReleasedAt:
         displayRelease?.releasedAt ?? null,
       expectedValue,

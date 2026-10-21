@@ -28,6 +28,11 @@ const SERIES: Record<string, EurostatSeriesConfig> = {
     nace: "G47",
     geo: "EA21",
   },
+
+  "ea-retail-sales-ex-fuel": {
+    nace: "G47_X_G473",
+    geo: "EA21",
+  },
 };
 
 type EurostatResponse = {

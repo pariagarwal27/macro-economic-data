@@ -1,3 +1,5 @@
+import { US_PPI_COMPONENTS } from '../catalog/us-ppi.mjs';
+
 export type Region = "US" | "UK" | "EA";
 export type MacroCategory = "prices" | "activity" | "labour" | "monetary" | "expectations" | "external";
 type SourceMacroCategory = "inflation" | "growth" | "jobs";
@@ -7,10 +9,13 @@ export type UiNode = {
   label: string;
   metricId?: string;
   momMetricId?: string;
+  groupOnly?: boolean;
+  chartMetricIds?: string[];
   children?: UiNode[];
 };
 
 export type IndicatorSpec = {
+  groupOnly?: boolean;
   id: string;
   title?: string;
   metricId: string;
@@ -133,6 +138,10 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
       title: "Core PCE",
       components: [],
     },
+    {
+      id: "us-ppi-card", metricId: "us-ppi-final-demand", yoyMetricId: "us-ppi-final-demand", momMetricId: "us-ppi-final-demand-mom", title: "Producer Price Index",
+      components: US_PPI_COMPONENTS,
+    },
     // ----------------------------------------------------
 // US INFLATION EXPECTATIONS
 // ----------------------------------------------------
@@ -248,6 +257,7 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
   id: "us-retail-sales-card",
   metricId: "us-retail-sales-total",
   title: "Retail Sales",
+  chartMetricIds: ["us-retail-sales-control-group"],
   components: [
     n("motor-vehicles", "Motor Vehicles", "us-retail-motor-vehicles"),
     n("gasoline", "Gasoline Stations", "us-retail-gasoline"),
@@ -463,6 +473,36 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
           n("ooh", "Owner-occupiers' housing costs"),
         ],
       },
+      {
+        id: "uk-ppi-card", metricId: "uk-ppi-output-yoy", yoyMetricId: "uk-ppi-output-yoy", momMetricId: "uk-ppi-output-mom", title: "Producer Price Index",
+        components: [
+          n("output", "Output PPI · manufactured products", "uk-ppi-output-yoy", [
+            n("food-beverages-tobacco", "Food, beverages & tobacco", "uk-ppi-food-beverages-tobacco-yoy", undefined, "uk-ppi-food-beverages-tobacco-mom"),
+            n("alcohol-tobacco", "Alcoholic beverages & tobacco", "uk-ppi-alcohol-tobacco-yoy", undefined, "uk-ppi-alcohol-tobacco-mom"),
+            n("textiles", "Textiles, apparel & leather", "uk-ppi-textiles-yoy", undefined, "uk-ppi-textiles-mom"),
+            n("paper", "Paper & printed products", "uk-ppi-paper-yoy", undefined, "uk-ppi-paper-mom"),
+            n("petroleum", "Coke & refined petroleum", "uk-ppi-petroleum-yoy", undefined, "uk-ppi-petroleum-mom"),
+            n("chemicals", "Chemicals & pharmaceuticals", "uk-ppi-chemicals-yoy", undefined, "uk-ppi-chemicals-mom"),
+            n("metals-machinery", "Metals, fabricated metals & machinery", "uk-ppi-metals-machinery-yoy", undefined, "uk-ppi-metals-machinery-mom"),
+            n("computers-electronics", "Computer, electronic & electrical products", "uk-ppi-computers-electronics-yoy", undefined, "uk-ppi-computers-electronics-mom"),
+            n("vehicles", "Motor vehicles & other transport equipment", "uk-ppi-vehicles-yoy", undefined, "uk-ppi-vehicles-mom"),
+          ], "uk-ppi-output-mom"),
+          n("input", "Input PPI · materials and fuels", "uk-ppi-input-yoy", [
+            n("input-manufactured", "Manufactured products", "uk-ppi-input-manufactured-yoy", undefined, "uk-ppi-input-manufactured-mom"),
+            n("input-fuel", "Fuel", "uk-ppi-input-fuel-yoy", undefined, "uk-ppi-input-fuel-mom"),
+            n("input-petroleum-ores", "Petroleum, gas & metal ores", "uk-ppi-input-petroleum-ores-yoy", undefined, "uk-ppi-input-petroleum-ores-mom"),
+            n("input-beverages-tobacco", "Beverages & tobacco", "uk-ppi-input-beverages-tobacco-yoy", undefined, "uk-ppi-input-beverages-tobacco-mom"),
+            n("input-other", "Other materials", "uk-ppi-input-other-yoy", undefined, "uk-ppi-input-other-mom"),
+            n("input-chemicals", "Chemicals", "uk-ppi-input-chemicals-yoy", undefined, "uk-ppi-input-chemicals-mom"),
+            n("input-metals", "Metals & non-metallic minerals", "uk-ppi-input-metals-yoy", undefined, "uk-ppi-input-metals-mom"),
+            n("input-equipment", "Parts & equipment", "uk-ppi-input-equipment-yoy", undefined, "uk-ppi-input-equipment-mom"),
+            n("input-domestic-food", "Domestic food", "uk-ppi-input-domestic-food-yoy", undefined, "uk-ppi-input-domestic-food-mom"),
+            n("input-imported-food", "Imported food", "uk-ppi-input-imported-food-yoy", undefined, "uk-ppi-input-imported-food-mom"),
+          ], "uk-ppi-input-mom"),
+          n("import", "Import Price Index", "uk-ppi-import-yoy", undefined, "uk-ppi-import-mom"),
+          n("export", "Export Price Index", "uk-ppi-export-yoy", undefined, "uk-ppi-export-mom"),
+        ],
+      },
       // ----------------------------------------------------
 // UK INFLATION EXPECTATIONS
 // ----------------------------------------------------
@@ -637,12 +677,14 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
     id: "uk-retail-sales-card",
     metricId: "uk-retail-sales-total-ex-fuel",
     title: "Retail Sales",
+    chartMetricIds: ["uk-retail-sales-total-yoy", "uk-retail-sales-ex-fuel-yoy", "uk-retail-sales-total-3m3m", "uk-retail-sales-ex-fuel-3m3m"],
     components: [
       n("food-stores", "Food Stores", "uk-retail-food-stores"),
       n("non-food-stores", "Non-Food Stores", "uk-retail-non-food-stores"),
       n("non-store", "Non-Store (Online)", "uk-retail-nonstore"),
       n("automotive-fuel", "Automotive Fuel", "uk-retail-automotive-fuel"),
-      n("total-ex-fuel", "Total ex Fuel", "uk-retail-sales-total-ex-fuel"),
+      n("headline", "Headline Retail Sales", "uk-retail-sales-total-ex-fuel"),
+      n("ex-fuel", "Retail Sales ex Fuel", "uk-retail-sales-ex-fuel"),
     ],
   },
 
@@ -789,25 +831,25 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
         ],
       },
       {
-        id: "ea-food-card", metricId: "ea-food-hicp-yoy", title: "Food, Alcohol & Tobacco",
+        id: "ea-food-card", metricId: "ea-food-hicp-yoy", yoyMetricId: "ea-food-hicp-yoy", momMetricId: "ea-food-hicp-mom", title: "Food, Alcohol & Tobacco",
         components: [
-          n("food", "Food, alcohol & tobacco", "ea-food-hicp-yoy"),
+          n("food", "Food, alcohol & tobacco", "ea-food-hicp-yoy", undefined, "ea-food-hicp-mom"),
           n("processed", "Processed food, alcohol & tobacco"),
           n("unprocessed", "Unprocessed food"),
         ],
       },
       {
-        id: "ea-energy-card", metricId: "ea-energy-hicp-yoy", title: "Energy",
+        id: "ea-energy-card", metricId: "ea-energy-hicp-yoy", yoyMetricId: "ea-energy-hicp-yoy", momMetricId: "ea-energy-hicp-mom", title: "Energy",
         components: [
-          n("energy", "Energy", "ea-energy-hicp-yoy"),
+          n("energy", "Energy", "ea-energy-hicp-yoy", undefined, "ea-energy-hicp-mom"),
           n("electricity", "Electricity / gas / solid fuels / heat"),
           n("liquid-fuels", "Liquid fuels"),
         ],
       },
       {
-        id: "ea-neig-card", metricId: "ea-goods-hicp-yoy", title: "Non-Energy Industrial Goods",
+        id: "ea-neig-card", metricId: "ea-goods-hicp-yoy", yoyMetricId: "ea-goods-hicp-yoy", momMetricId: "ea-goods-hicp-mom", title: "Non-Energy Industrial Goods",
         components: [
-          n("neig", "Non-energy industrial goods", "ea-goods-hicp-yoy"),
+          n("neig", "Non-energy industrial goods", "ea-goods-hicp-yoy", undefined, "ea-goods-hicp-mom"),
           n("durable", "Durable goods"),
           n("semi", "Semi-durable goods"),
           n("non-durable", "Non-durable goods"),
@@ -822,6 +864,23 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
           n("misc", "Services — miscellaneous"),
           n("recreation", "Services related to recreation & personal care"),
           n("transport", "Services related to transport"),
+        ],
+      },
+      {
+        id: "ea-ppi-card", metricId: "ea-ppi-yoy", yoyMetricId: "ea-ppi-yoy", momMetricId: "ea-ppi-mom", title: "Industrial Producer Prices",
+        components: [
+          n("industry", "Industry total", "ea-ppi-yoy", [
+            n("capital-goods", "Capital goods", "ea-ppi-capital-goods-yoy", undefined, "ea-ppi-capital-goods-mom"),
+            n("intermediate-goods", "Intermediate goods", "ea-ppi-intermediate-goods-yoy", undefined, "ea-ppi-intermediate-goods-mom"),
+            n("durable-consumer-goods", "Durable consumer goods", "ea-ppi-durable-consumer-goods-yoy", undefined, "ea-ppi-durable-consumer-goods-mom"),
+            n("non-durable-consumer-goods", "Non-durable consumer goods", "ea-ppi-non-durable-consumer-goods-yoy", undefined, "ea-ppi-non-durable-consumer-goods-mom"),
+            n("energy", "Energy", "ea-ppi-energy-yoy", undefined, "ea-ppi-energy-mom"),
+          ], "ea-ppi-mom"),
+          n("capital-goods", "Capital goods", "ea-ppi-capital-goods-yoy", undefined, "ea-ppi-capital-goods-mom"),
+          n("intermediate-goods", "Intermediate goods", "ea-ppi-intermediate-goods-yoy", undefined, "ea-ppi-intermediate-goods-mom"),
+          n("durable-consumer-goods", "Durable consumer goods", "ea-ppi-durable-consumer-goods-yoy", undefined, "ea-ppi-durable-consumer-goods-mom"),
+          n("non-durable-consumer-goods", "Non-durable consumer goods", "ea-ppi-non-durable-consumer-goods-yoy", undefined, "ea-ppi-non-durable-consumer-goods-mom"),
+          n("energy", "Energy", "ea-ppi-energy-yoy", undefined, "ea-ppi-energy-mom"),
         ],
       },
       // ----------------------------------------------------
@@ -932,6 +991,7 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
     n("non-food-ex-fuel", "Non-Food ex Fuel", "ea-retail-non-food-ex-fuel"),
     n("automotive-fuel", "Automotive Fuel", "ea-retail-automotive-fuel"),
     n("total-ex-motor-vehicles", "Total ex Motor Vehicles", "ea-retail-sales-total-ex-motor-vehicles"),
+    n("ex-fuel", "Retail Sales ex Fuel", "ea-retail-sales-ex-fuel"),
   ],
 },
 
@@ -1046,7 +1106,7 @@ const MACRO_CATEGORY_ORDER: MacroCategory[] = [
 
 const CATEGORY_SPEC_IDS: Record<Region, Record<MacroCategory, string[]>> = {
   US: {
-    prices: ["us-cpi-card", "us-core-cpi-card", "us-pce-card", "us-core-pce-card"],
+    prices: ["us-cpi-card", "us-core-cpi-card", "us-pce-card", "us-core-pce-card", "us-ppi-card"],
     activity: ["us-gdp-card", "us-retail-sales-card", "us-pmi-card", "us-pce-growth-card", "us-investment-card", "us-government-card", "us-net-exports-card"],
     labour: ["us-unemployment-card", "us-payrolls-card", "us-participation-card", "us-jolts-card", "us-wages-card", "us-claims-card"],
     monetary: [],
@@ -1054,7 +1114,7 @@ const CATEGORY_SPEC_IDS: Record<Region, Record<MacroCategory, string[]>> = {
     external: [],
   },
   UK: {
-    prices: ["uk-cpi-card", "uk-cpih-card", "uk-core-card", "uk-goods-card", "uk-services-card", "uk-food-card", "uk-housing-card"],
+    prices: ["uk-cpi-card", "uk-cpih-card", "uk-core-card", "uk-goods-card", "uk-services-card", "uk-food-card", "uk-housing-card", "uk-ppi-card"],
     activity: ["uk-gdp-card", "uk-consumption-card", "uk-retail-sales-card", "uk-capital-card", "uk-pmi-card", "uk-net-trade-card"],
     labour: ["uk-unemployment-card", "uk-employment-card", "uk-inactivity-card", "uk-vacancies-card", "uk-wages-card", "uk-payrolled-card"],
     monetary: [],
@@ -1062,7 +1122,7 @@ const CATEGORY_SPEC_IDS: Record<Region, Record<MacroCategory, string[]>> = {
     external: [],
   },
   EA: {
-    prices: ["ea-hicp-card", "ea-core-card", "ea-food-card", "ea-energy-card", "ea-neig-card", "ea-services-card"],
+    prices: ["ea-hicp-card", "ea-core-card", "ea-food-card", "ea-energy-card", "ea-neig-card", "ea-services-card", "ea-ppi-card"],
     activity: ["ea-gdp-card", "ea-retail-sales-card", "ea-pmi-card", "ea-household-card", "ea-capital-card", "ea-government-card", "ea-exports-card", "ea-imports-card"],
     labour: ["ea-unemployment-card", "ea-youth-card", "ea-employment-card", "ea-inactivity-card", "ea-vacancies-card", "ea-wages-card"],
     monetary: [],
@@ -1213,6 +1273,7 @@ export function flattenMetricIds(nodes: UiNode[] | undefined): string[] {
   const out: string[] = [];
   const walk = (xs: UiNode[]) => xs.forEach(x => {
     if (x.metricId) out.push(x.metricId);
+    if (x.momMetricId) out.push(x.momMetricId);
     if (x.children) walk(x.children);
   });
   walk(nodes);

@@ -4,6 +4,7 @@ const BASE = "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/dat
 
 interface EurostatResponse {
   value?: Record<string, number>;
+  status?: Record<string, string>;
   dimension?: {
     time?: { category?: { index?: Record<string, number> } };
   };
@@ -132,24 +133,23 @@ function parseEurostat(json: EurostatResponse): RawPoint[] {
 
     if (!date) continue;
 
+    const status = json.status?.[key]?.toLowerCase();
     points.push({
       date,
       value,
+      releaseStage: status === "e" ? "flash" : status === "p" ? "estimate" : undefined,
     });
   }
 
   points.sort((a, b) => a.date.localeCompare(b.date));
 
-  const byDate = new Map<string, number>();
+  const byDate = new Map<string, RawPoint>();
 
   for (const point of points) {
-    byDate.set(point.date, point.value);
+    byDate.set(point.date, point);
   }
 
-  return [...byDate.entries()].map(([date, value]) => ({
-    date,
-    value,
-  }));
+  return [...byDate.values()];
 }
 function unflatten(flat: number, size: number[]): number[] {
   const coords = new Array(size.length);
@@ -177,6 +177,39 @@ function periodToDate(period: string): string | null {
 
 /** Preset filters for catalog seriesIds — all via Eurostat Statistics API (JSON-stat). */
 export async function fetchEurostatPreset(seriesId: string): Promise<RawPoint[]> {
+  const ppiAlias = seriesId.match(/^ea-ppi:([^:]+)(?::(PCH_PRE|PCH_SM))?$/);
+  if (ppiAlias) {
+    const [, category, requestedRate] = ppiAlias;
+    const unit = requestedRate ?? "I21";
+    // Eurostat's official EA aggregate changes membership over time. Query
+    // each published aggregate and retain its official validity window.
+    const aggregateWindows = [
+      // Eurostat publishes the EA19 aggregate back to 1996; retain that full
+      // official history, while switching aggregate definitions at the
+      // documented membership dates below.
+      { geo: "EA19", from: "1996-01", to: "2022-12" },
+      { geo: "EA20", from: "2023-01", to: "2025-12" },
+      { geo: "EA21", from: "2026-01", to: "9999-12" },
+    ];
+    const chunks = await Promise.all(aggregateWindows.map(async ({ geo, from, to }) => {
+      // Eurostat's headline PPI release and its MIG breakdowns are for the
+      // domestic market (imports excluded), dataset sts_inppd_m. The similarly
+      // named sts_inpp_m series covers the total market and does not match the
+      // published release figures shown in the dashboard.
+      const points = await fetchEurostatSeries("sts_inppd_m", {
+        geo, freq: "M", indic_bt: "PRC_PRR_DOM", nace_r2: category,
+        s_adj: "NSA", unit,
+      });
+      return points.filter(point => {
+        const period = point.date.slice(0, 7);
+        return period >= from && period <= to;
+      });
+    }));
+    const byPeriod = new Map<string, number>();
+    for (const point of chunks.flat()) byPeriod.set(point.date, point.value);
+    return [...byPeriod].sort(([a], [b]) => a.localeCompare(b)).map(([date, value]) => ({ date, value }));
+  }
+
   switch (seriesId) {
     case "ea_inactive_population":
       return fetchEurostatSeries("lfsq_igan", {
@@ -233,6 +266,15 @@ case "ea_retail_sales_total_ex_motor_vehicles":
     s_adj: "SCA",
   });
 
+case "ea_retail_sales_ex_fuel":
+  return fetchEurostatSeries("sts_trtu_m", {
+    geo: "EA21",
+    nace_r2: "G47_X_G473",
+    indic_bt: "VOL_SLS",
+    unit: "I21",
+    s_adj: "SCA",
+  });
+
     case "prc_hicp_minr":
     case "prc_hicp_manr":
       return fetchEurostatSeries("prc_hicp_minr", {
@@ -271,10 +313,10 @@ case "ea_retail_sales_total_ex_motor_vehicles":
         coicop18: "SERV",
         unit: "RCH_M",
       });
-    case "prc_hicp_minr_goods":
+    case "prc_hicp_minr_igd_nnrg":
       return fetchEurostatSeries("prc_hicp_minr", {
         geo: "EA",
-        coicop18: "GD",
+        coicop18: "IGD_NNRG",
         unit: "RCH_A",
       });
     case "prc_hicp_minr_food":
@@ -288,6 +330,24 @@ case "ea_retail_sales_total_ex_motor_vehicles":
         geo: "EA",
         coicop18: "NRG",
         unit: "RCH_A",
+      });
+    case "prc_hicp_mmor_food":
+      return fetchEurostatSeries("prc_hicp_minr", {
+        geo: "EA",
+        coicop18: "FOOD",
+        unit: "RCH_M",
+      });
+    case "prc_hicp_mmor_nrg":
+      return fetchEurostatSeries("prc_hicp_minr", {
+        geo: "EA",
+        coicop18: "NRG",
+        unit: "RCH_M",
+      });
+    case "prc_hicp_mmor_igd_nnrg":
+      return fetchEurostatSeries("prc_hicp_minr", {
+        geo: "EA",
+        coicop18: "IGD_NNRG",
+        unit: "RCH_M",
       });
     case "prc_hicp_minr_DE":
     case "prc_hicp_manr_DE":
@@ -381,8 +441,9 @@ case "une_rt_m_youth":
         indic: "LM-UN-T-TOT",
       });
     case "sts_inppd_m":
-      return fetchEurostatSeries("sts_inpp_m", {
-        geo: "EA20",
+      return fetchEurostatSeries("sts_inppd_m", {
+        geo: "EA21",
+        indic_bt: "PRC_PRR_DOM",
         nace_r2: "B-E36",
         s_adj: "NSA",
         unit: "I21",

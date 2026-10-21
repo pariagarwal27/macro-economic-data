@@ -10,7 +10,9 @@ export async function GET() {
   try {
     const overviewIds = overviewMetricIds();
     const [histories, expectationHistories] = await Promise.all([
-      getSeriesHistories(overviewIds, 60),
+      // Overview charts need the prior-year base for YoY calculations and
+      // enough history for the year-range slider, not just the latest 5 years.
+      getSeriesHistories(overviewIds, 240),
       getSeriesHistories(expectationsOverviewMetricIds(), 300),
     ]);
     return NextResponse.json({ ...histories, ...expectationHistories }, { headers: { "Cache-Control": "no-store" } });

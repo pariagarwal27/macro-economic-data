@@ -6,10 +6,12 @@ import { getHistoryHandleForYearClick, getHistoryYears, getInitialHistoryHandleR
 /** Year picker for full-size charts. The plot remains full-width so both axes stay visible. */
 export function HistoryChartViewport({
   dates,
+  height,
   children,
   label = "Chart history",
   compact = false,
   fullHistoryByDefault = false,
+  shortYearLabels = false,
   onRangeChange,
 }: {
   dates: string[];
@@ -19,6 +21,7 @@ export function HistoryChartViewport({
   label?: string;
   compact?: boolean;
   fullHistoryByDefault?: boolean;
+  shortYearLabels?: boolean;
   onRangeChange?: (range: HistoryYearRange, isDefaultWindow: boolean) => void;
 }) {
   const [plotWidth, setPlotWidth] = useState(0);
@@ -106,23 +109,23 @@ export function HistoryChartViewport({
   if (compact) return <>{typeof children === "function" ? children(plotWidth, fromYear, toYear, isDefaultWindow) : children}</>;
 
   return (
-    <div className={`history-chart-viewport${showNavigation ? " has-history-navigation" : ""}`} role="group" aria-label={label}>
+    <div className={`history-chart-viewport${showNavigation ? " has-history-navigation" : ""}`} style={{ height }} role="group" aria-label={label}>
       <div ref={plotRef} className="history-chart-scrollport">
         {typeof children === "function" ? children(plotWidth || 100, fromYear, toYear, isDefaultWindow) : children}
       </div>
       {showNavigation && <div className="history-chart-navigation">
-        <div className="history-chart-range-row">
-          <span className="history-chart-range-label">From <strong>{handleRange.from}</strong></span>
+        <div className="history-chart-range-layout">
+          <span className="history-chart-range-label history-chart-range-from-label">From <strong>{handleRange.from}</strong></span>
           <div ref={rangeTrackRef} className="history-chart-range-slider">
             <span className="history-chart-range-track" />
             <span className="history-chart-range-selected" style={{ left: `${fromIndex / (years.length - 1) * 100}%`, right: `${100 - toIndex / (years.length - 1) * 100}%` }} />
             <div className={`history-chart-range-thumb history-chart-range-from${fromIndex === toIndex && toIndex === years.length - 1 ? " is-overlap-top" : ""}${draggingHandle === "from" ? " is-dragging" : ""}`} role="slider" tabIndex={0} aria-label={`From year for ${label}`} aria-valuemin={years[0]} aria-valuemax={handleRange.to} aria-valuenow={handleRange.from} aria-valuetext={`From ${handleRange.from}`} style={{ left: `${fromIndex / (years.length - 1) * 100}%` }} onPointerDown={event => { event.currentTarget.setPointerCapture(event.pointerId); setDraggingHandle("from"); moveHandleToPointer("from", event); }} onPointerMove={event => { if (draggingHandle === "from") moveHandleToPointer("from", event); }} onPointerUp={() => setDraggingHandle(null)} onLostPointerCapture={() => setDraggingHandle(null)} onKeyDown={event => moveHandleByKey("from", event)} />
             <div className={`history-chart-range-thumb history-chart-range-to${fromIndex === toIndex && toIndex < years.length - 1 ? " is-overlap-top" : ""}${draggingHandle === "to" ? " is-dragging" : ""}`} role="slider" tabIndex={0} aria-label={`To year for ${label}`} aria-valuemin={handleRange.from} aria-valuemax={years.at(-1)} aria-valuenow={handleRange.to} aria-valuetext={`To ${handleRange.to}`} style={{ left: `${toIndex / (years.length - 1) * 100}%` }} onPointerDown={event => { event.currentTarget.setPointerCapture(event.pointerId); setDraggingHandle("to"); moveHandleToPointer("to", event); }} onPointerMove={event => { if (draggingHandle === "to") moveHandleToPointer("to", event); }} onPointerUp={() => setDraggingHandle(null)} onLostPointerCapture={() => setDraggingHandle(null)} onKeyDown={event => moveHandleByKey("to", event)} />
           </div>
-          <span className="history-chart-range-label">To <strong>{handleRange.to}</strong></span>
-        </div>
-        <div className="history-chart-years" aria-label="Select a year; the nearest range handle moves to that year">
-          {years.map((year, index) => <button type="button" key={year} className={`${index === 0 ? "is-first" : ""}${index === years.length - 1 ? " is-last" : ""}${year === handleRange.from ? " is-from" : ""}${year === handleRange.to ? " is-to" : ""}`} style={{ left: `${years.length > 1 ? index / (years.length - 1) * 100 : 0}%` }} aria-label={`Select ${year}; move the nearest range handle`} onClick={() => pickYearLabel(index)}>{year}</button>)}
+          <span className="history-chart-range-label history-chart-range-to-label">To <strong>{handleRange.to}</strong></span>
+          <div className="history-chart-years" aria-label="Select a year; the nearest range handle moves to that year">
+            {years.map((year, index) => <button type="button" key={year} className={`${index === 0 ? "is-first" : ""}${index === years.length - 1 ? " is-last" : ""}${year === handleRange.from ? " is-from" : ""}${year === handleRange.to ? " is-to" : ""}`} style={{ left: `${years.length > 1 ? index / (years.length - 1) * 100 : 0}%` }} aria-label={`Select ${year}; move the nearest range handle`} onClick={() => pickYearLabel(index)}>{shortYearLabels ? `'${String(year).slice(-2)}` : year}</button>)}
+          </div>
         </div>
       </div>}
     </div>

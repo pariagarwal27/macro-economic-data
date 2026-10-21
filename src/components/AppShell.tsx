@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CalendarDays, Globe2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { GlobalMetricSearch } from "./GlobalMetricSearch";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -25,9 +26,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </Link>
         <nav className="editorial-primary-nav" aria-label="Main navigation">
           <Link href="/" aria-current={pathname === "/" ? "page" : undefined}>Overview</Link>
-          <Link href="/country/uk">Countries</Link>
+          <Link href="/country/us">Countries</Link>
           <Link href="/calendar" aria-current={pathname === "/calendar" ? "page" : undefined}>Calendar</Link>
+          <Link href="/latest-updated" aria-current={pathname === "/latest-updated" ? "page" : undefined}>Latest Updated</Link>
         </nav>
+        <GlobalMetricSearch />
         <div className="site-header-right">
           <Link href="/country/us" data-country="us" className="header-link">🇺🇸 US</Link>
           <Link href="/country/uk" data-country="uk" className="header-link">🇬🇧 UK</Link>

@@ -1,3 +1,5 @@
+import { US_PPI_SERIES } from './us-ppi.mjs';
+
 /**
  * Live (release-day) source routing.
  * BLS/BEA are the primary sources for US CPI/PCE. FRED is fallback only.
@@ -243,12 +245,48 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
 
   "us-ppi-final-demand": {
     provider: "bls",
-    seriesId: "WPSFD49207",
+    seriesId: "WPUFD4",
   },
   "us-ppi-core": {
     provider: "bls",
-    seriesId: "WPSFD4131",
+    seriesId: "WPUFD49116",
   },
+  "us-ppi-final-demand-mom": { provider: "bls", seriesId: "WPSFD4" },
+  "us-ppi-core-mom": { provider: "bls", seriesId: "WPSFD49116" },
+  "us-ppi-goods-yoy": { provider: "bls", seriesId: "WPUFD41" },
+  "us-ppi-goods-mom": { provider: "bls", seriesId: "WPSFD41" },
+  "us-ppi-foods-yoy": { provider: "bls", seriesId: "WPUFD411" },
+  "us-ppi-foods-mom": { provider: "bls", seriesId: "WPSFD411" },
+  "us-ppi-energy-yoy": { provider: "bls", seriesId: "WPUFD412" },
+  "us-ppi-energy-mom": { provider: "bls", seriesId: "WPSFD412" },
+  "us-ppi-goods-ex-food-energy-yoy": { provider: "bls", seriesId: "WPUFD413" },
+  "us-ppi-goods-ex-food-energy-mom": { provider: "bls", seriesId: "WPSFD413" },
+  "us-ppi-services-yoy": { provider: "bls", seriesId: "WPUFD42" },
+  "us-ppi-services-mom": { provider: "bls", seriesId: "WPSFD42" },
+  "us-ppi-services-ex-trade-yoy": { provider: "bls", seriesId: "WPUFD421" },
+  "us-ppi-services-ex-trade-mom": { provider: "bls", seriesId: "WPSFD421" },
+  "us-ppi-construction-yoy": { provider: "bls", seriesId: "WPUFD43" },
+  "us-ppi-construction-mom": { provider: "bls", seriesId: "WPSFD43" },
+  "us-ppi-final-demand-trade-yoy": { provider: "bls", seriesId: "WPUFD423" },
+  "us-ppi-final-demand-trade-mom": { provider: "bls", seriesId: "WPSFD423" },
+  "us-ppi-final-demand-transport-yoy": { provider: "bls", seriesId: "WPUFD422" },
+  "us-ppi-final-demand-transport-mom": { provider: "bls", seriesId: "WPSFD422" },
+  "us-ppi-intermediate-stage-1-yoy": { provider: "bls", seriesId: "WPUID51" },
+  "us-ppi-intermediate-stage-1-mom": { provider: "bls", seriesId: "WPSID51" },
+  "us-ppi-intermediate-stage-2-yoy": { provider: "bls", seriesId: "WPUID52" },
+  "us-ppi-intermediate-stage-2-mom": { provider: "bls", seriesId: "WPSID52" },
+  "us-ppi-intermediate-stage-3-yoy": { provider: "bls", seriesId: "WPUID53" },
+  "us-ppi-intermediate-stage-3-mom": { provider: "bls", seriesId: "WPSID53" },
+  "us-ppi-intermediate-stage-4-yoy": { provider: "bls", seriesId: "WPUID54" },
+  "us-ppi-intermediate-stage-4-mom": { provider: "bls", seriesId: "WPSID54" },
+  "us-ppi-intermediate-processed-goods-yoy": { provider: "bls", seriesId: "WPUID61" },
+  "us-ppi-intermediate-processed-goods-mom": { provider: "bls", seriesId: "WPSID61" },
+  "us-ppi-intermediate-unprocessed-goods-yoy": { provider: "bls", seriesId: "WPUID62" },
+  "us-ppi-intermediate-unprocessed-goods-mom": { provider: "bls", seriesId: "WPSID62" },
+  "us-ppi-intermediate-services-yoy": { provider: "bls", seriesId: "WPUID63" },
+  "us-ppi-intermediate-services-mom": { provider: "bls", seriesId: "WPSID63" },
+  "us-ppi-intermediate-construction-yoy": { provider: "bls", seriesId: "WPUID64" },
+  "us-ppi-intermediate-construction-mom": { provider: "bls", seriesId: "WPSID64" },
   "us-eci-wages": {
     provider: "bls",
     seriesId: "CIS2020000000000Q",
@@ -491,6 +529,50 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
     provider: "ons",
     seriesId: "GB7S",
   },
+  "uk-ppi-output-mom": { provider: "ons", seriesId: "GB7S" },
+  "uk-ppi-input-mom": { provider: "ons", seriesId: "GHIP" },
+  "uk-ppi-food-beverages-tobacco-yoy": { provider: "ons", seriesId: "GBA7" },
+  "uk-ppi-food-beverages-tobacco-mom": { provider: "ons", seriesId: "GBA7" },
+  "uk-ppi-alcohol-tobacco-yoy": { provider: "ons", seriesId: "GB7V" },
+  "uk-ppi-alcohol-tobacco-mom": { provider: "ons", seriesId: "GB7V" },
+  "uk-ppi-textiles-yoy": { provider: "ons", seriesId: "GB7W" },
+  "uk-ppi-textiles-mom": { provider: "ons", seriesId: "GB7W" },
+  "uk-ppi-paper-yoy": { provider: "ons", seriesId: "GB7X" },
+  "uk-ppi-paper-mom": { provider: "ons", seriesId: "GB7X" },
+  "uk-ppi-petroleum-yoy": { provider: "ons", seriesId: "GB7Y" },
+  "uk-ppi-petroleum-mom": { provider: "ons", seriesId: "GB7Y" },
+  "uk-ppi-chemicals-yoy": { provider: "ons", seriesId: "GB7Z" },
+  "uk-ppi-chemicals-mom": { provider: "ons", seriesId: "GB7Z" },
+  "uk-ppi-metals-machinery-yoy": { provider: "ons", seriesId: "GB82" },
+  "uk-ppi-metals-machinery-mom": { provider: "ons", seriesId: "GB82" },
+  "uk-ppi-computers-electronics-yoy": { provider: "ons", seriesId: "GB83" },
+  "uk-ppi-computers-electronics-mom": { provider: "ons", seriesId: "GB83" },
+  "uk-ppi-vehicles-yoy": { provider: "ons", seriesId: "GB84" },
+  "uk-ppi-vehicles-mom": { provider: "ons", seriesId: "GB84" },
+  "uk-ppi-input-manufactured-yoy": { provider: "ons", seriesId: "FSQT" },
+  "uk-ppi-input-manufactured-mom": { provider: "ons", seriesId: "FSQT" },
+  "uk-ppi-input-fuel-yoy": { provider: "ons", seriesId: "FSQ3" },
+  "uk-ppi-input-fuel-mom": { provider: "ons", seriesId: "FSQ3" },
+  "uk-ppi-input-petroleum-ores-yoy": { provider: "ons", seriesId: "FSQ4" },
+  "uk-ppi-input-petroleum-ores-mom": { provider: "ons", seriesId: "FSQ4" },
+  "uk-ppi-input-beverages-tobacco-yoy": { provider: "ons", seriesId: "FSQ5" },
+  "uk-ppi-input-beverages-tobacco-mom": { provider: "ons", seriesId: "FSQ5" },
+  "uk-ppi-input-other-yoy": { provider: "ons", seriesId: "FSQ6" },
+  "uk-ppi-input-other-mom": { provider: "ons", seriesId: "FSQ6" },
+  "uk-ppi-input-chemicals-yoy": { provider: "ons", seriesId: "FSQ7" },
+  "uk-ppi-input-chemicals-mom": { provider: "ons", seriesId: "FSQ7" },
+  "uk-ppi-input-metals-yoy": { provider: "ons", seriesId: "FSQ8" },
+  "uk-ppi-input-metals-mom": { provider: "ons", seriesId: "FSQ8" },
+  "uk-ppi-input-equipment-yoy": { provider: "ons", seriesId: "FSQ9" },
+  "uk-ppi-input-equipment-mom": { provider: "ons", seriesId: "FSQ9" },
+  "uk-ppi-input-domestic-food-yoy": { provider: "ons", seriesId: "FSP7" },
+  "uk-ppi-input-domestic-food-mom": { provider: "ons", seriesId: "FSP7" },
+  "uk-ppi-input-imported-food-yoy": { provider: "ons", seriesId: "FSP9" },
+  "uk-ppi-input-imported-food-mom": { provider: "ons", seriesId: "FSP9" },
+  "uk-ppi-import-yoy": { provider: "ons", seriesId: "GD74" },
+  "uk-ppi-import-mom": { provider: "ons", seriesId: "GD74" },
+  "uk-ppi-export-yoy": { provider: "ons", seriesId: "GB7R" },
+  "uk-ppi-export-mom": { provider: "ons", seriesId: "GB7R" },
   "uk-awe-regular-yoy": {
     provider: "ons",
     seriesId: "KAI9",
@@ -535,6 +617,14 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
     provider: "ons",
     seriesId: "J5EK",
   },
+  "uk-retail-sales-total-yoy": {
+    provider: "ons",
+    seriesId: "J5EB",
+  },
+  "uk-retail-sales-ex-fuel-yoy": {
+    provider: "ons",
+    seriesId: "J45U",
+  },
 
   // ---------------------------------------------------------------------------
   // Euro Area — Eurostat
@@ -565,15 +655,27 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
   },
   "ea-goods-hicp-yoy": {
     provider: "eurostat",
-    seriesId: "prc_hicp_minr_goods",
+    seriesId: "prc_hicp_minr_igd_nnrg",
+  },
+  "ea-goods-hicp-mom": {
+    provider: "eurostat",
+    seriesId: "prc_hicp_mmor_igd_nnrg",
   },
   "ea-food-hicp-yoy": {
     provider: "eurostat",
     seriesId: "prc_hicp_minr_food",
   },
+  "ea-food-hicp-mom": {
+    provider: "eurostat",
+    seriesId: "prc_hicp_mmor_food",
+  },
   "ea-energy-hicp-yoy": {
     provider: "eurostat",
     seriesId: "prc_hicp_minr_nrg",
+  },
+  "ea-energy-hicp-mom": {
+    provider: "eurostat",
+    seriesId: "prc_hicp_mmor_nrg",
   },
   "de-cpi-yoy": {
     provider: "eurostat",
@@ -609,8 +711,19 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
   },
   "ea-ppi-yoy": {
     provider: "eurostat",
-    seriesId: "sts_inpp_m",
+    seriesId: "ea-ppi:B-E36:PCH_SM",
   },
+  "ea-ppi-mom": { provider: "eurostat", seriesId: "ea-ppi:B-E36:PCH_PRE" },
+  "ea-ppi-capital-goods-yoy": { provider: "eurostat", seriesId: "ea-ppi:MIG_CAG:PCH_SM" },
+  "ea-ppi-capital-goods-mom": { provider: "eurostat", seriesId: "ea-ppi:MIG_CAG:PCH_PRE" },
+  "ea-ppi-intermediate-goods-yoy": { provider: "eurostat", seriesId: "ea-ppi:MIG_ING:PCH_SM" },
+  "ea-ppi-intermediate-goods-mom": { provider: "eurostat", seriesId: "ea-ppi:MIG_ING:PCH_PRE" },
+  "ea-ppi-durable-consumer-goods-yoy": { provider: "eurostat", seriesId: "ea-ppi:MIG_DCOG:PCH_SM" },
+  "ea-ppi-durable-consumer-goods-mom": { provider: "eurostat", seriesId: "ea-ppi:MIG_DCOG:PCH_PRE" },
+  "ea-ppi-non-durable-consumer-goods-yoy": { provider: "eurostat", seriesId: "ea-ppi:MIG_NDCOG:PCH_SM" },
+  "ea-ppi-non-durable-consumer-goods-mom": { provider: "eurostat", seriesId: "ea-ppi:MIG_NDCOG:PCH_PRE" },
+  "ea-ppi-energy-yoy": { provider: "eurostat", seriesId: "ea-ppi:MIG_NRG:PCH_SM" },
+  "ea-ppi-energy-mom": { provider: "eurostat", seriesId: "ea-ppi:MIG_NRG:PCH_PRE" },
   "ea-industrial-production": {
     provider: "eurostat",
     seriesId: "sts_inpr_m",
@@ -628,6 +741,12 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
     seriesId: "ei_bssi_ici",
   },
 };
+
+// One verified FD-ID manifest supplies both headline and nested PPI routes.
+Object.assign(LIVE_MAP, ...US_PPI_SERIES.flatMap(series => [
+  { [series.id]: { provider: 'bls', seriesId: series.seriesId } },
+  { [series.momId]: { provider: 'bls', seriesId: series.saSeriesId } },
+]));
 
 export function liveSeriesIdsForProvider(
   provider: LiveProvider

@@ -1,5 +1,5 @@
 import { getDb, getD1Database } from "@/db";
-import { ingestRuns, metrics } from "@/db/schema";
+import { ingestRuns } from "@/db/schema";
 import {
   getEconomicCalendarRows,
   type ScheduledCalendarRow,
@@ -21,13 +21,13 @@ import {
   RELEASE_PROCESSING_LEASE_MS,
 } from "./release-logging";
 import { METRICS } from "@/catalog/metrics";
-import type { MetricDef } from "@/catalog/metrics";
+import type { ReleaseStage } from "./release-stages";
 import { mapConcurrent } from "./release-concurrency";
 import {
   CPI_CALENDAR_DEPENDENT_METRIC_IDS,
   cpiReleaseCandidates,
 } from "./cpi-release-schedule";
-import { retryableHistoricalSchedules } from "./release-schedule-retries";
+import { isOnScheduledReleaseDay, retryableHistoricalSchedules } from "./release-schedule-retries";
 import { createReleaseAttemptRunner } from "./release-attempt-runner";
 
 const attemptRunner = createReleaseAttemptRunner();
@@ -79,88 +79,19 @@ function isDue(row: ScheduledCalendarRow, now: Date) {
   return localDate(now, tz) >= row.nextReleaseDate.slice(0, 10);
 }
 
-function safetyIntervalMs(metric: MetricDef) {
-  if (getD1Database()) {
-    // A rolling sweep still works after the supplied calendar's dates expire.
-    if (metric.frequency === "daily" || metric.frequency === "hourly") return 60 * 60_000;
-    return metric.frequency === "annual" ? 24 * 60 * 60_000 : 6 * 60 * 60_000;
-  }
-  switch (metric.frequency) {
-    case "daily":
-      return 60 * 60 * 1000;
-    case "hourly":
-      return 15 * 60 * 1000;
-    case "weekly":
-      return 12 * 60 * 60 * 1000;
-    case "monthly":
-      return 24 * 60 * 60 * 1000;
-    case "quarterly":
-      return 3 * 24 * 60 * 60 * 1000;
-    case "annual":
-      return 7 * 24 * 60 * 60 * 1000;
-    default:
-      return 24 * 60 * 60 * 1000;
-  }
-}
-
-function safetyBucket(metric: MetricDef, nowMs: number) {
-  const interval = safetyIntervalMs(metric);
-  return Math.floor(nowMs / interval) * interval;
-}
-
-export function isSafetyDue(
-  metric: MetricDef,
-  calendarRow: ScheduledCalendarRow | undefined,
-  lastIngestedAt: string | null,
-  nowMs: number
-) {
-  // A valid official calendar date takes precedence. Safety polling is only
-  // for metrics whose provider has not published a future schedule.
-  if (calendarRow?.nextReleaseDate && metric.frequency !== "daily" && metric.frequency !== "hourly") {
-    const scheduled = Date.parse(calendarRow.nextReleaseAt ?? `${calendarRow.nextReleaseDate.slice(0, 10)}T23:59:59Z`);
-    if (Number.isFinite(scheduled) && nowMs - scheduled <= 3 * 24 * 60 * 60_000) return false;
-  }
-
-  const lastMs = lastIngestedAt ? Date.parse(lastIngestedAt) : NaN;
-  const interval = safetyIntervalMs(metric);
-
-  return !Number.isFinite(lastMs) || nowMs - lastMs >= interval;
-}
-
-function safetyScheduledAt(metric: MetricDef, nowMs: number) {
-  return `safety:${metric.id}:${safetyBucket(metric, nowMs)}`;
-}
-
 type Candidate = {
   metricId: string;
   scheduledAt: string;
-  mode: "scheduled" | "safety";
+  mode: "scheduled";
 };
 
 async function buildCandidates(now: Date): Promise<Candidate[]> {
   const calendarRows = await getEconomicCalendarRows();
   const historyRows = await getEconomicCalendarRows({ history: true });
+  const currentAndHistoricalRows = [...calendarRows, ...retryableHistoricalSchedules(calendarRows, historyRows, now)];
   // Keep polling a release for up to three days after its date even if the
   // calendar has already rolled that metric forward to its next release.
-  const dueRows = [...calendarRows, ...retryableHistoricalSchedules(calendarRows, historyRows, now)];
-  const byMetric = new Map(
-    calendarRows
-      .filter((row) => row.metricId)
-      .map((row) => [row.metricId, row])
-  );
-
-  const db = getDb();
-  const catalogRows = await db
-    .select({
-      id: metrics.id,
-      lastIngestedAt: metrics.lastIngestedAt,
-    })
-    .from(metrics);
-
-  const lastIngested = new Map(
-    catalogRows.map((row) => [row.id, row.lastIngestedAt])
-  );
-
+  const dueRows = currentAndHistoricalRows;
   const candidates: Candidate[] = [];
 
   for (const row of dueRows) {
@@ -184,32 +115,6 @@ async function buildCandidates(now: Date): Promise<Candidate[]> {
 
   candidates.push(...cpiReleaseCandidates(calendarRows, now));
 
-  // Safety net for official metrics with no future calendar date. This keeps
-  // the system live without pretending that an official release time exists.
-  const nowMs = now.getTime();
-
-  for (const metric of METRICS) {
-    const config = sourceConfig(metric.id);
-    if (!config) {
-      continue;
-    }
-
-    if (
-      isSafetyDue(
-        metric,
-        byMetric.get(metric.id),
-        lastIngested.get(metric.id) ?? null,
-        nowMs
-      )
-    ) {
-      candidates.push({
-        metricId: metric.id,
-        scheduledAt: safetyScheduledAt(metric, nowMs),
-        mode: "safety",
-      });
-    }
-  }
-
   // Keep calendar order (release date ascending) but de-duplicate metric IDs.
   const seen = new Set<string>();
   return candidates.filter((candidate) => {
@@ -217,6 +122,11 @@ async function buildCandidates(now: Date): Promise<Candidate[]> {
     seen.add(candidate.metricId);
     return true;
   });
+}
+
+/** Read-only preview of scheduled releases that would be eligible at `now`. */
+export async function getDueReleaseCandidates(now = new Date()) {
+  return buildCandidates(now);
 }
 
 async function processCandidate(candidate: Candidate) {
@@ -315,12 +225,14 @@ async function processCandidate(candidate: Candidate) {
         value: result.value,
         rawValue: result.rawValue,
         releasedAt: result.releasedAt,
+        releaseStage: (result as { releaseStage?: ReleaseStage }).releaseStage,
         note: result.note,
       },
     });
 
     const alreadyRecorded = processed.reason === "already-recorded";
-    if (processed.updated || alreadyRecorded) {
+    const confirmedUnchanged = processed.reason === "confirmed-unchanged";
+    if (processed.updated || alreadyRecorded || confirmedUnchanged) {
   /*
    * The source returned a genuinely new observation, or an earlier refresh
    * already persisted this scheduled release.
@@ -352,20 +264,12 @@ async function processCandidate(candidate: Candidate) {
   );
 }
 
-    if (candidate.mode === "safety" && !processed.updated && processed.reason === "no-new-release") {
-      // A safety check finding identical data is complete for this time bucket.
-      // Scheduled release checks remain retryable until the new value arrives.
-      await markReleaseProcessed(candidate.metricId, candidate.scheduledAt);
-    }
-
-    const successfulCheck = processed.updated || alreadyRecorded;
-    const safetyCheckComplete = candidate.mode === "safety" &&
-      !processed.updated && processed.reason === "no-new-release";
-    const retryEligible = !processed.updated && !alreadyRecorded && !safetyCheckComplete;
+    const successfulCheck = processed.updated || alreadyRecorded || confirmedUnchanged;
+    const retryEligible = !successfulCheck;
     logReleaseEvent({
-      event: processed.updated ? "attempt_updated" : successfulCheck || safetyCheckComplete ? "attempt_checked_unchanged" : "attempt_retry_scheduled",
+      event: processed.updated ? "attempt_updated" : successfulCheck ? "attempt_checked_unchanged" : "attempt_retry_scheduled",
       ...context,
-      status: processed.updated ? "updated" : alreadyRecorded ? "already_recorded" : safetyCheckComplete ? "unchanged_safety_check" : "no_new_release_yet",
+      status: processed.updated ? "updated" : alreadyRecorded ? "already_recorded" : confirmedUnchanged ? "confirmed_unchanged" : "no_new_release_yet",
       fetchedPeriod: result.periodDate,
       fetchedValue: result.value,
       previousPeriod: "latestDbPeriod" in processed ? processed.latestDbPeriod : null,
@@ -425,7 +329,7 @@ export async function dispatchDueReleases(options?: {
 }) {
   const now = new Date();
   const retryDeadline = now.getTime() + (options?.retryForMs ?? 0);
-  const allCandidates = await buildCandidates(now);
+  const allCandidates = await getDueReleaseCandidates(now);
   const pollState = await getPollState();
   const candidates = allCandidates.filter(candidate => {
     if (options?.metricIds && !options.metricIds.includes(candidate.metricId)) return false;
@@ -436,7 +340,6 @@ export async function dispatchDueReleases(options?: {
     return state.status !== "processing" ||
       now.getTime() - Date.parse(state.lastAttemptAt) >= RELEASE_PROCESSING_LEASE_MS;
   }).sort((a, b) => {
-    if (a.mode !== b.mode) return a.mode === "scheduled" ? -1 : 1;
     return (pollState.get(a.metricId)?.lastAttemptAt ?? "").localeCompare(pollState.get(b.metricId)?.lastAttemptAt ?? "");
   });
   // Start every eligible release request together. This avoids delaying a
@@ -445,9 +348,10 @@ export async function dispatchDueReleases(options?: {
     candidate.metricId,
     () => processCandidate(candidate),
     async () => {
-      if (candidate.mode !== "scheduled" || Date.now() >= retryDeadline) return false;
+      if (candidate.mode !== "scheduled" || Date.now() >= retryDeadline ||
+          !isOnScheduledReleaseDay(candidate.metricId, candidate.scheduledAt, new Date())) return false;
       await new Promise(resolve => setTimeout(resolve, RELEASE_RETRY_COOLDOWN_MS));
-      return Date.now() < retryDeadline;
+      return Date.now() < retryDeadline && isOnScheduledReleaseDay(candidate.metricId, candidate.scheduledAt, new Date());
     },
   ))).filter(result => result !== null);
 
@@ -466,7 +370,7 @@ export async function dispatchDueReleases(options?: {
   return {
     checkedAt: now.toISOString(),
     scheduledDue: candidates.filter((x) => x.mode === "scheduled").length,
-    safetyDue: candidates.filter((x) => x.mode === "safety").length,
+    safetyDue: 0,
     eligible: candidates.length,
     attempted: results.filter(
       (item) =>

@@ -1,7 +1,52 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import type { MetricDef } from "@/catalog/metrics";
-import { buildEconomicCalendar, filterScheduledCalendarEvents, isWithinLastSevenCalendarDays } from "./economic-calendar-view";
+import { buildEconomicCalendar, inheritSharedReleaseSchedules, filterReleaseDiaryEvents, filterScheduledCalendarEvents, isWithinLastSevenCalendarDays, isWithinPastAndNextSevenCalendarDays } from "./economic-calendar-view";
+
+test("a placeholder without a date inherits the official calendar from its release family", () => {
+  const catalog = [
+    { id: "us-cpi-mom", name: "Headline CPI", region: "US", source: "bls", releaseName: "Consumer Price Index", frequency: "monthly" },
+    { id: "us-core-cpi-mom", name: "Core CPI", region: "US", source: "bls", releaseName: "Consumer Price Index", frequency: "monthly" },
+    { id: "uk-cpi", name: "UK CPI", region: "UK", source: "ons", releaseName: "Consumer Price Index", frequency: "monthly" },
+  ] as MetricDef[];
+  const result = inheritSharedReleaseSchedules([
+    { metricId: "us-cpi-mom", nextReleaseDate: "2026-11-10", nextReleaseAt: "2026-11-10T13:30:00Z" },
+    { metricId: "us-core-cpi-mom", nextReleaseDate: null, nextReleaseAt: null },
+  ], catalog);
+  const core = result.filter(row => row.metricId === "us-core-cpi-mom");
+  assert.equal(core.length, 1);
+  assert.equal(core[0].nextReleaseDate, "2026-11-10");
+  assert.equal(result.some(row => row.metricId === "uk-cpi"), false);
+});
+
+const diaryEvents = [
+  { metricId: "old", region: "US", scheduleType: "scheduled", scheduledDate: "2026-10-12", status: "released" },
+  { metricId: "history-start", region: "US", scheduleType: "scheduled", scheduledDate: "2026-10-13", status: "released" },
+  { metricId: "past-pending", region: "US", scheduleType: "scheduled", scheduledDate: "2026-10-18", status: "pending" },
+  { metricId: "today-released", region: "US", scheduleType: "scheduled", scheduledDate: "2026-10-19", status: "released" },
+  { metricId: "today-pending", region: "UK", scheduleType: "scheduled", scheduledDate: "2026-10-19", status: "pending" },
+  { metricId: "tomorrow", region: "UK", scheduleType: "scheduled", scheduledDate: "2026-10-20", status: "upcoming" },
+  { metricId: "next-seven", region: "EA", scheduleType: "scheduled", scheduledDate: "2026-10-26", status: "upcoming" },
+  { metricId: "next-eight", region: "US", scheduleType: "scheduled", scheduledDate: "2026-10-27", status: "upcoming" },
+  { metricId: "daily", region: "US", scheduleType: "daily", scheduledDate: "2026-10-19", status: "released" },
+  { metricId: "no-date", region: "US", scheduleType: "unannounced", scheduledDate: null, status: "unscheduled" },
+];
+
+test("upcoming diary includes today and seven days ahead, excluding past and continuous series", () => {
+  assert.deepEqual(filterReleaseDiaryEvents(diaryEvents, "upcoming", "2026-10-19").map(event => event.metricId),
+    ["today-released", "today-pending", "tomorrow", "next-seven"]);
+});
+
+test("history diary includes only confirmed releases in the last seven calendar days including today", () => {
+  assert.deepEqual(filterReleaseDiaryEvents(diaryEvents, "history", "2026-10-19").map(event => event.metricId),
+    ["history-start", "today-released"]);
+});
+
+test("both release diary tabs respect the selected country", () => {
+  assert.deepEqual(filterReleaseDiaryEvents(diaryEvents, "upcoming", "2026-10-19", "UK").map(event => event.metricId),
+    ["today-pending", "tomorrow"]);
+  assert.deepEqual(filterReleaseDiaryEvents(diaryEvents, "history", "2026-10-19", "UK"), []);
+});
 
 test("calendar diary filters out daily/hourly series and optionally limits releases to one country", () => {
   const events = [
@@ -21,6 +66,14 @@ test("last seven days includes today and excludes earlier, future, and continuou
   assert.equal(isWithinLastSevenCalendarDays("2026-10-05", "scheduled", "2026-10-12"), false);
   assert.equal(isWithinLastSevenCalendarDays("2026-10-13", "scheduled", "2026-10-12"), false);
   assert.equal(isWithinLastSevenCalendarDays(null, "daily", "2026-10-12"), false);
+});
+
+test("two-sided week includes the past seven days and next seven days around today", () => {
+  assert.equal(isWithinPastAndNextSevenCalendarDays("2026-10-09", "scheduled", "2026-10-15"), true);
+  assert.equal(isWithinPastAndNextSevenCalendarDays("2026-10-08", "scheduled", "2026-10-15"), false);
+  assert.equal(isWithinPastAndNextSevenCalendarDays("2026-10-22", "scheduled", "2026-10-15"), true);
+  assert.equal(isWithinPastAndNextSevenCalendarDays("2026-10-23", "scheduled", "2026-10-15"), false);
+  assert.equal(isWithinPastAndNextSevenCalendarDays("2026-10-16", "daily", "2026-10-15"), false);
 });
 
 test("released event uses the previous observation when the release omits priorPeriodValue", () => {
@@ -49,4 +102,32 @@ test("released event uses the previous observation when the release omits priorP
   assert.equal(result.allEvents[0].actual, 2.64);
   assert.equal(result.allEvents[0].status, "released");
   assert.equal(result.recentEvents.length, 1);
+});
+
+test("all-metrics next release advances to the earliest confirmed future schedule while retaining history", () => {
+  const metric = { id: "us-cpi", name: "CPI", region: "US", frequency: "monthly", unit: "percent" } as MetricDef;
+  const published = { metricId: metric.id, metricName: "CPI", source: "BLS", family: "CPI", nextReleaseDate: "2026-10-14", nextReleaseAt: "2026-10-14T12:30:00Z", status: "success", officialSource: null, updatedAt: null };
+  const result = buildEconomicCalendar([published], [{ metricId: metric.id, releasedAt: "2026-10-14T12:30:00Z", value: 3.2, expectedValue: null, priorPeriodValue: 3 }], [metric], new Date("2026-10-19T12:00:00Z"), {
+    history: [
+      { ...published, nextReleaseDate: "2026-12-10", nextReleaseAt: "2026-12-10T13:30:00Z" },
+      { ...published, nextReleaseDate: "2026-11-10", nextReleaseAt: "2026-11-10T13:30:00Z" },
+    ],
+  });
+  assert.equal(result.nextReleaseEvents[0].scheduledDate, "2026-11-10");
+  assert.equal(result.nextReleaseEvents[0].scheduledTime, "13:30");
+  assert.equal(result.nextReleaseEvents[0].status, "upcoming");
+  assert.equal(result.nextReleaseEvents[0].actual, null);
+  assert.equal(result.recentEvents[0].scheduledDate, "2026-10-14");
+  assert.equal(result.recentEvents[0].status, "released");
+});
+
+test("all-metrics does not reuse a published date or invent a next date when no future schedule is available", () => {
+  const metric = { id: "us-cpi", name: "CPI", region: "US", frequency: "monthly", unit: "percent" } as MetricDef;
+  const published = { metricId: metric.id, metricName: "CPI", source: "BLS", family: "CPI", nextReleaseDate: "2026-10-14", nextReleaseAt: "2026-10-14T12:30:00Z", status: "success", officialSource: null, updatedAt: null };
+  const result = buildEconomicCalendar([published], [{ metricId: metric.id, releasedAt: "2026-10-14T12:30:00Z", value: 3.2, expectedValue: null, priorPeriodValue: 3 }], [metric], new Date("2026-10-19T12:00:00Z"));
+  assert.equal(result.nextReleaseEvents[0].scheduledDate, null);
+  assert.equal(result.nextReleaseEvents[0].scheduledAt, null);
+  assert.equal(result.nextReleaseEvents[0].status, "unscheduled");
+  assert.equal(result.nextReleaseEvents[0].scheduleType, "source-error", "A stale calendar is not evidence that the next publication is unannounced");
+  assert.equal(result.allEvents[0].status, "released");
 });

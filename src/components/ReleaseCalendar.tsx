@@ -5,6 +5,7 @@ import Link from "next/link";
 import clsx from "clsx";
 import { formatObsDate, formatValue } from "@/lib/format";
 import { surpriseTone } from "@/lib/surprise";
+import { getClientJsonCache, refreshClientJson } from "@/lib/client-json-cache";
 import {
   dayKey,
   formatDayHeader,
@@ -199,22 +200,31 @@ export function ReleaseCalendar() {
   const [region, setRegion] = useState<(typeof REGIONS)[number]>("ALL");
   const [kind, setKind] = useState<Kind>("all");
   const [view, setView] = useState<ViewMode>("table");
-  const [data, setData] = useState<TapeResponse | null>(null);
+  const [data, setData] = useState<TapeResponse | null>(
+    () => getClientJsonCache<TapeResponse>("release-tape:ALL:all") ?? null
+  );
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let active = true;
+    const key = `release-tape:${region}:${kind}`;
+    const cached = getClientJsonCache<TapeResponse>(key);
+    setData(cached ?? null);
+    setError(null);
     const params = new URLSearchParams({
       region,
       days: "7",
       kind,
       forwardOnly: "true",
     });
-    fetch(`/api/calendar?${params}`, { cache: "no-store" })
-      .then(async (res) => {
-        if (!res.ok) throw new Error(`API ${res.status}`);
-        setData(await res.json());
+    refreshClientJson<TapeResponse>(key, `/api/calendar?${params}`, "Calendar request failed.")
+      .then((payload) => {
+        if (active) setData(payload);
       })
-      .catch((err) => setError(err instanceof Error ? err.message : String(err)));
+      .catch((err) => {
+        if (active) setError(err instanceof Error ? err.message : String(err));
+      });
+    return () => { active = false; };
   }, [region, kind]);
 
   const events = data?.events ?? [];

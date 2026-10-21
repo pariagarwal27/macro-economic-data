@@ -9,43 +9,45 @@ import { ExpectationsOverviewChart } from "./ExpectationsOverviewChart";
 import { EconomicCalendarSidebar } from "./EconomicCalendarSidebar";
 import { buildOverviewSeries, latestOverviewInflationMovement, latestOverviewMovement, OVERVIEW_METRICS, OVERVIEW_REGIONS, overviewPeriodLabel, type OverviewIndicator, type OverviewPayload } from "@/lib/overview-data";
 import { formatLiveSourceLabel } from "@/lib/live-source-label";
+import { getClientJsonCache, refreshClientJson } from "@/lib/client-json-cache";
 
 const INDICATORS: { id: OverviewIndicator; label: string; detail: string }[] = [
   { id: "inflation", label: "Inflation", detail: "CPI (US, UK) · HICP (Euro Area)" },
   { id: "gdp", label: "GDP growth", detail: "Quarter-on-quarter · seasonally adjusted" },
   { id: "unemployment", label: "Unemployment rate", detail: "Share of the labour force" },
   { id: "wage", label: "Wage growth", detail: "Annual pay growth · source definitions vary" },
+  { id: "retail", label: "Retail sales", detail: "" },
 ];
 const CORE_INFLATION_METRICS = { US: "us-cpi-core", UK: "uk-core-cpi-yoy", EA: "ea-core-hicp-yoy" } as const;
 
 export function HomeDashboard() {
-  const [payload, setPayload] = useState<OverviewPayload>({});
-  const [loading, setLoading] = useState(true);
+  const [selectedIndicator, setSelectedIndicator] = useState<OverviewIndicator>("inflation");
+  const [showExpectations, setShowExpectations] = useState(false);
+  const [payload, setPayload] = useState<OverviewPayload>(() => getClientJsonCache<OverviewPayload>("overview") ?? {});
+  const [loading, setLoading] = useState(() => getClientJsonCache<OverviewPayload>("overview") == null);
   const [error, setError] = useState("");
   const [now, setNow] = useState(() => new Date());
-  const load = useCallback(async (signal?: AbortSignal) => {
+  const load = useCallback(async (isActive: () => boolean = () => true) => {
     try {
-      const response = await fetch("/api/overview", { cache: "no-store", signal });
-      if (!response.ok) throw new Error("Unable to load the overview. Please try again.");
-      const data = await response.json() as OverviewPayload;
-      if (signal?.aborted) return;
+      const data = await refreshClientJson<OverviewPayload>("overview", "/api/overview", "Unable to load the overview. Please try again.");
+      if (!isActive()) return;
       setPayload(data);
       setNow(new Date());
       setError("");
     } catch (error) {
-      if (signal?.aborted) return;
+      if (!isActive()) return;
       setError(error instanceof Error ? error.message : "Overview unavailable.");
     } finally {
-      if (!signal?.aborted) setLoading(false);
+      if (isActive()) setLoading(false);
     }
   }, []);
   useEffect(() => {
-    const controller = new AbortController();
-    void load(controller.signal);
-    const timer = window.setInterval(() => void load(controller.signal), 30_000);
-    return () => { controller.abort(); window.clearInterval(timer); };
+    let active = true;
+    void load(() => active);
+    const timer = window.setInterval(() => void load(() => active), 30_000);
+    return () => { active = false; window.clearInterval(timer); };
   }, [load]);
-  const charts = useMemo(() => ({ gdp: buildOverviewSeries(payload, "gdp", now), unemployment: buildOverviewSeries(payload, "unemployment", now), wage: buildOverviewSeries(payload, "wage", now) }), [payload, now]);
+  const charts = useMemo(() => ({ gdp: buildOverviewSeries(payload, "gdp", now), unemployment: buildOverviewSeries(payload, "unemployment", now), wage: buildOverviewSeries(payload, "wage", now), retail: buildOverviewSeries(payload, "retail", now) }), [payload, now]);
 
   return <div className="overview-page">
     <div className="overview-main">
@@ -53,7 +55,7 @@ export function HomeDashboard() {
     <section className="overview-comparison" id="country-comparison" aria-labelledby="overview-comparison-title" aria-busy={loading}>
       <div className="overview-comparison-scroll" tabIndex={0} role="region" aria-label="Three-country key indicator comparison">
         <table><thead><tr><th scope="col"><h2 id="overview-comparison-title">Key indicators</h2></th>{OVERVIEW_REGIONS.map(region => <th key={region} scope="col" data-country={region.toLowerCase()}><div className="overview-country-heading"><span className="overview-country-flag" aria-hidden="true">{COUNTRY_META[region].flag}</span><div><h3>{COUNTRY_META[region].name}</h3><Link href={`/country/${region.toLowerCase()}`}>Open country view →</Link></div></div></th>)}</tr></thead>
-          <tbody>{INDICATORS.map(indicator => <tr key={indicator.id}><th scope="row"><strong>{indicator.label}</strong><span>{indicator.detail}</span></th>{OVERVIEW_REGIONS.map(region => {
+          <tbody>{INDICATORS.map(indicator => <tr key={indicator.id} data-selected={selectedIndicator === indicator.id}><th scope="row"><button type="button" className="overview-indicator-select" aria-pressed={selectedIndicator === indicator.id} aria-controls="overview-selected-chart" onClick={() => { setSelectedIndicator(indicator.id); if (indicator.id !== "inflation") setShowExpectations(false); }}><strong>{indicator.label}</strong>{indicator.detail && <span>{indicator.detail}</span>}</button></th>{OVERVIEW_REGIONS.map(region => {
             const reading = latestOverviewMovement(payload, indicator.id, region, now);
             const metric = payload[OVERVIEW_METRICS[region][indicator.id]];
             const period = reading ? overviewPeriodLabel(reading.date, indicator.id === "gdp" || indicator.id === "wage" && region === "EA") : "";
@@ -85,9 +87,9 @@ export function HomeDashboard() {
               </td>;
             }
             return <td key={region} data-country={region.toLowerCase()}>
-              <div className="overview-reading-pair">
+              <div className={`overview-reading-pair${indicator.id === "retail" ? " overview-reading-single" : ""}`}>
                 <div><span>{reading?.primaryLabel ?? (loading ? "Loading…" : "No published observation")}</span><div className="overview-reading-value"><strong>{loading ? "…" : formatValue(reading?.primary ?? null)}</strong>{reading && cue(reading.primaryChange, reading.primaryChangeLabel)}</div></div>
-                <div><span>{reading?.secondaryLabel ?? (loading ? "Loading…" : "No prior observation")}</span><div className="overview-reading-value"><strong>{loading ? "…" : formatValue(reading?.secondary ?? null)}</strong>{reading && cue(reading.secondaryChange, reading.secondaryChangeLabel)}</div></div>
+                {indicator.id !== "retail" && <div><span>{reading?.secondaryLabel ?? (loading ? "Loading…" : "No prior observation")}</span><div className="overview-reading-value"><strong>{loading ? "…" : formatValue(reading?.secondary ?? null)}</strong>{reading && cue(reading.secondaryChange, reading.secondaryChangeLabel)}</div></div>}
               </div>
               {reading && <span className="overview-reading-source">{period ? `${period} · ` : ""}{formatLiveSourceLabel(metric?.meta?.liveSource)}{region === "US" && indicator.id === "gdp" ? " · converted from SAAR" : indicator.id === "wage" && region === "EA" ? " · quarterly" : ""}</span>}
             </td>;
@@ -95,12 +97,9 @@ export function HomeDashboard() {
         </table>
       </div>
     </section>
-    <InflationOverviewChart payload={payload} loading={loading} />
-    <div className="overview-supporting-charts"><OverviewChart indicator="gdp" data={charts.gdp} loading={loading} /><OverviewChart indicator="unemployment" data={charts.unemployment} loading={loading} /></div>
-    <div className="overview-wage-expectations">
-      <OverviewChart indicator="wage" data={charts.wage} loading={loading} />
-      <ExpectationsOverviewChart payload={payload} loading={loading} />
-    </div>
+    <section id="overview-selected-chart" className="overview-selected-chart" aria-live="polite" aria-label={`${INDICATORS.find(item => item.id === selectedIndicator)?.label ?? "Selected indicator"} chart`}>
+      {selectedIndicator === "inflation" && showExpectations ? <ExpectationsOverviewChart payload={payload} loading={loading} onBack={() => setShowExpectations(false)} /> : selectedIndicator === "inflation" ? <InflationOverviewChart payload={payload} loading={loading} onShowExpectations={() => setShowExpectations(true)} /> : <OverviewChart indicator={selectedIndicator} data={charts[selectedIndicator]} loading={loading} />}
+    </section>
     <footer className="overview-footer"><span>Charts default to the latest rolling 12 months of published data; release schedules may lag.</span><span>Country views retain the original published series and full indicator breakdowns.</span></footer>
     </div>
     <aside className="overview-release-sidebar" aria-label="Economic release diary">

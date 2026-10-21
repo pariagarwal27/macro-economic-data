@@ -1,0 +1,409 @@
+{
+  "main": [
+    "headline",
+    "core",
+    "goods",
+    "services",
+    "construction",
+    "intermediate-processed-goods",
+    "intermediate-unprocessed-goods",
+    "intermediate-services",
+    "intermediate-construction",
+    "intermediate-stage-1",
+    "intermediate-stage-2",
+    "intermediate-stage-3",
+    "intermediate-stage-4"
+  ],
+  "series": [
+    {
+      "key": "headline",
+      "label": "Final demand",
+      "seriesId": "WPUFD4",
+      "children": [
+        "goods",
+        "services",
+        "construction"
+      ]
+    },
+    {
+      "key": "core",
+      "label": "Final demand less foods, energy & trade services",
+      "seriesId": "WPUFD49116"
+    },
+    {
+      "key": "goods",
+      "label": "Final demand goods",
+      "seriesId": "WPUFD41",
+      "children": [
+        "foods",
+        "energy",
+        "goods-ex-food-energy"
+      ]
+    },
+    {
+      "key": "foods",
+      "label": "Final demand foods",
+      "seriesId": "WPUFD411",
+      "children": [
+        "consumer-foods",
+        "government-foods",
+        "export-foods"
+      ]
+    },
+    {
+      "key": "consumer-foods",
+      "label": "Finished consumer foods",
+      "seriesId": "WPUFD4111"
+    },
+    {
+      "key": "government-foods",
+      "label": "Government purchased foods",
+      "seriesId": "WPUFD4112"
+    },
+    {
+      "key": "export-foods",
+      "label": "Foods for export",
+      "seriesId": "WPUFD4113"
+    },
+    {
+      "key": "energy",
+      "label": "Final demand energy",
+      "seriesId": "WPUFD412",
+      "children": [
+        "consumer-energy",
+        "government-energy",
+        "export-energy"
+      ]
+    },
+    {
+      "key": "consumer-energy",
+      "label": "Finished consumer energy goods",
+      "seriesId": "WPUFD4121"
+    },
+    {
+      "key": "government-energy",
+      "label": "Government purchased energy",
+      "seriesId": "WPUFD4122"
+    },
+    {
+      "key": "export-energy",
+      "label": "Energy for export",
+      "seriesId": "WPUFD4123"
+    },
+    {
+      "key": "goods-ex-food-energy",
+      "label": "Goods less foods & energy",
+      "seriesId": "WPUFD413",
+      "children": [
+        "finished-goods-ex-food-energy",
+        "government-goods-ex-food-energy",
+        "export-goods-ex-food-energy"
+      ]
+    },
+    {
+      "key": "finished-goods-ex-food-energy",
+      "label": "Finished goods less foods & energy",
+      "seriesId": "WPUFD4131"
+    },
+    {
+      "key": "government-goods-ex-food-energy",
+      "label": "Government purchased goods, excluding foods & energy",
+      "seriesId": "WPUFD4132"
+    },
+    {
+      "key": "export-goods-ex-food-energy",
+      "label": "Goods for export, excluding foods & energy",
+      "seriesId": "WPUFD4133"
+    },
+    {
+      "key": "services",
+      "label": "Final demand services",
+      "seriesId": "WPUFD42",
+      "children": [
+        "services-ex-trade",
+        "final-demand-transport",
+        "final-demand-trade"
+      ]
+    },
+    {
+      "key": "services-ex-trade",
+      "label": "Services less trade, transportation & warehousing",
+      "seriesId": "WPUFD421",
+      "children": [
+        "finished-other-services",
+        "government-other-services",
+        "export-other-services"
+      ]
+    },
+    {
+      "key": "finished-other-services",
+      "label": "Finished services less trade, transportation & warehousing",
+      "seriesId": "WPUFD4211"
+    },
+    {
+      "key": "government-other-services",
+      "label": "Government services less trade, transportation & warehousing",
+      "seriesId": "WPUFD4212"
+    },
+    {
+      "key": "export-other-services",
+      "label": "Export services less trade, transportation & warehousing",
+      "seriesId": "WPUFD4213"
+    },
+    {
+      "key": "final-demand-transport",
+      "label": "Final demand transportation & warehousing services",
+      "seriesId": "WPUFD422",
+      "children": [
+        "passenger-transport",
+        "goods-transport"
+      ]
+    },
+    {
+      "key": "passenger-transport",
+      "label": "Transportation of passengers for final demand",
+      "seriesId": "WPUFD4221"
+    },
+    {
+      "key": "goods-transport",
+      "label": "Transportation & warehousing of goods for final demand",
+      "seriesId": "WPUFD4222"
+    },
+    {
+      "key": "final-demand-trade",
+      "label": "Final demand trade services",
+      "seriesId": "WPUFD423",
+      "children": [
+        "trade-finished",
+        "trade-government",
+        "trade-exports"
+      ]
+    },
+    {
+      "key": "trade-finished",
+      "label": "Trade of finished goods",
+      "seriesId": "WPUFD4231"
+    },
+    {
+      "key": "trade-government",
+      "label": "Trade of government purchased goods",
+      "seriesId": "WPUFD4232"
+    },
+    {
+      "key": "trade-exports",
+      "label": "Trade of exports",
+      "seriesId": "WPUFD4233"
+    },
+    {
+      "key": "construction",
+      "label": "Final demand construction",
+      "seriesId": "WPUFD43",
+      "children": [
+        "private-construction",
+        "government-construction"
+      ]
+    },
+    {
+      "key": "private-construction",
+      "label": "Construction for private capital investment",
+      "seriesId": "WPUFD431"
+    },
+    {
+      "key": "government-construction",
+      "label": "Construction for government",
+      "seriesId": "WPUFD432"
+    },
+    {
+      "key": "intermediate-processed-goods",
+      "label": "Processed goods for intermediate demand",
+      "seriesId": "WPUID61",
+      "children": [
+        "intermediate-manufacturing-materials",
+        "intermediate-construction-materials",
+        "intermediate-processed-fuels",
+        "intermediate-containers",
+        "intermediate-supplies"
+      ]
+    },
+    {
+      "key": "intermediate-manufacturing-materials",
+      "label": "Materials & components for manufacturing",
+      "seriesId": "WPUID611"
+    },
+    {
+      "key": "intermediate-construction-materials",
+      "label": "Materials & components for construction",
+      "seriesId": "WPUID612"
+    },
+    {
+      "key": "intermediate-processed-fuels",
+      "label": "Processed fuels & lubricants for intermediate demand",
+      "seriesId": "WPUID613"
+    },
+    {
+      "key": "intermediate-containers",
+      "label": "Containers for intermediate demand",
+      "seriesId": "WPUID614"
+    },
+    {
+      "key": "intermediate-supplies",
+      "label": "Supplies for intermediate demand",
+      "seriesId": "WPUID615"
+    },
+    {
+      "key": "intermediate-unprocessed-goods",
+      "label": "Unprocessed goods for intermediate demand",
+      "seriesId": "WPUID62",
+      "children": [
+        "intermediate-food-feed",
+        "intermediate-nonfood-ex-fuel",
+        "intermediate-unprocessed-fuel"
+      ]
+    },
+    {
+      "key": "intermediate-food-feed",
+      "label": "Unprocessed foodstuffs & feedstuffs",
+      "seriesId": "WPUID621"
+    },
+    {
+      "key": "intermediate-nonfood-ex-fuel",
+      "label": "Unprocessed nonfood materials except fuel",
+      "seriesId": "WPUID6221"
+    },
+    {
+      "key": "intermediate-unprocessed-fuel",
+      "label": "Unprocessed fuel",
+      "seriesId": "WPUID6222"
+    },
+    {
+      "key": "intermediate-services",
+      "label": "Services for intermediate demand",
+      "seriesId": "WPUID63",
+      "children": [
+        "intermediate-other-services",
+        "intermediate-transport",
+        "intermediate-trade"
+      ]
+    },
+    {
+      "key": "intermediate-other-services",
+      "label": "Intermediate services less trade, transportation & warehousing",
+      "seriesId": "WPUID631"
+    },
+    {
+      "key": "intermediate-transport",
+      "label": "Intermediate transportation & warehousing services",
+      "seriesId": "WPUID632"
+    },
+    {
+      "key": "intermediate-trade",
+      "label": "Trade services for intermediate demand",
+      "seriesId": "WPUID633"
+    },
+    {
+      "key": "intermediate-construction",
+      "label": "Construction for intermediate demand",
+      "seriesId": "WPUID64"
+    },
+    {
+      "key": "intermediate-stage-1",
+      "label": "Stage 1 intermediate demand",
+      "seriesId": "WPUID51",
+      "children": [
+        "stage-1-goods",
+        "stage-1-services",
+        "stage-1-construction"
+      ]
+    },
+    {
+      "key": "stage-1-goods",
+      "label": "Goods inputs to stage 1 intermediate demand",
+      "seriesId": "WPUID59111"
+    },
+    {
+      "key": "stage-1-services",
+      "label": "Services inputs to stage 1 intermediate demand",
+      "seriesId": "WPUID59112"
+    },
+    {
+      "key": "stage-1-construction",
+      "label": "Construction inputs to stage 1 intermediate demand",
+      "seriesId": "WPUID59117"
+    },
+    {
+      "key": "intermediate-stage-2",
+      "label": "Stage 2 intermediate demand",
+      "seriesId": "WPUID52",
+      "children": [
+        "stage-2-goods",
+        "stage-2-services",
+        "stage-2-construction"
+      ]
+    },
+    {
+      "key": "stage-2-goods",
+      "label": "Goods inputs to stage 2 intermediate demand",
+      "seriesId": "WPUID59211"
+    },
+    {
+      "key": "stage-2-services",
+      "label": "Services inputs to stage 2 intermediate demand",
+      "seriesId": "WPUID59212"
+    },
+    {
+      "key": "stage-2-construction",
+      "label": "Construction inputs to stage 2 intermediate demand",
+      "seriesId": "WPUID59213"
+    },
+    {
+      "key": "intermediate-stage-3",
+      "label": "Stage 3 intermediate demand",
+      "seriesId": "WPUID53",
+      "children": [
+        "stage-3-goods",
+        "stage-3-services",
+        "stage-3-construction"
+      ]
+    },
+    {
+      "key": "stage-3-goods",
+      "label": "Goods inputs to stage 3 intermediate demand",
+      "seriesId": "WPUID59311"
+    },
+    {
+      "key": "stage-3-services",
+      "label": "Services inputs to stage 3 intermediate demand",
+      "seriesId": "WPUID59312"
+    },
+    {
+      "key": "stage-3-construction",
+      "label": "Construction inputs to stage 3 intermediate demand",
+      "seriesId": "WPUID59313"
+    },
+    {
+      "key": "intermediate-stage-4",
+      "label": "Stage 4 intermediate demand",
+      "seriesId": "WPUID54",
+      "children": [
+        "stage-4-goods",
+        "stage-4-services",
+        "stage-4-construction"
+      ]
+    },
+    {
+      "key": "stage-4-goods",
+      "label": "Goods inputs to stage 4 intermediate demand",
+      "seriesId": "WPUID59411"
+    },
+    {
+      "key": "stage-4-services",
+      "label": "Services inputs to stage 4 intermediate demand",
+      "seriesId": "WPUID59412"
+    },
+    {
+      "key": "stage-4-construction",
+      "label": "Construction inputs to stage 4 intermediate demand",
+      "seriesId": "WPUID59413"
+    }
+  ]
+}

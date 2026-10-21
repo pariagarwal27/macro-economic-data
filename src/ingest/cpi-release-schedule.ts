@@ -23,7 +23,16 @@ const UNDERLYING_CPI_REFRESH_METRICS = [
   ...UNDERLYING_CPI_METRICS.map(metricId => `${metricId}-mom`),
 ];
 
-const MAX_RELEASE_WINDOW_MS = 3 * 24 * 60 * 60_000;
+function isOnCpiReleaseDay(scheduledAt: Date, now: Date) {
+  if (now.getTime() < scheduledAt.getTime()) return false;
+  const dateInNewYork = (date: Date) => new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+  return dateInNewYork(now) === dateInNewYork(scheduledAt);
+}
 
 function utcAtLocalTime(date: string, hour: number, minute: number, timeZone: string) {
   const [year, month, day] = date.slice(0, 10).split("-").map(Number);
@@ -42,11 +51,6 @@ function utcAtLocalTime(date: string, hour: number, minute: number, timeZone: st
   const part = (type: string) => Number(parts.find((item) => item.type === type)?.value);
   const represented = Date.UTC(part("year"), part("month") - 1, part("day"), part("hour"), part("minute"));
   return new Date(desired + desired - represented);
-}
-
-function isWithinReleaseWindow(scheduledAt: Date, now: Date) {
-  const elapsed = now.getTime() - scheduledAt.getTime();
-  return elapsed >= 0 && elapsed <= MAX_RELEASE_WINDOW_MS;
 }
 
 /**
@@ -73,7 +77,7 @@ export function cpiReleaseCandidates(
     ...BLS_CPI_DEPENDENTS.map((metricId) => ({ metricId, scheduledAt: blsAt })),
     ...UNDERLYING_CPI_REFRESH_METRICS.map((metricId) => ({ metricId, scheduledAt: underlyingAt })),
   ]
-    .filter(({ scheduledAt }) => isWithinReleaseWindow(scheduledAt, now))
+    .filter(({ scheduledAt }) => isOnCpiReleaseDay(scheduledAt, now))
     .map(({ metricId, scheduledAt }) => ({
       metricId,
       scheduledAt: scheduledAt.toISOString(),

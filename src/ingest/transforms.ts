@@ -3,12 +3,14 @@ import type { Transform } from "@/catalog/metrics";
 export interface RawPoint {
   date: string;
   value: number;
+  releaseStage?: "flash" | "estimate" | "final" | "revised";
 }
 
 export interface TransformedPoint {
   date: string;
   value: number;
   rawValue: number;
+  releaseStage?: RawPoint["releaseStage"];
 }
 
 /** Apply series transforms. YoY/MoM use prior observation spacing. */
@@ -18,7 +20,7 @@ export function applyTransform(
 ): TransformedPoint[] {
   const sorted = [...points].sort((a, b) => a.date.localeCompare(b.date));
   if (transform === "level" || transform === "index" || transform === "published_rate") {
-    return sorted.map((p) => ({ date: p.date, value: p.value, rawValue: p.value }));
+    return sorted.map((p) => ({ date: p.date, value: p.value, rawValue: p.value, releaseStage: p.releaseStage }));
   }
 
   const out: TransformedPoint[] = [];
@@ -27,7 +29,7 @@ export function applyTransform(
     if (transform === "diff_3m") {
       const priorDate = shiftMonths(cur.date, -3);
       const prev = sorted.find((point) => point.date === priorDate);
-      if (prev) out.push({ date: cur.date, value: cur.value - prev.value, rawValue: cur.value });
+      if (prev) out.push({ date: cur.date, value: cur.value - prev.value, rawValue: cur.value, releaseStage: cur.releaseStage });
       continue;
     }
     if (transform === "diff" || transform === "pct_change") {
@@ -40,7 +42,7 @@ export function applyTransform(
             ? NaN
             : ((cur.value - prev.value) / Math.abs(prev.value)) * 100;
       if (!Number.isFinite(value)) continue;
-      out.push({ date: cur.date, value, rawValue: cur.value });
+      out.push({ date: cur.date, value, rawValue: cur.value, releaseStage: cur.releaseStage });
       continue;
     }
 
@@ -52,6 +54,7 @@ export function applyTransform(
         date: cur.date,
         value: ((cur.value - prev.value) / Math.abs(prev.value)) * 100,
         rawValue: cur.value,
+        releaseStage: cur.releaseStage,
       });
       continue;
     }
@@ -64,6 +67,7 @@ export function applyTransform(
         date: cur.date,
         value: ((cur.value - prev.value) / Math.abs(prev.value)) * 100,
         rawValue: cur.value,
+        releaseStage: cur.releaseStage,
       });
     }
   }

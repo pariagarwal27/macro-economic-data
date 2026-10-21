@@ -2,34 +2,25 @@ import { NextResponse } from "next/server";
 import { and, desc, gte, inArray, lt } from "drizzle-orm";
 import { getDashboardCalendarMetrics } from "@/lib/dashboard-calendar-metrics";
 import { getEconomicCalendarRows } from "@/lib/economic-calendar-db";
-import { buildEconomicCalendar, type CalendarActual } from "@/lib/economic-calendar-view";
+import { buildEconomicCalendar, inheritSharedReleaseSchedules, type CalendarActual } from "@/lib/economic-calendar-view";
 import { METRICS } from "@/catalog/metrics";
-import { getDb } from "@/db";
+import { getD1Database, getDb } from "@/db";
 import { observations, releases } from "@/db/schema";
 import { getCompletedCalendarReleases } from "@/ingest/release-state";
 import { applyTransform } from "@/ingest/transforms";
 import { cpiUnderlyingScheduleRows } from "@/ingest/cpi-release-schedule";
+import { getActiveLiveSource } from "@/ingest/source-registry";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-function inheritSharedReleaseSchedules<T extends { metricId: string }>(
-  rows: T[], catalog: ReturnType<typeof getDashboardCalendarMetrics>,
-) {
-  const metricsById = new Map(catalog.map(metric => [metric.id, metric]));
-  const scheduledMetricIds = new Set(rows.map(row => row.metricId));
-  const inherited = catalog.flatMap(metric => {
-    if (scheduledMetricIds.has(metric.id) || metric.frequency === "daily" || metric.frequency === "hourly") return [];
-    const peer = catalog.find(candidate => candidate.id !== metric.id && candidate.region === metric.region &&
-      candidate.source === metric.source && candidate.releaseName === metric.releaseName && scheduledMetricIds.has(candidate.id));
-    return peer ? rows.filter(row => row.metricId === peer.id).map(row => ({ ...row, metricId: metric.id, metricName: metric.name })) : [];
-  });
-  return [...rows, ...inherited].filter(row => metricsById.has(row.metricId));
-}
-
 export async function GET() {
   try {
-    const catalog = getDashboardCalendarMetrics();
+    const isCloud = Boolean(getD1Database());
+    const catalog = getDashboardCalendarMetrics().map(metric => ({
+      ...metric,
+      liveSource: getActiveLiveSource(metric.id, isCloud),
+    }));
     const displayed = new Set(catalog.map(metric => metric.id));
     const rawSchedule = (await getEconomicCalendarRows({ includeUnscheduled: true })).filter(row => displayed.has(row.metricId));
     const inheritedSchedule = inheritSharedReleaseSchedules(rawSchedule, catalog);

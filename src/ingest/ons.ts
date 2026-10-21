@@ -1,4 +1,5 @@
 import type { RawPoint } from "./transforms";
+import { parseOnsCsv } from "./ons-csv";
 import {
   fetchOnsPayeEmploymentChange,
   fetchOnsPayeEmploymentLevel,
@@ -56,6 +57,28 @@ const SERIES_URI: Record<string, string> = {
  KG7S: "/economy/grossdomesticproductgdp/timeseries/kg7s/pn2", // CPI goods monthly
   GHIP: "/economy/inflationandpriceindices/timeseries/ghip/ppi", // input PPI index (live)
   GB7S: "/economy/inflationandpriceindices/timeseries/gb7s/ppi", // output PPI index (live; mm22 path is lagged)
+  GBA7: "/economy/inflationandpriceindices/timeseries/gba7/ppi",
+  GB7V: "/economy/inflationandpriceindices/timeseries/gb7v/ppi",
+  GB7W: "/economy/inflationandpriceindices/timeseries/gb7w/ppi",
+  GB7X: "/economy/inflationandpriceindices/timeseries/gb7x/ppi",
+  GB7Y: "/economy/inflationandpriceindices/timeseries/gb7y/ppi",
+  GB7Z: "/economy/inflationandpriceindices/timeseries/gb7z/ppi",
+  GB82: "/economy/inflationandpriceindices/timeseries/gb82/ppi",
+  GB83: "/economy/inflationandpriceindices/timeseries/gb83/ppi",
+  GB84: "/economy/inflationandpriceindices/timeseries/gb84/ppi",
+  FSQT: "/economy/inflationandpriceindices/timeseries/fsqt/ppi",
+  FSQ2: "/economy/inflationandpriceindices/timeseries/fsq2/ppi",
+  FSQ3: "/economy/inflationandpriceindices/timeseries/fsq3/ppi",
+  FSQ4: "/economy/inflationandpriceindices/timeseries/fsq4/ppi",
+  FSQ5: "/economy/inflationandpriceindices/timeseries/fsq5/ppi",
+  FSQ6: "/economy/inflationandpriceindices/timeseries/fsq6/ppi",
+  FSQ7: "/economy/inflationandpriceindices/timeseries/fsq7/ppi",
+  FSQ8: "/economy/inflationandpriceindices/timeseries/fsq8/ppi",
+  FSQ9: "/economy/inflationandpriceindices/timeseries/fsq9/ppi",
+  FSP7: "/economy/inflationandpriceindices/timeseries/fsp7/ppi",
+  FSP9: "/economy/inflationandpriceindices/timeseries/fsp9/ppi",
+  GD74: "/economy/inflationandpriceindices/timeseries/gd74/ppi",
+  GB7R: "/economy/inflationandpriceindices/timeseries/gb7r/ppi", // export PPI index (manufactured products)
   JVZ7: "/economy/inflationandpriceindices/timeseries/jvz7/ppi",
   ZZ65: "/economy/grossdomesticproductgdp/timeseries/zz65/pn2", // legacy output index
   AP2Y: "/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/timeseries/ap2y/unem",
@@ -92,6 +115,11 @@ const SERIES_URI: Record<string, string> = {
   JO5A: "/businessindustryandtrade/retailindustry/timeseries/jo5a/drsi",
   J5EK: "/businessindustryandtrade/retailindustry/timeseries/j5ek/drsi",
   J5EC: "/businessindustryandtrade/retailindustry/timeseries/j5ec/drsi",
+  J45W: "/businessindustryandtrade/retailindustry/timeseries/j45w/drsi", // All retail excluding automotive fuel, MoM volume growth
+  J5EB: "/businessindustryandtrade/retailindustry/timeseries/j5eb/drsi", // All retail including fuel, YoY volume growth
+  J45U: "/businessindustryandtrade/retailindustry/timeseries/j45u/drsi", // All retail excluding fuel, YoY volume growth
+  J5EG: "/businessindustryandtrade/retailindustry/timeseries/j5eg/drsi", // All retail including fuel, rolling 3m on previous 3m volume growth
+  J45R: "/businessindustryandtrade/retailindustry/timeseries/j45r/drsi", // All retail excluding fuel, rolling 3m on previous 3m volume growth
   ECY4: "/economy/grossdomesticproductgdp/timeseries/ecy4/mgdp",
   ED3C: "/economy/grossdomesticproductgdp/timeseries/ed3c/mgdp",
   ECYX: "/economy/grossdomesticproductgdp/timeseries/ecyx/mgdp", // monthly GDP MoM %
@@ -122,6 +150,12 @@ KG7Q: "/economy/grossdomesticproductgdp/timeseries/kg7q/qna",
   I46G: "/employmentandlabourmarket/peopleinwork/employmentandemployeetypes/timeseries/i46g/lms", // inactivity rate
 };
 
+const ONS_MONTHLY_ONLY_SERIES = new Set([
+  "GB7S", "GHIP", "GBA7", "GB7V", "GB7W", "GB7X", "GB7Y", "GB7Z", "GB82", "GB83", "GB84",
+  "FSQT", "FSQ2", "FSQ3", "FSQ4", "FSQ5", "FSQ6", "FSQ7", "FSQ8", "FSQ9", "FSP7", "FSP9", "GD74", "GB7R",
+  "J5EB", "J45U", "J5EG", "J45R", "ECY2",
+]);
+
 export async function fetchOnsSeries(seriesId: string): Promise<RawPoint[]> {
   if (seriesId === "N4JE") return fetchOnsJobOpeningsRate();
 
@@ -139,14 +173,14 @@ if (seriesId === "PAYE_EMP_CHANGE") {
   const uri = SERIES_URI[seriesId];
   if (!uri) throw new Error(`No ONS URI mapping for ${seriesId}`);
 
-  const points = await fetchOnsCsvSeries(uri, seriesId);
+  const points = await fetchOnsCsvSeries(uri, seriesId, ONS_MONTHLY_ONLY_SERIES.has(seriesId));
   if (seriesId === "MGSX") {
     return mergeUkUnemploymentBulletin(points);
   }
   return points;
 }
 
-async function fetchOnsCsvSeries(uri: string, seriesId: string): Promise<RawPoint[]> {
+async function fetchOnsCsvSeries(uri: string, seriesId: string, monthlyOnly = false): Promise<RawPoint[]> {
   const url = `${GENERATOR}?format=csv&uri=${encodeURIComponent(uri)}`;
   let lastErr: Error | null = null;
   for (let attempt = 0; attempt < 5; attempt++) {
@@ -168,7 +202,7 @@ async function fetchOnsCsvSeries(uri: string, seriesId: string): Promise<RawPoin
     if (text.includes("<!DOCTYPE") || text.includes("<html")) {
       throw new Error(`ONS returned HTML for ${seriesId}`);
     }
-    return parseOnsCsv(text);
+    return parseOnsCsv(text, monthlyOnly);
   }
   throw lastErr ?? new Error(`ONS failed for ${seriesId}`);
 }
@@ -194,72 +228,3 @@ function dedupeOnsPoints(points: RawPoint[]): RawPoint[] {
   return [...map.values()].sort((a, b) => a.date.localeCompare(b.date));
 }
 
-function parseOnsCsv(text: string): RawPoint[] {
-  const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
-  const points: RawPoint[] = [];
-  let inData = false;
-
-  for (const line of lines) {
-    // Skip metadata preamble until we hit a date-like row
-    const m = line.match(/^"?(\d{4}(?:\s+[A-Z]{3}|\s+Q[1-4])?)"?\s*,\s*"?(-?[\d.]+)"?/i);
-    if (!m) {
-      if (/^"?Date"?/i.test(line) || /^"?CDID"?/i.test(line)) inData = true;
-      continue;
-    }
-    inData = true;
-    const date = onsDate(m[1]);
-    const value = Number(m[2]);
-    if (!date || !Number.isFinite(value)) continue;
-    points.push({ date, value });
-  }
-
-  if (!inData && points.length === 0) {
-    // Alternate: simple two-column CSV with header
-    for (let i = 1; i < lines.length; i++) {
-      const parts = lines[i].split(",");
-      if (parts.length < 2) continue;
-      const date = onsDate(parts[0].replace(/"/g, "").trim());
-      const value = Number(parts[1].replace(/"/g, "").trim());
-      if (!date || !Number.isFinite(value)) continue;
-      points.push({ date, value });
-    }
-  }
-
-  return points.sort((a, b) => a.date.localeCompare(b.date));
-}
-
-function onsDate(d: string): string | null {
-  const cleaned = d.replace(/"/g, "").trim();
-  const m = cleaned.match(/^(\d{4})\s+([A-Z]{3})$/i);
-  if (m) {
-    const month = monthNum(m[2]);
-    if (!month) return null;
-    return `${m[1]}-${month}-01`;
-  }
-  const q = cleaned.match(/^(\d{4})\s+Q([1-4])$/i);
-  if (q) {
-    const month = String((Number(q[2]) - 1) * 3 + 1).padStart(2, "0");
-    return `${q[1]}-${month}-01`;
-  }
-  if (/^\d{4}$/.test(cleaned)) return `${cleaned}-01-01`;
-  if (/^\d{4}-\d{2}/.test(cleaned)) return cleaned.slice(0, 10);
-  return null;
-}
-
-function monthNum(mon: string): string | null {
-  const map: Record<string, string> = {
-    JAN: "01",
-    FEB: "02",
-    MAR: "03",
-    APR: "04",
-    MAY: "05",
-    JUN: "06",
-    JUL: "07",
-    AUG: "08",
-    SEP: "09",
-    OCT: "10",
-    NOV: "11",
-    DEC: "12",
-  };
-  return map[mon.toUpperCase()] ?? null;
-}

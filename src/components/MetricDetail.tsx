@@ -8,6 +8,7 @@ import { formatDelta, formatObsDate, formatValue } from "@/lib/format";
 import { surpriseTone, computeSurprise } from "@/lib/surprise";
 import { INFLATION_TREES, US_PCE_TREE, type Node } from "@/catalog/hierarchy";
 import { formatLiveSourceLabel } from "@/lib/live-source-label";
+import { displayReleaseStage, type ReleaseStage } from "@/ingest/release-stages";
 
 type SeriesPayload = {
   meta: {
@@ -29,7 +30,14 @@ type SeriesPayload = {
     liveSource?: string | null;
   };
   history: Array<{ date: string; value: number }>;
+  threeMonth?: {
+    label: string;
+    note: string;
+    frequency?: string;
+    history: Array<{ date: string; value: number }>;
+  };
   displayReleasedAt?: string | null;
+  releaseStage?: ReleaseStage | null;
   expectedValue?: number | null;
   surprise?: number | null;
   priorPeriodValue?: number | null;
@@ -47,6 +55,7 @@ type SeriesPayload = {
     changeVsPriorPeriod: number | null;
     supportingDocUrl: string | null;
     notes: string | null;
+    releaseStage?: ReleaseStage | null;
   }>;
 };
 
@@ -63,9 +72,11 @@ function findPath(nodes: Node[], id: string, path: string[] = []): string[] | nu
 export function MetricDetail({ id }: { id: string }) {
   const [data, setData] = useState<SeriesPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [selectedThreeMonth, setSelectedThreeMonth] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/metrics/${id}?limit=360`, { cache: "no-store" })
+    setSelectedThreeMonth(false);
+    fetch(`/api/metrics/${id}?limit=5000`, { cache: "no-store" })
       .then(async (res) => {
         if (!res.ok) throw new Error(`API ${res.status}`);
         setData(await res.json());
@@ -93,8 +104,10 @@ export function MetricDetail({ id }: { id: string }) {
   const {
     meta,
     history,
+    threeMonth,
     releases,
     displayReleasedAt,
+    releaseStage,
     expectedValue,
     surprise,
     priorPeriodValue,
@@ -143,6 +156,11 @@ export function MetricDetail({ id }: { id: string }) {
                   ? `${formatObsDate(latest.date)} period`
                   : "—"}
             </div>
+            {displayReleaseStage(releaseStage) && (
+              <span className="mt-2 inline-flex rounded-full border border-[var(--accent)]/30 bg-[var(--accent-soft)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-ink)]">
+                {displayReleaseStage(releaseStage)}
+              </span>
+            )}
           </div>
           <div className="rounded-xl bg-[var(--paper)]/70 p-4">
             <div className="text-xs text-[var(--muted)]">Consensus</div>
@@ -227,11 +245,45 @@ export function MetricDetail({ id }: { id: string }) {
       </section>
 
       <section className="mt-6 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 sm:p-6">
-        <h2 className="font-[family-name:var(--font-display)] text-xl">Published trend</h2>
-        <p className="mb-4 text-xs text-[var(--muted)]">
-          Last 12 months by default · {meta.frequency}; use the year range to inspect earlier observations.
-        </p>
-        <SeriesChart data={history} unit={meta.unit} frequency={meta.frequency} />
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="font-[family-name:var(--font-display)] text-xl">
+              {threeMonth ? "Trend" : "Published trend"}
+            </h2>
+            <p className="mt-1 text-xs text-[var(--muted)]">
+              Last 12 months by default · {meta.frequency}; use the year range to inspect earlier observations.
+            </p>
+          </div>
+          {threeMonth && (
+            <div className="inline-flex rounded-lg border border-[var(--line)] p-1" aria-label="Trend measure">
+              <button
+                type="button"
+                aria-pressed={!selectedThreeMonth}
+                onClick={() => setSelectedThreeMonth(false)}
+                className={clsx("rounded-md px-3 py-1.5 text-xs", !selectedThreeMonth ? "bg-[var(--ink)] text-[var(--panel)]" : "text-[var(--muted)] hover:text-[var(--ink)]")}
+              >
+                Published
+              </button>
+              <button
+                type="button"
+                aria-pressed={selectedThreeMonth}
+                onClick={() => setSelectedThreeMonth(true)}
+                className={clsx("rounded-md px-3 py-1.5 text-xs", selectedThreeMonth ? "bg-[var(--ink)] text-[var(--panel)]" : "text-[var(--muted)] hover:text-[var(--ink)]")}
+              >
+                {threeMonth.label}
+              </button>
+            </div>
+          )}
+        </div>
+        {threeMonth && selectedThreeMonth && <p className="mt-2 text-xs text-[var(--muted)]">{threeMonth.note}</p>}
+        <div className="mt-4">
+          <SeriesChart
+            data={selectedThreeMonth && threeMonth ? threeMonth.history : history}
+            unit={selectedThreeMonth && threeMonth?.label.includes("SAAR") ? "percent" : meta.unit}
+            frequency={meta.frequency}
+            valueLabel={selectedThreeMonth && threeMonth ? threeMonth.label : "Published"}
+          />
+        </div>
       </section>
 
       <section className="mt-6 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 sm:p-6">
@@ -244,6 +296,7 @@ export function MetricDetail({ id }: { id: string }) {
               <tr>
                 <th className="pb-2 pr-3">Released</th>
                 <th className="pb-2 pr-3">Period</th>
+                <th className="pb-2 pr-3">Type</th>
                 <th className="pb-2 pr-3">Actual</th>
                 <th className="pb-2 pr-3">Consensus</th>
                 <th className="pb-2 pr-3">Surprise</th>
@@ -267,6 +320,13 @@ export function MetricDetail({ id }: { id: string }) {
                   </td>
                   <td className="py-2.5 pr-3 text-[var(--muted)]">
                     {r.periodLabel ?? formatObsDate(r.periodDate)}
+                  </td>
+                  <td className="py-2.5 pr-3">
+                    {displayReleaseStage(r.releaseStage) ? (
+                      <span className="inline-flex rounded-full border border-[var(--accent)]/30 bg-[var(--accent-soft)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-ink)]">
+                        {displayReleaseStage(r.releaseStage)}
+                      </span>
+                    ) : "—"}
                   </td>
                   <td className="py-2.5 pr-3 font-[family-name:var(--font-mono)]">
                     {formatValue(r.value, meta.unit)}

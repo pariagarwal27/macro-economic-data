@@ -5,8 +5,13 @@ import { isUsCpiLsegOnlyMetric } from "./source-registry";
 import { getD1Database } from "@/db";
 import { getSourceSnapshot } from "./cloud-source-cache";
 import { isFreshReleaseFetch } from "./release-fetch-context.js";
+import { US_PPI_SERIES } from '../catalog/us-ppi.mjs';
 
 const BLS_URL = "https://api.bls.gov/publicAPI/v2/timeseries/data/";
+const PPI_SERIES_IDS = [...new Set(US_PPI_SERIES.flatMap(series => [series.seriesId, series.saSeriesId]))];
+const PPI_SERIES_SET = new Set(PPI_SERIES_IDS);
+const ppiBatches = new Map<string, { expiresAt: number; promise: Promise<Map<string, RawPoint[]>> }>();
+const ppiHistories = new Map<string, Promise<Map<string, RawPoint[]>>>();
 
 export interface BlsFetchOptions {
   startYear?: number;
@@ -27,6 +32,21 @@ export async function fetchBlsSeries(
   }));
   const requestedIds = [...new Set(seriesIds)].filter(id => !cpiSeriesIds.has(id));
   if (!requestedIds.length) return new Map();
+  // All FD-ID components share one publication. Coalesce component requests
+  // into one family batch per minute, with a separate cache for release-time
+  // requests so a pre-release response cannot satisfy the first release poll.
+  if (requestedIds.every(id => PPI_SERIES_SET.has(id))) {
+    const key = `${opts.startYear ?? new Date().getFullYear() - 2}:${opts.endYear ?? new Date().getFullYear()}:${isFreshReleaseFetch() ? 'release' : 'normal'}`;
+    let entry = ppiBatches.get(key);
+    if (!entry || entry.expiresAt <= Date.now()) {
+      const promise = fetchBlsSeriesUncached(PPI_SERIES_IDS, opts);
+      entry = { expiresAt: Date.now() + 60_000, promise };
+      ppiBatches.set(key, entry);
+      promise.catch(() => { if (ppiBatches.get(key)?.promise === promise) ppiBatches.delete(key); });
+    }
+    const batch = await entry.promise;
+    return new Map(requestedIds.map(id => [id, batch.get(id) ?? []]));
+  }
   if (isFreshReleaseFetch() || !getD1Database()) return fetchBlsSeriesUncached(requestedIds, opts);
   const allIds = [...new Set([...requestedIds, ...METRICS.flatMap(metric => {
     if (isUsCpiLsegOnlyMetric(metric.id)) return [];
@@ -53,8 +73,9 @@ async function fetchBlsSeriesUncached(
   const out = new Map<string, RawPoint[]>();
 
   // BLS allows 25 (v1) / 50 (v2) series per request.
-  for (let i = 0; i < seriesIds.length; i += 25) {
-    const chunk = seriesIds.slice(i, i + 25);
+  const batchSize = registrationkey ? 50 : 25;
+  for (let i = 0; i < seriesIds.length; i += batchSize) {
+    const chunk = seriesIds.slice(i, i + batchSize);
 
     const body: Record<string, unknown> = {
       seriesid: chunk,
@@ -171,6 +192,21 @@ export async function fetchBlsOne(
   return map.get(seriesId) ?? [];
 }
 
+/** Full available official BLS history for PPI series. */
+export async function fetchUsPpiHistory(seriesId: string): Promise<RawPoint[]> {
+  const endYear = new Date().getFullYear();
+  const key = String(endYear);
+  let promise = ppiHistories.get(key);
+  if (!promise) {
+    promise = fetchBlsSeriesFullHistory(PPI_SERIES_IDS, { startYear: 1947, endYear, windowYears: 10 });
+    ppiHistories.set(key, promise);
+    promise.catch(() => ppiHistories.delete(key));
+  }
+  const points = (await promise).get(seriesId) ?? [];
+  if (!points.length) throw new Error(`Official BLS PPI history unavailable for ${seriesId}`);
+  return points;
+}
+
 interface BlsResponse {
   status: string;
   message?: string[];
@@ -226,6 +262,7 @@ function blsPeriodToDate(
   const m = period.match(/^M(\d{2})$/);
 
   if (m) {
+    if (Number(m[1]) < 1 || Number(m[1]) > 12) return null;
     return `${year}-${m[1]}-01`;
   }
 

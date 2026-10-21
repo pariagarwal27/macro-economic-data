@@ -1,13 +1,13 @@
-import { getNiceTickDomain, getNiceTicks } from "./chart-axis";
+import { getNiceTickDomain, getNiceTicks, getTickPrecision } from "./chart-axis";
 
 export type OverviewRegion = "US" | "UK" | "EA";
-export type OverviewIndicator = "inflation" | "gdp" | "unemployment" | "wage";
-export type OverviewObservation = { date: string; value: number };
+export type OverviewIndicator = "inflation" | "gdp" | "unemployment" | "wage" | "retail";
+export type OverviewObservation = { date: string; value: number; rawValue?: number | null };
 export type OverviewPayload = Record<string, {
   history: OverviewObservation[];
   meta?: { liveSource?: string | null; name?: string; unit?: string; frequency?: string };
 } | null>;
-export type OverviewChartPoint = { date: string; period: string; label: string; US: number | null; UK: number | null; EA: number | null };
+export type OverviewChartPoint = { date: string; period: string; label: string; US: number | null; UK: number | null; EA: number | null; [key: string]: string | number | null };
 export type OverviewInflationMode = "yoy" | "mom";
 export type OverviewInflationSeries = { key: string; region: OverviewRegion; kind: "headline" | "core"; metricLabel: string };
 export type OverviewInflationPoint = { date: string; period: string; label: string } & Record<string, number | string | null>;
@@ -23,35 +23,34 @@ export const OVERVIEW_INFLATION_SERIES: OverviewInflationSeries[] = [
 
 /** Keep overview scales local to the visible indicator and its current observations. */
 export function overviewAxisTicks(data: OverviewChartPoint[], indicator: OverviewIndicator): number[] {
-  const values = data.flatMap(point => OVERVIEW_REGIONS.map(region => point[region]).filter((value): value is number => value !== null && Number.isFinite(value)));
+  const values = data.flatMap(point => OVERVIEW_REGIONS.flatMap(region => [point[region], point[`${region}Trend`]]).filter((value): value is number => typeof value === "number" && Number.isFinite(value)));
   if (indicator === "gdp") values.push(0);
   if (!values.length) return [];
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const padding = Math.max((max - min) * 0.02, 0.02);
-  return getNiceTicks([min - padding, max + padding], 10, 0.1);
+  return getNiceTicks(values, 9, 0.05);
 }
 export function overviewRegionAxisTicks(data: OverviewChartPoint[], regions: OverviewRegion[]): number[] {
-  const values = data.flatMap(point => regions.map(region => point[region]).filter((value): value is number => value !== null && Number.isFinite(value)));
+  const values = data.flatMap(point => regions.flatMap(region => [point[region], point[`${region}Trend`]]).filter((value): value is number => typeof value === "number" && Number.isFinite(value)));
   if (!values.length) return [];
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const padding = Math.max((max - min) * 0.08, 0.05);
-  return getNiceTicks([min - padding, max + padding], 8, 0.05);
+  return getNiceTicks(values, 9, 0.05);
 }
 export function overviewAxisDomain(ticks: number[]): [number, number] {
   return getNiceTickDomain(ticks);
 }
 
+export function overviewAxisDigits(ticks: number[]): number {
+  return getTickPrecision(ticks);
+}
+
 export const OVERVIEW_REGIONS: OverviewRegion[] = ["US", "UK", "EA"];
 export const OVERVIEW_METRICS: Record<OverviewRegion, Record<OverviewIndicator, string>> = {
-  US: { inflation: "us-cpi", gdp: "us-gdp-real", unemployment: "us-unemployment", wage: "us-ahe" },
-  UK: { inflation: "uk-cpi-yoy", gdp: "uk-gdp-qoq", unemployment: "uk-unemployment", wage: "uk-awe-regular-yoy" },
-  EA: { inflation: "ea-hicp-yoy", gdp: "ea-gdp-qoq", unemployment: "ea-unemployment", wage: "ea-wage-growth" },
+  US: { inflation: "us-cpi", gdp: "us-gdp-real", unemployment: "us-unemployment", wage: "us-ahe", retail: "us-retail-sales-total" },
+  UK: { inflation: "uk-cpi-yoy", gdp: "uk-gdp-qoq", unemployment: "uk-unemployment", wage: "uk-awe-regular-yoy", retail: "uk-retail-sales-total-ex-fuel" },
+  EA: { inflation: "ea-hicp-yoy", gdp: "ea-gdp-qoq", unemployment: "ea-unemployment", wage: "ea-wage-growth", retail: "ea-retail-sales-total-ex-motor-vehicles" },
 };
 const OVERVIEW_AUXILIARY_METRICS = [
   "us-cpi-mom", "uk-cpi-mom", "ea-hicp-mom",
   "us-ahe-mom", "uk-awe-regular-mom", "ea-wage-growth-qoq",
+  "uk-retail-sales-total-yoy", "uk-retail-sales-total-3m3m",
 ];
 const OVERVIEW_CORE_INFLATION_METRICS = [
   "us-cpi-core",
@@ -94,8 +93,11 @@ function observationMonth(date: string, quarterlyStart = false): { year: number;
   if (!iso || Number(iso[2]) < 1 || Number(iso[2]) > 12) return null;
   const year = Number(iso[1]);
   const month = Number(iso[2]);
-  const isQuarterStart = [1, 4, 7, 10].includes(month) && date.match(/^\d{4}-\d{2}-\d{2}/);
-  return { year, month: quarterlyStart && isQuarterStart ? month + 2 : month };
+  // Quarterly observations can be stored as quarter labels, quarter-start
+  // dates, month-only dates, or dates within the quarter. Normalize every
+  // known quarterly series to its quarter-end month so countries line up on
+  // the same chart period.
+  return { year, month: quarterlyStart ? Math.ceil(month / 3) * 3 : month };
 }
 
 function overviewReadings(payload: OverviewPayload, region: OverviewRegion, indicator: OverviewIndicator, now: Date) {
@@ -107,7 +109,11 @@ function overviewReadings(payload: OverviewPayload, region: OverviewRegion, indi
   const currentPeriod = currentYear * 12 + currentMonth - 1;
   const lastCompletedQuarter = currentYear * 12 + Math.floor((currentMonth - 1) / 3) * 3 - 1;
   return history.flatMap(point => {
-    const period = observationMonth(point.date, series?.meta?.frequency === "quarterly");
+    // GDP overview histories are all quarterly, even when a provider labels
+    // the period with a quarter-start month (or its frequency metadata uses
+    // a different casing/wording). Normalize every observation to quarter end
+    // before building the shared US/UK/EA chart timeline.
+    const period = observationMonth(point.date, indicator === "gdp" || series?.meta?.frequency?.toLowerCase() === "quarterly");
     const periodIndex = period ? period.year * 12 + period.month - 1 : -1;
     if (!period || periodIndex > currentPeriod || indicator === "gdp" && periodIndex > lastCompletedQuarter || !Number.isFinite(point.value)) return [];
     const quarter = Math.ceil(period.month / 3);
@@ -257,6 +263,10 @@ export function latestOverviewMovement(payload: OverviewPayload, indicator: Over
       secondaryChangeLabel: indicator === "wage" && region === "EA" ? "vs prior quarter" : "vs prior month",
     };
   }
+  if (indicator === "retail") {
+    const previous = readings.at(-2);
+    return { date: latest.date, primary: latest.value, secondary: null, primaryLabel: "MoM", secondaryLabel: "", primaryChange: previous ? latest.value - previous.value : null, primaryChangeLabel: "vs prior month", secondaryChange: null, secondaryChangeLabel: "" };
+  }
   if (indicator === "gdp") {
     const previous = [...readings].reverse().find(reading => reading.periodIndex === latest.periodIndex - 3);
     const previousPrevious = previous ? [...readings].reverse().find(reading => reading.periodIndex === previous.periodIndex - 3) : null;
@@ -284,8 +294,11 @@ export function overviewPeriodLabel(date: string, quarterly = false) {
 }
 
 export function buildOverviewSeries(payload: OverviewPayload, indicator: OverviewIndicator, now = new Date()): OverviewChartPoint[] {
-  const readingsByRegion = Object.fromEntries(OVERVIEW_REGIONS.map(region => [region, overviewReadings(payload, region, indicator, now)])) as Record<OverviewRegion, ReturnType<typeof overviewReadings>>;
-  const allReadings = OVERVIEW_REGIONS.flatMap(region => readingsByRegion[region]);
+  const readingsByRegion = Object.fromEntries(OVERVIEW_REGIONS.map(region => [region,
+    indicator === "retail" ? retailYearOverYearReadings(payload, region, now) : overviewReadings(payload, region, indicator, now),
+  ])) as Record<OverviewRegion, ReturnType<typeof overviewReadings>>;
+  const trendsByRegion = Object.fromEntries(OVERVIEW_REGIONS.map(region => [region, indicator === "gdp" || indicator === "inflation" ? [] : overviewThreeMonthReadings(payload, region, indicator, readingsByRegion[region], now)])) as Record<OverviewRegion, ReturnType<typeof overviewReadings>>;
+  const allReadings = OVERVIEW_REGIONS.flatMap(region => [...readingsByRegion[region], ...trendsByRegion[region]]);
   if (!allReadings.length) return [];
   const latest = Math.max(...allReadings.map(reading => reading.periodIndex));
   const cutoff = latest - 12;
@@ -293,7 +306,16 @@ export function buildOverviewSeries(payload: OverviewPayload, indicator: Overvie
   const first = indicator === "inflation" ? cutoff : indicator === "gdp" ? Math.min(firstPublished, latest - 12) : firstPublished;
   const step = indicator === "gdp" ? 3 : 1;
   const periods: number[] = [];
-  for (let index = first; index <= latest; index += step) periods.push(index);
+  if (indicator === "gdp") {
+    // Anchor the sequence to quarter ends. Starting a `+3` loop at an
+    // unnormalized month can otherwise produce labels for quarters that do
+    // not correspond to the stored observation indexes.
+    const firstQuarterEnd = Math.floor(first / 3) * 3 + 2;
+    const latestQuarterEnd = Math.floor(latest / 3) * 3 + 2;
+    for (let index = firstQuarterEnd; index <= latestQuarterEnd; index += 3) periods.push(index);
+  } else {
+    for (let index = first; index <= latest; index += step) periods.push(index);
+  }
   const points: OverviewChartPoint[] = periods.map(index => {
     const year = Math.floor(index / 12);
     const month = index % 12 + 1;
@@ -302,7 +324,7 @@ export function buildOverviewSeries(payload: OverviewPayload, indicator: Overvie
       date: indicator === "gdp" ? `${year}-Q${quarter}` : `${year}-${String(month).padStart(2, "0")}-01`,
       period: indicator === "gdp" ? `${year}-Q${quarter}` : `${year}-${String(month).padStart(2, "0")}`,
       label: indicator === "gdp" ? `Q${quarter} ${year}` : `${MONTH_NAMES[month - 1]} ’${String(year).slice(-2)}`,
-      US: null, UK: null, EA: null,
+      US: null, UK: null, EA: null, USTrend: null, UKTrend: null, EATrend: null,
     };
   });
   for (const region of OVERVIEW_REGIONS) {
@@ -311,8 +333,123 @@ export function buildOverviewSeries(payload: OverviewPayload, indicator: Overvie
       const point = points.find(item => item.period === (indicator === "gdp" ? `${reading.year}-Q${reading.quarter}` : `${reading.year}-${String(reading.month).padStart(2, "0")}`));
       if (point) point[region] = reading.value;
     }
+    for (const reading of trendsByRegion[region]) {
+      if (reading.periodIndex < first || reading.periodIndex > latest) continue;
+      const point = points.find(item => item.period === `${reading.year}-${String(reading.month).padStart(2, "0")}`);
+      if (point) point[`${region}Trend`] = reading.value;
+    }
   }
   return points;
+}
+
+function indexedMonthlyHistory(payload: OverviewPayload, metricId: string, now: Date) {
+  const metric = payload[metricId];
+  const nowParts = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles", year: "numeric", month: "numeric" }).formatToParts(now);
+  const latestAllowed = Number(nowParts.find(part => part.type === "year")?.value) * 12 + Number(nowParts.find(part => part.type === "month")?.value) - 1;
+  return (metric?.history ?? []).flatMap(point => {
+    const period = observationMonth(point.date);
+    const periodIndex = period ? period.year * 12 + period.month - 1 : -1;
+    return period && periodIndex <= latestAllowed && Number.isFinite(point.value) ? [{ ...point, periodIndex }] : [];
+  }).sort((a, b) => a.periodIndex - b.periodIndex);
+}
+
+function indexedQuarterlyHistory(payload: OverviewPayload, metricId: string, now: Date) {
+  const metric = payload[metricId];
+  const nowParts = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles", year: "numeric", month: "numeric" }).formatToParts(now);
+  const latestAllowed = Number(nowParts.find(part => part.type === "year")?.value) * 12 + Number(nowParts.find(part => part.type === "month")?.value) - 1;
+  return (metric?.history ?? []).flatMap(point => {
+    const period = observationMonth(point.date, true);
+    const periodIndex = period ? period.year * 12 + period.month - 1 : -1;
+    return period && periodIndex <= latestAllowed && Number.isFinite(point.value) ? [{ ...point, periodIndex }] : [];
+  }).sort((a, b) => a.periodIndex - b.periodIndex);
+}
+
+function retailYearOverYearReadings(payload: OverviewPayload, region: OverviewRegion, now: Date) {
+  if (region === "UK") {
+    const published = indexedMonthlyHistory(payload, "uk-retail-sales-total-yoy", now);
+    return published.map(point => {
+      const period = observationMonth(point.date)!;
+      return { date: point.date, value: point.value, month: period.month, year: period.year, periodIndex: point.periodIndex, quarter: Math.ceil(period.month / 3) };
+    });
+  }
+  const metricId = OVERVIEW_METRICS[region].retail;
+  const history = indexedMonthlyHistory(payload, metricId, now);
+  const byPeriod = new Map(history.map(point => [point.periodIndex, point]));
+  return history.flatMap(point => {
+    const prior = byPeriod.get(point.periodIndex - 12);
+    let value: number | null = null;
+    if (point.rawValue != null && prior?.rawValue != null && point.rawValue > 0 && prior.rawValue > 0) {
+      value = (point.rawValue / prior.rawValue - 1) * 100;
+    } else {
+      const monthlyWindow = Array.from({ length: 12 }, (_, lag) => byPeriod.get(point.periodIndex - 11 + lag)?.value);
+      if (monthlyWindow.every((rate): rate is number => rate != null && Number.isFinite(rate))) {
+        value = (monthlyWindow.reduce((product, rate) => product * (1 + rate / 100), 1) - 1) * 100;
+      }
+    }
+    if (value == null || !Number.isFinite(value)) return [];
+    const period = observationMonth(point.date)!;
+    return [{ date: point.date, value, month: period.month, year: period.year, periodIndex: point.periodIndex, quarter: Math.ceil(period.month / 3) }];
+  });
+}
+
+function trailingMonthlyAverage(readings: ReturnType<typeof overviewReadings>, periodIndex: number, count = 3) {
+  const byPeriod = new Map(readings.map(reading => [reading.periodIndex, reading.value]));
+  const window = Array.from({ length: count }, (_, lag) => byPeriod.get(periodIndex - count + 1 + lag));
+  return window.every((value): value is number => value != null && Number.isFinite(value))
+    ? window.reduce((sum, value) => sum + value, 0) / count
+    : null;
+}
+
+function compoundedThreeMonthAnnualized(payload: OverviewPayload, metricId: string, now: Date) {
+  const history = indexedMonthlyHistory(payload, metricId, now);
+  const byPeriod = new Map(history.map(point => [point.periodIndex, point.value]));
+  return history.flatMap(point => {
+    const window = Array.from({ length: 3 }, (_, lag) => byPeriod.get(point.periodIndex - 2 + lag));
+    if (!window.every((value): value is number => value != null && Number.isFinite(value))) return [];
+    const value = (Math.pow(window.reduce((product, rate) => product * (1 + rate / 100), 1), 4) - 1) * 100;
+    if (!Number.isFinite(value)) return [];
+    const period = observationMonth(point.date)!;
+    return [{ date: point.date, value, month: period.month, year: period.year, periodIndex: point.periodIndex, quarter: Math.ceil(period.month / 3) }];
+  });
+}
+
+function compoundedThreeMonthAnnualizedIndex(payload: OverviewPayload, metricId: string, now: Date) {
+  const history = indexedMonthlyHistory(payload, metricId, now);
+  const byPeriod = new Map(history.map(point => [point.periodIndex, point]));
+  return history.flatMap(point => {
+    const indexWindow = [0, 1, 2, 3].map(lag => byPeriod.get(point.periodIndex - 3 + lag)?.rawValue);
+    if (!indexWindow.every((value): value is number => value != null && Number.isFinite(value) && value > 0)) return [];
+    const value = (Math.pow(indexWindow[3]! / indexWindow[0]!, 4) - 1) * 100;
+    if (!Number.isFinite(value)) return [];
+    const period = observationMonth(point.date)!;
+    return [{ date: point.date, value, month: period.month, year: period.year, periodIndex: point.periodIndex, quarter: Math.ceil(period.month / 3) }];
+  });
+}
+
+function overviewThreeMonthReadings(payload: OverviewPayload, region: OverviewRegion, indicator: OverviewIndicator, readings: ReturnType<typeof overviewReadings>, now: Date) {
+  if (indicator === "unemployment") {
+    return readings.flatMap(point => {
+      const value = trailingMonthlyAverage(readings, point.periodIndex);
+      return value == null ? [] : [{ ...point, value }];
+    });
+  }
+  if (indicator === "retail" && region === "UK") {
+    return indexedMonthlyHistory(payload, "uk-retail-sales-total-3m3m", now).map(point => {
+      const period = observationMonth(point.date)!;
+      return { date: point.date, value: point.value, month: period.month, year: period.year, periodIndex: point.periodIndex, quarter: Math.ceil(period.month / 3) };
+    });
+  }
+  if (indicator === "retail" && region === "US") return compoundedThreeMonthAnnualized(payload, "us-retail-sales-total", now);
+  if (indicator === "retail" && region === "EA") return compoundedThreeMonthAnnualizedIndex(payload, OVERVIEW_METRICS.EA.retail, now);
+  if (indicator === "wage" && region === "US") return compoundedThreeMonthAnnualized(payload, "us-ahe-mom", now);
+  if (indicator === "wage" && region === "UK") return compoundedThreeMonthAnnualized(payload, "uk-awe-regular-mom", now);
+  if (indicator === "wage" && region === "EA") {
+    return indexedQuarterlyHistory(payload, "ea-wage-growth-qoq", now).map(point => {
+      const period = observationMonth(point.date, true)!;
+      return { date: point.date, value: point.value, month: period.month, year: period.year, periodIndex: point.periodIndex, quarter: Math.ceil(period.month / 3) };
+    });
+  }
+  return [];
 }
 
 const INFLATION_SERIES_IDS: Record<OverviewInflationMode, Record<string, string>> = {
@@ -331,6 +468,7 @@ export function buildOverviewInflationSeries(payload: OverviewPayload, mode: Ove
   const nowParts = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles", year: "numeric", month: "numeric" }).formatToParts(now);
   const latestAllowed = Number(nowParts.find(part => part.type === "year")?.value) * 12 + Number(nowParts.find(part => part.type === "month")?.value) - 1;
   const byKey = new Map<string, Map<number, number>>();
+  const threeMonthByKey = new Map<string, Map<number, number>>();
   const allPeriods: number[] = [];
   for (const series of OVERVIEW_INFLATION_SERIES) {
     const metricId = INFLATION_SERIES_IDS[mode][series.key]!;
@@ -355,6 +493,41 @@ export function buildOverviewInflationSeries(payload: OverviewPayload, mode: Ove
       allPeriods.push(index);
     }
     byKey.set(series.key, values);
+
+    // Match each source's available trend: US CPI uses the seasonally adjusted
+    // index for 3m/3m SAAR; UK and Euro Area use a three-observation mean of
+    // their published YoY rates (HICP is not seasonally adjusted).
+    if (mode === "yoy") {
+      const trendMetricId = INFLATION_SERIES_IDS.yoy[series.key]!;
+      const trendMetric = payload[trendMetricId];
+      const observations = new Map<number, number>();
+      for (const point of trendMetric?.history ?? []) {
+        const period = observationMonth(point.date);
+        const index = period ? period.year * 12 + period.month - 1 : -1;
+        if (index >= 0 && index <= latestAllowed && Number.isFinite(point.value)) observations.set(index, point.value);
+      }
+      const trendValues = new Map<number, number>();
+      for (const index of values.keys()) {
+        if (series.region === "US" && trendMetric?.meta?.unit === "index") {
+          const window = [0, 1, 2, 3].map(lag => observations.get(index - 3 + lag));
+          if (window.every((value): value is number => value != null && Number.isFinite(value)) && window[0]! > 0) {
+            const rate = (Math.pow(window[3]! / window[0]!, 4) - 1) * 100;
+            if (Number.isFinite(rate)) trendValues.set(index, rate);
+          }
+        } else if (series.region === "UK") {
+          const window = [observations.get(index - 2), observations.get(index - 1), observations.get(index)];
+          if (window.every((value): value is number => value != null && Number.isFinite(value))) {
+            trendValues.set(index, window.reduce((sum, value) => sum + value, 0) / 3);
+          }
+        } else if (series.region === "EA") {
+          const window = [observations.get(index - 2), observations.get(index - 1), observations.get(index)];
+          if (window.every((value): value is number => value != null && Number.isFinite(value))) {
+            trendValues.set(index, window.reduce((sum, value) => sum + value, 0) / 3);
+          }
+        }
+      }
+      threeMonthByKey.set(series.key, trendValues);
+    }
   }
   if (!allPeriods.length) return [];
   const first = Math.min(...allPeriods);
@@ -368,7 +541,10 @@ export function buildOverviewInflationSeries(payload: OverviewPayload, mode: Ove
       period: `${year}-${String(month).padStart(2, "0")}`,
       label: `${MONTH_NAMES[month - 1]} ’${String(year).slice(-2)}`,
     };
-    for (const series of OVERVIEW_INFLATION_SERIES) point[series.key] = byKey.get(series.key)?.get(index) ?? null;
+    for (const series of OVERVIEW_INFLATION_SERIES) {
+      point[series.key] = byKey.get(series.key)?.get(index) ?? null;
+      point[`${series.key}3m3m`] = threeMonthByKey.get(series.key)?.get(index) ?? null;
+    }
     points.push(point);
   }
   return points;

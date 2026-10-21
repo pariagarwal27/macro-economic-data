@@ -3,12 +3,14 @@ import {
   Legend,
   Line,
   LineChart,
+  Area,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
-import { getExpectationAxisTicks, getNiceTickDomain } from "@/lib/chart-axis";
+import { Fragment } from "react";
+import { getExpectationAxisTicks, getNiceTickDomain, getTickPrecision } from "@/lib/chart-axis";
 import { HistoryChartViewport } from "@/components/HistoryChartViewport";
 import { filterHistoryByYearRange, filterHistoryToTrailing12Months } from "@/lib/history-range";
 
@@ -53,30 +55,6 @@ function monthKey(value: string) {
   if (!match) return null;
 
   return `${match[1]}-${match[2]}`;
-}
-
-function monthLabel(value: string) {
-  const match = value.match(/^(\d{4})-(\d{2})$/);
-
-  if (!match) return value;
-
-  const date = new Date(
-    Date.UTC(
-      Number(match[1]),
-      Number(match[2]) - 1,
-      1
-    )
-  );
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    year: "2-digit",
-    timeZone: "UTC",
-  }).format(date);
 }
 
 function compactMonthLabel(value: string, includeYear: boolean) {
@@ -258,8 +236,8 @@ export function ExpectationComparisonChart({
         ) : null}
       </div>
 
-      <HistoryChartViewport dates={rows.map(row => String(row.date))} frequency={hasDailySeries ? "daily" : "monthly"} height={expanded ? 256 : 320} label={title}>
-        {(plotWidth, fromYear, toYear, isDefaultWindow) => { const yearRows = isDefaultWindow ? filterHistoryToTrailing12Months(rows) : filterHistoryByYearRange(rows, fromYear, toYear); const valuesForAxis = (axis: "left" | "right") => valid.filter(item => !hasDualAxis ? true : (item.axis ?? "left") === axis).flatMap(item => item.data.filter(point => yearRows.some(row => row.date === point.date)).map(point => point.value)); const leftTicks = getExpectationAxisTicks(valuesForAxis("left")); const rightTicks = hasDualAxis ? getExpectationAxisTicks(valuesForAxis("right")) : []; const digitsFor = (ticks: number[]) => { const step = ticks.length > 1 ? Math.abs(ticks[1]! - ticks[0]!) : 0.1; return step < 0.1 ? 2 : 1; }; return <div className={`expectation-comparison-plot h-80 w-full${expanded ? " expectation-comparison-plot--expanded" : ""}`} style={{ width: plotWidth }}><ResponsiveContainer width={plotWidth} height="100%">
+      <HistoryChartViewport dates={rows.map(row => String(row.date))} frequency={hasDailySeries ? "daily" : "monthly"} height={352} label={title} shortYearLabels>
+        {(plotWidth, fromYear, toYear, isDefaultWindow) => { const yearRows = isDefaultWindow ? filterHistoryToTrailing12Months(rows) : filterHistoryByYearRange(rows, fromYear, toYear); const firstDate = String(yearRows[0]?.date ?? ""); const lastDate = String(yearRows.at(-1)?.date ?? firstDate); const firstMonth = Number(firstDate.slice(5, 7)); const lastMonth = Number(lastDate.slice(5, 7)); const monthSpan = Math.max(1, (Number(lastDate.slice(0, 4)) - Number(firstDate.slice(0, 4))) * 12 + lastMonth - firstMonth + 1); const monthStride = monthSpan <= 6 ? 1 : monthSpan <= 18 ? 2 : monthSpan <= 36 ? 3 : monthSpan <= 84 ? 6 : 12; const seenMonths = new Set<string>(); const axisTicks = yearRows.flatMap(row => { const date = String(row.date); const monthKey = date.slice(0, 7); const month = Number(date.slice(5, 7)); if (seenMonths.has(monthKey) || (month - 1) % monthStride !== 0) return []; seenMonths.add(monthKey); return [date]; }); const valuesForAxis = (axis: "left" | "right") => valid.filter(item => !hasDualAxis ? true : (item.axis ?? "left") === axis).flatMap(item => item.data.filter(point => yearRows.some(row => row.date === point.date)).map(point => point.value)); const leftTicks = getExpectationAxisTicks(valuesForAxis("left")); const rightTicks = hasDualAxis ? getExpectationAxisTicks(valuesForAxis("right")) : []; const digitsFor = (ticks: number[]) => { return Math.max(1, getTickPrecision(ticks)); }; return <div className={`expectation-comparison-plot h-80 w-full${expanded ? " expectation-comparison-plot--expanded" : ""}`} style={{ width: plotWidth }}><ResponsiveContainer width={plotWidth} height="100%">
           <LineChart
             data={yearRows}
             margin={{
@@ -277,9 +255,8 @@ export function ExpectationComparisonChart({
 
             <XAxis
               dataKey="date"
+              ticks={axisTicks}
               tickFormatter={(value) => {
-                if (hasDailySeries) return dayLabel(value);
-                if (!showAlternateMonthlyTicks) return monthLabel(value);
                 const month = String(value).slice(5, 7);
                 return compactMonthLabel(String(value), month === "01" || yearRows[0]?.date === value);
               }}
@@ -289,15 +266,15 @@ export function ExpectationComparisonChart({
               }}
               axisLine={false}
               tickLine={false}
-              minTickGap={hasDailySeries ? 28 : showAlternateMonthlyTicks ? 0 : 18}
-              interval={showAlternateMonthlyTicks ? 1 : "preserveStartEnd"}
+              minTickGap={18}
+              interval={0}
               padding={{
                 left: 8,
                 right: 8,
               }}
             />
 
-            <YAxis
+            <YAxis allowDataOverflow
               yAxisId={hasDualAxis ? "left" : undefined}
               domain={getNiceTickDomain(leftTicks)}
               ticks={leftTicks}
@@ -323,7 +300,7 @@ export function ExpectationComparisonChart({
               tickCount={5}
             />
 
-            {hasDualAxis ? <YAxis
+            {hasDualAxis ? <YAxis allowDataOverflow
               yAxisId="right"
               orientation="right"
               domain={getNiceTickDomain(rightTicks)}
@@ -347,6 +324,7 @@ export function ExpectationComparisonChart({
             /> : null}
 
             <Tooltip
+              cursor={{ stroke: "var(--line-strong)", strokeDasharray: "3 3" }}
               trigger={hideMarkers ? "click" : "hover"}
               labelFormatter={(label) =>
                 hasDailySeries ? fullDayLabel(String(label)) : fullMonthLabel(String(label))
@@ -377,7 +355,7 @@ export function ExpectationComparisonChart({
 
             {valid.map((item, index) => {
               const color = SERIES_COLORS[index % SERIES_COLORS.length];
-              return <Line
+              return <Fragment key={item.id}><Area yAxisId={hasDualAxis ? item.axis ?? "left" : undefined} type="linear" dataKey={`s${index}`} baseValue={hasDualAxis && (item.axis ?? "left") === "right" ? rightTicks[0] ?? "dataMin" : leftTicks[0] ?? "dataMin"} fill={color} fillOpacity={0.12} stroke="none" connectNulls tooltipType="none" isAnimationActive={false} /><Line
                 key={item.id}
                 yAxisId={hasDualAxis ? item.axis ?? "left" : undefined}
                 type="linear"
@@ -399,18 +377,13 @@ export function ExpectationComparisonChart({
                 }}
                 connectNulls={true}
                 isAnimationActive={false}
-              />;
+              /></Fragment>;
             })}
           </LineChart>
         </ResponsiveContainer></div>; }}
       </HistoryChartViewport>
     </div>
   );
-}
-
-function dayLabel(value: string) {
-  const date = new Date(`${value}T00:00:00Z`);
-  return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" }).format(date);
 }
 
 function fullDayLabel(value: string) {

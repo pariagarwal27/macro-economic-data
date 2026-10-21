@@ -35,9 +35,8 @@ const LSEG: MetricSourceConfig[] = [
   ["us-cpi-food","USCPFOD=ECI"],["us-cpi-energy","USCPNRG=ECI"],["us-cpi-apparel","aUSCPICL/A"],
   ["us-cpi-other-goods","aUSCPOF/C"],["us-cpi-shelter","USCPSHL=ECI"],
   ["us-cpi-medical-services","aUSCWSMF/C"],["us-cpi-transport-services","aUSCWSTF/C"],
-  ["us-ppi-final-demand","USPPFD=ECI"],["us-ppi-core","USPPIE=ECI"],
   ["us-umich-inflation-exp-1y","USUM1P=ECI"],
-  ["us-umich-sentiment","USUMSF=ECI"],["us-import-prices","USIPI=ECI"],
+  ["us-umich-sentiment","USUMSF=ECI"],
   ["us-manufacturers-new-orders","USDGN=ECI"],["us-eci-wages","USECIW=ECI"],
   ["us-eci-total","USECI=ECI"],["us-ahe","USAHEY=ECI"],["us-ahe-mom","USAHE=ECI"],
   ["us-gdp-now","aUSGHCG/A"],["us-industrial-production","USIP=ECI"],
@@ -62,8 +61,8 @@ const LSEG: MetricSourceConfig[] = [
   // UK
   ["uk-cpi-yoy","GBHICY=ECI"],["uk-alcohol-cpi-yoy","GBCPXY=ECI"],["uk-cpi-mom","GBHICM=ECI"],
   ["uk-core-cpi-mom","GBCPXM=ECI"],["uk-services-cpi-yoy","pGBCPXY=4295870355"],
-  ["uk-housing-cpi-yoy","GBNHP=ECI"],["uk-rpi-yoy","GBRPI=ECI"],["uk-ppi-output-yoy","GBPPIY=ECI"],
-  ["uk-awe-regular-yoy","GBAWEY=ECI"],["uk-ppi-input-yoy","GBPINY=ECI"],["uk-gdp-yoy","GBGDPY=ECI"],
+  ["uk-housing-cpi-yoy","GBNHP=ECI"],
+  ["uk-awe-regular-yoy","GBAWEY=ECI"],["uk-gdp-yoy","GBGDPY=ECI"],
   ["uk-industrial-production","GBIPY=ECI"],
   ["uk-retail-sales","GBRSLY=ECI"],["uk-cli","aGBCLEAD"],["uk-business-confidence","aGBEUSRCIR"],
   ["uk-unemployment","GBUNR=ECI"],["uk-awe-total-yoy","GBATOY=ECI"],["uk-vacancies","GBVAC=ECI"],
@@ -72,10 +71,8 @@ const LSEG: MetricSourceConfig[] = [
   ["uk-retail-food-stores","aGBRSLSVFS/CA"],
   ["uk-retail-automotive-fuel","GBRSX=ECI"],
   ["uk-employment-rate","GBILOU=ECI"],["uk-inactivity-rate","aGBEIAPRT/A"],
-  // Euro area
-  ["ea-hicp-yoy","EUHICY=ECI"],["ea-core-hicp-yoy","EUCPXY=ECI"],["ea-hicp-mom","EUHIC=ECI"],
-  ["de-cpi-yoy","DEHICY=ECI"],["fr-cpi-yoy","FRHICY=ECI"],["it-cpi-yoy","ITHICY=ECI"],
-  ["es-cpi-yoy","ESHICY=ECI"],["ea-ppi-yoy","EUPPIY=ECI"],
+  // Euro area national HICP metrics use the official Eurostat API mapping in
+  // LIVE_MAP. Do not route them through the optional LSEG desktop worker.
   ["ea-industrial-production","EUIPY=ECI"],["ea-retail-sales","EURSLY=ECI"],
   ["ea-esi","EUCONS=ECI"],["ea-unemployment","EUUNR=ECI"],["de-unemployment","DEUNR=ECI"],
   ["ea-employment-yoy","EUEMPY=ECI"],["ea-employment-qoq","EUEMPQ=ECI"],
@@ -94,17 +91,9 @@ const PCE_FAMILY = new Set([
   "us-real-pce-nondurable-goods", "us-real-pce-services",
 ]);
 
-const US_CPI_BLS_COMPONENTS = new Set([
-  "us-cpi-core-nsa",
-  "us-cpi-new-vehicles",
-  "us-cpi-used-cars",
-  "us-cpi-medical-commodities",
-  "us-cpi-recreation-commodities",
-  "us-cpi-education-commodities",
-  "us-cpi-recreation-services",
-  "us-cpi-education-services",
-  "us-cpi-other-services",
-]);
+// Route the entire catalogued US consumer-price index family through its
+// official BLS series. LSEG remains available for other metrics but must not
+// shadow BLS revisions or component history here.
 
 const CLEVELAND_EXPECTATION_METRICS = new Set([
   "us-cleveland-exp-inf-1y",
@@ -125,7 +114,7 @@ const CATALOG_FALLBACK: MetricSourceConfig[] = METRICS
     source: CLEVELAND_EXPECTATION_METRICS.has(m.id) ? "cleveland" : m.source,
     sourceId: m.seriesId,
     releaseStrategy: "release-day-poll",
-    pollSeconds: m.source === "fred" ? 30 : 15,
+    pollSeconds: m.id.startsWith('us-ppi-') ? 60 : m.source === "fred" ? 30 : 15,
   }));
 
 const PCE_BEA: MetricSourceConfig[] = METRICS
@@ -155,6 +144,18 @@ export const SOURCE_REGISTRY_MAP = new Map(
 );
 
 export function getSourceConfig(metricId: string) {
+  if (isUsCpiMetric(metricId)) {
+    const metric = METRICS.find((item) => item.id === metricId);
+    if (metric) return {
+      metricId,
+      adapter: "pipeline" as const,
+      source: "bls",
+      sourceId: metric.seriesId,
+      releaseStrategy: "release-day-poll" as const,
+      pollSeconds: 15,
+      notes: "Official BLS CPI series",
+    };
+  }
   const config = SOURCE_REGISTRY_MAP.get(metricId) ?? null;
   if (isUsCpiLsegOnlyMetric(metricId) && config?.adapter !== "lseg") return null;
   return config;
@@ -171,14 +172,14 @@ export function isUsCpiMetric(metricId: string) {
   );
 }
 
-/** Components without a verified LSEG RIC intentionally use official BLS data. */
-export function isUsCpiBlsComponent(metricId: string) {
-  return US_CPI_BLS_COMPONENTS.has(metricId);
+/** Metrics explicitly assigned to official BLS CPI series. */
+export function isUsCpiBlsMetric(metricId: string) {
+  return isUsCpiMetric(metricId);
 }
 
-/** CPI family metrics except the explicit BLS exceptions remain LSEG-only. */
+/** CPI family metrics except those explicitly assigned to BLS remain LSEG-only. */
 export function isUsCpiLsegOnlyMetric(metricId: string) {
-  return isUsCpiMetric(metricId) && !isUsCpiBlsComponent(metricId);
+  return isUsCpiMetric(metricId) && !isUsCpiBlsMetric(metricId);
 }
 
 /** CPI backfills may return a shorter LSEG history than the database already has. */
@@ -186,8 +187,7 @@ export function shouldMergeHistoricalBackfill(metricId: string) {
   return isUsCpiLsegOnlyMetric(metricId);
 }
 
-// Local and hosted CPI paths use LSEG where mapped; the nine explicitly
-// designated component series use the BLS API.
+// Catalogued CPI indexes and rates use the BLS API in local and hosted paths.
 export function getCloudSourceConfig(metricId: string): MetricSourceConfig | null {
   if (isUsCpiLsegOnlyMetric(metricId)) {
     const config = SOURCE_REGISTRY_MAP.get(metricId);
@@ -230,6 +230,12 @@ export function getActiveLiveMapping(metricId: string, isCloud: boolean) {
     const config = isCloud ? getCloudSourceConfig(metricId) : getSourceConfig(metricId);
     return config?.adapter === "lseg"
       ? { provider: "lseg" as const, seriesId: config.sourceId }
+      : undefined;
+  }
+  if (isUsCpiBlsMetric(metricId)) {
+    const config = isCloud ? getCloudSourceConfig(metricId) : getSourceConfig(metricId);
+    return config?.source === "bls"
+      ? { provider: "bls" as const, seriesId: config.sourceId }
       : undefined;
   }
   const mapped = LIVE_MAP[metricId];

@@ -1,5 +1,6 @@
 
 import { METRICS, X_HANDLES, type MetricDef } from "@/catalog/metrics";
+import { VINTAGE_TRACKED_METRICS } from "./release-stages";
 import {
   DESK_MATRIX_BLOCKS,
   allDeskMatrixMetricIds,
@@ -84,8 +85,7 @@ import {
   fetchBoeDailyInflationCompensation,
   fetchBoeAgentsPaySettlement,
 } from "./boe-dmp";
-import { fetchOnsPpiBulletin } from "./ons-ppi-bulletin";
-import { fetchBlsSeries, fetchBlsSeriesFullHistory } from "./bls";
+import { fetchBlsSeries, fetchBlsSeriesFullHistory, fetchUsPpiHistory } from "./bls";
 import { fetchPhiladelphiaLatest } from "./philadelphia";
 
 import {
@@ -388,6 +388,11 @@ async function writeReleaseRow(
   sourceNote: string,
   docsUrl?: string | null
 ) {
+  // For these Eurostat series, release-dispatcher is the authoritative vintage
+  // recorder. A routine history refresh must not rewrite a flash/final/revised
+  // row with today's timestamp or erase its stage marker.
+  if (VINTAGE_TRACKED_METRICS.has(metric.id)) return;
+
   const client = getClient();
   const now = new Date().toISOString();
   const latest = unique[unique.length - 1];
@@ -484,12 +489,14 @@ async function writeReleaseRow(
     ],
   });
 
-  // Drop duplicate live rows for the same period (keep canonical released_at)
-  await client.execute({
-    sql: `DELETE FROM releases
-          WHERE metric_id = ? AND period_date = ? AND released_at != ?`,
-    args: [metric.id, latest.date, releasedAt],
-  });
+  // Preserve estimate/final/revision rows for metrics that expose release vintages.
+  if (!VINTAGE_TRACKED_METRICS.has(metric.id)) {
+    await client.execute({
+      sql: `DELETE FROM releases
+            WHERE metric_id = ? AND period_date = ? AND released_at != ?`,
+      args: [metric.id, latest.date, releasedAt],
+    });
+  }
 }
 
 /** Full replace — used for historical backfill. */
@@ -645,7 +652,6 @@ type LiveCaches = {
   adp?: { level: RawPoint[]; change: RawPoint[] };
   dol?: { initial: RawPoint[]; continuing: RawPoint[] };
   gdpNow?: RawPoint[];
-  onsPpi?: Awaited<ReturnType<typeof fetchOnsPpiBulletin>>;
   rssByMetric?: Map<string, FeedItem>;
 };
 
@@ -782,17 +788,6 @@ async function warmLiveCaches(targets: MetricDef[] = METRICS, options?: { skipFe
     }
   }
 
-  if (providers.has("ons") && targets.some(metric => metric.id.startsWith("uk-ppi-"))) {
-    try {
-      caches.onsPpi = await fetchOnsPpiBulletin();
-
-      console.log(
-        `[live] ONS PPI bulletin in=${caches.onsPpi.inputYoy?.value} out=${caches.onsPpi.outputYoy?.value}`
-      );
-    } catch (err) {
-      console.warn(`[live] ONS PPI bulletin failed:`, err);
-    }
-  }
 
   return caches;
 }
@@ -1167,19 +1162,6 @@ async function loadLiveRaw(
       return { points, note: `Live BEA ${ref.seriesId}` };
     }
     case "ons": {
-      // Prefer bulletin headlines for PPI annual rates (authoritative on release day)
-      if (metric.id === "uk-ppi-input-yoy" && caches.onsPpi?.inputYoy) {
-        return {
-          points: [caches.onsPpi.inputYoy],
-          note: "Live ONS PPI bulletin (input YoY)",
-        };
-      }
-      if (metric.id === "uk-ppi-output-yoy" && caches.onsPpi?.outputYoy) {
-        return {
-          points: [caches.onsPpi.outputYoy],
-          note: "Live ONS PPI bulletin (output YoY)",
-        };
-      }
       await new Promise((r) => setTimeout(r, 400));
       return {
         points: await fetchOnsSeries(ref.seriesId),
@@ -1265,8 +1247,7 @@ export async function fetchOfficialLatestFromPipeline(metricId: string) {
     metric.id === "us-eci-wages" ||
     (live.note.startsWith("Official LSEG") && metric.transform !== "level") ||
     live.note.includes("(change)") ||
-    live.note.includes("release page") ||
-    live.note.includes("PPI bulletin");
+    live.note.includes("release page");
 
   const prepared = preparePoints(metric, live.points, { treatAsLevel });
   const latest = prepared.at(-1);
@@ -1276,6 +1257,7 @@ export async function fetchOfficialLatestFromPipeline(metricId: string) {
     periodDate: latest.date,
     value: latest.value,
     rawValue: latest.rawValue,
+    releaseStage: latest.releaseStage,
     releasedAt: new Date().toISOString(),
     note: live.note,
   };
@@ -1306,6 +1288,7 @@ async function loadFredRaw(
 
 async function loadOfficialHistory(metric: MetricDef): Promise<RawPoint[]> {
   const endYear = new Date().getFullYear();
+  if (metric.id.startsWith('us-ppi-')) return fetchUsPpiHistory(metric.seriesId);
   if (isUsCpiLsegOnlyMetric(metric.id)) {
     const config = getSourceConfig(metric.id);
     return config?.adapter === "lseg"
@@ -1666,7 +1649,7 @@ export async function runIngest(
   opts?: { metricIds?: string[] }
 ): Promise<IngestSummary> {
   await ensureSchema();
-  await seedCatalog();
+  await seedCatalog({ metricIds: opts?.metricIds, cleanupOrphans: !opts?.metricIds?.length });
 
   const db = getDb();
   const startedAt = new Date().toISOString();
@@ -1746,8 +1729,7 @@ export async function runIngest(
               metric.id === "us-eci-wages" ||
               (live.note.startsWith("Official LSEG") && metric.transform !== "level") ||
               live.note.includes("(change)") ||
-              live.note.includes("release page") ||
-              live.note.includes("PPI bulletin");
+              live.note.includes("release page");
             const rss = liveCaches.rssByMetric?.get(metric.id);
             const count = await persistMetricMerge(metric, live.points, live.note, {
               treatAsLevel: headline,

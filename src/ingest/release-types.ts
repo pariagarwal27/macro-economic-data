@@ -1,3 +1,5 @@
+import type { ReleaseStage } from "./release-stages";
+
 export type ScheduledRelease = {
   metricId: string;
   metricName: string | null;
@@ -15,6 +17,7 @@ export type NormalizedRelease = {
   rawValue?: string | null;
   releasedAt: string;
   vintageDate?: string | null;
+  releaseStage?: ReleaseStage;
   supportingDocUrl?: string | null;
   notes?: string | null;
 };

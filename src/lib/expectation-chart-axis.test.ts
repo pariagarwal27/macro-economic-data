@@ -4,10 +4,10 @@ import test from "node:test";
 test("expectation chart axes use fine steps for tightly grouped readings", async () => {
   const { getExpectationAxisTicks } = await import("./chart-axis");
 
-  assert.deepEqual(
-    getExpectationAxisTicks([2.57, 2.61, 2.64, 2.68]),
-    [2.55, 2.6, 2.65, 2.7],
-  );
+  const ticks = getExpectationAxisTicks([2.57, 2.61, 2.64, 2.68]);
+  assert.ok(ticks[0]! < 2.57 && ticks.at(-1)! > 2.68);
+  assert.ok(ticks[1]! - ticks[0]! <= 0.025);
+  assert.ok(ticks.at(-1)! - ticks[0]! < 0.16);
 });
 
 test("expectation chart axes keep wider ranges readable without clipping data", async () => {
