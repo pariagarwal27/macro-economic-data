@@ -10,7 +10,8 @@ type SafeSeries = "sellingPrice" | "wage" | "inputCost";
 
 /**
  * Read the official SAFE Chart 14 workbook table. Each component is the
- * survey-weighted mean of firms' expectations over the next 12 months.
+ * survey-weighted mean of firms' expectations over the next 12 months. The
+ * current ECB workbook contains the full published quarterly history.
  */
 async function fetchSafeSeries(series: SafeSeries): Promise<RawPoint[]> {
   const response = await fetch(SAFE_ZIP, {

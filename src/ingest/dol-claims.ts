@@ -10,6 +10,8 @@ import type { RawPoint } from "./transforms";
 export async function fetchDolClaims(): Promise<{
   initial: RawPoint[];
   continuing: RawPoint[];
+  initialAverage: RawPoint[];
+  continuingAverage: RawPoint[];
 }> {
   if (getD1Database()) return fromHtml();
   try {
@@ -24,6 +26,8 @@ export async function fetchDolClaims(): Promise<{
 async function fromPdf(): Promise<{
   initial: RawPoint[];
   continuing: RawPoint[];
+  initialAverage: RawPoint[];
+  continuingAverage: RawPoint[];
 }> {
   const packageName = process.env.LOCAL_PDF_MODULE ?? "pdf-parse";
   const { PDFParse } = await import(/* webpackIgnore: true */ packageName) as typeof import("pdf-parse");
@@ -61,9 +65,13 @@ async function fromPdf(): Promise<{
    */
   const initial = extractInitialClaimsRelease(text);
   const continuing = extractContinuingClaimsRelease(text);
+  const averages = extractFourWeekAverages(text, initial?.date, continuing?.date);
 
   if (!initial) {
     throw new Error("DOL PDF: no initial claims figure");
+  }
+  if (averages.initial.length < 10 || averages.continuing.length < 10) {
+    throw new Error("DOL PDF: historical four-week averages table could not be parsed");
   }
 
   return {
@@ -82,7 +90,74 @@ async function fromPdf(): Promise<{
           },
         ]
       : [],
+    initialAverage: averages.initial,
+    continuingAverage: averages.continuing,
   };
+}
+
+function extractFourWeekAverages(
+  text: string,
+  initialDate?: string,
+  continuingDate?: string
+): { initial: RawPoint[]; continuing: RawPoint[] } {
+  const table = extractAverageTable(text);
+  const insuredSectionStart = text.search(/advance\s+seasonally\s+adjusted\s+insured\s+unemployment\s+rate/i);
+  const unadjustedSectionStart = text.search(/UNADJUSTED\s+DATA/i);
+  const initialSection = insuredSectionStart >= 0 ? text.slice(0, insuredSectionStart) : text;
+  const continuingSection = insuredSectionStart >= 0
+    ? text.slice(insuredSectionStart, unadjustedSectionStart > insuredSectionStart ? unadjustedSectionStart : undefined)
+    : "";
+
+  return {
+    initial: mergeOfficialAveragePoints(table.initial, extractAveragePoints(initialSection, initialDate)),
+    continuing: mergeOfficialAveragePoints(table.continuing, extractAveragePoints(continuingSection, continuingDate)),
+  };
+}
+
+/** DOL's release table contains dated averages in thousands, including its historical revisions. */
+function extractAverageTable(text: string): { initial: RawPoint[]; continuing: RawPoint[] } {
+  const tableStart = text.search(/Seasonally\s+Adjusted\s+US\s+Weekly\s+UI\s+Claims\s*\(in\s+thousands\)/i);
+  if (tableStart < 0) return { initial: [], continuing: [] };
+
+  const rowsText = text.slice(tableStart);
+  const rowPattern = /([A-Z][a-z]+\s+\d{1,2},?\s+20\d{2})\s+([0-9,]+)\s+([+-]?[0-9,]+)\s+([0-9,]+\.\d{2})\s+([0-9,]+)\s+([+-]?[0-9,]+)\s+([0-9,]+\.\d{2})\s+[0-9.]+/g;
+  const initial: RawPoint[] = [];
+  const continuing: RawPoint[] = [];
+
+  for (const match of rowsText.matchAll(rowPattern)) {
+    const date = parseDolDate(match[1]);
+    const initialAverage = Number(match[4]?.replace(/,/g, ""));
+    const continuingAverage = Number(match[7]?.replace(/,/g, ""));
+    if (!date || !Number.isFinite(initialAverage) || !Number.isFinite(continuingAverage)) continue;
+    initial.push({ date, value: Math.round(initialAverage * 1000) });
+    continuing.push({ date, value: Math.round(continuingAverage * 1000) });
+  }
+
+  return { initial, continuing };
+}
+
+function mergeOfficialAveragePoints(tablePoints: RawPoint[], releasePoints: RawPoint[]): RawPoint[] {
+  const byDate = new Map(tablePoints.map((point) => [point.date, point]));
+  for (const point of releasePoints) byDate.set(point.date, point);
+  return [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function extractAveragePoints(section: string, currentDate?: string): RawPoint[] {
+  if (!currentDate) return [];
+
+  const current = section.match(/4-week\s+moving\s+average\s+was\s+([0-9,]+)/i);
+  if (!current?.[1]) return [];
+
+  const points: RawPoint[] = [{ date: currentDate, value: Number(current[1].replace(/,/g, "")) }];
+  const previous = section.match(/previous\s+week(?:'s|’s)\s+average\s+was\s+revised\b[^.;]{0,140}?\bto\s+([0-9,]+)/i);
+  const previousDate = new Date(`${currentDate}T00:00:00Z`);
+
+  if (previous?.[1] && Number.isFinite(previousDate.getTime())) {
+    previousDate.setUTCDate(previousDate.getUTCDate() - 7);
+    points.push({ date: previousDate.toISOString().slice(0, 10), value: Number(previous[1].replace(/,/g, "")) });
+  }
+
+  return points.filter((point) => Number.isFinite(point.value) && point.value >= 1000);
 }
 
 function extractInitialClaimsRelease(
@@ -183,6 +258,8 @@ function parseDolDate(value: string): string | null {
 async function fromHtml(): Promise<{
   initial: RawPoint[];
   continuing: RawPoint[];
+  initialAverage: RawPoint[];
+  continuingAverage: RawPoint[];
 }> {
   const claims = await fetch(
     "https://oui.doleta.gov/unemploy/claims.asp",
@@ -237,5 +314,7 @@ async function fromHtml(): Promise<{
       },
     ],
     continuing: [],
+    initialAverage: [],
+    continuingAverage: [],
   };
 }

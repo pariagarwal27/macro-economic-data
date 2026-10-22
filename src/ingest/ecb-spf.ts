@@ -198,10 +198,16 @@ export async function fetchEcbSpfSeries(
  * 1-year inflation expectation.
  */
 export async function fetchEcbCesInflation1y(): Promise<RawPoint[]> {
-  return fetchEcbCes(
-    "CES.M.Z18.ALL.T.C1120.NUM_VAR.WM",
-    "1Y"
-  );
+  // ECB EA11 observations begin in April 2022. The same survey's published
+  // EA6 aggregate provides the earlier history through December 2023. Join
+  // at the EA11 launch date so the current aggregate takes precedence and no
+  // duplicate or synthetic observations are introduced.
+  const [ea6, ea11] = await Promise.all([
+    fetchEcbCes("CES.M.Z17.ALL.T.C1120.NUM_VAR.WM", "1Y EA6 history"),
+    fetchEcbCes("CES.M.Z18.ALL.T.C1120.NUM_VAR.WM", "1Y EA11"),
+  ]);
+  return [...ea6.filter((point) => point.date < "2022-04-01"), ...ea11]
+    .sort((left, right) => left.date.localeCompare(right.date));
 }
 
 

@@ -83,6 +83,7 @@ import {
   fetchBoeMapsInflation,
   fetchBoeMprInflationSeries,
   fetchBoeDailyInflationCompensation,
+  fetchBoeFiveYearInflationCompensation,
   fetchBoeAgentsPaySettlement,
 } from "./boe-dmp";
 import { fetchBlsSeries, fetchBlsSeriesFullHistory, fetchUsPpiHistory } from "./bls";
@@ -650,7 +651,7 @@ type LiveCaches = {
   empsit?: Awaited<ReturnType<typeof fetchBlsEmpsitRelease>>;
   cpiRelease?: Awaited<ReturnType<typeof fetchBlsCpiRelease>> | null;
   adp?: { level: RawPoint[]; change: RawPoint[] };
-  dol?: { initial: RawPoint[]; continuing: RawPoint[] };
+  dol?: { initial: RawPoint[]; continuing: RawPoint[]; initialAverage: RawPoint[]; continuingAverage: RawPoint[] };
   gdpNow?: RawPoint[];
   rssByMetric?: Map<string, FeedItem>;
 };
@@ -1061,8 +1062,8 @@ async function loadLiveRaw(
     if (metric.source === "atlanta") {
       if (metric.seriesId === "BIE_EXPECTED_PRICE_1Y") {
         return {
-          points: await fetchAtlantaBieSeries("price"),
-          note: "Live Atlanta Fed BIE price expectations",
+          points: await fetchAtlantaBieSeries("headline"),
+          note: "Live Atlanta Fed BIE headline (year-ahead unit-cost expectations)",
         };
       }
       if (metric.seriesId === "BIE_EXPECTED_UNIT_COST_1Y") {
@@ -1138,6 +1139,12 @@ async function loadLiveRaw(
       }
       if (ref.seriesId === "continuing" && caches.dol.continuing.length) {
         return { points: caches.dol.continuing, note: "Live DOL ETA claims" };
+      }
+      if (ref.seriesId === "initial-average" && caches.dol.initialAverage.length) {
+        return { points: caches.dol.initialAverage, note: "Official DOL four-week moving average" };
+      }
+      if (ref.seriesId === "continuing-average" && caches.dol.continuingAverage.length) {
+        return { points: caches.dol.continuingAverage, note: "Official DOL four-week moving average" };
       }
       return null;
     }
@@ -1288,6 +1295,10 @@ async function loadFredRaw(
 
 async function loadOfficialHistory(metric: MetricDef): Promise<RawPoint[]> {
   const endYear = new Date().getFullYear();
+  if (metric.source === "dol") {
+    const claims = await fetchDolClaims();
+    return metric.seriesId === "initial-average" ? claims.initialAverage : claims.continuingAverage;
+  }
   if (metric.id.startsWith('us-ppi-')) return fetchUsPpiHistory(metric.seriesId);
   if (isUsCpiLsegOnlyMetric(metric.id)) {
     const config = getSourceConfig(metric.id);
@@ -1340,7 +1351,7 @@ async function loadOfficialHistory(metric: MetricDef): Promise<RawPoint[]> {
     return fetchLsegHistory(metric.seriesId, { start: "1990-01-01" });
   }
 
-  if (metric.source === "atlanta" && metric.seriesId === "BIE_EXPECTED_PRICE_1Y") {
+  if (metric.source === "atlanta" && ["BIE_EXPECTED_PRICE_1Y", "BIE_EXPECTED_UNIT_COST_1Y"].includes(metric.seriesId)) {
     return fetchAtlantaBieSeries();
   }
   if (metric.id === "us-atlanta-wage" && metric.source === "atlanta") {
@@ -1585,6 +1596,7 @@ async function fetchBoeBySeriesId(seriesId: string) {
   if (seriesId === "UK_INFL_COMP_5Y5Y") {
     return fetchBoeDailyInflationCompensation(seriesId);
   }
+  if (seriesId === "UK_INFL_COMP_5Y") return fetchBoeFiveYearInflationCompensation();
   // BoE Inflation Attitudes Survey
   if (seriesId === "IAS_Q2A") {
     return fetchBoeInflationExpectations("1y");
@@ -1677,11 +1689,8 @@ export async function runIngest(
     ? METRICS.filter((m) => opts.metricIds!.includes(m.id))
     : METRICS;
 
-  // These three EA market-based expectation metrics are intentionally deferred
-  // until their real LSEG RICs are added to LIVE_MAP. Do not let a full
-  // backfill/refresh fail because the catalog aliases are not native ECB SDMX
-  // series. Once a LIVE_MAP LSEG mapping exists, they automatically become
-  // eligible again.
+  // EA market-based expectation metrics use LSEG RICs, not ECB SDMX aliases.
+  // They are eligible only when a real RIC is registered in LIVE_MAP.
   const deferredEaMarketMetricIds = new Set([
     "ea-inflation-comp-1y",
     "ea-inflation-comp-2y",
@@ -1731,10 +1740,15 @@ export async function runIngest(
               live.note.includes("(change)") ||
               live.note.includes("release page");
             const rss = liveCaches.rssByMetric?.get(metric.id);
-            const count = await persistMetricMerge(metric, live.points, live.note, {
-              treatAsLevel: headline,
-              docsUrl: rss?.link ?? metric.docsUrl,
-            });
+            const count = metric.source === "dol"
+              ? await persistMetricReplace(metric, live.points, live.note, {
+                  treatAsLevel: headline,
+                  docsUrl: rss?.link ?? metric.docsUrl,
+                })
+              : await persistMetricMerge(metric, live.points, live.note, {
+                  treatAsLevel: headline,
+                  docsUrl: rss?.link ?? metric.docsUrl,
+                });
             return { ok: true as const, metricId: metric.id, count, via: "live" as const };
           }
         } catch (err) {

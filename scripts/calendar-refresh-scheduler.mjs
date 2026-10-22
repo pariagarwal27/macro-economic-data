@@ -1,8 +1,9 @@
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createClient } from '@libsql/client';
+import { existsSync } from 'node:fs';
 
-export const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+export const DAY_MS = 24 * 60 * 60 * 1000;
 export const refreshStatePath = () => process.env.CALENDAR_REFRESH_STATE_PATH ?? path.join(process.cwd(), 'data', 'calendar-refresh-state.json');
 export async function readRefreshState(statePath) {
   try { return JSON.parse(await readFile(statePath, 'utf8')); }
@@ -32,10 +33,31 @@ export async function acquireRefreshLock(statePath) {
     throw error;
   }
 }
+
+/** A known publication elapsed since the last successful schedule fetch. */
+export async function hasElapsedCalendarRelease({ since, now, databasePath = process.env.CALENDAR_DB_PATH ?? path.join(process.cwd(), 'Economic_calendar', 'economic_calendar.db') }) {
+  if (!since || !existsSync(databasePath)) return false;
+  const client = createClient({ url: `file:${path.resolve(databasePath).replace(/\\/g, '/')}` });
+  try {
+    const result = await client.execute({
+      sql: `SELECT 1 FROM calendar WHERE status != 'daily_series' AND (
+        (COALESCE(next_release_at, release_deadline_at) IS NOT NULL AND
+          julianday(COALESCE(next_release_at, release_deadline_at)) > julianday(?) AND
+          julianday(COALESCE(next_release_at, release_deadline_at)) <= julianday(?)) OR
+        (next_release_at IS NULL AND release_deadline_at IS NULL AND next_release_date IS NOT NULL AND
+          next_release_date >= substr(?, 1, 10) AND next_release_date < substr(?, 1, 10))
+      ) LIMIT 1`,
+      args: [since, new Date(now).toISOString(), since, new Date(now).toISOString()],
+    });
+    return result.rows.length > 0;
+  } finally { client.close(); }
+}
+
 export class CalendarRefreshScheduler {
   running = false;
-  constructor({ statePath = refreshStatePath(), run, now = Date.now, onError = () => {} }) {
+  constructor({ statePath = refreshStatePath(), run, now = Date.now, onError = () => {}, isReleaseDue = hasElapsedCalendarRelease }) {
     this.statePath = statePath; this.run = run; this.now = now; this.onError = onError;
+    this.isReleaseDue = isReleaseDue;
   }
   async tick() {
     if (this.running) return 'busy';
@@ -47,8 +69,9 @@ export class CalendarRefreshScheduler {
       if (!unlock) return 'busy';
       // Re-read after taking the lock in case another process just finished.
       const latest = await readRefreshState(this.statePath);
-      if (latest.lastSuccessAt && now - Date.parse(latest.lastSuccessAt) < WEEK_MS) return 'not-due';
       if (latest.lastAttemptAt && now - Date.parse(latest.lastAttemptAt) < 3_600_000) return 'not-due';
+      if (latest.lastSuccessAt && now - Date.parse(latest.lastSuccessAt) < DAY_MS &&
+        !await this.isReleaseDue({ since: latest.lastSuccessAt, now })) return 'not-due';
       const attempt = { ...latest, lastAttemptAt: new Date(now).toISOString() };
       await saveRefreshState(this.statePath, attempt);
       try {

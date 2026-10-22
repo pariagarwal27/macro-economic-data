@@ -123,6 +123,7 @@ export function ExpectationComparisonChart({
    */
 
   const hasDailySeries = series.some((item) => item.frequency === "daily" || item.frequency === "hourly");
+  const hasAnnualSeries = series.some((item) => item.frequency?.toLowerCase() === "annual");
   const today = new Date();
   const todayKey = today.toISOString().slice(0, 10);
   const currentMonthKey = todayKey.slice(0, 7);
@@ -131,17 +132,18 @@ export function ExpectationComparisonChart({
     .map((item) => {
       const byMonth = new Map<string, number>();
       const isDaily = item.frequency === "daily" || item.frequency === "hourly";
+      const isAnnual = item.frequency?.toLowerCase() === "annual";
 
       for (const point of item.data ?? []) {
         const date = String(point.date).slice(0, 10);
-        const month = monthKey(date);
+        const month = isAnnual && /^\d{4}$/.test(date) ? `${date}-01` : monthKey(date);
         const value = Number(point.value);
 
         if (!month || !Number.isFinite(value)) {
           continue;
         }
 
-        if (isDaily ? date > todayKey : month! > currentMonthKey) {
+        if (isAnnual ? date.slice(0, 4) > String(today.getUTCFullYear()) : isDaily ? date > todayKey : month! > currentMonthKey) {
           continue;
         }
 
@@ -182,7 +184,9 @@ export function ExpectationComparisonChart({
 
         </div>
         <div className="expectation-comparison-empty">
-          No observations available.
+          {series.some((item) => item.id.startsWith("ea-inflation-comp-"))
+            ? "No market observations are loaded. This licensed LSEG series needs the local Workspace data worker; start it and run the market-series backfill to populate the chart."
+            : "No observations available."}
         </div>
       </div>
     );
@@ -236,8 +240,8 @@ export function ExpectationComparisonChart({
         ) : null}
       </div>
 
-      <HistoryChartViewport dates={rows.map(row => String(row.date))} frequency={hasDailySeries ? "daily" : "monthly"} height={352} label={title} shortYearLabels>
-        {(plotWidth, fromYear, toYear, isDefaultWindow) => { const yearRows = isDefaultWindow ? filterHistoryToTrailing12Months(rows) : filterHistoryByYearRange(rows, fromYear, toYear); const firstDate = String(yearRows[0]?.date ?? ""); const lastDate = String(yearRows.at(-1)?.date ?? firstDate); const firstMonth = Number(firstDate.slice(5, 7)); const lastMonth = Number(lastDate.slice(5, 7)); const monthSpan = Math.max(1, (Number(lastDate.slice(0, 4)) - Number(firstDate.slice(0, 4))) * 12 + lastMonth - firstMonth + 1); const monthStride = monthSpan <= 6 ? 1 : monthSpan <= 18 ? 2 : monthSpan <= 36 ? 3 : monthSpan <= 84 ? 6 : 12; const seenMonths = new Set<string>(); const axisTicks = yearRows.flatMap(row => { const date = String(row.date); const monthKey = date.slice(0, 7); const month = Number(date.slice(5, 7)); if (seenMonths.has(monthKey) || (month - 1) % monthStride !== 0) return []; seenMonths.add(monthKey); return [date]; }); const valuesForAxis = (axis: "left" | "right") => valid.filter(item => !hasDualAxis ? true : (item.axis ?? "left") === axis).flatMap(item => item.data.filter(point => yearRows.some(row => row.date === point.date)).map(point => point.value)); const leftTicks = getExpectationAxisTicks(valuesForAxis("left")); const rightTicks = hasDualAxis ? getExpectationAxisTicks(valuesForAxis("right")) : []; const digitsFor = (ticks: number[]) => { return Math.max(1, getTickPrecision(ticks)); }; return <div className={`expectation-comparison-plot h-80 w-full${expanded ? " expectation-comparison-plot--expanded" : ""}`} style={{ width: plotWidth }}><ResponsiveContainer width={plotWidth} height="100%">
+      <HistoryChartViewport dates={rows.map(row => String(row.date))} frequency={hasAnnualSeries ? "annual" : hasDailySeries ? "daily" : "monthly"} height={352} label={title} shortYearLabels fullHistoryByDefault={hasAnnualSeries}>
+        {(plotWidth, fromYear, toYear, isDefaultWindow) => { const yearRows = isDefaultWindow ? hasAnnualSeries ? filterHistoryByYearRange(rows, Math.max(Number(String(rows.at(-1)?.date).slice(0, 4)) - 9, Number(String(rows[0]?.date).slice(0, 4))), Number(String(rows.at(-1)?.date).slice(0, 4))) : filterHistoryToTrailing12Months(rows) : filterHistoryByYearRange(rows, fromYear, toYear); const firstDate = String(yearRows[0]?.date ?? ""); const lastDate = String(yearRows.at(-1)?.date ?? firstDate); const firstMonth = Number(firstDate.slice(5, 7)); const lastMonth = Number(lastDate.slice(5, 7)); const monthSpan = Math.max(1, (Number(lastDate.slice(0, 4)) - Number(firstDate.slice(0, 4))) * 12 + lastMonth - firstMonth + 1); const monthStride = monthSpan <= 6 ? 1 : monthSpan <= 18 ? 2 : monthSpan <= 36 ? 3 : monthSpan <= 84 ? 6 : 12; const seenMonths = new Set<string>(); const axisTicks = yearRows.flatMap(row => { const date = String(row.date); const monthKey = date.slice(0, 7); const month = Number(date.slice(5, 7)); if (seenMonths.has(monthKey) || (month - 1) % monthStride !== 0) return []; seenMonths.add(monthKey); return [date]; }); const valuesForAxis = (axis: "left" | "right") => valid.filter(item => !hasDualAxis ? true : (item.axis ?? "left") === axis).flatMap(item => item.data.filter(point => yearRows.some(row => row.date === point.date)).map(point => point.value)); const leftTicks = getExpectationAxisTicks(valuesForAxis("left")); const rightTicks = hasDualAxis ? getExpectationAxisTicks(valuesForAxis("right")) : []; const digitsFor = (ticks: number[]) => { return Math.max(1, getTickPrecision(ticks)); }; return <div className={`expectation-comparison-plot h-80 w-full${expanded ? " expectation-comparison-plot--expanded" : ""}`} style={{ width: plotWidth }}><ResponsiveContainer width={plotWidth} height="100%">
           <LineChart
             data={yearRows}
             margin={{
@@ -257,6 +261,7 @@ export function ExpectationComparisonChart({
               dataKey="date"
               ticks={axisTicks}
               tickFormatter={(value) => {
+                if (hasAnnualSeries) return String(value).slice(0, 4);
                 const month = String(value).slice(5, 7);
                 return compactMonthLabel(String(value), month === "01" || yearRows[0]?.date === value);
               }}
@@ -327,7 +332,7 @@ export function ExpectationComparisonChart({
               cursor={{ stroke: "var(--line-strong)", strokeDasharray: "3 3" }}
               trigger={hideMarkers ? "click" : "hover"}
               labelFormatter={(label) =>
-                hasDailySeries ? fullDayLabel(String(label)) : fullMonthLabel(String(label))
+                hasAnnualSeries ? String(label).slice(0, 4) : hasDailySeries ? fullDayLabel(String(label)) : fullMonthLabel(String(label))
               }
               formatter={(value, name) => [
                 percent(value, 2),
@@ -355,7 +360,7 @@ export function ExpectationComparisonChart({
 
             {valid.map((item, index) => {
               const color = SERIES_COLORS[index % SERIES_COLORS.length];
-              return <Fragment key={item.id}><Area yAxisId={hasDualAxis ? item.axis ?? "left" : undefined} type="linear" dataKey={`s${index}`} baseValue={hasDualAxis && (item.axis ?? "left") === "right" ? rightTicks[0] ?? "dataMin" : leftTicks[0] ?? "dataMin"} fill={color} fillOpacity={0.12} stroke="none" connectNulls tooltipType="none" isAnimationActive={false} /><Line
+              return <Fragment key={item.id}><Area yAxisId={hasDualAxis ? item.axis ?? "left" : undefined} type="linear" dataKey={`s${index}`} legendType="none" baseValue={hasDualAxis && (item.axis ?? "left") === "right" ? rightTicks[0] ?? "dataMin" : leftTicks[0] ?? "dataMin"} fill={color} fillOpacity={0.12} stroke="none" connectNulls tooltipType="none" isAnimationActive={false} /><Line
                 key={item.id}
                 yAxisId={hasDualAxis ? item.axis ?? "left" : undefined}
                 type="linear"

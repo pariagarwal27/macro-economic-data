@@ -68,7 +68,8 @@ export async function GET(
       .filter((metric) => metric.region === r && (metric.frequency === "daily" || metric.frequency === "hourly"))
       .map((metric) => metric.id);
     const driverIds = contributionMetricIds().filter(id => METRICS.some(metric => metric.id === id && metric.region === r));
-    const threeMonthSourceIds = rootIds.flatMap((id) => THREE_MONTH_METHODS.get(id)?.sourceMetricIds ?? []);
+    const threeMonthSourceIds = [...rootIds, ...componentIds, ...chartIds]
+      .flatMap((id) => THREE_MONTH_METHODS.get(id)?.sourceMetricIds ?? []);
     const ids = [...new Set([...rootIds, ...componentIds, ...chartIds, ...inflationRateFallbackIds, ...underlyingInflationIds, ...continuousIds, ...driverIds, ...threeMonthSourceIds])];
 
     // Include the prior year so 2026 charts can calculate YoY values from

@@ -2,8 +2,10 @@
 
 import json
 import os
+from pathlib import Path
 import requests
-from datetime import date, datetime
+from datetime import date, datetime, timezone
+from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
 
 from release_time_utils import combine_date_time, extract_release_time
@@ -25,6 +27,10 @@ OUTPUT_FILE = "fred_bls_release_dates.json"
 # ============================================================
 
 BLS_METRICS = {
+    # Canonical catalog IDs as well as legacy component aliases.
+    "us-cpi-yoy": {"release_family": "CPI"},
+    "us-core-cpi-yoy": {"release_family": "CPI"},
+    "us-core-cpi-mom": {"release_family": "CPI"},
 
     # --------------------------------------------------------
     # CPI
@@ -141,6 +147,43 @@ BLS_METRICS = {
     "us-ppi-core": {
         "release_family": "PPI"
     },
+    "us-ppi-final-demand-mom": {"release_family": "PPI"},
+    "us-ppi-core-mom": {"release_family": "PPI"},
+
+    "us-ppi-goods-yoy": {"release_family": "PPI"},
+    "us-ppi-foods-yoy": {"release_family": "PPI"},
+    "us-ppi-energy-yoy": {"release_family": "PPI"},
+    "us-ppi-goods-ex-food-energy-yoy": {"release_family": "PPI"},
+    "us-ppi-services-yoy": {"release_family": "PPI"},
+    "us-ppi-services-ex-trade-yoy": {"release_family": "PPI"},
+    "us-ppi-construction-yoy": {"release_family": "PPI"},
+    "us-ppi-goods-mom": {"release_family": "PPI"},
+    "us-ppi-foods-mom": {"release_family": "PPI"},
+    "us-ppi-energy-mom": {"release_family": "PPI"},
+    "us-ppi-goods-ex-food-energy-mom": {"release_family": "PPI"},
+    "us-ppi-services-mom": {"release_family": "PPI"},
+    "us-ppi-services-ex-trade-mom": {"release_family": "PPI"},
+    "us-ppi-construction-mom": {"release_family": "PPI"},
+    "us-ppi-final-demand-trade-yoy": {"release_family": "PPI"},
+    "us-ppi-final-demand-trade-mom": {"release_family": "PPI"},
+    "us-ppi-final-demand-transport-yoy": {"release_family": "PPI"},
+    "us-ppi-final-demand-transport-mom": {"release_family": "PPI"},
+    "us-ppi-intermediate-stage-1-yoy": {"release_family": "PPI"},
+    "us-ppi-intermediate-stage-1-mom": {"release_family": "PPI"},
+    "us-ppi-intermediate-stage-2-yoy": {"release_family": "PPI"},
+    "us-ppi-intermediate-stage-2-mom": {"release_family": "PPI"},
+    "us-ppi-intermediate-stage-3-yoy": {"release_family": "PPI"},
+    "us-ppi-intermediate-stage-3-mom": {"release_family": "PPI"},
+    "us-ppi-intermediate-stage-4-yoy": {"release_family": "PPI"},
+    "us-ppi-intermediate-stage-4-mom": {"release_family": "PPI"},
+    "us-ppi-intermediate-processed-goods-yoy": {"release_family": "PPI"},
+    "us-ppi-intermediate-processed-goods-mom": {"release_family": "PPI"},
+    "us-ppi-intermediate-unprocessed-goods-yoy": {"release_family": "PPI"},
+    "us-ppi-intermediate-unprocessed-goods-mom": {"release_family": "PPI"},
+    "us-ppi-intermediate-services-yoy": {"release_family": "PPI"},
+    "us-ppi-intermediate-services-mom": {"release_family": "PPI"},
+    "us-ppi-intermediate-construction-yoy": {"release_family": "PPI"},
+    "us-ppi-intermediate-construction-mom": {"release_family": "PPI"},
 
 
     # --------------------------------------------------------
@@ -301,6 +344,15 @@ BLS_METRICS = {
 # RELEASE NAMES
 # ============================================================
 
+PPI_MANIFEST = Path(__file__).resolve().parents[1] / 'src' / 'catalog' / 'us-ppi-series.json'
+for series in json.loads(PPI_MANIFEST.read_text(encoding='utf-8'))['series']:
+    metric_id = ('us-ppi-final-demand' if series['key'] == 'headline' else
+                 'us-ppi-core' if series['key'] == 'core' else f"us-ppi-{series['key']}-yoy")
+    mom_id = ('us-ppi-final-demand-mom' if series['key'] == 'headline' else
+              'us-ppi-core-mom' if series['key'] == 'core' else f"us-ppi-{series['key']}-mom")
+    BLS_METRICS[metric_id] = {'release_family': 'PPI'}
+    BLS_METRICS[mom_id] = {'release_family': 'PPI'}
+
 RELEASE_NAME_MAP = {
     "CPI": "Consumer Price Index",
     "PPI": "Producer Price Index",
@@ -337,6 +389,11 @@ BLS_RELEASE_TIMEZONE = "America/New_York"
 
 CENSUS_M3_URL = "https://www.census.gov/manufacturing/m3/release_schedule.html"
 BLS_TIME_SOURCE = "https://www.bls.gov/schedule/news_release/"
+BLS_PPI_SCHEDULE_URL = "https://www.bls.gov/schedule/news_release/ppi.htm"
+BLS_SCHEDULE_URLS = {
+    "CPI": "https://www.bls.gov/schedule/news_release/cpi.htm",
+    "PPI": BLS_PPI_SCHEDULE_URL,
+}
 RELEASE_TIME_SOURCES = {
     family: BLS_TIME_SOURCE for family in (
         "CPI", "PPI", "Employment Situation", "JOLTS",
@@ -344,6 +401,7 @@ RELEASE_TIME_SOURCES = {
         "U.S. Import and Export Price Indexes",
     )
 }
+RELEASE_TIME_SOURCES["PPI"] = BLS_PPI_SCHEDULE_URL
 RELEASE_TIME_SOURCES.update({
     "New Residential Construction": "https://www.census.gov/construction/nrc/about_the_surveys/release_schedule.html",
     "Advance Report on Durable Goods": CENSUS_M3_URL,
@@ -389,6 +447,72 @@ def parse_census_m3_schedule(html, today=None):
                 if family not in out or item["next_release"] < out[family]["next_release"]:
                     out[family] = item
     return out
+
+
+def parse_bls_schedule(html, family, today=None, now=None):
+    """Read only dated BLS schedule rows, advancing after the publication time."""
+    if now is None and today is None:
+        now = datetime.now(timezone.utc)
+    today = today or now.astimezone(ZoneInfo(BLS_RELEASE_TIMEZONE)).date()
+    soup = BeautifulSoup(html, "html.parser")
+    result = None
+    for table in soup.find_all("table"):
+        rows = table.find_all("tr")
+        if not rows:
+            continue
+        headers = [cell.get_text(" ", strip=True).lower() for cell in rows[0].find_all(["th", "td"])]
+        if not any("reference month" in value for value in headers) or not any("release date" in value for value in headers):
+            continue
+        for row in rows[1:]:
+            cells = [cell.get_text(" ", strip=True) for cell in row.find_all(["th", "td"])]
+            if len(cells) < 3:
+                continue
+            release_text = cells[1].replace(".", "")
+            try:
+                release_date = datetime.strptime(release_text, "%b %d, %Y").date()
+            except ValueError:
+                try:
+                    release_date = datetime.strptime(release_text, "%B %d, %Y").date()
+                except ValueError:
+                    continue
+            if release_date < today:
+                continue
+            release_at = combine_date_time(release_date, extract_release_time(cells[2]), BLS_RELEASE_TIMEZONE)
+            if now and release_at and datetime.fromisoformat(release_at) <= now:
+                continue
+            item = {
+                "next_release": release_date.isoformat(),
+                "next_release_at": release_at,
+                "release_name": RELEASE_NAME_MAP[family],
+                "official_source": BLS_SCHEDULE_URLS[family],
+                "official_evidence": " | ".join(cells),
+            }
+            if result is None or item["next_release"] < result["next_release"]:
+                result = item
+    return {family: result} if result else {}
+
+
+def parse_bls_ppi_schedule(html, today=None, now=None):
+    return parse_bls_schedule(html, "PPI", today=today, now=now)
+
+
+def fetch_official_family_dates():
+    dates = {}
+    for family, url in BLS_SCHEDULE_URLS.items():
+        try:
+            response = requests.get(url, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
+            response.raise_for_status()
+            parsed = parse_bls_schedule(response.text, family)
+            if not parsed:
+                raise RuntimeError("No future dated release row in the official schedule")
+            dates.update(parsed)
+        except Exception as exc:
+            dates[family] = {
+                "next_release": None, "next_release_at": None,
+                "release_name": RELEASE_NAME_MAP[family], "official_source": url,
+                "error": f"Official BLS schedule fetch/parse failed: {exc}",
+            }
+    return dates
 
 # ============================================================
 # FRED API HELPERS
@@ -542,40 +666,32 @@ def fetch_next_release(release_id):
 # MAIN
 # ============================================================
 
-def main():
-
-    print("=" * 70)
-    print("FRED BLS RELEASE CALENDAR FETCH")
-    print("=" * 70)
-
-    # --------------------------------------------------------
-    # 1. Find FRED release IDs
-    # --------------------------------------------------------
-
-    releases = find_release_ids()
-
-    print("\n" + "=" * 70)
-    print("FETCHING NEXT RELEASE DATES")
-    print("=" * 70)
-
-    # --------------------------------------------------------
-    # 2. Fetch next date once per release family
-    # --------------------------------------------------------
-
-    family_dates = {}
-
-    # These are Census products; their FRED release names do not match
-    # the historical aliases above. Prefer Census's dated column schedule.
+def collect_family_dates():
+    family_dates = fetch_official_family_dates()
+    try:
+        releases = find_release_ids()
+    except Exception as exc:
+        print(f"FRED release lookup unavailable; keeping official schedules: {exc}")
+        releases = {}
     try:
         response = requests.get(CENSUS_M3_URL, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
         response.raise_for_status()
         family_dates.update(parse_census_m3_schedule(response.text))
     except Exception as exc:
         print(f"Census M3 schedule unavailable: {exc}")
-
     for family, release_info in releases.items():
 
         if family in family_dates:
+            continue
+
+        if family == "PPI":
+            family_dates[family] = {
+                **release_info,
+                "next_release": None,
+                "next_release_at": None,
+                "official_source": BLS_PPI_SCHEDULE_URL,
+                "error": "Official BLS PPI release schedule could not be read; no secondary date fallback used.",
+            }
             continue
 
         release_id = release_info["release_id"]
@@ -625,6 +741,12 @@ def main():
                 f"ERROR: {e}"
             )
 
+
+    return family_dates
+
+
+def main():
+    family_dates = collect_family_dates()
 
     # --------------------------------------------------------
     # 3. Build metric-level output
@@ -678,6 +800,7 @@ def main():
             "next_release_at": next_release_at,
             "official_source": family_info.get("official_source", family_info.get("release_link")),
             "official_evidence": family_info.get("official_evidence"),
+            "error": family_info.get("error"),
             "official_time_source": RELEASE_TIME_SOURCES.get(family),
         }
 

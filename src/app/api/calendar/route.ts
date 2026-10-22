@@ -6,7 +6,7 @@ export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
   const region = req.nextUrl.searchParams.get("region") ?? "ALL";
-  const days = Number(req.nextUrl.searchParams.get("days") ?? "7");
+  const days = Number(req.nextUrl.searchParams.get("days") ?? "10");
   const kind = (req.nextUrl.searchParams.get("kind") ?? "all") as
     | "all"
     | "data"

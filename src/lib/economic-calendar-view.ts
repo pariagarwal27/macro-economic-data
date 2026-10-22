@@ -175,7 +175,9 @@ export function buildEconomicCalendar(schedule: ScheduledCalendarRow[], actuals:
     };
   };
   const compare = (a: ReturnType<typeof makeEvent>, b: ReturnType<typeof makeEvent>) => (a.scheduledDate ?? '9999').localeCompare(b.scheduledDate ?? '9999') || (a.scheduledTime ?? '99:99').localeCompare(b.scheduledTime ?? '99:99') || compareCalendarMetricEvents(a, b);
-  const allEvents = catalog.map(metric=>makeEvent(metric,byId.get(metric.id))).sort(compare);
+  const pceIndexLevelIds = new Set(['us-pce', 'us-core-pce']);
+  const allEvents = catalog.filter(metric => !pceIndexLevelIds.has(metric.id))
+    .map(metric => makeEvent(metric, byId.get(metric.id))).sort(compare);
   // All Metrics describes the next publication; completed publications remain
   // in allEvents/recentEvents for the diary and release notifications.
   const nextReleaseEvents = allEvents.map(event => {

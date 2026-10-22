@@ -3,7 +3,7 @@ import json
 import re
 from datetime import date, datetime, timezone
 from pathlib import Path
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 import requests
 from html.parser import HTMLParser
@@ -21,6 +21,8 @@ BOE_BASE = "https://www.bankofengland.co.uk"
 BOE_LATEST_URL = BOE_BASE + "/news/latest-and-upcoming"
 BOE_IAS_SITEMAP = BOE_BASE + "/sitemap/inflation-attitudes-survey"
 BOE_MARKETS_SITEMAP = BOE_BASE + "/sitemap/markets"
+YOUGOV_ECONOMY_URL = "https://yougov.com/en-gb/content/economy"
+CITI_INSIGHTS_URL = "https://www.citigroup.com/global/insights/citi-institute"
 BOE_AGENTS_SITEMAP = BOE_BASE + "/sitemap/agents-summary"
 BOE_RELEASE_TIMEZONE = "Europe/London"
 
@@ -80,8 +82,9 @@ METRICS = [
 # ============================================================
 
 class LinkParser(HTMLParser):
-    def __init__(self):
+    def __init__(self, base_url=BOE_BASE):
         super().__init__()
+        self.base_url = base_url
         self.links = []
         self.href = None
         self.parts = []
@@ -105,9 +108,9 @@ class LinkParser(HTMLParser):
         href = self.href
 
         if href and href.startswith("/"):
-            href = urljoin(BOE_BASE, href)
+            href = urljoin(self.base_url, href)
 
-        if href and href.startswith(BOE_BASE) and title:
+        if href and urlparse(href).hostname == urlparse(self.base_url).hostname and title:
             self.links.append({"title": title, "url": href})
 
         self.href = None
@@ -135,8 +138,8 @@ def request_page(url):
     return fetch_html(url)
 
 
-def extract_links(html):
-    parser = LinkParser()
+def extract_links(html, base_url=BOE_BASE):
+    parser = LinkParser(base_url)
     parser.feed(html)
     return parser.links
 
@@ -311,14 +314,15 @@ def fetch_explicit_next_date_from_page(url, family=None):
     if not release_time and family in BOE_STANDARD_RELEASE_TIME_BY_FAMILY:
         release_time = BOE_STANDARD_RELEASE_TIME_BY_FAMILY[family]
 
+    release_at = combine_date_time(release_date, release_time, BOE_RELEASE_TIMEZONE)
+    if release_at and datetime.fromisoformat(release_at) <= datetime.now(timezone.utc):
+        release_date = None
+        release_at = None
+
     return {
         "date": release_date,
         "release_time": release_time,
-        "release_at": combine_date_time(
-            release_date,
-            release_time,
-            "Europe/London",
-        ),
+        "release_at": release_at,
         "source_url": url,
         "evidence": evidence,
     }
@@ -424,14 +428,20 @@ def discover_future_release_from_sitemap(sitemap_url, title_keywords, family=Non
                 seen.add(item["url"])
                 candidates.append(item)
 
+    matching_count = len(candidates)
     candidates = filter_future_sitemap_candidates(candidates)
 
     if not candidates:
-        return None
+        return missing_release(
+            "not_announced" if matching_count else "parse_failed", sitemap_url,
+            "Official sitemap contains no current or future publication for this survey."
+            if matching_count else "No matching publication links found in the official sitemap.",
+        )
 
     print(f"  inspecting {len(candidates)} current/future sitemap candidate(s)")
 
     future = []
+    errors = []
 
     for item in candidates:
         try:
@@ -452,10 +462,14 @@ def discover_future_release_from_sitemap(sitemap_url, title_keywords, family=Non
 
         except requests.RequestException as exc:
             print(f"    request failed: {exc}")
+            errors.append(str(exc))
             continue
 
     if not future:
-        return None
+        return missing_release(
+            "fetch_failed" if errors else "not_announced", sitemap_url,
+            "; ".join(errors) if errors else "Official publication pages do not state a future publication date.",
+        )
 
     future.sort(key=lambda x: x["date"])
     return future[0]
@@ -643,13 +657,44 @@ def fetch_citi_yougov_date():
     Do not infer a monthly release date from historical frequency.
     Do not use Reuters/Bloomberg/other secondary sources.
 
-    If Citi or YouGov publishes an official future release date,
-    this function can be connected to that official source.
-
-    Until an official future date exists, return None.
+    Inspect publisher discovery pages and any matching survey publication.
+    A missing survey source is unknown, not a confirmed absence of a date.
     """
 
-    return None
+    # These are publisher discovery pages, not a verified survey calendar.
+    # Absence of a matching survey source therefore means unknown, rather
+    # than proof that the publisher has not announced a date.
+    errors = []
+    candidates = []
+    for source_url in (YOUGOV_ECONOMY_URL, CITI_INSIGHTS_URL):
+        try:
+            html = fetch_html(source_url)
+            inspected = 0
+            for item in extract_links(html, source_url):
+                title = item["title"].lower()
+                if "inflation" in title and ("citi" in title or "yougov" in title):
+                    if inspected >= MAX_LATEST_CANDIDATES:
+                        break
+                    inspected += 1
+                    result = fetch_explicit_next_date_from_page(item["url"], family="CITI_YOUGOV")
+                    if result.get("date"):
+                        candidates.append(result)
+        except requests.RequestException as exc:
+            errors.append(str(exc))
+    if candidates:
+        return min(candidates, key=lambda item: item["date"])
+    return missing_release(
+        "fetch_failed" if errors else "source_unavailable", YOUGOV_ECONOMY_URL,
+        "; ".join(errors) if errors else
+        "No public Citi/YouGov survey calendar or dated future publication was located on the publisher discovery pages; next release remains unverified.",
+    )
+
+
+def missing_release(status, source_url, reason):
+    return {"date": None, "release_at": None, "source_url": source_url,
+            "status": status, "evidence": reason,
+            "source_checked": status not in ("fetch_failed", "parse_failed"),
+            "error": reason if status in ("fetch_failed", "parse_failed", "source_unavailable") else None}
 
 
 def fetch_inflation_compensation_date():
@@ -688,7 +733,7 @@ def fetch_family_dates():
             family_dates[family] = fetcher()
         except Exception as exc:
             print(f"  ERROR: {exc}")
-            family_dates[family] = None
+            family_dates[family] = missing_release("fetch_failed", None, str(exc))
 
     return family_dates
 
@@ -706,7 +751,7 @@ def build_results(family_dates):
 
         if family_result:
             release_date = family_result["date"]
-            status = "success"
+            status = "success" if release_date else family_result.get("status", "not_found")
             source_url = family_result.get("source_url")
             evidence = family_result.get("evidence")
 
@@ -740,6 +785,8 @@ def build_results(family_dates):
                 "status": status,
                 "official_source": source_url,
                 "official_evidence": evidence,
+                "error": family_result.get("error") if family_result else None,
+                "source_checked": bool(family_result and (release_date or family_result.get("source_checked"))),
             }
         )
 
@@ -760,7 +807,7 @@ def main():
     for family in sorted(family_dates):
         result = family_dates[family]
 
-        if result:
+        if result and result.get("date"):
             print(f"{family} -> {result['date'].isoformat()}")
 
             if result.get("release_time"):
@@ -814,10 +861,11 @@ def main():
         "not_scheduled": not_scheduled,
         "not_announced": not_announced,
         "not_found": not_found,
+        "source_errors": sum(result["status"] in ("fetch_failed", "parse_failed", "source_unavailable") for result in results),
         "family_dates": {
             family: (
                 result["date"].isoformat()
-                if result
+                if result and result.get("date")
                 else None
             )
             for family, result in family_dates.items()

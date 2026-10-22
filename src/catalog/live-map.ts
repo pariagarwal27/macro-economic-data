@@ -59,6 +59,15 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
   "ea-sp-global-services-pmi": { provider: "lseg", seriesId: "EUPMIS=ECI" },
   "ea-sp-global-composite-pmi": { provider: "lseg", seriesId: "EUPMIP=ECI" },
 
+  // Euro-area zero-coupon HICP inflation swaps / inflation compensation.
+  // The 5y5y observation is the LSEG middle-rate forward series; market data
+  // requires the local Workspace bridge configured in LSEG_WORKER_URL.
+  "ea-inflation-comp-1y": { provider: "lseg", seriesId: "EUHICP1Y=" },
+  "ea-inflation-comp-2y": { provider: "lseg", seriesId: "EUHICP2Y=" },
+  "ea-inflation-comp-5y": { provider: "lseg", seriesId: "EUHICP5Y=" },
+  "ea-inflation-comp-10y": { provider: "lseg", seriesId: "EUHICP10Y=" },
+  "ea-inflation-comp-5y5y": { provider: "lseg", seriesId: "EUIL5Y5Y=R" },
+
   // ---------------------------------------------------------------------------
   // BLS — Employment Situation
   // ---------------------------------------------------------------------------
@@ -335,6 +344,14 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
   "us-continuing-claims": {
     provider: "dol",
     seriesId: "continuing",
+  },
+  "us-initial-claims-4wk-average": {
+    provider: "dol",
+    seriesId: "initial-average",
+  },
+  "us-continuing-claims-4wk-average": {
+    provider: "dol",
+    seriesId: "continuing-average",
   },
 
   // ---------------------------------------------------------------------------

@@ -18,7 +18,7 @@ const scheduler = new CalendarRefreshScheduler({
   onError: error => console.error('[calendar-worker]', error.message),
 });
 for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => { stopping = true; child?.kill(signal); });
-console.log('[calendar-worker] Weekly refresh enabled; checks on startup and every minute, retries failures after one hour.');
+console.log('[calendar-worker] Daily and post-release schedule refresh enabled; checks every minute, with one-hour retry backoff.');
 do {
   try {
     const outcome = await scheduler.tick();

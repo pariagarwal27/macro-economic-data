@@ -1,0 +1,748 @@
+{
+  "generatedAt": "2026-10-16T08:51:22.727Z",
+  "source": "https://api.bls.gov/publicAPI/v2/timeseries/data/",
+  "summary": {
+    "runId": 486,
+    "mode": "backfill",
+    "metricsProcessed": 122,
+    "observationsUpserted": 16409,
+    "liveHits": 122,
+    "fredFallbacks": 0,
+    "failures": []
+  },
+  "coverage": [
+    {
+      "metric_id": "us-ppi-construction-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-construction-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-consumer-energy-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-consumer-energy-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-consumer-foods-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-consumer-foods-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-core",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-core-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-energy-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-energy-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-export-energy-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-export-energy-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-export-foods-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-export-foods-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-export-goods-ex-food-energy-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-export-goods-ex-food-energy-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-export-other-services-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-export-other-services-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-final-demand",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-final-demand-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-final-demand-trade-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-final-demand-trade-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-final-demand-transport-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-final-demand-transport-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-finished-goods-ex-food-energy-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-finished-goods-ex-food-energy-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-finished-other-services-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-finished-other-services-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-foods-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-foods-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-goods-ex-food-energy-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-goods-ex-food-energy-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-goods-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-goods-transport-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-goods-transport-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-goods-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-government-construction-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-government-construction-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-government-energy-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-government-energy-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-government-foods-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-government-foods-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-government-goods-ex-food-energy-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-government-goods-ex-food-energy-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-government-other-services-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-government-other-services-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-construction-materials-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-construction-materials-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-construction-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-construction-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-containers-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-containers-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-food-feed-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-food-feed-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-manufacturing-materials-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-manufacturing-materials-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-nonfood-ex-fuel-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-nonfood-ex-fuel-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-other-services-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-other-services-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-processed-fuels-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-processed-fuels-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-processed-goods-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-processed-goods-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-services-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-services-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-stage-1-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-stage-1-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-stage-2-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-stage-2-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-stage-3-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-stage-3-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-stage-4-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-stage-4-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-supplies-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-supplies-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-trade-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-trade-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-transport-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-transport-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-unprocessed-fuel-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-unprocessed-fuel-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-unprocessed-goods-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-intermediate-unprocessed-goods-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-passenger-transport-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-passenger-transport-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-private-construction-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-private-construction-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-services-ex-trade-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-services-ex-trade-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-services-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-services-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-1-construction-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-1-construction-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-1-goods-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-1-goods-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-1-services-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-1-services-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-2-construction-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-2-construction-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-2-goods-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-2-goods-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-2-services-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-2-services-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-3-construction-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-3-construction-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-3-goods-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-3-goods-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-3-services-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-3-services-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-4-construction-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-4-construction-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-4-goods-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-4-goods-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-4-services-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-stage-4-services-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-trade-exports-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-trade-exports-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-trade-finished-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-trade-finished-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-trade-government-mom",
+      "observations": 140,
+      "first_period": "2015-02-01",
+      "latest_period": "2026-09-01"
+    },
+    {
+      "metric_id": "us-ppi-trade-government-yoy",
+      "observations": 129,
+      "first_period": "2016-01-01",
+      "latest_period": "2026-09-01"
+    }
+  ],
+  "backup": "C:\\Users\\pari.agarwal\\Downloads\\macro_economic_data_patched\\macro_economic_data - Copy\\data\\backups\\macro-before-us-ppi-2026-10-16T08-51-20-133Z.db"
+}

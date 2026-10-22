@@ -1,0 +1,113 @@
+{
+  "checked_at_utc": "2026-10-19T08:59:21.233Z",
+  "as_of_date": "2026-10-19",
+  "sources": [
+    {
+      "family": "HICP_AGGREGATES",
+      "status": "verified",
+      "fetch_status": "success",
+      "calendar_url": "https://ec.europa.eu/eurostat/o/calendars/eventsIcal?theme=0&category=0",
+      "methodology_url": "https://ec.europa.eu/eurostat/web/hicp/information-data",
+      "announcement_url": "https://ec.europa.eu/eurostat/web/products-euro-indicators/w/2-16102026-ap",
+      "next_flash_date": "2026-11-04",
+      "next_final_date": "2026-11-18",
+      "evidence": "Official October 16 publication announces November 4 flash and November 18 final; official methodology includes monthly and annual rates for headline, ex-energy-food core and services in flash releases."
+    },
+    {
+      "family": "WAGE_TRACKER",
+      "status": "not_announced",
+      "fetch_status": "success",
+      "source_checked": true,
+      "calendar_url": "https://www.ecb.europa.eu/press/calendars/statscal/html/index.en.html",
+      "weekly_calendar_url": "https://www.ecb.europa.eu/press/calendars/weekly/html/index.en.html",
+      "announcement_url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr260916~7bc58ebef4.en.html",
+      "next_release_month": "2026-11",
+      "next_release_date": null,
+      "evidence": "Official September release refers to November 2026 data release but provides no exact day. Current ECB statistical and weekly calendars have no future EWT event. November 20 INW event is a different dataset and is excluded."
+    }
+  ],
+  "metrics": [
+    {
+      "metric_id": "ea-hicp-yoy",
+      "release_family": "HICP_AGGREGATES",
+      "status": "verified",
+      "next_release": "2026-11-04",
+      "next_release_at": "2026-11-04T11:00:00+01:00",
+      "release_stage": "flash",
+      "source_url": "https://ec.europa.eu/eurostat/o/calendars/eventsIcal?theme=0&category=0",
+      "evidence_url": "https://ec.europa.eu/eurostat/web/products-euro-indicators/w/2-16102026-ap"
+    },
+    {
+      "metric_id": "ea-core-hicp-yoy",
+      "release_family": "HICP_AGGREGATES",
+      "status": "verified",
+      "next_release": "2026-11-04",
+      "next_release_at": "2026-11-04T11:00:00+01:00",
+      "release_stage": "flash",
+      "source_url": "https://ec.europa.eu/eurostat/o/calendars/eventsIcal?theme=0&category=0",
+      "evidence_url": "https://ec.europa.eu/eurostat/web/products-euro-indicators/w/2-16102026-ap"
+    },
+    {
+      "metric_id": "ea-hicp-mom",
+      "release_family": "HICP_AGGREGATES",
+      "status": "verified",
+      "next_release": "2026-11-04",
+      "next_release_at": "2026-11-04T11:00:00+01:00",
+      "release_stage": "flash",
+      "source_url": "https://ec.europa.eu/eurostat/o/calendars/eventsIcal?theme=0&category=0",
+      "evidence_url": "https://ec.europa.eu/eurostat/web/products-euro-indicators/w/2-16102026-ap"
+    },
+    {
+      "metric_id": "ea-core-hicp-mom",
+      "release_family": "HICP_AGGREGATES",
+      "status": "verified",
+      "next_release": "2026-11-04",
+      "next_release_at": "2026-11-04T11:00:00+01:00",
+      "release_stage": "flash",
+      "source_url": "https://ec.europa.eu/eurostat/o/calendars/eventsIcal?theme=0&category=0",
+      "evidence_url": "https://ec.europa.eu/eurostat/web/products-euro-indicators/w/2-16102026-ap"
+    },
+    {
+      "metric_id": "ea-services-hicp-yoy",
+      "release_family": "HICP_AGGREGATES",
+      "status": "verified",
+      "next_release": "2026-11-04",
+      "next_release_at": "2026-11-04T11:00:00+01:00",
+      "release_stage": "flash",
+      "source_url": "https://ec.europa.eu/eurostat/o/calendars/eventsIcal?theme=0&category=0",
+      "evidence_url": "https://ec.europa.eu/eurostat/web/products-euro-indicators/w/2-16102026-ap"
+    },
+    {
+      "metric_id": "ea-services-hicp-mom",
+      "release_family": "HICP_AGGREGATES",
+      "status": "verified",
+      "next_release": "2026-11-04",
+      "next_release_at": "2026-11-04T11:00:00+01:00",
+      "release_stage": "flash",
+      "source_url": "https://ec.europa.eu/eurostat/o/calendars/eventsIcal?theme=0&category=0",
+      "evidence_url": "https://ec.europa.eu/eurostat/web/products-euro-indicators/w/2-16102026-ap"
+    },
+    {
+      "metric_id": "ea-wage-tracker",
+      "release_family": "WAGE_TRACKER",
+      "status": "not_announced",
+      "source_checked": true,
+      "next_release": null,
+      "next_release_at": null,
+      "next_release_month": "2026-11",
+      "source_url": "https://www.ecb.europa.eu/press/calendars/statscal/html/index.en.html",
+      "evidence_url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr260916~7bc58ebef4.en.html"
+    },
+    {
+      "metric_id": "ea-wage-tracker-ex-oneoff",
+      "release_family": "WAGE_TRACKER",
+      "status": "not_announced",
+      "source_checked": true,
+      "next_release": null,
+      "next_release_at": null,
+      "next_release_month": "2026-11",
+      "source_url": "https://www.ecb.europa.eu/press/calendars/statscal/html/index.en.html",
+      "evidence_url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr260916~7bc58ebef4.en.html"
+    }
+  ]
+}

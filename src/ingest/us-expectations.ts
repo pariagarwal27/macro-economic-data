@@ -4,7 +4,7 @@ const ATLANTA_BIE_URL =
   "https://www.atlantafed.org/research-and-data/surveys/business-inflation-expectations";
 
 export async function fetchAtlantaBieSeries(
-  series: "price" | "unit-cost" = "unit-cost"
+  series: "headline" | "unit-cost" = "unit-cost"
 ): Promise<RawPoint[]> {
   const response = await fetch(ATLANTA_BIE_URL, {
     headers: {
@@ -22,8 +22,6 @@ export async function fetchAtlantaBieSeries(
 
   const html = await response.text();
   const $ = cheerio.load(html);
-
-  const currentYear = new Date().getFullYear();
 
   const monthNames = [
     "January",
@@ -46,12 +44,13 @@ export async function fetchAtlantaBieSeries(
     const href = $(element).attr("href") ?? "";
     const text = $(element).text().replace(/\s+/g, " ").trim();
 
-    const isCurrentYearChartPack =
-      text.includes(String(currentYear)) &&
-      monthNames.some((month) => text.includes(month)) &&
+    const isDatedChartPack =
+      /\b\d{4}\b/.test(text) &&
+      monthNames.some((month) => text.toLowerCase().includes(month.toLowerCase())) &&
+      /business inflation expectations|monthly report|chart pack|monthly-report|monthly-chart-pack/i.test(`${text} ${href}`) &&
       /\.pdf(?:$|[?#])/i.test(href);
 
-    if (!isCurrentYearChartPack) {
+    if (!isDatedChartPack) {
       return;
     }
 
@@ -104,7 +103,7 @@ export async function fetchAtlantaBieSeries(
        *
        * Monthly Report: September 2026
        *
-       * Firms’ year-ahead unit cost expectations increased
+       * Firmsâ€™ year-ahead unit cost expectations increased
        * to 2.4 percent.
        */
 
@@ -112,17 +111,12 @@ export async function fetchAtlantaBieSeries(
         /Monthly Report:\s*(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{4})/i
       );
 
-      const valuePatterns =
-        series === "price"
-          ? [
-              /Firms['’]\s+year-ahead\s+price\s+expectations[\s\S]{0,160}?\b(\d+(?:\.\d+)?)\s*percent/i,
-              /year-ahead\s+price\s+expectations[\s\S]{0,160}?\b(\d+(?:\.\d+)?)\s*percent/i,
-              /expected\s+price\s+increase[\s\S]{0,160}?\b(\d+(?:\.\d+)?)\s*percent/i,
-            ]
-          : [
-              /Firms['’]\s+year-ahead\s+unit\s+cost\s+expectations[\s\S]{0,160}?\b(\d+(?:\.\d+)?)\s*percent/i,
-              /year-ahead\s+unit\s+cost\s+expectations[\s\S]{0,160}?\b(\d+(?:\.\d+)?)\s*percent/i,
-            ];
+      // Both catalog IDs represent the monthly headline BIE measure. Never
+      // mix the separate quarterly selling-price question into this history.
+      const valuePatterns = [
+        /Firms['’]\s+year-ahead\s+unit[ -]+cost\s+expectations[^.]{0,100}?\b(?:to|at)\s+(\d+(?:\.\d+)?)\s*percent/i,
+        /year-ahead\s+unit[ -]+cost\s+expectations[^.]{0,100}?\b(?:to|at)\s+(\d+(?:\.\d+)?)\s*percent/i,
+      ];
 
       const valueMatch = valuePatterns
         .map((pattern) => text.match(pattern))
@@ -170,11 +164,9 @@ export async function fetchAtlantaBieSeries(
 
   if (!finalPoints.length) {
     throw new Error(
-      `Atlanta Fed BIE (${series}): no ${currentYear} observations could be parsed`
+      `Atlanta Fed BIE (${series}): no dated monthly observations could be parsed`
     );
   }
-console.log("ATLANTA BIE PDF LINKS:", pdfLinks);
-console.log("ATLANTA BIE POINTS:", finalPoints);
   return finalPoints;
 }
 
@@ -446,7 +438,7 @@ async function fetchClevelandSofieWorkbook(
 
 
 /* =========================================================
-   UNIVERSITY OF MICHIGAN — PX5
+   UNIVERSITY OF MICHIGAN â€” PX5
    ========================================================= */
 
 /**
@@ -1484,7 +1476,7 @@ function normalizeHeader(
     .replace(/^\uFEFF/, "")
     .toLowerCase()
     .replace(
-      /[–—-]/g,
+      /[â€“â€”-]/g,
       " "
     )
     .replace(

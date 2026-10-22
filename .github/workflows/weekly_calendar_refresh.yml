@@ -1,8 +1,8 @@
-name: Weekly Calendar Refresh
+name: Daily Calendar Refresh
 
 on:
   schedule:
-    - cron: "0 2 * * 1"
+    - cron: "0 2 * * *"
   workflow_dispatch:
 
 jobs:

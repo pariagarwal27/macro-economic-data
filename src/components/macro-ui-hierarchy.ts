@@ -586,16 +586,8 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
       "BoE DMP — Wage Growth 1-Year",
       "uk-dmp-wage-exp-1y"
     ),
-    n(
-      "agents-pay-settlement",
-      "BoE Agents — Pay Settlement Expectations",
-      "uk-agents-pay-settlement-exp-1y"
-    ),
   ],
-  chartMetricIds: [
-    "uk-dmp-wage-exp-1y",
-    "uk-agents-pay-settlement-exp-1y",
-  ],
+  chartMetricIds: ["uk-dmp-wage-exp-1y"],
 },
 
 {
@@ -614,12 +606,16 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
       "UK Inflation Compensation — 5Y5Y",
       "uk-inflation-comp-5y5y"
     ),
+    n(
+      "uk-market-5y",
+      "UK Inflation Compensation — 5-Year",
+      "uk-inflation-comp-5y"
+    ),
   ],
   chartMetricIds: [
     "uk-inflation-comp-1y",
     "uk-inflation-comp-5y5y",
     "uk-inflation-comp-5y",
-    "uk-inflation-comp-10y",
   ],
 },
 
@@ -957,25 +953,6 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
   ],
 },
 
-{
-  id: "ea-inflation-expectations-professional",
-  metricId: "ea-spf-current-year",
-  title: "Professional Forecasters",
-  expectationGroup: "professional",
-  components: [
-    n("spf-current-year", "ECB SPF — Current-Year HICP Forecast", "ea-spf-current-year"),
-    n("spf-1y", "ECB SPF — 1-Year HICP Forecast", "ea-inflation-exp-1y"),
-    n("spf-2y", "ECB SPF — 2-Year HICP Forecast", "ea-spf-hicp-2y"),
-    n("spf-lt", "ECB SPF — Long-Term HICP Forecast", "ea-inflation-exp-lt"),
-  ],
-  chartMetricIds: [
-    "ea-spf-current-year",
-    "ea-inflation-exp-1y",
-    "ea-spf-hicp-2y",
-    "ea-inflation-exp-lt",
-  ],
-},
-
     ],
     growth: [
       {
@@ -1126,7 +1103,7 @@ const CATEGORY_SPEC_IDS: Record<Region, Record<MacroCategory, string[]>> = {
     activity: ["ea-gdp-card", "ea-retail-sales-card", "ea-pmi-card", "ea-household-card", "ea-capital-card", "ea-government-card", "ea-exports-card", "ea-imports-card"],
     labour: ["ea-unemployment-card", "ea-youth-card", "ea-employment-card", "ea-inactivity-card", "ea-vacancies-card", "ea-wages-card"],
     monetary: [],
-    expectations: ["ea-inflation-expectations-consumer", "ea-inflation-expectations-wage", "ea-inflation-expectations-business", "ea-inflation-expectations-market", "ea-inflation-expectations-professional"],
+    expectations: ["ea-inflation-expectations-consumer", "ea-inflation-expectations-wage", "ea-inflation-expectations-business", "ea-inflation-expectations-market"],
     external: [],
   },
 };
@@ -1198,6 +1175,10 @@ export const DASHBOARD: Record<Region, Record<MacroCategory, IndicatorSpec[]>> =
     }
 
     if (region === "UK") {
+      // UK expectation tabs stop at household, business, market-based, and wage.
+      categories.expectations = categories.expectations.filter(
+        (spec) => spec.expectationGroup !== "professional",
+      );
       const employmentCard = categories.labour.find((spec) => spec.id === "uk-employment-card");
       const inactivityCard = categories.labour.find((spec) => spec.id === "uk-inactivity-card");
       if (employmentCard && inactivityCard) {

@@ -15,7 +15,8 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timezone
+from zoneinfo import ZoneInfo
 
 from release_time_utils import extract_release_time, combine_date_time
 from html.parser import HTMLParser
@@ -358,12 +359,16 @@ def extract_from_plain_text(html: str) -> list[dict]:
     return results
 
 
-def choose_next(candidates: list[dict]) -> dict | None:
-    today = date.today()
+def choose_next(candidates: list[dict], now=None) -> dict | None:
+    now = now or datetime.now(timezone.utc)
+    today = now.astimezone(ZoneInfo("America/New_York")).date()
 
     future = [
         item for item in candidates
-        if item["date"] >= today
+        if item["date"] >= today and (
+            not item.get("release_time") or
+            datetime.fromisoformat(combine_date_time(item["date"], item["release_time"], "America/New_York")) > now
+        )
     ]
 
     if not future:

@@ -37,7 +37,9 @@ from __future__ import annotations
 import calendar
 import json
 import re
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
+from bs4 import BeautifulSoup
 from html.parser import HTMLParser
 from pathlib import Path
 from functools import lru_cache
@@ -123,6 +125,7 @@ URLS = {
     "CHICAGO": "https://www.chicagofed.org/research/data/data-release-calendar",
     "ADP": "https://adpemploymentreport.com/",
     "DOL_CLAIMS": "https://oui.doleta.gov/unemploy/claims.asp",
+    "CLAIMS_CALENDAR": "https://fred.stlouisfed.org/releases/calendar?rid=180&view=year",
     "OECD_CLI": "https://www.oecd.org/en/data/datasets/oecd-composite-leading-indicators-clis.html",
     "OECD_RELEASES": "https://www.oecd.org/en/data/insights/statistical-releases/release-dates-for-oecd-statistics-news-releases.html",
 }
@@ -219,40 +222,14 @@ def parse_month_day_year(s: str) -> date | None:
 
 
 def next_date_from_bls_cpi() -> dict:
+    from fetch_fred_calendar import parse_bls_schedule
     html = fetch(URLS["BLS_CPI"])
-    text = visible_text(html)
-    today = date.today()
-
-    # BLS schedule rows look like:
-    # September 2026 | Oct. 14, 2026 | 08:30 AM
-    # Parse every explicit release-date token and select the nearest future
-    # one. The page is specifically the CPI schedule, so no other release
-    # family can be selected.
-    dates = []
-
-    for m in re.finditer(
-        r"\b(?:Jan\.?|Feb\.?|Mar\.?|Apr\.?|May|Jun\.?|Jul\.?|Aug\.?|"
-        r"Sep\.?|Oct\.?|Nov\.?|Dec\.?|January|February|March|April|June|"
-        r"July|August|September|October|November|December)\s+"
-        r"\d{1,2},?\s+\d{4}\b",
-        text,
-        re.I,
-    ):
-        d = parse_month_day_year(m.group(0))
-        if d and d >= today:
-            dates.append(d)
-
-    if not dates:
+    value = parse_bls_schedule(html, "CPI").get("CPI")
+    if not value:
         raise RuntimeError("Could not parse future BLS CPI date.")
-
-    d = min(dates)
-    return result(
-        d,
-        URLS["BLS_CPI"],
-        f"BLS Consumer Price Index release schedule: {d.isoformat()}",
-        release_time="08:30",
-        timezone_name="America/New_York",
-    )
+    value_out = result(date.fromisoformat(value["next_release"]), value["official_source"], value["official_evidence"])
+    value_out["next_release_at"] = value["next_release_at"]
+    return value_out
 
 
 def fetch_cpi_derived(family: str) -> dict:
@@ -688,43 +665,48 @@ def fetch_oecd_unemployment() -> dict:
     )
 
 
+def parse_claims_calendar(html: str, now=None, source=None) -> dict | None:
+    """Use the Federal Reserve's dated DOL release entries, including holidays."""
+    now = now or datetime.now(timezone.utc)
+    today = now.astimezone(ZoneInfo("America/Chicago")).date()
+    candidates = []
+    current_day = None
+    for row in BeautifulSoup(html, "html.parser").find_all("tr"):
+        text = row.get_text(" ", strip=True)
+        # Date headers apply only to the following release rows in this table.
+        if re.match(r"^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s", text):
+            current_day = parse_month_day_year(text)
+            continue
+        link = row.find("a", href=re.compile(r"(?:[?&])rid=180(?:&|$)"))
+        if not link or not current_day or current_day < today:
+            continue
+        release_time = extract_release_time(text)
+        release_at = combine_date_time(current_day, release_time, "America/Chicago")
+        if release_at and datetime.fromisoformat(release_at) <= now:
+            continue
+        candidates.append(result(current_day, source or URLS["CLAIMS_CALENDAR"],
+            f"Federal Reserve calendar for DOL Unemployment Insurance Weekly Claims: {current_day.isoformat()} | {text} | All times US Central",
+            release_time=release_time, timezone_name="America/Chicago"))
+    return min(candidates, key=lambda item: item["date"]) if candidates else None
+
+
 def weekly_claims_result() -> dict:
     today = date.today()
+    for year in (today.year, today.year + 1):
+        source = f"{URLS['CLAIMS_CALENDAR']}&vs={year}-01-01&ve={year}-12-31&ob=rd&od=asc"
+        value = parse_claims_calendar(fetch(source), source=source)
+        if value:
+            return value
+    raise RuntimeError("No published future DOL claims date was found in the Federal Reserve calendar.")
 
-    # U.S. unemployment-insurance claims are released weekly on Thursday
-    # at 08:30 ET.  IMPORTANT: keep TODAY when today is Thursday.
-    #
-    # The previous implementation always advanced Thursday -> next Thursday.
-    # If the calendar was refreshed after 08:30 ET on release day, that caused
-    # the current release to disappear from the calendar and the dispatcher
-    # could jump straight to the following week's release.
-    #
-    # Keeping today's scheduled release for the whole Thursday is deliberate:
-    # the release-dispatcher can then see it as due and either ingest it or
-    # retry until the official value is available.  Starting Friday, the next
-    # Thursday is used.
-    if today.weekday() == 3:  # Thursday
-        d = today
-        evidence = (
-            f"U.S. Department of Labor weekly Unemployment Insurance claims "
-            f"cadence; release day: {d.isoformat()}"
-        )
-    else:
-        days_until_thursday = (3 - today.weekday()) % 7
-        d = today + timedelta(days=days_until_thursday)
-        evidence = (
-            f"U.S. Department of Labor weekly Unemployment Insurance claims "
-            f"cadence; next Thursday: {d.isoformat()}"
-        )
 
-    return result(
-        d,
-        URLS["DOL_CLAIMS"],
-        evidence,
-        "weekly_cadence",
-        release_time="08:30",
-        timezone_name="America/New_York",
-    )
+def fetch_atlanta_wage() -> dict:
+    text = visible_text(fetch(URLS["ATLANTA_WAGE"]))
+    d = parse_explicit_next_update(text, "Next update")
+    if d and d >= date.today():
+        return result(d, URLS["ATLANTA_WAGE"], f"Atlanta Fed explicit next update: {d.isoformat()}")
+    return not_announced(URLS["ATLANTA_WAGE"],
+        "Official Atlanta Fed page checked: no exact next publication date announced. Usually by the second Friday; timing depends on Census CPS microdata availability.")
 
 
 def daily_result() -> dict:
@@ -741,10 +723,16 @@ def sofie_result() -> dict:
     Try to discover a future Cleveland Fed SoFIE press release from the
     official sitemap. If none exists yet, return not_announced.
     """
+    # Failure to inspect the actual provider page is a fetch failure, not evidence
+    # that a date is unannounced. Check it before the secondary sitemap.
+    page = visible_text(fetch(URLS["CLEVELAND_SOFIE"]))
+    announced = parse_explicit_next_update(page, "Next release")
+    if announced and announced >= date.today():
+        return result(announced, URLS["CLEVELAND_SOFIE"], f"Official SoFIE next release: {announced.isoformat()}")
     try:
         text = visible_text(fetch(URLS["CLEVELAND_SITEMAP"]))
     except Exception:
-        return result(None, URLS["CLEVELAND_SOFIE"], "Could not inspect Cleveland Fed sitemap.", "not_announced")
+        return not_announced(URLS["CLEVELAND_SOFIE"], "Official SoFIE page checked: no next publication date announced; supplementary sitemap unavailable.")
 
     today = date.today()
     dates = []
@@ -763,16 +751,20 @@ def sofie_result() -> dict:
         except ValueError:
             continue
         if d >= today:
-            dates.append((d, "https://www.clevelandfed.org" + slug))
+            url = "https://www.clevelandfed.org" + slug
+            # A future URL slug alone does not announce a publication date.
+            announcement = parse_explicit_next_update(visible_text(fetch(url)), "Next release")
+            if announcement and announcement >= today:
+                dates.append((announcement, url))
 
     if dates:
         d, url = min(dates, key=lambda x: x[0])
-        return result(d, url, f"Cleveland Fed SoFIE future press release discovered in official sitemap: {d.isoformat()}")
+        return result(d, url, f"Cleveland Fed SoFIE explicit next release announced: {d.isoformat()}")
 
     return result(
         None,
         URLS["CLEVELAND_SOFIE"],
-        "SoFIE is quarterly, but no future official publication date is currently announced on the discoverable Cleveland Fed sources.",
+        "Official SoFIE sources checked: no exact future publication date announced. The 1-year question is quarterly; the 5-year question is asked annually in the October survey.",
         "not_announced",
     )
 
@@ -792,10 +784,7 @@ def main():
         "CLEVELAND_INFLATION_EXPECTATIONS": lambda: fetch_cpi_derived("CLEVELAND_INFLATION_EXPECTATIONS"),
         "CLEVELAND_SOFIE": sofie_result,
         "ATLANTA_CPI": lambda: fetch_cpi_derived("ATLANTA_CPI"),
-        "ATLANTA_WAGE": lambda: not_announced(
-            URLS["ATLANTA_WAGE"],
-            "Atlanta Fed says the Wage Growth Tracker is usually updated by the second Friday of the month; exact timing depends on Census CPS microdata availability.",
-        ),
+        "ATLANTA_WAGE": fetch_atlanta_wage,
         "ATLANTA_GDPNOW": fetch_gdpnow,
         "ATLANTA_BIE": fetch_bie,
         "UMICH_CONSUMERS": fetch_umich,

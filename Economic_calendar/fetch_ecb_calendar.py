@@ -530,22 +530,28 @@ def fetch_wage_tracker():
         "update_type": "scheduled_statistical_release",
         "source_url": ECB_STATS_CALENDAR_URL,
         "status": "not_announced",
+        "source_checked": False,
         "error": None,
         "note": "No future ECB Wage Tracker event announced in the official statistical calendar.",
     }
     try:
         text = fetch_text(ECB_STATS_CALENDAR_URL)
+        # An empty/blocked/error page is not evidence that EWT is unannounced.
+        if not re.search(r"\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}.*?\(Dataset:\s*\w+\)", text, re.I | re.S):
+            raise RuntimeError("Official ECB statistical calendar has no readable dated dataset events")
+        result["source_checked"] = True
         pattern = re.compile(
             r"(\d{2}/\d{2}/\d{4})\s+(\d{2}:\d{2})"
             r"(?:(?!\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}).){0,500}?"
             r"(?:ECB\s+)?Wage Tracker\s+\(Dataset:\s*EWT\)",
             re.I | re.S,
         )
-        today = datetime.now(timezone.utc).date()
+        now = datetime.now(timezone.utc)
         candidates = []
         for match in pattern.finditer(text):
             release_date = datetime.strptime(match.group(1), "%d/%m/%Y").date()
-            if release_date >= today:
+            release_at = combine_date_time(release_date, match.group(2), "Europe/Berlin")
+            if release_at and datetime.fromisoformat(release_at) > now:
                 candidates.append((release_date, match.group(2)))
         if candidates:
             release_date, release_time = min(candidates)
@@ -557,7 +563,7 @@ def fetch_wage_tracker():
                 "note": None,
             })
     except Exception as exc:
-        result.update({"status": "error", "error": str(exc), "note": None})
+        result.update({"status": "error", "source_checked": False, "error": str(exc), "note": None})
     return result
 
 
@@ -592,6 +598,7 @@ def build_metric_results(family_results):
             "release_title": family_result.get("release_title"),
             "update_type": family_result.get("update_type"),
             "status": family_result.get("status"),
+            "source_checked": family_result.get("source_checked"),
             "source_url": family_result.get("source_url"),
             "success": bool(
                 family_result.get("success")

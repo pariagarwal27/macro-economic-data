@@ -55,6 +55,8 @@ import {
 import { round } from "@/ingest/transforms";
 import { releaseStageFromNote, VINTAGE_TRACKED_METRICS } from "@/ingest/release-stages";
 import { investingToCatalogScale } from "@/catalog/investing-map";
+import { getEconomicCalendarRows } from "@/lib/economic-calendar-db";
+import { getDashboardCalendarMetrics } from "@/lib/dashboard-calendar-metrics";
 
 /** Prefer release row for the latest observation period; ignore other periods' calendar dates. */
 function pickDisplayRelease(
@@ -97,7 +99,7 @@ export async function getReleaseTape(opts?: {
   pastOnly?: boolean;
 }) {
   const db = getDb();
-  const days = opts?.days ?? 7;
+  const days = opts?.days ?? 10;
   const now = new Date();
   const forwardOnly = opts?.forwardOnly !== false;
   const { start, end } = releaseTapeWindow(now, days, { forwardOnly, pastOnly: opts?.pastOnly });
@@ -176,7 +178,12 @@ export async function getReleaseTape(opts?: {
     if (!releaseByMetric.has(release.metricId)) releaseByMetric.set(release.metricId, release);
   }
 
-  const events = filtered.map((r) => {
+  const windowDays = Array.from({ length: days }, (_, i) => {
+    const d = addUtcDays(utcDayStart(start), i);
+    return d.toISOString().slice(0, 10);
+  });
+
+  let events = filtered.map((r) => {
     const scale = r.metricId ? investingToCatalogScale(r.metricId) : 1;
     const scaleVal = (v: number | null) =>
       v != null && Number.isFinite(v) ? round(v * scale) : null;
@@ -220,16 +227,71 @@ export async function getReleaseTape(opts?: {
     };
   });
 
+  // The release diary is fed by calendar_events, while the official schedule
+  // refresh writes confirmed future dates to the separate calendar database.
+  // Use that schedule as a fallback when the event tape has not been ingested
+  // yet, so the calendar and matrix remain useful on a fresh deployment.
+  if (!events.length && forwardOnly && !opts?.pastOnly) {
+    const displayedMetrics = getDashboardCalendarMetrics();
+    const displayedById = new Map(displayedMetrics.map(metric => [metric.id, metric]));
+    const windowDaySet = new Set(windowDays);
+    const scheduleRows = await getEconomicCalendarRows();
+    const candidates = scheduleRows.flatMap(row => {
+      const metric = displayedById.get(row.metricId);
+      const date = row.nextReleaseDate?.slice(0, 10) ?? row.nextReleaseAt?.slice(0, 10);
+      if (!metric || !date || !windowDaySet.has(date)) return [];
+      if (regionFilter !== "ALL" && metric.region !== regionFilter) return [];
+      const eventName = metric.name;
+      const eventKind = classifyCalendarEvent(eventName);
+      if (kindFilter === "data" && eventKind !== "data") return [];
+      if (kindFilter === "speakers" && eventKind !== "speaker") return [];
+      if (kindFilter === "policy" && eventKind !== "policy") return [];
+      const hasExactTime = Boolean(row.nextReleaseAt && /T\d{2}:\d{2}.*(?:Z|[+-]\d{2}:\d{2})$/i.test(row.nextReleaseAt));
+      const timestamp = hasExactTime ? Date.parse(row.nextReleaseAt!) : Number.NaN;
+      if (hasExactTime && (!Number.isFinite(timestamp) || timestamp < now.getTime() || timestamp >= end.getTime())) return [];
+      const releasedAt = hasExactTime ? new Date(timestamp).toISOString() : `${date}T12:00:00.000Z`;
+      return [{
+        releasedAt,
+        actualReleasedAt: null,
+        periodDate: null,
+        periodLabel: null,
+        eventName,
+        country: metric.region,
+        currency: metric.region === "US" ? "USD" : metric.region === "UK" ? "GBP" : "EUR",
+        metricId: metric.id,
+        shortName: metric.shortName,
+        unit: metric.unit,
+        region: metric.region,
+        tapeRegion: metric.region,
+        category: metric.category,
+        importance: metric.importance === "critical" ? 3 : metric.importance === "high" ? 2 : metric.importance === "medium" ? 1 : 0,
+        eventKind,
+        speakerInstitution: eventKind === "speaker" ? speakerInstitution(eventName) : null,
+        actual: null,
+        forecast: null,
+        previous: null,
+        rawActual: null,
+        rawForecast: null,
+        rawPrevious: null,
+        status: "upcoming" as const,
+        hasForecast: false,
+      }];
+    });
+    if (candidates.length) {
+      const candidateIds = [...new Set(candidates.map(event => event.metricId).filter((id): id is string => Boolean(id)))];
+      const latestPublishedRows = await db.select({ metricId: releases.metricId, value: releases.value })
+        .from(releases).where(inArray(releases.metricId, candidateIds)).orderBy(desc(releases.releasedAt));
+      const latestPublished = new Map<string, number>();
+      for (const row of latestPublishedRows) if (row.value != null && !latestPublished.has(row.metricId)) latestPublished.set(row.metricId, row.value);
+      events = candidates.map(event => ({ ...event, previous: latestPublished.get(event.metricId ?? "") ?? null }));
+    }
+  }
+
   const maxRow = await db
     .select({ maxAt: calendarEvents.releasedAt })
     .from(calendarEvents)
     .orderBy(desc(calendarEvents.releasedAt))
     .limit(1);
-
-  const windowDays = Array.from({ length: days }, (_, i) => {
-    const d = addUtcDays(utcDayStart(start), i);
-    return d.toISOString().slice(0, 10);
-  });
 
   return {
     events,

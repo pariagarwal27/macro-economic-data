@@ -104,6 +104,11 @@ const CLEVELAND_EXPECTATION_METRICS = new Set([
   "us-cleveland-exp-inf-30y",
 ]);
 
+const ATLANTA_BIE_METRICS = new Set([
+  "us-atlanta-bie-1y",
+  "us-atlanta-bie-unit-cost-1y",
+]);
+
 const CATALOG_FALLBACK: MetricSourceConfig[] = METRICS
   .filter((m) => !PCE_FAMILY.has(m.id))
   .filter((m) => !isUsCpiLsegOnlyMetric(m.id))
@@ -200,7 +205,7 @@ export function getCloudSourceConfig(metricId: string): MetricSourceConfig | nul
   if (!metric) return null;
   const live = LIVE_MAP[metricId];
   const source = live && live.provider !== "lseg" ? live.provider : metric.source;
-  if (source === "lseg" || source === "pmi_scrape" || (source === "atlanta" && !live)) return null;
+  if (source === "lseg" || source === "pmi_scrape" || (source === "atlanta" && !live && !ATLANTA_BIE_METRICS.has(metricId))) return null;
   if (source === "ecb" && /^EA_INFL_COMP_/.test(metric.seriesId)) return null;
   return {
     metricId, source,

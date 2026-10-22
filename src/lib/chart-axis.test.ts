@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { getNiceTicks, getNiceTickDomain, getTickPrecision } from "./chart-axis";
+import { getNiceTicks, getNiceTickDomain, getPairedAxisTicks, getTickPrecision } from "./chart-axis";
 import { overviewAxisDomain } from "./overview-data";
 
 test("small movements at a large level use most of the vertical axis", () => {
@@ -16,6 +16,21 @@ test("a selected narrow window rescales independently of historical extremes", (
   const [min, max] = getNiceTickDomain(getNiceTicks([2.61, 2.62, 2.63], 7, 0.1));
   assert.ok(min < 2.61 && max > 2.63);
   assert.ok(max - min < 0.04);
+});
+
+test("paired inflation measures get independent scales for YoY and 3m/3m SAAR", () => {
+  const { primaryTicks, secondaryTicks } = getPairedAxisTicks(
+    [2.6, 2.8, 3.0, 3.2],
+    [0.2, 0.5, 6.2, 8.1],
+    7,
+    0.05,
+  );
+  const [primaryMin, primaryMax] = getNiceTickDomain(primaryTicks);
+  const [combinedMin, combinedMax] = getNiceTickDomain(getNiceTicks([2.6, 2.8, 3.0, 3.2, 0.2, 0.5, 6.2, 8.1], 7, 0.05));
+
+  assert.ok(primaryMin < 2.6 && primaryMax > 3.2);
+  assert.ok(getNiceTickDomain(secondaryTicks)[0] < 0.2 && getNiceTickDomain(secondaryTicks)[1] > 8.1);
+  assert.ok(primaryMax - primaryMin < combinedMax - combinedMin);
 });
 
 test("overview domains never inset past observed endpoints", () => {

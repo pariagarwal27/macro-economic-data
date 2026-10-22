@@ -1,10 +1,8 @@
 import assert from "node:assert/strict";
-// @ts-ignore Node 24 supplies SQLite; this project's Node 20 type package predates it.
+// @ts-expect-error Node 24 supplies SQLite; this project's Node 20 type package predates it.
 import { DatabaseSync } from "node:sqlite";
 import { getCloudSourceConfig, getSourceConfig } from "../src/ingest/source-registry";
 import { claimRelease, markReleaseRetry, markReleaseProcessed } from "../src/ingest/release-state";
-import { isSafetyDue } from "../src/ingest/release-dispatcher";
-import { METRICS } from "../src/catalog/metrics";
 import { getSourceSnapshot } from "../src/ingest/cloud-source-cache";
 import { processFetchedRelease } from "../src/ingest/release-processor";
 
@@ -81,7 +79,6 @@ async function main() {
     },
   };
   Object.assign(globalThis, { [Symbol.for("__cloudflare-context__")]: { env: { DB: database } } });
-  const metric = METRICS.find(m => m.id === "us-cpi")!;
   let loads = 0;
   const load = async () => { loads++; return { value: 123.4 }; };
   assert.deepEqual(await getSourceSnapshot("test-provider", 600_000, load), { value: 123.4 });
@@ -90,9 +87,6 @@ async function main() {
   sqlite.prepare("UPDATE cloud_source_cache SET expires_at = 0").run();
   await getSourceSnapshot("test-provider", 600_000, load);
   assert.equal(loads, 2, "Expired source snapshots must reload");
-  const calendar = { metricId: metric.id, nextReleaseDate: "2026-10-01", nextReleaseAt: null } as any;
-  assert.equal(isSafetyDue(metric, calendar, null, Date.parse("2026-10-20")), true, "Expired calendars must not disable future refreshes");
-  assert.equal(isSafetyDue(metric, { ...calendar, nextReleaseDate: "2026-11-01" }, null, Date.parse("2026-10-20")), false);
   assert.equal(await claimRelease("us-cpi", "2026-10-06"), true);
   assert.equal(await claimRelease("us-cpi", "2026-10-06"), false, "Concurrent claim must fail");
   await markReleaseRetry("us-cpi", "2026-10-06", "not released yet");

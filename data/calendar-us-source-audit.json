@@ -1,0 +1,136 @@
+{
+  "checked_at": "2026-10-19T09:00:02.767155+00:00",
+  "as_of": "2026-10-19",
+  "metrics": [
+    {
+      "metric_id": "us-cpi-yoy",
+      "family": "CPI",
+      "status": "verified_date",
+      "next_release_date": "2026-11-10",
+      "next_release_at": "2026-11-10T08:30:00-05:00",
+      "official_source": "https://www.bls.gov/schedule/news_release/cpi.htm",
+      "verification_method": "Official schedule browsed; direct Python HTTP403",
+      "reason": "October 2026 | Nov. 10, 2026 | 08:30 AM"
+    },
+    {
+      "metric_id": "us-cpi-mom",
+      "family": "CPI",
+      "status": "verified_date",
+      "next_release_date": "2026-11-10",
+      "next_release_at": "2026-11-10T08:30:00-05:00",
+      "official_source": "https://www.bls.gov/schedule/news_release/cpi.htm",
+      "verification_method": "Official schedule browsed; direct Python HTTP403",
+      "reason": "October 2026 | Nov. 10, 2026 | 08:30 AM"
+    },
+    {
+      "metric_id": "us-core-cpi-yoy",
+      "family": "CPI",
+      "status": "verified_date",
+      "next_release_date": "2026-11-10",
+      "next_release_at": "2026-11-10T08:30:00-05:00",
+      "official_source": "https://www.bls.gov/schedule/news_release/cpi.htm",
+      "verification_method": "Official schedule browsed; direct Python HTTP403",
+      "reason": "October 2026 | Nov. 10, 2026 | 08:30 AM"
+    },
+    {
+      "metric_id": "us-core-cpi-mom",
+      "family": "CPI",
+      "status": "verified_date",
+      "next_release_date": "2026-11-10",
+      "next_release_at": "2026-11-10T08:30:00-05:00",
+      "official_source": "https://www.bls.gov/schedule/news_release/cpi.htm",
+      "verification_method": "Official schedule browsed; direct Python HTTP403",
+      "reason": "October 2026 | Nov. 10, 2026 | 08:30 AM"
+    },
+    {
+      "metric_id": "us-ppi-final-demand",
+      "family": "PPI",
+      "status": "verified_date",
+      "next_release_date": "2026-11-13",
+      "next_release_at": "2026-11-13T08:30:00-05:00",
+      "official_source": "https://www.bls.gov/schedule/news_release/ppi.htm",
+      "verification_method": "Official schedule browsed; direct Python HTTP403",
+      "reason": "October 2026 | Nov. 13, 2026 | 08:30 AM"
+    },
+    {
+      "metric_id": "us-ppi-final-demand-mom",
+      "family": "PPI",
+      "status": "verified_date",
+      "next_release_date": "2026-11-13",
+      "next_release_at": "2026-11-13T08:30:00-05:00",
+      "official_source": "https://www.bls.gov/schedule/news_release/ppi.htm",
+      "verification_method": "Official schedule browsed; direct Python HTTP403",
+      "reason": "October 2026 | Nov. 13, 2026 | 08:30 AM"
+    },
+    {
+      "metric_id": "us-initial-claims",
+      "family": "JOBLESS_CLAIMS",
+      "status": "verified_date",
+      "next_release_date": "2026-10-22",
+      "next_release_at": "2026-10-22T07:30:00-05:00",
+      "official_source": "https://fred.stlouisfed.org/releases/calendar?rid=180&view=year",
+      "verification_method": "Official HTML fetched and parsed",
+      "reason": "Federal Reserve calendar for DOL Unemployment Insurance Weekly Claims: 2026-10-22 | 7:30 am Unemployment Insurance Weekly Claims Report | All times US Central"
+    },
+    {
+      "metric_id": "us-continuing-claims",
+      "family": "JOBLESS_CLAIMS",
+      "status": "verified_date",
+      "next_release_date": "2026-10-22",
+      "next_release_at": "2026-10-22T07:30:00-05:00",
+      "official_source": "https://fred.stlouisfed.org/releases/calendar?rid=180&view=year",
+      "verification_method": "Official HTML fetched and parsed",
+      "reason": "Federal Reserve calendar for DOL Unemployment Insurance Weekly Claims: 2026-10-22 | 7:30 am Unemployment Insurance Weekly Claims Report | All times US Central"
+    },
+    {
+      "metric_id": "us-atlanta-wage",
+      "family": "ATLANTA_WAGE",
+      "status": "not_announced",
+      "next_release_date": null,
+      "next_release_at": null,
+      "official_source": "https://www.atlantafed.org/research-and-data/data/wage-growth-tracker",
+      "verification_method": "Official HTML fetched and parsed",
+      "reason": "Official Atlanta Fed page checked: no exact next publication date announced. Usually by the second Friday; timing depends on Census CPS microdata availability."
+    },
+    {
+      "metric_id": "us-cleveland-sofie-1y",
+      "family": "CLEVELAND_SOFIE",
+      "status": "not_announced",
+      "next_release_date": null,
+      "next_release_at": null,
+      "official_source": "https://www.clevelandfed.org/indicators-and-data/survey-of-firms-inflation-expectations",
+      "verification_method": "Official HTML fetched and parsed",
+      "reason": "Official Cleveland Fed SoFIE page checked on 2026-10-19: 1y data through 2026 Q3, 5y data through 2025 Q4. No exact future publication date announced. 1y survey quarterly; 5y question annual (October survey)."
+    },
+    {
+      "metric_id": "us-cleveland-sofie-5y",
+      "family": "CLEVELAND_SOFIE",
+      "status": "not_announced",
+      "next_release_date": null,
+      "next_release_at": null,
+      "official_source": "https://www.clevelandfed.org/indicators-and-data/survey-of-firms-inflation-expectations",
+      "verification_method": "Official HTML fetched and parsed",
+      "reason": "Official Cleveland Fed SoFIE page checked on 2026-10-19: 1y data through 2026 Q3, 5y data through 2025 Q4. No exact future publication date announced. 1y survey quarterly; 5y question annual (October survey)."
+    },
+    {
+      "metric_id": "us-retail-sales-total",
+      "family": "US_RETAIL_SALES",
+      "status": "verified_date",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T08:30:00-05:00",
+      "official_source": "https://www.census.gov/retail/release_schedule.html",
+      "verification_method": "Official HTML fetched and parsed",
+      "reason": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30"
+    },
+    {
+      "metric_id": "us-retail-sales-control-group",
+      "family": "US_RETAIL_SALES",
+      "status": "verified_date",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T08:30:00-05:00",
+      "official_source": "https://www.census.gov/retail/release_schedule.html",
+      "verification_method": "Official HTML fetched and parsed",
+      "reason": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30"
+    }
+  ]
+}

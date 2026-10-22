@@ -347,7 +347,7 @@ def normalize_record(
     if status == "daily_series" or update_type in {"daily_business_day", "daily_market_data", "continuous"}:
         status = "daily_series"
         next_release = None
-    elif (record.get("error") or status in {"fetch_failed", "fetch_error", "error"}) and not next_release:
+    elif (record.get("error") or status in {"fetch_failed", "fetch_error", "parse_failed", "source_unavailable", "error"}) and not next_release:
         status = "source_error"
     elif not next_release:
         status = status or "not_announced"
@@ -435,9 +435,9 @@ def complete_catalog(records, catalog):
         if record is None:
             record = {"metric_id": metric["id"], "source": metric["source"], "family": None,
                       "next_release": None, "next_release_at": None,
-                      "release_status": "not_announced", "success": False,
+                      "release_status": "source_error", "success": False,
                       "official_source": metric.get("official_url"),
-                      "official_evidence": "No confirmed release schedule fetched for this catalog metric."}
+                      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified."}
         result.append({**record, "metric": metric["name"]})
     return result
 
@@ -556,10 +556,7 @@ def main():
     by_metric_id = defaultdict(list)
 
     for record in all_source_records:
-
-        by_metric_id[
-            record["metric_id"]
-        ].append(record)
+        by_metric_id[record["metric_id"]].append(record)
 
     duplicate_ids = {
         metric_id: records

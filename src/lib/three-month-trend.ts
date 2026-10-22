@@ -7,7 +7,7 @@ export type ThreeMonthTrend = {
   frequency: MetricDef["frequency"];
   history: TrendPoint[];
 };
-export type ThreeMonthMethod = "published-saar" | "published-3m3m" | "rolling-3m3m-index" | "saar-3m3m" | "moving-average" | "agency-average" | "not-applicable";
+export type ThreeMonthMethod = "published-saar" | "published-3m3m" | "rolling-3m3m-index" | "saar-3m3m" | "moving-average" | "published-average" | "not-applicable";
 
 export type ThreeMonthMethodEntry = {
   method: ThreeMonthMethod;
@@ -89,24 +89,6 @@ function monthlyAverage(points: TrendPoint[], periods = 3): TrendPoint[] {
   });
 }
 
-function observationAverage(points: TrendPoint[], periods: number): TrendPoint[] {
-  return points.flatMap((point, index) => {
-    if (index < periods - 1) return [];
-    const window = points.slice(index - periods + 1, index + 1);
-    if (window.some((entry) => !Number.isFinite(entry.value))) return [];
-    if (periods === 4 && window.some((entry, windowIndex) => {
-      if (windowIndex === 0) return false;
-      const days = (Date.parse(`${entry.date.slice(0, 10)}T00:00:00Z`) -
-        Date.parse(`${window[windowIndex - 1]!.date.slice(0, 10)}T00:00:00Z`)) / 86_400_000;
-      return days < 6 || days > 8;
-    })) return [];
-    return [{
-      date: point.date,
-      value: window.reduce((sum, entry) => sum + entry.value, 0) / periods,
-    }];
-  });
-}
-
 function isSeasonallyAdjusted(metric: MetricDef): boolean {
   const id = metric.seriesId.toUpperCase();
   // BEA's PCE price index table (including the catalog's PCE subindexes)
@@ -121,7 +103,7 @@ function isSeasonallyAdjusted(metric: MetricDef): boolean {
     metric.unit === "index";
   return /seasonally adjusted|\bSA\b/i.test(metric.description) ||
     isBeaPcePriceIndex ||
-    id.startsWith("CUSR") || id.startsWith("WPS") ||
+    id.startsWith("CUSR") || id.startsWith("WPS") || id.startsWith("CES") ||
     /(?:SA|SL|SAS|SASL)$/.test(id);
 }
 
@@ -133,7 +115,9 @@ export function buildThreeMonthMethodMap(metrics: MetricDef[]): Map<string, Thre
 
   for (const metric of supportedMetrics) {
     const seasonallyAdjusted = isSeasonallyAdjusted(metric);
-    const momId = metric.transform === "pct_change_yoy"
+    const momId = metric.transform === "pct_change_yoy" ||
+      (metric.region === "EA" && metric.subcategory === "producer_prices" && metric.id.endsWith("-yoy")) ||
+      (metric.region === "UK" && metric.id === "uk-awe-regular-yoy")
       ? metric.id.endsWith("-yoy")
         ? metric.id.replace(/-yoy$/, "-mom")
         : metric.id.startsWith("us-ppi-")
@@ -157,6 +141,16 @@ export function buildThreeMonthMethodMap(metrics: MetricDef[]): Map<string, Thre
       entry = { method: "published-3m3m", label: "3m/3m", frequency: metric.frequency, seasonallyAdjusted: true, sourceMetricIds: ["uk-retail-sales-total-3m3m"] };
     } else if (metric.region === "UK" && metric.id === "uk-retail-sales-ex-fuel") {
       entry = { method: "published-3m3m", label: "3m/3m", frequency: metric.frequency, seasonallyAdjusted: true, sourceMetricIds: ["uk-retail-sales-ex-fuel-3m3m"] };
+    } else if (metric.region === "EA" && metric.category === "inflation" && metric.subcategory === "producer_prices" && metric.transform === "published_rate" && momMetric) {
+      // Eurostat PPI month-on-month rates are published for the matching
+      // indicator and can be compounded into an annualized three-month rate.
+      entry = { method: "saar-3m3m", label: "3m/3m SAAR", frequency: metric.frequency, seasonallyAdjusted: false, sourceMetricIds: [momMetric.id] };
+    } else if (metric.region === "UK" && metric.id === "uk-awe-regular-yoy" && momMetric) {
+      entry = { method: "saar-3m3m", label: "3m/3m SAAR", frequency: metric.frequency, seasonallyAdjusted: true, sourceMetricIds: [momMetric.id] };
+    } else if (metric.region === "UK" && metric.category === "inflation" && metric.subcategory === "producer_prices" && metric.transform === "pct_change_yoy" && momMetric) {
+      // ONS PPI is not seasonally adjusted. Retain the requested annualized
+      // three-month rate, and disclose the NSA source in the trend note.
+      entry = { method: "saar-3m3m", label: "3m/3m SAAR", frequency: metric.frequency, seasonallyAdjusted: false, sourceMetricIds: [momMetric.id] };
     } else if (metric.region === "UK" && metric.id === "uk-gdp-qoq") {
       entry = {
         method: "not-applicable",
@@ -181,8 +175,10 @@ export function buildThreeMonthMethodMap(metrics: MetricDef[]): Map<string, Thre
       };
     } else if (metric.id === "us-gdp-real") {
       entry = { method: "published-saar", label: "QoQ SAAR", frequency: metric.frequency, seasonallyAdjusted: true, sourceMetricIds: [metric.id] };
-    } else if (metric.frequency === "weekly" && /claims/i.test(metric.id) && metric.id === "us-initial-claims") {
-      entry = { method: "agency-average", label: "4-week average", frequency: metric.frequency, seasonallyAdjusted, sourceMetricIds: [metric.id] };
+    } else if (metric.frequency === "weekly" && metric.id === "us-initial-claims") {
+      entry = { method: "published-average", label: "4-week moving average", frequency: metric.frequency, seasonallyAdjusted, sourceMetricIds: [metric.id, "us-initial-claims-4wk-average"] };
+    } else if (metric.frequency === "weekly" && metric.id === "us-continuing-claims") {
+      entry = { method: "published-average", label: "4-week moving average", frequency: metric.frequency, seasonallyAdjusted, sourceMetricIds: [metric.id, "us-continuing-claims-4wk-average"] };
     } else if (metric.frequency === "monthly" && metric.id.startsWith("us-retail-sales") && metric.transform === "pct_change_mom") {
       // Census/FRED retail series are seasonally adjusted monthly rates even
       // where the local metric description omits the adjustment flag. Compose
@@ -252,12 +248,13 @@ export function buildThreeMonthTrend(
     };
   }
 
-  if (method.method === "agency-average") {
+  if (method.method === "published-average") {
+    if (!companionPublishedHistory?.length) return null;
     return {
       label: method.label,
-      note: "Trailing average of the latest four published weekly observations.",
+      note: "Official seasonally adjusted 4-week moving average published in the U.S. Department of Labor weekly claims release.",
       frequency: method.frequency,
-      history: observationAverage(history, 4),
+      history: companionPublishedHistory,
     };
   }
 
@@ -295,7 +292,27 @@ export function buildThreeMonthTrend(
   if (method.method === "saar-3m3m" && metric.transform === "pct_change_yoy" && companionPublishedHistory?.length) {
     return {
       label: method.label,
-      note: "Calculated from the corresponding seasonally adjusted monthly series.",
+      note: metric.region === "UK" && metric.subcategory === "producer_prices"
+        ? "Annualized change compounded from three published monthly ONS PPI rates. The underlying series is not seasonally adjusted."
+        : "Calculated from the corresponding seasonally adjusted monthly series.",
+      frequency: method.frequency,
+      history: annualizedThreeMonthRates(companionPublishedHistory),
+    };
+  }
+
+  if (method.method === "saar-3m3m" && metric.region === "EA" && metric.subcategory === "producer_prices" && companionPublishedHistory?.length) {
+    return {
+      label: method.label,
+      note: "Annualized change compounded from three published monthly Eurostat PPI rates. The underlying Euro Area PPI series is not seasonally adjusted, so seasonal effects remain.",
+      frequency: method.frequency,
+      history: annualizedThreeMonthRates(companionPublishedHistory),
+    };
+  }
+
+  if (method.method === "saar-3m3m" && metric.region === "UK" && metric.id === "uk-awe-regular-yoy" && companionPublishedHistory?.length) {
+    return {
+      label: method.label,
+      note: "Annualized change compounded from three monthly changes in the seasonally adjusted ONS AWE regular-pay index.",
       frequency: method.frequency,
       history: annualizedThreeMonthRates(companionPublishedHistory),
     };

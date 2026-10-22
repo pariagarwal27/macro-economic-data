@@ -2,7 +2,8 @@ import json
 import re
 import time
 from datetime import datetime, timezone
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urljoin
+from zoneinfo import ZoneInfo
 
 import requests
 
@@ -90,6 +91,48 @@ ONS_METRICS = {
     # --------------------------------------------------------
     "uk-ppi-output-yoy": "GB7S",
     "uk-ppi-input-yoy": "GHIP",
+    "uk-ppi-output-mom": "GB7S",
+    "uk-ppi-input-mom": "GHIP",
+    "uk-ppi-import-yoy": "GD74",
+    "uk-ppi-import-mom": "GD74",
+    "uk-ppi-food-beverages-tobacco-yoy": "GBA7",
+    "uk-ppi-food-beverages-tobacco-mom": "GBA7",
+    "uk-ppi-alcohol-tobacco-yoy": "GB7V",
+    "uk-ppi-alcohol-tobacco-mom": "GB7V",
+    "uk-ppi-textiles-yoy": "GB7W",
+    "uk-ppi-textiles-mom": "GB7W",
+    "uk-ppi-paper-yoy": "GB7X",
+    "uk-ppi-paper-mom": "GB7X",
+    "uk-ppi-petroleum-yoy": "GB7Y",
+    "uk-ppi-petroleum-mom": "GB7Y",
+    "uk-ppi-chemicals-yoy": "GB7Z",
+    "uk-ppi-chemicals-mom": "GB7Z",
+    "uk-ppi-metals-machinery-yoy": "GB82",
+    "uk-ppi-metals-machinery-mom": "GB82",
+    "uk-ppi-computers-electronics-yoy": "GB83",
+    "uk-ppi-computers-electronics-mom": "GB83",
+    "uk-ppi-vehicles-yoy": "GB84",
+    "uk-ppi-vehicles-mom": "GB84",
+    "uk-ppi-input-manufactured-yoy": "FSQT",
+    "uk-ppi-input-manufactured-mom": "FSQT",
+    "uk-ppi-input-fuel-yoy": "FSQ3",
+    "uk-ppi-input-fuel-mom": "FSQ3",
+    "uk-ppi-input-petroleum-ores-yoy": "FSQ4",
+    "uk-ppi-input-petroleum-ores-mom": "FSQ4",
+    "uk-ppi-input-beverages-tobacco-yoy": "FSQ5",
+    "uk-ppi-input-beverages-tobacco-mom": "FSQ5",
+    "uk-ppi-input-other-yoy": "FSQ6",
+    "uk-ppi-input-other-mom": "FSQ6",
+    "uk-ppi-input-chemicals-yoy": "FSQ7",
+    "uk-ppi-input-chemicals-mom": "FSQ7",
+    "uk-ppi-input-metals-yoy": "FSQ8",
+    "uk-ppi-input-metals-mom": "FSQ8",
+    "uk-ppi-input-equipment-yoy": "FSQ9",
+    "uk-ppi-input-equipment-mom": "FSQ9",
+    "uk-ppi-input-domestic-food-yoy": "FSP7",
+    "uk-ppi-input-domestic-food-mom": "FSP7",
+    "uk-ppi-input-imported-food-yoy": "FSP9",
+    "uk-ppi-input-imported-food-mom": "FSP9",
 
     # --------------------------------------------------------
     # Labour / Earnings
@@ -331,6 +374,48 @@ add_family(
     [
         "uk-ppi-output-yoy",
         "uk-ppi-input-yoy",
+        "uk-ppi-output-mom",
+        "uk-ppi-input-mom",
+        "uk-ppi-import-yoy",
+        "uk-ppi-import-mom",
+        "uk-ppi-food-beverages-tobacco-yoy",
+        "uk-ppi-food-beverages-tobacco-mom",
+        "uk-ppi-alcohol-tobacco-yoy",
+        "uk-ppi-alcohol-tobacco-mom",
+        "uk-ppi-textiles-yoy",
+        "uk-ppi-textiles-mom",
+        "uk-ppi-paper-yoy",
+        "uk-ppi-paper-mom",
+        "uk-ppi-petroleum-yoy",
+        "uk-ppi-petroleum-mom",
+        "uk-ppi-chemicals-yoy",
+        "uk-ppi-chemicals-mom",
+        "uk-ppi-metals-machinery-yoy",
+        "uk-ppi-metals-machinery-mom",
+        "uk-ppi-computers-electronics-yoy",
+        "uk-ppi-computers-electronics-mom",
+        "uk-ppi-vehicles-yoy",
+        "uk-ppi-vehicles-mom",
+        "uk-ppi-input-manufactured-yoy",
+        "uk-ppi-input-manufactured-mom",
+        "uk-ppi-input-fuel-yoy",
+        "uk-ppi-input-fuel-mom",
+        "uk-ppi-input-petroleum-ores-yoy",
+        "uk-ppi-input-petroleum-ores-mom",
+        "uk-ppi-input-beverages-tobacco-yoy",
+        "uk-ppi-input-beverages-tobacco-mom",
+        "uk-ppi-input-other-yoy",
+        "uk-ppi-input-other-mom",
+        "uk-ppi-input-chemicals-yoy",
+        "uk-ppi-input-chemicals-mom",
+        "uk-ppi-input-metals-yoy",
+        "uk-ppi-input-metals-mom",
+        "uk-ppi-input-equipment-yoy",
+        "uk-ppi-input-equipment-mom",
+        "uk-ppi-input-domestic-food-yoy",
+        "uk-ppi-input-domestic-food-mom",
+        "uk-ppi-input-imported-food-yoy",
+        "uk-ppi-input-imported-food-mom",
     ],
 )
 
@@ -509,6 +594,10 @@ def normalize_release(item):
     if not isinstance(item, dict):
         return None
 
+    description = item.get("description") or {}
+    if any(item.get(flag) or description.get(flag) for flag in ("published", "cancelled", "postponed")):
+        return None
+
     title = (
         item.get("title")
         or item.get("name")
@@ -584,6 +673,9 @@ def fetch_family_release(family_name, config):
             "next_release": None,
             "release_title": None,
             "error": str(exc),
+            "status": "fetch_failed",
+            "source_checked": False,
+            "official_source": url,
         }
 
     raw_items = get_release_items(payload)
@@ -604,6 +696,9 @@ def fetch_family_release(family_name, config):
             "next_release": None,
             "release_title": None,
             "error": "No usable release records returned",
+            "status": "parse_failed" if raw_items else "not_announced",
+            "source_checked": not bool(raw_items),
+            "official_source": url,
         }
 
     # Exact title matching
@@ -617,6 +712,15 @@ def fetch_family_release(family_name, config):
         for item in normalized
         if pattern.search(item["title"])
     ]
+
+    # Search results can retain a release after publication. Compare exact
+    # provider timestamps when available; a date-only entry stays valid today.
+    now = datetime.now(timezone.utc)
+    today = now.astimezone(ZoneInfo("Europe/London")).date().isoformat()
+    candidates = [item for item in candidates if (
+        datetime.fromisoformat(item["release_at"]) > now
+        if item.get("release_at") else item["release_date"] >= today
+    )]
 
     if not candidates:
         print("   ❌ No title match found")
@@ -633,6 +737,9 @@ def fetch_family_release(family_name, config):
             "next_release": None,
             "release_title": None,
             "error": "No title regex match",
+            "status": "not_announced",
+            "source_checked": True,
+            "official_source": url,
         }
 
     # Sort by date
@@ -663,6 +770,9 @@ def fetch_family_release(family_name, config):
         "next_release_at": selected.get("release_at"),
         "release_title": selected["title"],
         "release_uri": selected.get("uri"),
+        "official_source": urljoin("https://www.ons.gov.uk", selected.get("uri") or ""),
+        "status": "success",
+        "source_checked": True,
         "error": None,
     }
 
@@ -729,6 +839,9 @@ def build_metric_results(family_results):
             "next_release": family_result.get("next_release"),
             "next_release_at": family_result.get("next_release_at"),
             "release_title": family_result.get("release_title"),
+            "official_source": family_result.get("official_source"),
+            "status": family_result.get("status") or ("success" if family_result.get("success") else "fetch_failed"),
+            "source_checked": family_result.get("source_checked", False),
             "success": bool(
                 family_result.get("success")
                 and family_result.get("next_release")

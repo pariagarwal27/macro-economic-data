@@ -17,6 +17,21 @@ test("overview monthly chart follows the latest available observation back twelv
   assert.equal(chart.find(point => point.period === "2025-07")?.US, undefined);
 });
 
+test("Euro Area headline and core HICP show their three-month average YoY values", async () => {
+  const { buildOverviewInflationSeries } = await import("./overview-data");
+  const dates = ["2026-03-01", "2026-04-01", "2026-05-01"];
+  const payload = {
+    "ea-hicp-yoy": { history: dates.map((date, index) => ({ date, value: [2.6, 3.0, 3.2][index]! })) },
+    "ea-core-hicp-yoy": { history: dates.map((date, index) => ({ date, value: [2.3, 2.2, 2.6][index]! })) },
+  };
+
+  const chart = buildOverviewInflationSeries(payload, "yoy", new Date("2026-10-22T12:00:00Z"));
+  const may = chart.find(point => point.period === "2026-05");
+
+  assert.equal(may?.eaHeadline3m3m, (2.6 + 3.0 + 3.2) / 3);
+  assert.equal(may?.eaCore3m3m, (2.3 + 2.2 + 2.6) / 3);
+});
+
 test("non-inflation overview series retain older observations for the year-range picker", async () => {
   const { buildOverviewSeries } = await import("./overview-data");
   const chart = buildOverviewSeries({ "us-unemployment": { history: [

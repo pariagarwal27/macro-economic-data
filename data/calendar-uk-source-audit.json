@@ -1,0 +1,100 @@
+{
+  "checked_at_utc": "2026-10-19T09:01:32.432470+00:00",
+  "as_of_date": "2026-10-19",
+  "source_files": [
+    "Economic_calendar/ons_fetch_results.json",
+    "Economic_calendar/boe_fetch_results.json"
+  ],
+  "metrics": [
+    {
+      "metric_id": "uk-maps-inflation-2y",
+      "family": "MAPS",
+      "official_urls_checked": [
+        "https://www.bankofengland.co.uk/sitemap/markets",
+        "https://www.bankofengland.co.uk/markets/market-intelligence"
+      ],
+      "next_release": null,
+      "next_release_at": null,
+      "status": "not_announced_in_checked_official_sources",
+      "fetch_status": "not_announced",
+      "reason": "Official Markets sitemap and MaPS section list September 2026 as the latest results, with no explicitly dated future MaPS publication. The stated Friday-after-MPC publication rule was not converted to an inferred date. Catalog source URL was obsolete; current official source is the market-intelligence page and its Markets sitemap."
+    },
+    {
+      "metric_id": "uk-maps-inflation-3y",
+      "family": "MAPS",
+      "official_urls_checked": [
+        "https://www.bankofengland.co.uk/sitemap/markets",
+        "https://www.bankofengland.co.uk/markets/market-intelligence"
+      ],
+      "next_release": null,
+      "next_release_at": null,
+      "status": "not_announced_in_checked_official_sources",
+      "fetch_status": "not_announced",
+      "reason": "Official Markets sitemap and MaPS section list September 2026 as the latest results, with no explicitly dated future MaPS publication. The stated Friday-after-MPC publication rule was not converted to an inferred date. Catalog source URL was obsolete; current official source is the market-intelligence page and its Markets sitemap."
+    },
+    {
+      "metric_id": "uk-maps-inflation-5y",
+      "family": "MAPS",
+      "official_urls_checked": [
+        "https://www.bankofengland.co.uk/sitemap/markets",
+        "https://www.bankofengland.co.uk/markets/market-intelligence"
+      ],
+      "next_release": null,
+      "next_release_at": null,
+      "status": "not_announced_in_checked_official_sources",
+      "fetch_status": "not_announced",
+      "reason": "Official Markets sitemap and MaPS section list September 2026 as the latest results, with no explicitly dated future MaPS publication. The stated Friday-after-MPC publication rule was not converted to an inferred date. Catalog source URL was obsolete; current official source is the market-intelligence page and its Markets sitemap."
+    },
+    {
+      "metric_id": "uk-citi-yougov-inflation-exp-1y",
+      "family": "CITI_YOUGOV",
+      "official_urls_checked": [
+        "https://yougov.com/en-gb/content/economy",
+        "https://www.citigroup.com/global/insights/citi-institute"
+      ],
+      "next_release": null,
+      "next_release_at": null,
+      "status": "unknown_source_unavailable",
+      "fetch_status": "source_unavailable",
+      "reason": "Citi and YouGov publisher discovery pages were reachable, but no public survey calendar or explicitly dated future Citi/YouGov publication was located. Previous code returned None unconditionally and incorrectly called this not_announced; now source_unavailable distinguishes an unverified schedule. BoE Monetary Policy Report is a secondary data citation, not the publisher calendar."
+    },
+    {
+      "metric_id": "uk-citi-yougov-inflation-exp-5-10y",
+      "family": "CITI_YOUGOV",
+      "official_urls_checked": [
+        "https://yougov.com/en-gb/content/economy",
+        "https://www.citigroup.com/global/insights/citi-institute"
+      ],
+      "next_release": null,
+      "next_release_at": null,
+      "status": "unknown_source_unavailable",
+      "fetch_status": "source_unavailable",
+      "reason": "Citi and YouGov publisher discovery pages were reachable, but no public survey calendar or explicitly dated future Citi/YouGov publication was located. Previous code returned None unconditionally and incorrectly called this not_announced; now source_unavailable distinguishes an unverified schedule. BoE Monetary Policy Report is a secondary data citation, not the publisher calendar."
+    },
+    {
+      "metric_id": "uk-maps-inflation-1y",
+      "family": "MAPS",
+      "official_urls_checked": [
+        "https://www.bankofengland.co.uk/sitemap/markets",
+        "https://www.bankofengland.co.uk/markets/market-intelligence"
+      ],
+      "next_release": null,
+      "next_release_at": null,
+      "status": "not_announced_in_checked_official_sources",
+      "fetch_status": "not_announced",
+      "reason": "Official Markets sitemap and MaPS section list September 2026 as the latest results, with no explicitly dated future MaPS publication. The stated Friday-after-MPC publication rule was not converted to an inferred date. Catalog source URL was obsolete; current official source is the market-intelligence page and its Markets sitemap."
+    },
+    {
+      "metric_id": "uk-gdp-mom",
+      "family": "GDP_MONTHLY",
+      "official_urls_checked": [
+        "https://www.ons.gov.uk/releases/gdpmonthlyestimateukseptember2026"
+      ],
+      "next_release": "2026-11-12",
+      "next_release_at": "2026-11-12T07:00:00+00:00",
+      "status": "announced",
+      "fetch_status": "success",
+      "reason": "The cached calendar still pointed to the published 15 October release. Fresh official ONS API and release-page checks confirm the next release; fixed elapsed-release filtering and source URL propagation."
+    }
+  ]
+}

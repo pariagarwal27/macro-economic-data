@@ -204,6 +204,27 @@
       "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index-excluding-food-and-energy"
     },
     {
+      "id": "us-pce-mom",
+      "name": "PCE (Headline) MoM",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-yoy",
+      "name": "PCE (Headline) YoY",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-core-pce-yoy",
+      "name": "PCE (Core) YoY",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index-excluding-food-and-energy"
+    },
+    {
       "id": "us-pce-goods",
       "name": "PCE — Goods",
       "source": "bea",
@@ -296,7 +317,7 @@
     },
     {
       "id": "us-core-pce-mom",
-      "name": "Core PCE Month-over-Month",
+      "name": "PCE (Core) MoM",
       "source": "bea",
       "frequency": "monthly",
       "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
@@ -304,37 +325,37 @@
     {
       "id": "us-cleveland-median-cpi",
       "name": "Cleveland Fed Median CPI YoY",
-      "source": "fred",
+      "source": "cleveland",
       "frequency": "monthly",
       "official_url": "https://www.clevelandfed.org/indicators-and-data/median-cpi"
     },
     {
       "id": "us-cleveland-trimmed-cpi",
       "name": "Cleveland Fed 16% Trimmed-Mean CPI",
-      "source": "fred",
+      "source": "cleveland",
       "frequency": "monthly",
       "official_url": "https://www.clevelandfed.org/indicators-and-data/median-cpi"
     },
     {
       "id": "us-sticky-cpi",
       "name": "Atlanta Fed Sticky CPI YoY",
-      "source": "fred",
+      "source": "atlanta",
       "frequency": "monthly",
       "official_url": "https://www.atlantafed.org/research-and-data/data/sticky-price-cpi"
     },
     {
       "id": "us-core-sticky-cpi",
       "name": "Atlanta Fed Core Sticky CPI YoY",
-      "source": "fred",
+      "source": "atlanta",
       "frequency": "monthly",
       "official_url": "https://www.atlantafed.org/research-and-data/data/sticky-price-cpi"
     },
     {
       "id": "us-flexible-cpi",
       "name": "Atlanta Fed Flexible CPI YoY",
-      "source": "fred",
+      "source": "atlanta",
       "frequency": "monthly",
-      "official_url": "https://www.atlantafed.org/chcs/stickyprice"
+      "official_url": "https://www.atlantafed.org/research-and-data/data/sticky-price-cpi"
     },
     {
       "id": "us-umich-inflation-exp-1y",
@@ -458,7 +479,7 @@
     {
       "id": "us-import-prices",
       "name": "Import Price Index",
-      "source": "fred",
+      "source": "bls",
       "frequency": "monthly",
       "official_url": "https://www.bls.gov/mxp"
     },
@@ -500,7 +521,7 @@
     {
       "id": "us-atlanta-wage",
       "name": "Atlanta Fed Wage Growth Tracker",
-      "source": "fred",
+      "source": "atlanta",
       "frequency": "monthly",
       "official_url": "https://www.atlantafed.org/chcs/wage-growth-tracker"
     },
@@ -706,6 +727,20 @@
       "source": "fred",
       "frequency": "weekly",
       "official_url": "https://oui.doleta.gov/unemploy/claims.asp"
+    },
+    {
+      "id": "us-initial-claims-4wk-average",
+      "name": "Initial Claims 4-Week Moving Average",
+      "source": "dol",
+      "frequency": "weekly",
+      "official_url": "https://www.dol.gov/ui/data.pdf"
+    },
+    {
+      "id": "us-continuing-claims-4wk-average",
+      "name": "Continuing Claims 4-Week Moving Average",
+      "source": "dol",
+      "frequency": "weekly",
+      "official_url": "https://www.dol.gov/ui/data.pdf"
     },
     {
       "id": "us-temp-help",
@@ -1143,7 +1178,14 @@
     },
     {
       "id": "ea-goods-hicp-yoy",
-      "name": "Euro Area Goods HICP YoY",
+      "name": "Euro Area Non-Energy Industrial Goods HICP YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/hicp"
+    },
+    {
+      "id": "ea-goods-hicp-mom",
+      "name": "Euro Area Goods HICP MoM",
       "source": "eurostat",
       "frequency": "monthly",
       "official_url": "https://ec.europa.eu/eurostat/web/hicp"
@@ -1156,8 +1198,22 @@
       "official_url": "https://ec.europa.eu/eurostat/web/hicp"
     },
     {
+      "id": "ea-food-hicp-mom",
+      "name": "Euro Area Food HICP MoM",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/hicp"
+    },
+    {
       "id": "ea-energy-hicp-yoy",
       "name": "Euro Area Energy HICP YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/web/hicp"
+    },
+    {
+      "id": "ea-energy-hicp-mom",
+      "name": "Euro Area Energy HICP MoM",
       "source": "eurostat",
       "frequency": "monthly",
       "official_url": "https://ec.europa.eu/eurostat/web/hicp"
@@ -1426,7 +1482,7 @@
       "name": "UK Retail Sales Volume MoM",
       "source": "ons",
       "frequency": "monthly",
-      "official_url": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry"
+      "official_url": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/j5ec/drsi"
     },
     {
       "id": "ea-retail-sales-mom",
@@ -1507,17 +1563,17 @@
     },
     {
       "id": "us-atlanta-bie-1y",
-      "name": "Atlanta Fed Business Inflation Expectations 1-Year",
+      "name": "Atlanta Fed Business Inflation Expectations (1-Year)",
       "source": "atlanta",
       "frequency": "monthly",
-      "official_url": "https://www.atlantafed.org/research/inflationproject/bie"
+      "official_url": "https://www.atlantafed.org/research-and-data/surveys/business-inflation-expectations"
     },
     {
       "id": "us-atlanta-bie-unit-cost-1y",
       "name": "Atlanta Fed BIE Expected Unit-Cost Growth 1-Year",
       "source": "atlanta",
       "frequency": "monthly",
-      "official_url": "https://www.atlantafed.org/research/inflationproject/bie"
+      "official_url": "https://www.atlantafed.org/research-and-data/surveys/business-inflation-expectations"
     },
     {
       "id": "us-cleveland-sofie-1y",
@@ -1607,7 +1663,7 @@
       "id": "us-breakeven-1y",
       "name": "1-Year Breakeven Inflation Rate",
       "source": "fred",
-      "frequency": "daily",
+      "frequency": "monthly",
       "official_url": "https://www.federalreserve.gov"
     },
     {
@@ -1712,8 +1768,8 @@
       "id": "uk-inflation-comp-5y",
       "name": "UK 5-Year Inflation Compensation",
       "source": "boe",
-      "frequency": "daily",
-      "official_url": "https://www.bankofengland.co.uk/statistics"
+      "frequency": "monthly",
+      "official_url": "https://www.bankofengland.co.uk/statistics/yield-curves"
     },
     {
       "id": "uk-inflation-comp-10y",
@@ -1804,35 +1860,35 @@
       "name": "Euro Area 1-Year Inflation Compensation",
       "source": "lseg",
       "frequency": "daily",
-      "official_url": "https://data.ecb.europa.eu/"
+      "official_url": "https://www.ecb.europa.eu/press/annual-reports-financial-statements/annual/html/ecb.ar2025~b7f898b33d.en.html"
     },
     {
       "id": "ea-inflation-comp-2y",
       "name": "Euro Area 2-Year Inflation Compensation",
       "source": "lseg",
       "frequency": "daily",
-      "official_url": "https://data.ecb.europa.eu/"
+      "official_url": "https://www.ecb.europa.eu/press/annual-reports-financial-statements/annual/html/ecb.ar2025~b7f898b33d.en.html"
     },
     {
       "id": "ea-inflation-comp-5y",
       "name": "Euro Area 5-Year Inflation Compensation",
       "source": "lseg",
       "frequency": "daily",
-      "official_url": "https://data.ecb.europa.eu/"
+      "official_url": "https://www.ecb.europa.eu/press/annual-reports-financial-statements/annual/html/ecb.ar2025~b7f898b33d.en.html"
     },
     {
       "id": "ea-inflation-comp-10y",
       "name": "Euro Area 10-Year Inflation Compensation",
       "source": "lseg",
       "frequency": "daily",
-      "official_url": "https://data.ecb.europa.eu/"
+      "official_url": "https://www.ecb.europa.eu/press/annual-reports-financial-statements/annual/html/ecb.ar2025~b7f898b33d.en.html"
     },
     {
       "id": "ea-inflation-comp-5y5y",
       "name": "Euro Area 5Y5Y Forward Inflation Compensation",
       "source": "lseg",
       "frequency": "daily",
-      "official_url": "https://data.ecb.europa.eu/"
+      "official_url": "https://www.ecb.europa.eu/press/annual-reports-financial-statements/annual/html/ecb.ar2025~b7f898b33d.en.html"
     },
     {
       "id": "us-real-pce-growth",
@@ -2214,7 +2270,7 @@
     },
     {
       "id": "us-nyfed-sce-labor-job-finding-1y",
-      "name": "NY Fed SCE Job Finding Probability (1-Year)",
+      "name": "NY Fed SCE Job Finding Probability (3-Month Conditional)",
       "source": "nyfed",
       "frequency": "monthly",
       "official_url": "https://www.newyorkfed.org/microeconomics/sce"
@@ -2325,6 +2381,13 @@
       "official_url": "https://www.census.gov/retail/marts/www/timeseries.html"
     },
     {
+      "id": "us-retail-sales-control-group",
+      "name": "US Retail Sales Control Group (calculated)",
+      "source": "census",
+      "frequency": "monthly",
+      "official_url": "https://www.census.gov/retail/marts/www/timeseries.html"
+    },
+    {
       "id": "us-ism-manufacturing-pmi",
       "name": "US ISM Manufacturing PMI",
       "source": "lseg",
@@ -2382,10 +2445,52 @@
     },
     {
       "id": "uk-retail-sales-total-ex-fuel",
-      "name": "UK Retail Sales — Total ex Fuel",
+      "name": "UK Retail Sales — Headline",
       "source": "ons",
       "frequency": "monthly",
-      "official_url": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/j5ec/drsi"
+      "official_url": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/j45w/drsi"
+    },
+    {
+      "id": "uk-retail-sales-ex-fuel",
+      "name": "UK Retail Sales — Ex Fuel",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/j45w/drsi"
+    },
+    {
+      "id": "uk-retail-sales-total-yoy",
+      "name": "UK Retail Sales — Headline YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/j5eb/drsi"
+    },
+    {
+      "id": "uk-retail-sales-ex-fuel-yoy",
+      "name": "UK Retail Sales ex Fuel — YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/j45u/drsi"
+    },
+    {
+      "id": "uk-retail-sales-total-3m3m",
+      "name": "UK Retail Sales — Headline 3m/3m",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/j5eg/drsi"
+    },
+    {
+      "id": "uk-retail-sales-ex-fuel-3m3m",
+      "name": "UK Retail Sales ex Fuel — 3m/3m",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/j45r/drsi"
+    },
+    {
+      "id": "uk-gdp-monthly-3m3m",
+      "name": "UK Monthly GDP 3m/3m",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp/timeseries/ecy2/mgdp"
     },
     {
       "id": "uk-sp-global-manufacturing-pmi",
@@ -2435,6 +2540,13 @@
       "source": "eurostat",
       "frequency": "monthly",
       "official_url": "https://ec.europa.eu/eurostat/web/retail-trade"
+    },
+    {
+      "id": "ea-retail-sales-ex-fuel",
+      "name": "Euro Area Retail Sales — Ex Fuel",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/databrowser/view/sts_trtu_m/default/table"
     },
     {
       "id": "ea-sp-global-manufacturing-pmi",
@@ -2582,6 +2694,1266 @@
       "source": "ons",
       "frequency": "monthly",
       "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours/bulletins/earningsandemploymentfrompayasyouearnrealtimeinformationuk/latest"
+    },
+    {
+      "id": "us-sticky-cpi-mom",
+      "name": "Atlanta Fed Sticky CPI MoM",
+      "source": "atlanta",
+      "frequency": "monthly",
+      "official_url": "https://www.atlantafed.org/research-and-data/data/sticky-price-cpi"
+    },
+    {
+      "id": "us-core-sticky-cpi-mom",
+      "name": "Atlanta Fed Core Sticky CPI MoM",
+      "source": "atlanta",
+      "frequency": "monthly",
+      "official_url": "https://www.atlantafed.org/research-and-data/data/sticky-price-cpi"
+    },
+    {
+      "id": "us-flexible-cpi-mom",
+      "name": "Atlanta Fed Flexible CPI MoM",
+      "source": "atlanta",
+      "frequency": "monthly",
+      "official_url": "https://www.atlantafed.org/research-and-data/data/sticky-price-cpi"
+    },
+    {
+      "id": "us-cleveland-median-cpi-mom",
+      "name": "Cleveland Fed Median CPI MoM",
+      "source": "cleveland",
+      "frequency": "monthly",
+      "official_url": "https://www.clevelandfed.org/indicators-and-data/median-cpi"
+    },
+    {
+      "id": "us-cleveland-trimmed-cpi-mom",
+      "name": "Cleveland Fed 16% Trimmed-Mean CPI MoM",
+      "source": "cleveland",
+      "frequency": "monthly",
+      "official_url": "https://www.clevelandfed.org/indicators-and-data/median-cpi"
+    },
+    {
+      "id": "us-ppi-goods-yoy",
+      "name": "Final demand goods YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-goods-mom",
+      "name": "Final demand goods MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-foods-yoy",
+      "name": "Final demand foods YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-foods-mom",
+      "name": "Final demand foods MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-energy-yoy",
+      "name": "Final demand energy YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-energy-mom",
+      "name": "Final demand energy MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-goods-ex-food-energy-yoy",
+      "name": "Final demand goods less foods and energy YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-goods-ex-food-energy-mom",
+      "name": "Final demand goods less foods and energy MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-services-yoy",
+      "name": "Final demand services YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-services-mom",
+      "name": "Final demand services MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-services-ex-trade-yoy",
+      "name": "Final demand services less trade, transportation, and warehousing YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-services-ex-trade-mom",
+      "name": "Final demand services less trade, transportation, and warehousing MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-construction-yoy",
+      "name": "Final demand construction YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-construction-mom",
+      "name": "Final demand construction MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-final-demand-trade-yoy",
+      "name": "Final demand trade services YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-final-demand-trade-mom",
+      "name": "Final demand trade services MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-final-demand-transport-yoy",
+      "name": "Final demand transportation and warehousing services YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-final-demand-transport-mom",
+      "name": "Final demand transportation and warehousing services MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-stage-1-yoy",
+      "name": "Stage 1 intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-stage-1-mom",
+      "name": "Stage 1 intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-stage-2-yoy",
+      "name": "Stage 2 intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-stage-2-mom",
+      "name": "Stage 2 intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-stage-3-yoy",
+      "name": "Stage 3 intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-stage-3-mom",
+      "name": "Stage 3 intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-stage-4-yoy",
+      "name": "Stage 4 intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-stage-4-mom",
+      "name": "Stage 4 intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-processed-goods-yoy",
+      "name": "Processed goods for intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-processed-goods-mom",
+      "name": "Processed goods for intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-unprocessed-goods-yoy",
+      "name": "Unprocessed goods for intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-unprocessed-goods-mom",
+      "name": "Unprocessed goods for intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-services-yoy",
+      "name": "Services for intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-services-mom",
+      "name": "Services for intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-construction-yoy",
+      "name": "Construction for intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-construction-mom",
+      "name": "Construction for intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "uk-ppi-food-beverages-tobacco-yoy",
+      "name": "UK Food, beverages & tobacco PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gba7/ppi"
+    },
+    {
+      "id": "uk-ppi-food-beverages-tobacco-mom",
+      "name": "UK Food, beverages & tobacco PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gba7/ppi"
+    },
+    {
+      "id": "uk-ppi-alcohol-tobacco-yoy",
+      "name": "UK Alcoholic beverages & tobacco PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gb7v/ppi"
+    },
+    {
+      "id": "uk-ppi-alcohol-tobacco-mom",
+      "name": "UK Alcoholic beverages & tobacco PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gb7v/ppi"
+    },
+    {
+      "id": "uk-ppi-textiles-yoy",
+      "name": "UK Textiles, apparel & leather PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gb7w/ppi"
+    },
+    {
+      "id": "uk-ppi-textiles-mom",
+      "name": "UK Textiles, apparel & leather PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gb7w/ppi"
+    },
+    {
+      "id": "uk-ppi-paper-yoy",
+      "name": "UK Paper & printed products PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gb7x/ppi"
+    },
+    {
+      "id": "uk-ppi-paper-mom",
+      "name": "UK Paper & printed products PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gb7x/ppi"
+    },
+    {
+      "id": "uk-ppi-petroleum-yoy",
+      "name": "UK Coke & refined petroleum PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gb7y/ppi"
+    },
+    {
+      "id": "uk-ppi-petroleum-mom",
+      "name": "UK Coke & refined petroleum PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gb7y/ppi"
+    },
+    {
+      "id": "uk-ppi-chemicals-yoy",
+      "name": "UK Chemicals & pharmaceuticals PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gb7z/ppi"
+    },
+    {
+      "id": "uk-ppi-chemicals-mom",
+      "name": "UK Chemicals & pharmaceuticals PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gb7z/ppi"
+    },
+    {
+      "id": "uk-ppi-metals-machinery-yoy",
+      "name": "UK Basic metals, fabricated metals & machinery PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gb82/ppi"
+    },
+    {
+      "id": "uk-ppi-metals-machinery-mom",
+      "name": "UK Basic metals, fabricated metals & machinery PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gb82/ppi"
+    },
+    {
+      "id": "uk-ppi-computers-electronics-yoy",
+      "name": "UK Computer, electronic & electrical products PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gb83/ppi"
+    },
+    {
+      "id": "uk-ppi-computers-electronics-mom",
+      "name": "UK Computer, electronic & electrical products PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gb83/ppi"
+    },
+    {
+      "id": "uk-ppi-vehicles-yoy",
+      "name": "UK Motor vehicles & other transport equipment PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gb84/ppi"
+    },
+    {
+      "id": "uk-ppi-vehicles-mom",
+      "name": "UK Motor vehicles & other transport equipment PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gb84/ppi"
+    },
+    {
+      "id": "uk-ppi-input-manufactured-yoy",
+      "name": "UK Input: manufactured products PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsqt/ppi"
+    },
+    {
+      "id": "uk-ppi-input-manufactured-mom",
+      "name": "UK Input: manufactured products PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsqt/ppi"
+    },
+    {
+      "id": "uk-ppi-input-fuel-yoy",
+      "name": "UK Input: fuel PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsq3/ppi"
+    },
+    {
+      "id": "uk-ppi-input-fuel-mom",
+      "name": "UK Input: fuel PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsq3/ppi"
+    },
+    {
+      "id": "uk-ppi-input-petroleum-ores-yoy",
+      "name": "UK Input: petroleum, gas & metal ores PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsq4/ppi"
+    },
+    {
+      "id": "uk-ppi-input-petroleum-ores-mom",
+      "name": "UK Input: petroleum, gas & metal ores PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsq4/ppi"
+    },
+    {
+      "id": "uk-ppi-input-beverages-tobacco-yoy",
+      "name": "UK Input: beverages & tobacco PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsq5/ppi"
+    },
+    {
+      "id": "uk-ppi-input-beverages-tobacco-mom",
+      "name": "UK Input: beverages & tobacco PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsq5/ppi"
+    },
+    {
+      "id": "uk-ppi-input-other-yoy",
+      "name": "UK Input: other inputs PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsq6/ppi"
+    },
+    {
+      "id": "uk-ppi-input-other-mom",
+      "name": "UK Input: other inputs PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsq6/ppi"
+    },
+    {
+      "id": "uk-ppi-input-chemicals-yoy",
+      "name": "UK Input: chemicals PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsq7/ppi"
+    },
+    {
+      "id": "uk-ppi-input-chemicals-mom",
+      "name": "UK Input: chemicals PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsq7/ppi"
+    },
+    {
+      "id": "uk-ppi-input-metals-yoy",
+      "name": "UK Input: metals & non-metallic minerals PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsq8/ppi"
+    },
+    {
+      "id": "uk-ppi-input-metals-mom",
+      "name": "UK Input: metals & non-metallic minerals PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsq8/ppi"
+    },
+    {
+      "id": "uk-ppi-input-equipment-yoy",
+      "name": "UK Input: parts & equipment PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsq9/ppi"
+    },
+    {
+      "id": "uk-ppi-input-equipment-mom",
+      "name": "UK Input: parts & equipment PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsq9/ppi"
+    },
+    {
+      "id": "uk-ppi-input-domestic-food-yoy",
+      "name": "UK Input: domestic food PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsp7/ppi"
+    },
+    {
+      "id": "uk-ppi-input-domestic-food-mom",
+      "name": "UK Input: domestic food PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsp7/ppi"
+    },
+    {
+      "id": "uk-ppi-input-imported-food-yoy",
+      "name": "UK Input: imported food PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsp9/ppi"
+    },
+    {
+      "id": "uk-ppi-input-imported-food-mom",
+      "name": "UK Input: imported food PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/fsp9/ppi"
+    },
+    {
+      "id": "uk-ppi-import-yoy",
+      "name": "UK Import Price Index PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gd74/ppi"
+    },
+    {
+      "id": "uk-ppi-import-mom",
+      "name": "UK Import Price Index PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gd74/ppi"
+    },
+    {
+      "id": "uk-ppi-export-yoy",
+      "name": "UK Export Price Index PPI YoY",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gb7r/ppi"
+    },
+    {
+      "id": "uk-ppi-export-mom",
+      "name": "UK Export Price Index PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gb7r/ppi"
+    },
+    {
+      "id": "us-ppi-final-demand-mom",
+      "name": "Final demand PPI MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-core-mom",
+      "name": "Final demand less foods, energy, and trade services PPI MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "uk-ppi-input-mom",
+      "name": "UK Input PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/ghip/ppi"
+    },
+    {
+      "id": "uk-ppi-output-mom",
+      "name": "UK Output PPI MoM",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/gb7s/ppi"
+    },
+    {
+      "id": "us-ppi-consumer-foods-yoy",
+      "name": "Finished consumer foods YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-consumer-foods-mom",
+      "name": "Finished consumer foods MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-government-foods-yoy",
+      "name": "Government purchased foods YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-government-foods-mom",
+      "name": "Government purchased foods MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-export-foods-yoy",
+      "name": "Foods for export YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-export-foods-mom",
+      "name": "Foods for export MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-consumer-energy-yoy",
+      "name": "Finished consumer energy goods YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-consumer-energy-mom",
+      "name": "Finished consumer energy goods MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-government-energy-yoy",
+      "name": "Government purchased energy YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-government-energy-mom",
+      "name": "Government purchased energy MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-export-energy-yoy",
+      "name": "Energy for export YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-export-energy-mom",
+      "name": "Energy for export MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-finished-goods-ex-food-energy-yoy",
+      "name": "Finished goods less foods & energy YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-finished-goods-ex-food-energy-mom",
+      "name": "Finished goods less foods & energy MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-government-goods-ex-food-energy-yoy",
+      "name": "Government purchased goods, excluding foods & energy YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-government-goods-ex-food-energy-mom",
+      "name": "Government purchased goods, excluding foods & energy MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-export-goods-ex-food-energy-yoy",
+      "name": "Goods for export, excluding foods & energy YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-export-goods-ex-food-energy-mom",
+      "name": "Goods for export, excluding foods & energy MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-finished-other-services-yoy",
+      "name": "Finished services less trade, transportation & warehousing YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-finished-other-services-mom",
+      "name": "Finished services less trade, transportation & warehousing MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-government-other-services-yoy",
+      "name": "Government services less trade, transportation & warehousing YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-government-other-services-mom",
+      "name": "Government services less trade, transportation & warehousing MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-export-other-services-yoy",
+      "name": "Export services less trade, transportation & warehousing YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-export-other-services-mom",
+      "name": "Export services less trade, transportation & warehousing MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-passenger-transport-yoy",
+      "name": "Transportation of passengers for final demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-passenger-transport-mom",
+      "name": "Transportation of passengers for final demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-goods-transport-yoy",
+      "name": "Transportation & warehousing of goods for final demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-goods-transport-mom",
+      "name": "Transportation & warehousing of goods for final demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-trade-finished-yoy",
+      "name": "Trade of finished goods YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-trade-finished-mom",
+      "name": "Trade of finished goods MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-trade-government-yoy",
+      "name": "Trade of government purchased goods YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-trade-government-mom",
+      "name": "Trade of government purchased goods MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-trade-exports-yoy",
+      "name": "Trade of exports YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-trade-exports-mom",
+      "name": "Trade of exports MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-private-construction-yoy",
+      "name": "Construction for private capital investment YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-private-construction-mom",
+      "name": "Construction for private capital investment MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-government-construction-yoy",
+      "name": "Construction for government YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-government-construction-mom",
+      "name": "Construction for government MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-manufacturing-materials-yoy",
+      "name": "Materials & components for manufacturing YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-manufacturing-materials-mom",
+      "name": "Materials & components for manufacturing MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-construction-materials-yoy",
+      "name": "Materials & components for construction YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-construction-materials-mom",
+      "name": "Materials & components for construction MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-processed-fuels-yoy",
+      "name": "Processed fuels & lubricants for intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-processed-fuels-mom",
+      "name": "Processed fuels & lubricants for intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-containers-yoy",
+      "name": "Containers for intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-containers-mom",
+      "name": "Containers for intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-supplies-yoy",
+      "name": "Supplies for intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-supplies-mom",
+      "name": "Supplies for intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-food-feed-yoy",
+      "name": "Unprocessed foodstuffs & feedstuffs YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-food-feed-mom",
+      "name": "Unprocessed foodstuffs & feedstuffs MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-nonfood-ex-fuel-yoy",
+      "name": "Unprocessed nonfood materials except fuel YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-nonfood-ex-fuel-mom",
+      "name": "Unprocessed nonfood materials except fuel MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-unprocessed-fuel-yoy",
+      "name": "Unprocessed fuel YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-unprocessed-fuel-mom",
+      "name": "Unprocessed fuel MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-other-services-yoy",
+      "name": "Intermediate services less trade, transportation & warehousing YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-other-services-mom",
+      "name": "Intermediate services less trade, transportation & warehousing MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-transport-yoy",
+      "name": "Intermediate transportation & warehousing services YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-transport-mom",
+      "name": "Intermediate transportation & warehousing services MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-trade-yoy",
+      "name": "Trade services for intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-intermediate-trade-mom",
+      "name": "Trade services for intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-1-goods-yoy",
+      "name": "Goods inputs to stage 1 intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-1-goods-mom",
+      "name": "Goods inputs to stage 1 intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-1-services-yoy",
+      "name": "Services inputs to stage 1 intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-1-services-mom",
+      "name": "Services inputs to stage 1 intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-1-construction-yoy",
+      "name": "Construction inputs to stage 1 intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-1-construction-mom",
+      "name": "Construction inputs to stage 1 intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-2-goods-yoy",
+      "name": "Goods inputs to stage 2 intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-2-goods-mom",
+      "name": "Goods inputs to stage 2 intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-2-services-yoy",
+      "name": "Services inputs to stage 2 intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-2-services-mom",
+      "name": "Services inputs to stage 2 intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-2-construction-yoy",
+      "name": "Construction inputs to stage 2 intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-2-construction-mom",
+      "name": "Construction inputs to stage 2 intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-3-goods-yoy",
+      "name": "Goods inputs to stage 3 intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-3-goods-mom",
+      "name": "Goods inputs to stage 3 intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-3-services-yoy",
+      "name": "Services inputs to stage 3 intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-3-services-mom",
+      "name": "Services inputs to stage 3 intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-3-construction-yoy",
+      "name": "Construction inputs to stage 3 intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-3-construction-mom",
+      "name": "Construction inputs to stage 3 intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-4-goods-yoy",
+      "name": "Goods inputs to stage 4 intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-4-goods-mom",
+      "name": "Goods inputs to stage 4 intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-4-services-yoy",
+      "name": "Services inputs to stage 4 intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-4-services-mom",
+      "name": "Services inputs to stage 4 intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-4-construction-yoy",
+      "name": "Construction inputs to stage 4 intermediate demand YoY",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "us-ppi-stage-4-construction-mom",
+      "name": "Construction inputs to stage 4 intermediate demand MoM",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/ppi"
+    },
+    {
+      "id": "ea-ppi-capital-goods-yoy",
+      "name": "Euro Area Capital goods PPI YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/databrowser/view/sts_inppd_m/default/table"
+    },
+    {
+      "id": "ea-ppi-capital-goods-mom",
+      "name": "Euro Area Capital goods PPI MoM",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/databrowser/view/sts_inppd_m/default/table"
+    },
+    {
+      "id": "ea-ppi-intermediate-goods-yoy",
+      "name": "Euro Area Intermediate goods PPI YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/databrowser/view/sts_inppd_m/default/table"
+    },
+    {
+      "id": "ea-ppi-intermediate-goods-mom",
+      "name": "Euro Area Intermediate goods PPI MoM",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/databrowser/view/sts_inppd_m/default/table"
+    },
+    {
+      "id": "ea-ppi-durable-consumer-goods-yoy",
+      "name": "Euro Area Durable consumer goods PPI YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/databrowser/view/sts_inppd_m/default/table"
+    },
+    {
+      "id": "ea-ppi-durable-consumer-goods-mom",
+      "name": "Euro Area Durable consumer goods PPI MoM",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/databrowser/view/sts_inppd_m/default/table"
+    },
+    {
+      "id": "ea-ppi-non-durable-consumer-goods-yoy",
+      "name": "Euro Area Non-durable consumer goods PPI YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/databrowser/view/sts_inppd_m/default/table"
+    },
+    {
+      "id": "ea-ppi-non-durable-consumer-goods-mom",
+      "name": "Euro Area Non-durable consumer goods PPI MoM",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/databrowser/view/sts_inppd_m/default/table"
+    },
+    {
+      "id": "ea-ppi-energy-yoy",
+      "name": "Euro Area Energy PPI YoY",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/databrowser/view/sts_inppd_m/default/table"
+    },
+    {
+      "id": "ea-ppi-energy-mom",
+      "name": "Euro Area Energy PPI MoM",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/databrowser/view/sts_inppd_m/default/table"
+    },
+    {
+      "id": "ea-ppi-mom",
+      "name": "Euro Area Industrial PPI MoM",
+      "source": "eurostat",
+      "frequency": "monthly",
+      "official_url": "https://ec.europa.eu/eurostat/databrowser/view/sts_inppd_m/default/table"
     }
   ]
 }

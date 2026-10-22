@@ -1,6 +1,7 @@
 
 import type { RawPoint } from "./transforms";
 import AdmZip from "adm-zip";
+import * as XLSX from "xlsx";
 const DMP_INDEX =
   "https://www.bankofengland.co.uk/decision-maker-panel/2026/august-2026";
 const MPS_INDEX = "https://www.bankofengland.co.uk/markets/market-intelligence/survey-results";
@@ -25,24 +26,23 @@ const SERIES_COL: Record<DmpWageSeries, string> = {
 
 let cachedXlsx: { url: string; buf: Buffer; at: number } | null = null;
 const CACHE_MS = 10 * 60 * 1000;
-let cachedBoeDailyInflation: { points: RawPoint[]; at: number } | null = null;
+const cachedBoeDailyInflation = new Map<string, { points: RawPoint[]; at: number }>();
 const BOE_DAILY_CURVE_CACHE_MS = 60 * 60 * 1000;
 
 /**
- * Daily UK 5Y5Y implied inflation compensation from the BoE's gilt curve.
+ * Daily UK 5Y inflation compensation and 5Y5Y forward from the BoE's gilt curve.
  * The BoE publishes daily spot inflation zero-coupon rates at 5Y and 10Y;
  * with continuous compounding, the five-year forward rate starting in five
  * years is 2 * 10Y spot - 5Y spot. The 1Y point is not published in this
- * dataset (the daily spot curve starts at 25 months), so it remains on the
+ * dataset (the daily spot curve starts at 25 months), so 1Y remains on the
  * existing monthly MPR series until a valid daily one-year source is added.
  */
 export async function fetchBoeDailyInflationCompensation(
   seriesId: "UK_INFL_COMP_5Y5Y"
 ): Promise<RawPoint[]> {
   const now = Date.now();
-  if (cachedBoeDailyInflation && now - cachedBoeDailyInflation.at < BOE_DAILY_CURVE_CACHE_MS) {
-    return cachedBoeDailyInflation.points;
-  }
+  const cached = cachedBoeDailyInflation.get(seriesId);
+  if (cached && now - cached.at < BOE_DAILY_CURVE_CACHE_MS) return cached.points;
 
   const [archiveResponse, latestResponse] = await Promise.all([
     fetch(BOE_DAILY_INFLATION_ARCHIVE, {
@@ -62,7 +62,7 @@ export async function fetchBoeDailyInflationCompensation(
   if (!recentEntry) throw new Error("BoE daily inflation archive is missing its current-history workbook");
 
   const points = new Map<string, number>();
-  for (const point of parseBoeDailyFiveYearForward(recentEntry.getData())) {
+  for (const point of parseBoeDailyInflationSeries(recentEntry.getData(), seriesId)) {
     points.set(point.date, point.value);
   }
 
@@ -71,7 +71,7 @@ export async function fetchBoeDailyInflationCompensation(
     /GLC Inflation daily data current month\.xlsx$/i.test(entry.entryName)
   );
   if (!latestEntry) throw new Error("BoE latest yield curve ZIP is missing its inflation workbook");
-  for (const point of parseBoeDailyFiveYearForward(latestEntry.getData())) {
+  for (const point of parseBoeDailyInflationSeries(latestEntry.getData(), seriesId)) {
     points.set(point.date, point.value);
   }
 
@@ -79,11 +79,14 @@ export async function fetchBoeDailyInflationCompensation(
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([date, value]) => ({ date, value }));
   if (!result.length) throw new Error(`${seriesId} returned no daily BoE curve observations`);
-  cachedBoeDailyInflation = { points: result, at: now };
+  cachedBoeDailyInflation.set(seriesId, { points: result, at: now });
   return result;
 }
 
-function parseBoeDailyFiveYearForward(workbook: Buffer): RawPoint[] {
+function parseBoeDailyInflationSeries(
+  workbook: Buffer,
+  seriesId: "UK_INFL_COMP_5Y" | "UK_INFL_COMP_5Y5Y",
+): RawPoint[] {
   const zip = new AdmZip(workbook);
   const shared = parseSharedStrings(
     zip.getEntry("xl/sharedStrings.xml")?.getData().toString("utf8") ?? ""
@@ -114,9 +117,9 @@ function parseBoeDailyFiveYearForward(workbook: Buffer): RawPoint[] {
       const fiveYear = parseNumber(row[fiveYearColumn] ?? "");
       const tenYear = parseNumber(row[tenYearColumn] ?? "");
       if (fiveYear == null || tenYear == null) continue;
-      const forward = 2 * tenYear - fiveYear;
-      if (Number.isFinite(forward) && forward >= -5 && forward <= 15) {
-        points.set(date, forward);
+      const value = 2 * tenYear - fiveYear;
+      if (Number.isFinite(value) && value >= -5 && value <= 15) {
+        points.set(date, value);
       }
     }
   }
@@ -124,6 +127,71 @@ function parseBoeDailyFiveYearForward(workbook: Buffer): RawPoint[] {
   return [...points.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([date, value]) => ({ date, value }));
+}
+
+/**
+ * BoE IADB IUMSIZC: end-month level of the five-year inflation zero-coupon
+ * yield. This is the published 5Y spot measure and has a longer history than
+ * the recent daily spreadsheet archive.
+ */
+export async function fetchBoeFiveYearInflationCompensation(): Promise<RawPoint[]> {
+  const url = new URL("https://www.bankofengland.co.uk/boeapps/database/_iadb-fromshowcolumns.asp");
+  url.search = new URLSearchParams({
+    "csv.x": "yes",
+    Datefrom: "01/Jan/1985",
+    Dateto: "now",
+    SeriesCodes: "IUMSIZC",
+    CSVF: "TN",
+    UsingCodes: "Y",
+    VPD: "Y",
+    VFD: "N",
+  }).toString();
+  const response = await fetch(url, {
+    headers: { "User-Agent": "macro-economy-tracker/1.0", Accept: "text/csv,text/plain,*/*" },
+    cache: "no-store",
+  });
+  if (!response.ok) throw new Error(`BoE IADB IUMSIZC HTTP ${response.status}`);
+  const text = (await response.text()).replace(/^\uFEFF/, "");
+  const points: RawPoint[] = [];
+  for (const line of text.split(/\r?\n/)) {
+    const cells = parseCsvRow(line);
+    const dateCell = cells.find((cell) => /^(?:\d{1,2}[/-][A-Za-z]{3}[/-]\d{2,4}|\d{1,2}\s+[A-Za-z]{3}\s+\d{2,4}|\d{4}-\d{2}(?:-\d{2})?|[A-Za-z]{3}-\d{2})$/.test(cell.trim()));
+    if (!dateCell) continue;
+    const date = parseBoEIadbDate(dateCell.trim());
+    const valueCell = cells.find((cell) => parseNumber(cell) != null && cell.trim() !== dateCell);
+    const value = valueCell == null ? null : parseNumber(valueCell);
+    if (date && value != null && Number.isFinite(value)) points.push({ date, value });
+  }
+  const result = dedupe(points);
+  if (!result.length) throw new Error("BoE IADB IUMSIZC returned no observations");
+  return result;
+}
+
+function parseCsvRow(line: string): string[] {
+  const cells: string[] = [];
+  let cell = "";
+  let quoted = false;
+  for (let index = 0; index < line.length; index++) {
+    const character = line[index]!;
+    if (character === '"') {
+      if (quoted && line[index + 1] === '"') { cell += '"'; index++; }
+      else quoted = !quoted;
+    } else if (character === "," && !quoted) {
+      cells.push(cell.trim()); cell = "";
+    } else cell += character;
+  }
+  cells.push(cell.trim());
+  return cells;
+}
+
+function parseBoEIadbDate(value: string): string | null {
+  const date = value.match(/^(\d{1,2})[\s/-]+([A-Za-z]{3})[\s/-]+(\d{2,4})$/);
+  if (date) {
+    const year = Number(date[3]);
+    const fullYear = year < 100 ? (year >= 70 ? 1900 + year : 2000 + year) : year;
+    return `${fullYear}-${monthNum(date[2]!)}-01`;
+  }
+  return normalizeDate(value);
 }
 
 export async function fetchBoeDmpWages(seriesId: DmpWageSeries): Promise<RawPoint[]> {
@@ -527,6 +595,8 @@ async function resolveLatestDmpMonthlyXlsxUrl(): Promise<string> {
   const pages = [
     DMP_INDEX,
     "https://www.bankofengland.co.uk/decision-maker-panel",
+    "https://decisionmakerpanel.co.uk/data/",
+    "https://decisionmakerpanel.co.uk/data/data-archive/",
   ];
 
   const candidates: Array<{
@@ -556,7 +626,7 @@ async function resolveLatestDmpMonthlyXlsxUrl(): Promise<string> {
 
       const matches = [
         ...html.matchAll(
-          /href=["']([^"']*monthly-dmp-data-([a-z]+)-(\d{4})\.xlsx)["']/gi
+          /href=["']([^"']*monthly-dmp-data-(?:for-website-)?([a-z]+)-(\d{4})(?:-\d+)?\.xlsx)["']/gi
         ),
       ];
 
@@ -619,58 +689,28 @@ async function fetchDmpMonthlyHistoryByHeader(seriesId: string): Promise<RawPoin
 async function fetchDmpCpiExpectationHistory(
   seriesId: "DMP_CPI_EXPECTED_1Y" | "DMP_CPI_EXPECTED_3Y"
 ): Promise<RawPoint[]> {
+  // The DMP's published aggregate workbook contains the complete monthly
+  // single-month CPI-expectations table, including the earlier observations
+  // omitted from recent release-page prose.
+  const workbook = XLSX.read(await loadLatestDmpXlsx(), { type: "buffer", cellDates: true });
+  const sheetName = workbook.SheetNames.find((name) => normalize(name) === "cpi expectations");
+  const sheet = sheetName ? workbook.Sheets[sheetName] : undefined;
+  if (!sheet) throw new Error("DMP workbook is missing the CPI expectations sheet");
+  const rows = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: null, raw: true });
+  const horizonColumn = seriesId === "DMP_CPI_EXPECTED_1Y" ? 2 : 3;
   const points: RawPoint[] = [];
-  const months = [
-    "january", "february", "march", "april", "may", "june",
-    "july", "august", "september", "october", "november", "december",
-  ];
-  const currentYear = new Date().getUTCFullYear();
-  const years = [currentYear, currentYear - 1, currentYear - 2, currentYear - 3, currentYear - 4];
-
-  for (const year of years) {
-    for (const month of months) {
-      if (year === 2026 && month === "september") continue;
-
-      const url = `https://www.bankofengland.co.uk/decision-maker-panel/${year}/${month}-${year}`;
-
-      try {
-        const html = await fetchText(url);
-        const date = parseBoEMonthDate(html, url);
-        if (!date) continue;
-
-        // Keep decimal points intact; normalize() would remove them.
-        const text = stripHtml(html).replace(/\s+/g, " ");
-
-        const patterns = seriesId === "DMP_CPI_EXPECTED_1Y"
-          ? [
-              /expectations for year-ahead CPI inflation[^.]{0,220}?(?:to|at|was|were|remained at|unchanged at)\s+([0-9]+(?:\.[0-9]+)?)%/i,
-              /year-ahead CPI inflation[^.]{0,220}?(?:to|at|was|were|remained at|unchanged at)\s+([0-9]+(?:\.[0-9]+)?)%/i,
-            ]
-          : [
-              /three-year(?:-ahead)? CPI inflation expectations?[^.]{0,220}?(?:to|at|was|were|remained at|unchanged at)\s+([0-9]+(?:\.[0-9]+)?)%/i,
-              /three-year(?:-ahead)? CPI inflation[^.]{0,220}?(?:to|at|was|were|remained at|unchanged at)\s+([0-9]+(?:\.[0-9]+)?)%/i,
-            ];
-
-        let value: number | null = null;
-        for (const pattern of patterns) {
-          const match = text.match(pattern);
-          if (match) {
-            value = Number(match[1]);
-            break;
-          }
-        }
-
-        if (value != null && Number.isFinite(value) && value >= -5 && value <= 15) {
-          points.push({ date, value });
-          console.log(`[DMP ${seriesId}] ${date}: ${value}`);
-        }
-      } catch {
-        // Some monthly pages do not exist; skip them.
-      }
-    }
+  for (const row of rows.slice(4)) {
+    const rawDate = row[0];
+    const date = rawDate instanceof Date
+      ? `${rawDate.getUTCFullYear()}-${String(rawDate.getUTCMonth() + 1).padStart(2, "0")}-01`
+      : normalizeDate(String(rawDate ?? ""));
+    const rawValue = row[horizonColumn];
+    const value = typeof rawValue === "number" ? rawValue : parseNumber(String(rawValue ?? ""));
+    if (date && value != null && Number.isFinite(value)) points.push({ date, value });
   }
-
-  return dedupe(points).sort((a, b) => a.date.localeCompare(b.date));
+  const result = dedupe(points);
+  if (!result.length) throw new Error(`DMP workbook has no CPI expectation values for ${seriesId}`);
+  return result;
 }
 
 async function fetchDmpOwnPriceExpectationHistory(): Promise<RawPoint[]> {

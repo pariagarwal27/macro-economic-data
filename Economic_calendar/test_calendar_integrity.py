@@ -4,6 +4,12 @@ from release_time_utils import extract_release_time, clean_datetime_value, combi
 
 
 class CalendarIntegrityTests(unittest.TestCase):
+    def test_unavailable_source_is_not_reported_as_checked_unannounced(self):
+        for status in ("source_unavailable", "parse_failed", "fetch_failed"):
+            with self.subTest(status=status):
+                item = normalize_record("BoE", {"metric_id": "uk-maps-inflation-1y", "status": status, "next_release": None})
+                self.assertEqual(item["release_status"], "source_error")
+
     def test_hour_only_time(self):
         self.assertEqual(extract_release_time("Published at 8 AM Eastern"), "08:00")
         self.assertEqual(extract_release_time("12 p.m."), "12:00")
@@ -31,7 +37,7 @@ class CalendarIntegrityTests(unittest.TestCase):
         metrics = complete_catalog([item], [{"id": "us-cleveland-exp-inf-1y", "name": "Expected inflation", "source": "cleveland"}, {"id": "missing", "name": "Unannounced", "source": "ecb"}])
         self.assertEqual(len(metrics), 2)
         self.assertIsNone(metrics[1]["next_release"])
-        self.assertEqual(metrics[1]["release_status"], "not_announced")
+        self.assertEqual(metrics[1]["release_status"], "source_error", "Missing mapping is not a verified absence of an official date")
 
 
 if __name__ == "__main__":

@@ -24,10 +24,10 @@ const beforeCleveland = cpiReleaseCandidates(schedule, new Date("2026-10-14T14:5
 assert.equal(beforeCleveland.some((candidate) => candidate.metricId === "us-cleveland-median-cpi"), false);
 
 const atCleveland = cpiReleaseCandidates(schedule, new Date("2026-10-14T15:00:00Z"));
-assert.deepEqual(atCleveland.slice(-2).map((candidate) => candidate.metricId), [
-  "us-cleveland-median-cpi",
-  "us-cleveland-trimmed-cpi",
-]);
-assert.ok(atCleveland.slice(-2).every((candidate) => candidate.scheduledAt === "2026-10-14T15:00:00.000Z"));
+const underlyingIds = atCleveland.filter((candidate) => candidate.metricId.includes("sticky-cpi") || candidate.metricId.includes("flexible-cpi") || candidate.metricId.includes("cleveland-")).map((candidate) => candidate.metricId);
+assert.deepEqual(underlyingIds.slice(-2), ["us-cleveland-median-cpi-mom", "us-cleveland-trimmed-cpi-mom"]);
+assert.ok(underlyingIds.includes("us-cleveland-median-cpi") && underlyingIds.includes("us-cleveland-trimmed-cpi"));
+assert.ok(atCleveland.slice(3).every((candidate) => candidate.scheduledAt === "2026-10-14T15:00:00.000Z"));
+assert.deepEqual(cpiReleaseCandidates(schedule, new Date("2026-10-15T12:30:00Z")), [], "CPI-dependent metrics must stop retrying after the release day");
 
 console.log("US CPI, core CPI and Cleveland Fed releases are scheduled at their official release times");

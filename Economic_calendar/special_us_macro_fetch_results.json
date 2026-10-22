@@ -1,5 +1,5 @@
 {
-  "fetched_at": "2026-10-14T00:50:35",
+  "fetched_at": "2026-10-22T06:23:14",
   "metrics": [
     {
       "metric_id": "us-cleveland-median-cpi",
@@ -119,7 +119,7 @@
       "release_time_kind": null,
       "release_status": "not_announced",
       "official_source": "https://www.clevelandfed.org/indicators-and-data/survey-of-firms-inflation-expectations",
-      "official_evidence": "SoFIE is quarterly, but no future official publication date is currently announced on the discoverable Cleveland Fed sources."
+      "official_evidence": "Official SoFIE sources checked: no exact future publication date announced. The 1-year question is quarterly; the 5-year question is asked annually in the October survey."
     },
     {
       "metric_id": "us-cleveland-sofie-5y",
@@ -131,7 +131,7 @@
       "release_time_kind": null,
       "release_status": "not_announced",
       "official_source": "https://www.clevelandfed.org/indicators-and-data/survey-of-firms-inflation-expectations",
-      "official_evidence": "SoFIE is quarterly, but no future official publication date is currently announced on the discoverable Cleveland Fed sources."
+      "official_evidence": "Official SoFIE sources checked: no exact future publication date announced. The 1-year question is quarterly; the 5-year question is asked annually in the October survey."
     },
     {
       "metric_id": "us-atlanta-sticky-cpi",
@@ -179,43 +179,43 @@
       "release_time_kind": null,
       "release_status": "not_announced",
       "official_source": "https://www.atlantafed.org/research-and-data/data/wage-growth-tracker",
-      "official_evidence": "Atlanta Fed says the Wage Growth Tracker is usually updated by the second Friday of the month; exact timing depends on Census CPS microdata availability."
+      "official_evidence": "Official Atlanta Fed page checked: no exact next publication date announced. Usually by the second Friday; timing depends on Census CPS microdata availability."
     },
     {
       "metric_id": "us-gdpnow",
       "metric": "Atlanta Fed GDPNow",
       "family": "ATLANTA_GDPNOW",
-      "next_release_date": "2026-10-15",
+      "next_release_date": "2026-10-27",
       "next_release_at": null,
       "release_deadline_at": null,
       "release_time_kind": null,
       "release_status": "official_date",
       "official_source": "https://www.atlantafed.org/research-and-data/data/gdpnow",
-      "official_evidence": "Atlanta Fed GDPNow: next update 2026-10-15"
+      "official_evidence": "Atlanta Fed GDPNow: next update 2026-10-27"
     },
     {
       "metric_id": "us-atlanta-bie-1y",
       "metric": "Atlanta Fed Business Inflation Expectations 1-Year",
       "family": "ATLANTA_BIE",
-      "next_release_date": "2026-10-21",
+      "next_release_date": "2026-11-18",
       "next_release_at": null,
       "release_deadline_at": null,
       "release_time_kind": null,
       "release_status": "official_date",
       "official_source": "https://www.atlantafed.org/research-and-data/surveys/business-inflation-expectations",
-      "official_evidence": "Atlanta Fed BIE Survey Release Dates section: 2026-10-21"
+      "official_evidence": "Atlanta Fed BIE Survey Release Dates section: 2026-11-18"
     },
     {
       "metric_id": "us-atlanta-bie-unit-cost-1y",
       "metric": "Atlanta Fed BIE Expected Unit-Cost Growth 1-Year",
       "family": "ATLANTA_BIE",
-      "next_release_date": "2026-10-21",
+      "next_release_date": "2026-11-18",
       "next_release_at": null,
       "release_deadline_at": null,
       "release_time_kind": null,
       "release_status": "official_date",
       "official_source": "https://www.atlantafed.org/research-and-data/surveys/business-inflation-expectations",
-      "official_evidence": "Atlanta Fed BIE Survey Release Dates section: 2026-10-21"
+      "official_evidence": "Atlanta Fed BIE Survey Release Dates section: 2026-11-18"
     },
     {
       "metric_id": "us-umich-inflation-exp-1y",
@@ -317,25 +317,25 @@
       "metric_id": "us-industrial-production",
       "metric": "Industrial Production YoY",
       "family": "FED_G17",
-      "next_release_date": "2026-10-16",
-      "next_release_at": "2026-10-16T09:15:00-04:00",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T09:15:00-05:00",
       "release_deadline_at": null,
       "release_time_kind": null,
       "release_status": "official_date",
-      "official_source": "https://www.federalreserve.gov/newsevents/2026-october.htm",
-      "official_evidence": "Federal Reserve Board G.17 calendar entry: 2026-10-16"
+      "official_source": "https://www.federalreserve.gov/newsevents/2026-november.htm",
+      "official_evidence": "Federal Reserve Board G.17 calendar entry: 2026-11-17"
     },
     {
       "metric_id": "us-capacity-utilization",
       "metric": "Capacity Utilization",
       "family": "FED_G17",
-      "next_release_date": "2026-10-16",
-      "next_release_at": "2026-10-16T09:15:00-04:00",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T09:15:00-05:00",
       "release_deadline_at": null,
       "release_time_kind": null,
       "release_status": "official_date",
-      "official_source": "https://www.federalreserve.gov/newsevents/2026-october.htm",
-      "official_evidence": "Federal Reserve Board G.17 calendar entry: 2026-10-16"
+      "official_source": "https://www.federalreserve.gov/newsevents/2026-november.htm",
+      "official_evidence": "Federal Reserve Board G.17 calendar entry: 2026-11-17"
     },
     {
       "metric_id": "us-dallas-business-activity",
@@ -389,25 +389,25 @@
       "metric_id": "us-initial-jobless-claims",
       "metric": "Initial Jobless Claims",
       "family": "JOBLESS_CLAIMS",
-      "next_release_date": "2026-10-15",
-      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "next_release_date": "2026-10-29",
+      "next_release_at": "2026-10-29T07:30:00-05:00",
       "release_deadline_at": null,
       "release_time_kind": null,
-      "release_status": "weekly_cadence",
-      "official_source": "https://oui.doleta.gov/unemploy/claims.asp",
-      "official_evidence": "U.S. Department of Labor weekly Unemployment Insurance claims cadence; next Thursday: 2026-10-15"
+      "release_status": "official_date",
+      "official_source": "https://fred.stlouisfed.org/releases/calendar?rid=180&view=year&vs=2026-01-01&ve=2026-12-31&ob=rd&od=asc",
+      "official_evidence": "Federal Reserve calendar for DOL Unemployment Insurance Weekly Claims: 2026-10-29 | 7:30 am Unemployment Insurance Weekly Claims Report | All times US Central"
     },
     {
       "metric_id": "us-continuing-jobless-claims",
       "metric": "Continuing Jobless Claims",
       "family": "JOBLESS_CLAIMS",
-      "next_release_date": "2026-10-15",
-      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "next_release_date": "2026-10-29",
+      "next_release_at": "2026-10-29T07:30:00-05:00",
       "release_deadline_at": null,
       "release_time_kind": null,
-      "release_status": "weekly_cadence",
-      "official_source": "https://oui.doleta.gov/unemploy/claims.asp",
-      "official_evidence": "U.S. Department of Labor weekly Unemployment Insurance claims cadence; next Thursday: 2026-10-15"
+      "release_status": "official_date",
+      "official_source": "https://fred.stlouisfed.org/releases/calendar?rid=180&view=year&vs=2026-01-01&ve=2026-12-31&ob=rd&od=asc",
+      "official_evidence": "Federal Reserve calendar for DOL Unemployment Insurance Weekly Claims: 2026-10-29 | 7:30 am Unemployment Insurance Weekly Claims Report | All times US Central"
     },
     {
       "metric_id": "uk-oecd-cli",
@@ -452,15 +452,15 @@
     "CLEVELAND_SOFIE": null,
     "ATLANTA_CPI": "2026-11-10",
     "ATLANTA_WAGE": null,
-    "ATLANTA_GDPNOW": "2026-10-15",
-    "ATLANTA_BIE": "2026-10-21",
+    "ATLANTA_GDPNOW": "2026-10-27",
+    "ATLANTA_BIE": "2026-11-18",
     "UMICH_CONSUMERS": "2026-10-23",
-    "FED_G17": "2026-10-16",
+    "FED_G17": "2026-11-17",
     "FED_BREAKEVENS": null,
     "DALLAS_BUSINESS_ACTIVITY": "2026-10-26",
     "CHICAGO_CFNAI": "2026-10-26",
     "ADP_NER": "2026-11-04",
-    "JOBLESS_CLAIMS": "2026-10-15",
+    "JOBLESS_CLAIMS": "2026-10-29",
     "OECD_CLI_BCI": "2026-11-09",
     "OECD_UNEMPLOYMENT": null
   },
@@ -478,7 +478,7 @@
     "DALLAS_BUSINESS_ACTIVITY": "official_date",
     "CHICAGO_CFNAI": "official_date",
     "ADP_NER": "official_date",
-    "JOBLESS_CLAIMS": "weekly_cadence",
+    "JOBLESS_CLAIMS": "official_date",
     "OECD_CLI_BCI": "official_date",
     "OECD_UNEMPLOYMENT": "not_announced"
   }

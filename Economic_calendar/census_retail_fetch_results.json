@@ -1,9 +1,9 @@
 {
   "source": "US Census Bureau",
   "source_family": "Monthly Retail Trade",
-  "fetched_at": "2026-10-14T00:49:37",
+  "fetched_at": "2026-10-22T06:22:16",
   "family_release_dates": {
-    "US_RETAIL_SALES": "2026-10-15"
+    "US_RETAIL_SALES": "2026-11-17"
   },
   "metrics": [
     {
@@ -11,100 +11,100 @@
       "metric": "US Retail Sales — Total",
       "census_id": "44X72",
       "family": "US_RETAIL_SALES",
-      "next_release_date": "2026-10-15",
-      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T08:30:00-05:00",
       "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | September 2026 | October 15, 2026 | Release time 08:30"
+      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30"
     },
     {
       "metric_id": "us-retail-sales-ex-auto",
       "metric": "US Retail Sales — Total ex Autos",
       "census_id": "44X72",
       "family": "US_RETAIL_SALES",
-      "next_release_date": "2026-10-15",
-      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T08:30:00-05:00",
       "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | September 2026 | October 15, 2026 | Release time 08:30"
+      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30"
     },
     {
       "metric_id": "us-retail-motor-vehicles",
       "metric": "US Retail Sales — Motor Vehicles",
       "census_id": "441",
       "family": "US_RETAIL_SALES",
-      "next_release_date": "2026-10-15",
-      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T08:30:00-05:00",
       "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | September 2026 | October 15, 2026 | Release time 08:30"
+      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30"
     },
     {
       "metric_id": "us-retail-gasoline",
       "metric": "US Retail Sales — Gasoline Stations",
       "census_id": "447",
       "family": "US_RETAIL_SALES",
-      "next_release_date": "2026-10-15",
-      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T08:30:00-05:00",
       "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | September 2026 | October 15, 2026 | Release time 08:30"
+      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30"
     },
     {
       "metric_id": "us-retail-food-beverage",
       "metric": "US Retail Sales — Food & Beverage",
       "census_id": "445",
       "family": "US_RETAIL_SALES",
-      "next_release_date": "2026-10-15",
-      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T08:30:00-05:00",
       "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | September 2026 | October 15, 2026 | Release time 08:30"
+      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30"
     },
     {
       "metric_id": "us-retail-general-merchandise",
       "metric": "US Retail Sales — General Merchandise",
       "census_id": "452",
       "family": "US_RETAIL_SALES",
-      "next_release_date": "2026-10-15",
-      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T08:30:00-05:00",
       "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | September 2026 | October 15, 2026 | Release time 08:30"
+      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30"
     },
     {
       "metric_id": "us-retail-nonstore",
       "metric": "US Retail Sales — Nonstore",
       "census_id": "454",
       "family": "US_RETAIL_SALES",
-      "next_release_date": "2026-10-15",
-      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T08:30:00-05:00",
       "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | September 2026 | October 15, 2026 | Release time 08:30"
+      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30"
     },
     {
       "metric_id": "us-retail-food-services",
       "metric": "US Retail Sales — Food Services",
       "census_id": "722",
       "family": "US_RETAIL_SALES",
-      "next_release_date": "2026-10-15",
-      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T08:30:00-05:00",
       "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | September 2026 | October 15, 2026 | Release time 08:30"
+      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30"
     },
     {
       "metric_id": "us-retail-sales-total",
       "metric": "US Retail Sales — Total",
       "census_id": "44X72",
       "family": "US_RETAIL_SALES",
-      "next_release_date": "2026-10-15",
-      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T08:30:00-05:00",
       "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | September 2026 | October 15, 2026 | Release time 08:30"
+      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30"
     },
     {
       "metric_id": "us-retail-total-ex-auto-gas",
       "metric": "US Retail Sales — Total ex Autos & Gas",
       "census_id": "44W72",
       "family": "US_RETAIL_SALES",
-      "next_release_date": "2026-10-15",
-      "next_release_at": "2026-10-15T08:30:00-04:00",
+      "next_release_date": "2026-11-17",
+      "next_release_at": "2026-11-17T08:30:00-05:00",
       "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | September 2026 | October 15, 2026 | Release time 08:30"
+      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30"
     }
   ]
 }

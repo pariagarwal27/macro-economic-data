@@ -51,7 +51,7 @@ import { EconomicCalendarSidebar } from "@/components/EconomicCalendarSidebar";
 import { GlobalMetricSearch } from "@/components/GlobalMetricSearch";
 import { getClientJsonCache, refreshClientJson } from "@/lib/client-json-cache";
 import { resolveStudioSelection } from "@/lib/chart-studio";
-import { getExpectationAxisTicks, getNiceTickDomain, getNiceTicks, getTickPrecision } from "@/lib/chart-axis";
+import { getExpectationAxisTicks, getNiceTickDomain, getNiceTicks, getPairedAxisTicks, getTickPrecision } from "@/lib/chart-axis";
 import { LaborChangeChart } from "@/components/LaborChangeChart";
 import { formatLaborChange, isLaborChangeMetric, laborChangeKpis, laborPublishedKpis } from "@/lib/labor-period-change";
 import { getPublishedExpectationReadings } from "@/lib/expectation-series";
@@ -391,7 +391,21 @@ function ClaimsDetailCharts({ initial, continuing, height, animateTrace = false 
               <XAxis dataKey="date" tickFormatter={value => formatChartDate(String(value), "weekly")} tickLine={false} axisLine={{ stroke: "var(--line-strong)" }} tickMargin={8} minTickGap={22} interval="preserveStartEnd" tick={{ fill: "var(--muted)", fontSize: 11 }} />
               <YAxis allowDataOverflow yAxisId="initial" orientation="left" width={74} domain={getNiceTickDomain(initialTicks)} ticks={initialTicks} tickFormatter={value => formatClaimsCount(Number(value))} tick={{ fill: initialColor, fontSize: 10 }} tickLine={false} axisLine={false} />
               <YAxis allowDataOverflow yAxisId="continuing" orientation="right" width={82} domain={getNiceTickDomain(continuingTicks)} ticks={continuingTicks} tickFormatter={value => formatClaimsCount(Number(value))} tick={{ fill: continuingColor, fontSize: 10 }} tickLine={false} axisLine={false} />
-              <Tooltip cursor={{ stroke: "var(--line-strong)", strokeWidth: 1, strokeDasharray: "4 3" }} contentStyle={{ borderRadius: 8, border: "1px solid var(--line)", background: "var(--panel)", fontSize: 12 }} labelFormatter={label => formatChartDate(String(label), "weekly", true)} formatter={(value, name) => [formatClaimsCount(Number(value)), String(name)]} />
+              <Tooltip cursor={{ stroke: "var(--line-strong)", strokeWidth: 1, strokeDasharray: "4 3" }} content={({ active, label, payload }) => {
+                if (!active || !payload?.length) return null;
+                const point = payload[0]?.payload as (typeof data)[number] | undefined;
+                if (!point) return null;
+                return <div style={{ borderRadius: 8, border: "1px solid var(--line)", background: "var(--panel)", padding: "10px 12px", fontSize: 12, boxShadow: "0 4px 14px rgba(0,0,0,.12)" }}>
+                  <strong style={{ display: "block", marginBottom: 8 }}>{formatChartDate(String(label), "weekly", true)}</strong>
+                  <table style={{ borderCollapse: "collapse", minWidth: 230 }}>
+                    <thead><tr><th style={{ textAlign: "left", padding: "2px 8px 5px 0" }}>Measure</th><th style={{ textAlign: "right", padding: "2px 8px 5px" }}>Initial claims</th><th style={{ textAlign: "right", padding: "2px 0 5px 8px" }}>Continuing claims</th></tr></thead>
+                    <tbody>
+                      <tr><th style={{ textAlign: "left", fontWeight: 500, paddingRight: 8 }}>Weekly</th><td style={{ textAlign: "right", padding: "3px 8px" }}>{formatClaimsCount(point.initial)}</td><td style={{ textAlign: "right", paddingLeft: 8 }}>{formatClaimsCount(point.continuing)}</td></tr>
+                      <tr><th style={{ textAlign: "left", fontWeight: 500, paddingRight: 8 }}>4-week average</th><td style={{ textAlign: "right", padding: "3px 8px" }}>{formatClaimsCount(point.initialTrend)}</td><td style={{ textAlign: "right", paddingLeft: 8 }}>{formatClaimsCount(point.continuingTrend)}</td></tr>
+                    </tbody>
+                  </table>
+                </div>;
+              }} />
               <Legend verticalAlign="top" align="center" height={28} iconType="line" />
               <Line yAxisId="initial" type="monotone" dataKey="initial" name="Initial Claims" stroke={initialColor} strokeWidth={2.5} strokeLinecap="round" dot={animateTrace ? (point) => { const index = Number(point.index ?? 0); const delay = index * 1500 / Math.max(1, yearData.length - 1); const latest = index === yearData.length - 1; return <g key={`claims-initial-${index}`}><circle cx={point.cx} cy={point.cy} r={latest ? 3.5 : 2.5} fill={initialColor} opacity={latest ? 1 : 0}><animate attributeName="opacity" values={latest ? "0;1" : "0;1;0"} keyTimes={latest ? "0;1" : "0;0.25;1"} dur="220ms" begin={`${delay}ms`} fill="freeze" /></circle>{latest && <circle cx={point.cx} cy={point.cy} r="10" fill={initialColor} opacity="0.18" />}</g>; } : { r: 3, fill: "var(--panel)", stroke: initialColor, strokeWidth: 2 }} activeDot={{ r: 6 }} connectNulls={false} isAnimationActive={animateTrace} animationDuration={1500} animationEasing="ease-in-out" />
               {initial?.threeMonth?.history?.length ? <Line yAxisId="initial" type="monotone" dataKey="initialTrend" name={initial.threeMonth.label} stroke={initialColor} strokeWidth={2.5} strokeDasharray="2 5" dot={false} activeDot={{ r: 5 }} connectNulls={false} isAnimationActive={false} /> : null}
@@ -729,6 +743,17 @@ function RateChart({
     root?.meta.subcategory?.toLowerCase().includes("expect") ||
     root?.meta.name.toLowerCase().includes("expect")
   );
+  // Atlanta already publishes wage growth as a rate. Reuse the overview
+  // chart rather than calculating YoY/MoM changes from those rate values.
+  if (root?.meta.id === "us-atlanta-wage") {
+    const group = NYFED_OVERVIEW_CHART_GROUPS.payGrowth;
+    return <ExpectationComparisonChart
+      title={group.title}
+      note={group.note}
+      series={[expectationSeries(allMetrics, root.meta.id)]}
+      showAlternateMonthlyTicks
+    />;
+  }
   if (root && isLaborChangeMetric(root.meta.id)) return <LaborChangeChart metric={root} height={height} />;
 
   const rootHistory = normalizeHistory(root?.history ?? []);
@@ -2073,6 +2098,7 @@ function getDisplayMode(
   if (isQuarterlyGdpMetric(metricId)) return "published-growth";
 
   if (
+    metricId === "us-atlanta-wage" ||
     metricId === "us-unemployment" ||
     metricId === "us-u6" ||
     metricId === "us-participation" ||
@@ -2385,7 +2411,7 @@ function getMetricKpis(
       mode: "rate" as const,
       leftLabel: "Latest",
       leftValue: history.at(-1)?.value ?? null,
-      rightLabel: "Previous",
+      rightLabel: "Prior",
       rightValue: history.at(-2)?.value ?? null,
       showRight: true,
     };
@@ -3112,6 +3138,20 @@ function getCardKpis(
 
   const id = metric.meta.id;
 
+  // Expectation series are published rate levels for every country. Compare
+  // the latest two observations directly instead of deriving change rates.
+  if (isPublishedExpectationMetric(metric)) {
+    const history = getPublishedExpectationReadings(metric.history ?? []);
+    return {
+      mode: "level" as const,
+      leftLabel: "Latest",
+      leftValue: history.at(-1)?.value ?? null,
+      rightLabel: "Prior",
+      rightValue: history.at(-2)?.value ?? null,
+      showRight: true,
+    };
+  }
+
   // PPI detail cards use ONS-published YoY and MoM series. Route them through
   // the paired measure lookup explicitly so display-mode classification for
   // an individual series cannot hide the monthly value.
@@ -3219,7 +3259,7 @@ if (isUSNetExportsMetric(metric)) {
     };
   }
 
-  if (getDisplayMode(id) !== "normal") {
+  if (isPublishedExpectationMetric(metric) || getDisplayMode(id) !== "normal") {
     return getMetricKpis(metric);
   }
 
@@ -3760,10 +3800,17 @@ function LabourChartStudio({ category, specs, metrics, onOpen, highlightedMetric
                 <div><dt>Updated</dt><dd>{supplementalRetailMetric.displayReleasedAt ? formatObsDate(supplementalRetailMetric.displayReleasedAt) : "—"}</dd></div>
               </dl>
             </section>}
-          </div> : claims ? <>
-          <span>Initial claims</span><strong>{formatClaimsCount(latestClaimsValue(metric))}</strong>{hasThreeMonth && <><span>{metric?.threeMonth?.label}</span><strong>{formatClaimsCount(metric?.threeMonth?.history.at(-1)?.value ?? null)}</strong></>}
-          <span>Continuing claims</span><strong className="labour-studio-secondary">{formatClaimsCount(latestClaimsValue(metrics["us-continuing-claims"]))}</strong>
-        </> : active.id === "us-net-exports-card" ? <><span>Latest</span><strong>{formatUsNetExportsValue(readings.leftValue)}</strong><span>Prior</span><strong className="labour-studio-secondary">{formatUsNetExportsValue(readings.rightValue)}</strong></> : category === "activity" && categoryMeasurePair(active, metric, metrics).showPair ? <><span>{categoryMeasurePair(active, metric, metrics).leftLabel}</span><strong>{categoryMeasurePair(active, metric, metrics).format(categoryMeasurePair(active, metric, metrics).leftValue)}</strong><span>{categoryMeasurePair(active, metric, metrics).rightLabel}</span><strong className="labour-studio-secondary">{categoryMeasurePair(active, metric, metrics).format(categoryMeasurePair(active, metric, metrics).rightValue)}</strong></> : <>
+        </div> : claims ? <div aria-label="Published jobless claims values" style={{ display: "grid", gridTemplateColumns: "minmax(56px, .65fr) minmax(0, 1fr) minmax(0, 1.1fr)", columnGap: 6, rowGap: 13, alignItems: "baseline" }}>
+          <span />
+          <h5 style={{ minWidth: 0, margin: 0, fontSize: 13 }}>Initial claims</h5>
+          <h5 style={{ minWidth: 0, margin: 0, paddingLeft: 8, fontSize: 13 }}>Continuing claims</h5>
+          <span style={{ color: "var(--muted)", fontSize: 12 }}>Weekly</span>
+          <strong style={{ minWidth: 0, whiteSpace: "nowrap", fontSize: 17, lineHeight: 1.1, color: "var(--country-series)" }}>{formatClaimsCount(latestClaimsValue(metric))}</strong>
+          <strong style={{ minWidth: 0, paddingLeft: 8, whiteSpace: "nowrap", fontSize: 17, lineHeight: 1.1, color: "var(--up)" }}>{formatClaimsCount(latestClaimsValue(metrics["us-continuing-claims"]))}</strong>
+          <span style={{ color: "var(--muted)", fontSize: 12 }}>4-week average</span>
+          <strong style={{ minWidth: 0, whiteSpace: "nowrap", fontSize: 17, lineHeight: 1.1, color: "var(--country-series)" }}>{formatClaimsCount(metric?.threeMonth?.history.at(-1)?.value ?? null)}</strong>
+          <strong style={{ minWidth: 0, paddingLeft: 8, whiteSpace: "nowrap", fontSize: 17, lineHeight: 1.1, color: "var(--up)" }}>{formatClaimsCount(metrics["us-continuing-claims"]?.threeMonth?.history.at(-1)?.value ?? null)}</strong>
+        </div> : active.id === "us-net-exports-card" ? <><span>Latest</span><strong>{formatUsNetExportsValue(readings.leftValue)}</strong><span>Prior</span><strong className="labour-studio-secondary">{formatUsNetExportsValue(readings.rightValue)}</strong></> : category === "activity" && categoryMeasurePair(active, metric, metrics).showPair ? <><span>{categoryMeasurePair(active, metric, metrics).leftLabel}</span><strong>{categoryMeasurePair(active, metric, metrics).format(categoryMeasurePair(active, metric, metrics).leftValue)}</strong><span>{categoryMeasurePair(active, metric, metrics).rightLabel}</span><strong className="labour-studio-secondary">{categoryMeasurePair(active, metric, metrics).format(categoryMeasurePair(active, metric, metrics).rightValue)}</strong></> : <>
           <span>{readings.leftLabel}</span><strong>{isLaborChangeMetric(metric?.meta.id) ? formatMetricValue(readings.leftValue, metric) : formatReading(readings.leftValue, active, metric)}</strong>
           {hasThreeMonth && ["US", "UK"].includes(metric?.meta.region ?? "") && <><span>{metric?.threeMonth?.label}</span><strong>{metric?.threeMonth?.history.at(-1) ? formatMetricValue(metric.threeMonth.history.at(-1)!.value, metric) : "—"}</strong></>}
           {readings.showRight && <><span>{readings.rightLabel}</span><strong className="labour-studio-secondary">{isLaborChangeMetric(metric?.meta.id) ? formatMetricValue(readings.rightValue, metric) : formatReading(readings.rightValue, active, metric)}</strong></>}
@@ -3912,30 +3959,31 @@ function InflationComparisonStudio({ region, specs, metrics, highlightedMetricId
   };
   const modeTabs = <div className="inflation-mode-tabs" role="tablist" aria-label="Inflation views">
     <button type="button" role="tab" aria-selected={view === "comparison"} onClick={() => { setView("comparison"); setMeasure("paired"); setSelectedIds(specs.filter(spec => !spec.id.endsWith("-ppi-card")).slice(0, 1).map(spec => spec.id)); }}>{region === "US" ? "CPI & PCE" : region === "UK" ? "CPI & CPIH" : "HICP"}</button>
-    <button type="button" role="tab" aria-selected={view === "ppi"} onClick={() => { setView("ppi"); setMeasure("YoY"); setSelectedIds((region === "US" ? ppiSpecs : ppiSpecs.slice(0, 1)).map(spec => spec.id)); }}>PPI</button>
+    <button type="button" role="tab" aria-selected={view === "ppi"} onClick={() => { setView("ppi"); setMeasure(region === "UK" ? "paired" : "YoY"); setSelectedIds(((region === "US" || region === "EA") ? ppiSpecs : ppiSpecs.slice(0, 1)).map(spec => spec.id)); }}>PPI</button>
     {region === "US" && <button type="button" role="tab" aria-selected={view === "underlying"} onClick={() => setView("underlying")}>Underlying inflation</button>}
   </div>;
   if (view === "underlying" && region === "US") return <div className="inflation-studio-shell">{modeTabs}<UnderlyingInflationMeasures metrics={metrics} onOpen={onOpen} /></div>;
   return <div className="inflation-studio-shell">{modeTabs}<div className="inflation-studio">
     <div className="inflation-studio-controls" role="group" aria-label="Inflation indicators">{displaySpecs.map((spec, index) => { const active = selectedIds.includes(spec.id); return <button key={spec.id} type="button" aria-pressed={active} className={clsx("inflation-chip", active && "is-active", highlightedMetricId && specContainsMetric(spec, highlightedMetricId) && "is-release-highlighted")} style={{ "--series-color": colors[index % colors.length] } as React.CSSProperties} onClick={() => setSelectedIds(current => active ? current.filter(id => id !== spec.id) : [...current, spec.id])}><i />{displayMetricTitle(spec, metrics[spec.metricId])}</button>; })}
-       <div className="inflation-measure-toggle" role="group" aria-label="Inflation measure">{([...(view === "ppi" ? ["YoY" as const] : ["paired" as const]), "MoM" as const]).map(value => <button key={value} type="button" aria-pressed={measure === value} onClick={() => setMeasure(value)}>{value === "paired" ? (region === "UK" ? "YoY + 3-month average" : region === "EA" ? "YoY + 3-month avg" : "YoY + 3m/3m SAAR") : value}</button>)}</div>
+       <div className="inflation-measure-toggle" role="group" aria-label="Inflation measure">{([...(view === "ppi" ? (region === "UK" ? ["paired" as const] : region === "EA" || region === "US" ? ["YoY" as const, "3m3m" as const] : ["YoY" as const]) : ["paired" as const]), "MoM" as const]).map(value => <button key={value} type="button" aria-pressed={measure === value} onClick={() => setMeasure(value)}>{value === "paired" ? (view === "ppi" && region === "UK" ? "YoY + 3m/3m SAAR" : region === "UK" ? "YoY + 3-month average" : region === "EA" ? "YoY + 3-month avg" : "YoY + 3m/3m SAAR") : value === "3m3m" ? "3m/3m SAAR" : value}</button>)}</div>
     </div>
     <div className="inflation-data-layout">
        <section className="inflation-chart-panel" aria-label="Inflation comparison chart">
-       <div className="inflation-chart-heading"><div className="inflation-chart-title"><h3>{view === "ppi" ? "PPI" : region === "EA" ? "HICP" : "Inflation"} comparison</h3><span>{measure === "paired" ? `YoY and ${region === "UK" ? "3-month average" : region === "EA" ? "3-month avg YoY" : "3m/3m SAAR"}` : measure === "3m3m" ? (region === "UK" ? "3-month average" : region === "EA" ? "3-month avg YoY" : "3m/3m SAAR") : measure} change · {isDefaultChartRange ? "last 12 months" : chartRange.from === chartRange.to ? chartRange.from : `${chartRange.from}–${chartRange.to}`}</span></div><div className="inflation-chart-legend" aria-label="Chart series">{selected.flatMap(spec => { const color = colors[plottedSpecs.findIndex(item => item.id === spec.id) % colors.length]; return measure === "paired" ? [<span key={spec.id}><i style={{ borderTop: `2px solid ${color}` }} />{seriesTitle(spec.id)}</span>, <span key={`${spec.id}-trend`}><i style={{ borderTop: `2px dotted ${color}` }} />{seriesTitle(`${spec.id}__trend`)}</span>] : [<span key={spec.id}><i style={{ borderTop: `2px solid ${color}` }} />{seriesTitle(measure === "3m3m" ? spec.id + "__trend" : spec.id)}</span>]; })}</div></div>
-        <div className="inflation-plot">{plottedSpecs.length ? <HistoryChartViewport dates={points.map(point => point.period)} frequency="monthly" height={352} label="Inflation comparison" onRangeChange={handleChartRangeChange}>{(plotWidth, fromYear, toYear, isDefaultWindow) => { const yearPoints = isDefaultWindow ? filterHistoryToTrailing12Months(points) : filterHistoryByYearRange(points, fromYear, toYear); const peakBaseline = measure === "YoY" || measure === "paired" ? 2 : 0; const chartPoints = yearPoints.map(point => { const value = peakShadeSpec ? point[peakShadeSpec.id] : null; return { ...point, peakShade: typeof value === "number" && value > peakBaseline ? value : null }; }); const yearTicks = getNiceTicks(yearPoints.flatMap(point => plottedSpecs.flatMap(spec => [point[spec.id], ...(measure === "paired" ? [point[`${spec.id}__trend`]] : [])]).filter((value): value is number => value != null && Number.isFinite(value)))); return <ResponsiveContainer width={plotWidth} height="100%"><LineChart data={chartPoints} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}><CartesianGrid stroke="var(--line)" strokeDasharray="2 4" vertical /><XAxis dataKey="label" tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={{ stroke: "var(--line-strong)" }} tickLine={false} minTickGap={18} interval="preserveStartEnd" /><YAxis allowDataOverflow unit="%" width={52} ticks={yearTicks} domain={getNiceTickDomain(yearTicks)} tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={false} tickLine={false} /><Tooltip cursor={{ stroke: "var(--line-strong)", strokeWidth: 1, strokeDasharray: "4 3" }} formatter={(value, name) => [Number(value).toFixed(1) + "%", seriesTitle(name ?? "")] } labelFormatter={(label) => String(label)} content={measure === "paired" ? ({ active, label, payload }) => { if (!active || !payload?.length) return null; const grouped = new Map<string, { yoy?: number; trend?: number }>(); for (const entry of payload) { const key = String(entry.dataKey ?? ""); const isTrend = key.endsWith("__trend"); const id = isTrend ? key.slice(0, -7) : key; if (!plottedSpecs.some(spec => spec.id === id) || entry.value == null || !Number.isFinite(Number(entry.value))) continue; const values = grouped.get(id) ?? {}; values[isTrend ? "trend" : "yoy"] = Number(entry.value); grouped.set(id, values); } return <div className="inflation-paired-tooltip"><strong className="inflation-paired-tooltip-period">{String(label)}</strong><div className="inflation-paired-tooltip-head"><span>Indicator</span><span>YoY</span><span>{region === "UK" ? "3-month avg" : "3m/3m SAAR"}</span></div>{[...grouped].map(([id, values]) => <div className="inflation-paired-tooltip-row" key={id}><span><i style={{ background: colors[plottedSpecs.findIndex(spec => spec.id === id) % colors.length] }} />{seriesTitle(id)}</span><b>{values.yoy == null ? "—" : values.yoy.toFixed(1) + "%"}</b><b>{values.trend == null ? "—" : values.trend.toFixed(1) + "%"}</b></div>)}</div>; } : undefined} />{peakShadeSpec && <Area dataKey="peakShade" type="linear" baseValue={peakBaseline} stroke="none" fill={colors[plottedSpecs.findIndex(spec => spec.id === peakShadeSpec.id) % colors.length]} fillOpacity={0.14} tooltipType="none" isAnimationActive={false} />}{plottedSpecs.map(spec => <Area key={`shade-${spec.id}`} dataKey={spec.id} type="linear" baseValue={yearTicks[0] ?? "dataMin"} stroke="none" fill={colors[plottedSpecs.findIndex(item => item.id === spec.id) % colors.length]} fillOpacity={0.07} tooltipType="none" isAnimationActive={false} />)}{plottedSpecs.flatMap(spec => {
+       <div className="inflation-chart-heading"><div className="inflation-chart-title"><h3>{view === "ppi" ? "PPI" : region === "EA" ? "HICP" : "Inflation"} comparison</h3><span>{measure === "paired" ? `YoY and ${view === "ppi" && region === "UK" ? "3m/3m SAAR" : region === "UK" ? "3-month average" : region === "EA" ? "3-month avg YoY" : "3m/3m SAAR"}` : measure === "3m3m" ? (region === "UK" ? "3-month average" : region === "EA" ? view === "ppi" ? "3m/3m SAAR" : "3-month avg YoY" : "3m/3m SAAR") : measure} change · {isDefaultChartRange ? "last 12 months" : chartRange.from === chartRange.to ? chartRange.from : `${chartRange.from}–${chartRange.to}`}</span></div><div className="inflation-chart-legend" aria-label="Chart series">{selected.flatMap(spec => { const color = colors[plottedSpecs.findIndex(item => item.id === spec.id) % colors.length]; return measure === "paired" ? [<span key={spec.id}><i style={{ borderTop: `2px solid ${color}` }} />{seriesTitle(spec.id)}{region === "US" ? " · left axis" : ""}</span>, <span key={`${spec.id}-trend`}><i style={{ borderTop: `2px dotted ${color}` }} />{seriesTitle(`${spec.id}__trend`)}{region === "US" ? " · right axis" : ""}</span>] : [<span key={spec.id}><i style={{ borderTop: `2px solid ${color}` }} />{seriesTitle(measure === "3m3m" ? spec.id + "__trend" : spec.id)}</span>]; })}</div></div>
+        <div className="inflation-plot">{plottedSpecs.length ? <HistoryChartViewport dates={points.map(point => point.period)} frequency="monthly" height={352} label="Inflation comparison" onRangeChange={handleChartRangeChange}>{(plotWidth, fromYear, toYear, isDefaultWindow) => { const yearPoints = isDefaultWindow ? filterHistoryToTrailing12Months(points) : filterHistoryByYearRange(points, fromYear, toYear); const peakBaseline = measure === "YoY" || measure === "paired" ? 2 : 0; const chartPoints = yearPoints.map(point => { const value = peakShadeSpec ? point[peakShadeSpec.id] : null; return { ...point, peakShade: typeof value === "number" && value > peakBaseline ? value : null }; }); const splitUsAxes = region === "US" && measure === "paired"; const primaryValues = yearPoints.flatMap(point => plottedSpecs.map(spec => point[spec.id]).filter((value): value is number => value != null && Number.isFinite(value))); const secondaryValues = yearPoints.flatMap(point => plottedSpecs.map(spec => point[`${spec.id}__trend`]).filter((value): value is number => value != null && Number.isFinite(value))); const pairedTicks = splitUsAxes ? getPairedAxisTicks(primaryValues, secondaryValues, 7, 0.05) : null; const yearTicks = pairedTicks?.primaryTicks ?? getNiceTicks([...primaryValues, ...(measure === "paired" ? secondaryValues : [])]); const trendTicks = pairedTicks?.secondaryTicks ?? []; return <ResponsiveContainer width={plotWidth} height="100%"><LineChart data={chartPoints} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}><CartesianGrid stroke="var(--line)" strokeDasharray="2 4" vertical /><XAxis dataKey="label" tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={{ stroke: "var(--line-strong)" }} tickLine={false} minTickGap={18} interval="preserveStartEnd" /><YAxis yAxisId="primary" allowDataOverflow unit="%" width={52} ticks={yearTicks} domain={getNiceTickDomain(yearTicks)} tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={false} tickLine={false} />{splitUsAxes && trendTicks.length > 0 && <YAxis yAxisId="secondary" orientation="right" allowDataOverflow unit="%" width={58} ticks={trendTicks} domain={getNiceTickDomain(trendTicks)} tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={false} tickLine={false} />}<Tooltip cursor={{ stroke: "var(--line-strong)", strokeWidth: 1, strokeDasharray: "4 3" }} formatter={(value, name) => [Number(value).toFixed(1) + "%", seriesTitle(name ?? "")] } labelFormatter={(label) => String(label)} content={measure === "paired" ? ({ active, label, payload }) => { if (!active || !payload?.length) return null; const grouped = new Map<string, { yoy?: number; trend?: number }>(); for (const entry of payload) { const key = String(entry.dataKey ?? ""); const isTrend = key.endsWith("__trend"); const id = isTrend ? key.slice(0, -7) : key; if (!plottedSpecs.some(spec => spec.id === id) || entry.value == null || !Number.isFinite(Number(entry.value))) continue; const values = grouped.get(id) ?? {}; values[isTrend ? "trend" : "yoy"] = Number(entry.value); grouped.set(id, values); } return <div className="inflation-paired-tooltip"><strong className="inflation-paired-tooltip-period">{String(label)}</strong><div className="inflation-paired-tooltip-head"><span>Indicator</span><span>YoY</span><span>{region === "UK" ? view === "ppi" ? "3m/3m SAAR" : "3-month avg" : "3m/3m SAAR"}</span></div>{[...grouped].map(([id, values]) => <div className="inflation-paired-tooltip-row" key={id}><span><i style={{ background: colors[plottedSpecs.findIndex(spec => spec.id === id) % colors.length] }} />{seriesTitle(id)}</span><b>{values.yoy == null ? "—" : values.yoy.toFixed(1) + "%"}</b><b>{values.trend == null ? "—" : values.trend.toFixed(1) + "%"}</b></div>)}</div>; } : undefined} />{peakShadeSpec && <Area yAxisId="primary" dataKey="peakShade" type="linear" baseValue={peakBaseline} stroke="none" fill={colors[plottedSpecs.findIndex(spec => spec.id === peakShadeSpec.id) % colors.length]} fillOpacity={0.14} tooltipType="none" isAnimationActive={false} />}{plottedSpecs.map(spec => <Area key={`shade-${spec.id}`} yAxisId="primary" dataKey={spec.id} type="linear" baseValue={yearTicks[0] ?? "dataMin"} stroke="none" fill={colors[plottedSpecs.findIndex(item => item.id === spec.id) % colors.length]} fillOpacity={0.07} tooltipType="none" isAnimationActive={false} />)}{plottedSpecs.flatMap(spec => {
   const color = colors[plottedSpecs.findIndex(item => item.id === spec.id) % colors.length];
   const trendKey = `${spec.id}__trend`;
   return [
-    <Line key={spec.id} connectNulls={false} type="linear" dataKey={spec.id} name={spec.id} stroke={color} strokeWidth={2.5} dot={{ r: 3, fill: color, strokeWidth: 0 }} activeDot={{ r: 5 }} isAnimationActive={false} /> ,
-    ...(measure === "paired" ? [<Line key={trendKey} connectNulls={false} type="linear" dataKey={trendKey} name={trendKey} stroke={color} strokeWidth={2.5} strokeDasharray="2 5" dot={false} activeDot={{ r: 5 }} isAnimationActive={false} />] : []),
+    <Line key={spec.id} yAxisId="primary" connectNulls={false} type="linear" dataKey={spec.id} name={spec.id} stroke={color} strokeWidth={2.5} dot={{ r: 3, fill: color, strokeWidth: 0 }} activeDot={{ r: 5 }} isAnimationActive={false} /> ,
+    ...(measure === "paired" ? [<Line key={trendKey} yAxisId={splitUsAxes ? "secondary" : "primary"} connectNulls={false} type="linear" dataKey={trendKey} name={trendKey} stroke={color} strokeWidth={2.5} strokeDasharray="2 5" dot={false} activeDot={{ r: 5 }} isAnimationActive={false} />] : []),
   ];
 })}</LineChart></ResponsiveContainer>; }}</HistoryChartViewport> : <div className="inflation-no-selection">Select an indicator to plot its published history.</div>}</div>
       {region === "US" && measure === "paired" && chartRange.from <= 2025 && chartRange.to >= 2025 && plottedSpecs.some(spec => ["us-cpi-card", "us-core-cpi-card"].includes(spec.id)) && <p className="inflation-data-note">BLS did not publish CPI indexes for October 2025 during the federal funding lapse. Since 3m/3m SAAR needs four consecutive seasonally adjusted index values, CPI and Core CPI are blank for October 2025 through January 2026; values resume in February. No estimates are substituted.</p>}
+      {region === "UK" && view === "ppi" && measure === "paired" && <p className="inflation-data-note">The UK PPI 3m/3m SAAR is compounded from three monthly ONS rates. ONS PPI is not seasonally adjusted, so seasonal effects remain in this annualized trend.</p>}
       </section>
       <section className="inflation-reading-panel" aria-label="Latest inflation readings table">
         <div className="inflation-reading-heading"><h3>{view === "ppi" ? "Latest producer price readings" : "Latest inflation readings"}</h3><span>Published release date and observation period are shown separately.</span></div>
-        <div className="inflation-reading-wrap" role="region" aria-label="Latest inflation readings" tabIndex={0}><table className={clsx("inflation-reading-table", (region === "US" || region === "UK") && "has-three-rates")}><thead><tr><th>Indicator</th>{(region === "US" || region === "UK") ? <><th>YoY</th><th>MoM</th><th>{region === "UK" ? "3-month average" : "3m/3m SAAR"}</th></> : <><th>{measure === "paired" ? "YoY" : measure === "3m3m" ? "3m/3m SAAR" : measure}</th>{measure !== "3m3m" && <th>{measure === "paired" ? (region === "EA" ? "3-month avg YoY" : "3m/3m SAAR") : measure === "YoY" ? "MoM" : "YoY"}</th>}</>}<th>Release date</th><th>Period</th><th>Source</th><th aria-label="Details" /></tr></thead><tbody>{displaySpecs.map((spec, index) => { const reading = readingFor(spec); const active = selectedIds.includes(spec.id); const secondValue = reading.otherReading; const showThreeRates = region === "US" || region === "UK"; return <tr key={spec.id} className={clsx(active && "selected-reading", highlightedMetricId && specContainsMetric(spec, highlightedMetricId) && "is-release-highlighted")} style={{ "--series-color": colors[index % colors.length] } as React.CSSProperties}><th scope="row"><i />{displayMetricTitle(spec, metrics[spec.metricId])}</th>{showThreeRates ? <><td>{spec.groupOnly ? "By component" : reading.fmtRate(reading.yoyReading)}</td><td>{spec.groupOnly ? "By component" : reading.fmtRate(reading.momReading)}</td><td>{spec.groupOnly ? "By component" : reading.fmtRate(reading.threeMonthReading)}</td></> : <><td>{spec.groupOnly ? "By component" : reading.fmtRate(reading.selectedReading)}</td>{measure !== "3m3m" && <td>{spec.groupOnly ? "By component" : reading.hasSecond ? reading.fmtRate(secondValue) : "—"}</td>}</>}<td>{reading.releaseDate}{reading.hasSecond && reading.secondReleaseDate !== reading.releaseDate ? <small className="reading-meta">{measure === "paired" ? (region === "UK" ? "3-month average" : region === "EA" ? "3-month avg YoY" : "3m/3m SAAR") : measure === "YoY" ? "MoM" : "YoY"}: {reading.secondReleaseDate}</small> : null}</td><td>{reading.latestPeriod ? formatObsDate(reading.latestPeriod) : "—"}</td><td>{reading.source}{reading.hasSecond && reading.secondSource !== reading.source ? <small className="reading-meta">{measure === "paired" ? (region === "UK" ? "3-month average" : region === "EA" ? "3-month avg YoY" : "3m/3m SAAR") : measure === "YoY" ? "MoM" : "YoY"}: {reading.secondSource}</small> : null}</td><td><button type="button" aria-label={`View ${displayMetricTitle(spec, metrics[spec.metricId])} details`} onClick={() => onOpen(spec)}><ChevronRight size={15} /></button></td></tr>; })}</tbody></table></div>
+        <div className="inflation-reading-wrap" role="region" aria-label="Latest inflation readings" tabIndex={0}><table className={clsx("inflation-reading-table", (region === "US" || region === "UK") && "has-three-rates")}><thead><tr><th>Indicator</th>{(region === "US" || region === "UK") ? <><th>YoY</th><th>MoM</th><th>{region === "UK" ? view === "ppi" ? "3m/3m SAAR" : "3-month average" : "3m/3m SAAR"}</th></> : <><th>{measure === "paired" ? "YoY" : measure === "3m3m" ? "3m/3m SAAR" : measure}</th>{measure !== "3m3m" && <th>{measure === "paired" ? (region === "EA" ? "3-month avg YoY" : "3m/3m SAAR") : measure === "YoY" ? "MoM" : "YoY"}</th>}</>}<th>Release date</th><th>Period</th><th>Source</th><th aria-label="Details" /></tr></thead><tbody>{displaySpecs.map((spec, index) => { const reading = readingFor(spec); const active = selectedIds.includes(spec.id); const secondValue = reading.otherReading; const showThreeRates = region === "US" || region === "UK"; return <tr key={spec.id} className={clsx(active && "selected-reading", highlightedMetricId && specContainsMetric(spec, highlightedMetricId) && "is-release-highlighted")} style={{ "--series-color": colors[index % colors.length] } as React.CSSProperties}><th scope="row"><i />{displayMetricTitle(spec, metrics[spec.metricId])}</th>{showThreeRates ? <><td>{spec.groupOnly ? "By component" : reading.fmtRate(reading.yoyReading)}</td><td>{spec.groupOnly ? "By component" : reading.fmtRate(reading.momReading)}</td><td>{spec.groupOnly ? "By component" : reading.fmtRate(reading.threeMonthReading)}</td></> : <><td>{spec.groupOnly ? "By component" : reading.fmtRate(reading.selectedReading)}</td>{measure !== "3m3m" && <td>{spec.groupOnly ? "By component" : reading.hasSecond ? reading.fmtRate(secondValue) : "—"}</td>}</>}<td>{reading.releaseDate}{reading.hasSecond && reading.secondReleaseDate !== reading.releaseDate ? <small className="reading-meta">{measure === "paired" ? (region === "UK" ? "3-month average" : region === "EA" ? "3-month avg YoY" : "3m/3m SAAR") : measure === "YoY" ? "MoM" : "YoY"}: {reading.secondReleaseDate}</small> : null}</td><td>{reading.latestPeriod ? formatObsDate(reading.latestPeriod) : "—"}</td><td>{reading.source}{reading.hasSecond && reading.secondSource !== reading.source ? <small className="reading-meta">{measure === "paired" ? (region === "UK" ? "3-month average" : region === "EA" ? "3-month avg YoY" : "3m/3m SAAR") : measure === "YoY" ? "MoM" : "YoY"}: {reading.secondSource}</small> : null}</td><td><button type="button" aria-label={`View ${displayMetricTitle(spec, metrics[spec.metricId])} details`} onClick={() => onOpen(spec)}><ChevronRight size={15} /></button></td></tr>; })}</tbody></table></div>
       </section>
     </div>
   </div></div>;
@@ -3993,9 +4041,10 @@ function UnderlyingInflationMeasures({ metrics, onOpen }: { metrics: Record<stri
 }
 
 function ExpectationGroupStudio({ region, specs, metrics, onMetricOpen, highlightedMetricId }: { region: Region; specs: IndicatorSpec[]; metrics: Record<string, DetailPayload | undefined>; onMetricOpen: (metricId: string) => void; highlightedMetricId: string | null }) {
-  const groups = Array.from(new Set(specs.map(spec => spec.expectationGroup).filter((group): group is NonNullable<IndicatorSpec["expectationGroup"]> => Boolean(group))));
+  const visibleSpecs = region === "UK" ? specs.filter(spec => spec.expectationGroup !== "professional") : specs;
+  const groups = Array.from(new Set(visibleSpecs.map(spec => spec.expectationGroup).filter((group): group is NonNullable<IndicatorSpec["expectationGroup"]> => Boolean(group))));
   const [group, setGroup] = useState<string>(groups[0] ?? "consumer");
-  const active = specs.find(spec => spec.expectationGroup === group) ?? specs[0];
+  const active = visibleSpecs.find(spec => spec.expectationGroup === group) ?? visibleSpecs[0];
   if (!active) return null;
   const candidateIds = active.chartMetricIds?.length ? active.chartMetricIds : collectMetricIds(active.components);
   const entries = candidateIds.map(id => metrics[id]).filter((item): item is DetailPayload => Boolean(item));
@@ -4343,32 +4392,6 @@ const isUsBusinessExpectations =
         ids: ["ea-spf-wage-exp-1y"],
       },
     ],
-    "ea-inflation-expectations-professional": [
-      {
-        key: "spf-current-year",
-        title: "ECB SPF · Current-Year HICP",
-        note: "Survey forecast for the current calendar year.",
-        ids: ["ea-spf-current-year"],
-      },
-      {
-        key: "spf-one-year",
-        title: "ECB SPF · One-Year-Ahead HICP",
-        note: "Survey forecast for inflation one year ahead.",
-        ids: ["ea-inflation-exp-1y"],
-      },
-      {
-        key: "spf-two-year",
-        title: "ECB SPF · Two-Year-Ahead HICP",
-        note: "Survey forecast for inflation two years ahead.",
-        ids: ["ea-spf-hicp-2y"],
-      },
-      {
-        key: "spf-long-term",
-        title: "ECB SPF · Long-Term HICP",
-        note: "Long-term professional inflation expectations.",
-        ids: ["ea-inflation-exp-lt"],
-      },
-    ],
   };
 
   const explicit = explicitGroups[spec.id];
@@ -4537,6 +4560,7 @@ function ClaimsKpis({
         const latest = normalizeHistory(claim.payload?.history ?? []).at(-1);
         const latestValue = latest?.value ?? claim.payload?.meta.latest?.value ?? null;
         const latestDate = latest?.date ?? claim.payload?.meta.latest?.date;
+        const averageValue = normalizeHistory(claim.payload?.threeMonth?.history ?? []).at(-1)?.value ?? null;
         return (
           <div className="drawer-kpi" key={claim.id}>
             <span>{claim.label}</span>
@@ -4546,6 +4570,10 @@ function ClaimsKpis({
             <small style={{ display: "block", marginTop: 4, color: "var(--muted)" }}>
               {latestDate ? formatObsDate(latestDate) : "Latest published week"}
             </small>
+            {claim.payload?.threeMonth && <>
+              <span style={{ display: "block", marginTop: 10 }}>{claim.payload.threeMonth.label}</span>
+              <strong style={{ display: "block", marginTop: 4 }}>{formatClaimsCount(averageValue)}</strong>
+            </>}
           </div>
         );
       })}
@@ -5122,7 +5150,7 @@ function DetailDrawer({
     nodes.forEach((node) => {
       const payload = node.metricId ? allMetrics[node.metricId] : undefined;
       const hasChildren = Boolean(node.children?.length);
-      if ((payload && payload.meta.id !== spec.metricId) || hasChildren) {
+      if ((payload && (payload.meta.id !== spec.metricId || spec.id === "us-claims-card")) || hasChildren) {
         flightDeckRows.push({ node, depth, group: group || spec.title || "Component", parentIds, hasChildren });
       }
       if (hasChildren) collectFlightDeckRows(node.children!, depth + 1, payload ? node.label : group, [...parentIds, node.id]);
@@ -5494,7 +5522,7 @@ function DetailDrawer({
                           ? region === "EA"
                             ? "ECB Wage Tracker + ECB SPF"
                             : region === "UK"
-                              ? "BoE DMP + BoE Agents"
+                            ? "BoE DMP"
                               : "New York Fed SCE + Atlanta Fed Wage Growth Tracker"
                           : "Inflation expectations"
                 : `${root?.meta.releaseName ?? "Official data series"} · Live source: ${formatLiveSourceLabel(root?.meta.liveSource)}${root?.meta.frequency ? ` · ${root.meta.frequency}` : ""}`}
@@ -5776,13 +5804,6 @@ function DetailDrawer({
                 </div>
                 <p className="flight-deck-note">{isRetailWeightField ? <>UK values use ONS 2025 percentages of all retailing; Non-Food Stores sums ONS-published non-food groups, and Total ex Fuel is the complement of the published fuel share. US Census category series are sales estimates, not a fixed-weight index. Eurostat uses 2021 turnover weights; some detailed weights are confidential and public weights have not yet been mapped here. Select a value or status for its official source and definition.</> : <>Weight shows the published 2026 share of the full CPI/CPIH/HICP basket. Select a weight to view its source. — means no applicable published weight is mapped.</>}</p>
                 {spec.id === "us-pce-card" && <p className="flight-deck-note">Headline PCE is grouped into goods and services. Core PCE excludes food and energy and remains a separate aggregate.</p>}
-                {(() => {
-                  const selectedPayload = allMetrics[effectiveSelectedSeriesId] ?? root;
-                  return <div className="flight-deck-selected">
-                    <div><span>Selected: {selectedPayload?.meta.shortName || selectedPayload?.meta.name || spec.title}</span><small>{selectedPayload ? `${formatExpectationValue(selectedPayload, selectedPayload.history?.at(-1)?.value)} · ${getLatestPeriodDate(selectedPayload) ? formatObsDate(getLatestPeriodDate(selectedPayload)) : "Observation date unavailable"}` : "Published detail unavailable"}</small></div>
-                    <div><small>Release {selectedPayload?.displayReleasedAt ? formatObsDate(selectedPayload.displayReleasedAt) : "—"} · {formatLiveSourceLabel(selectedPayload?.meta.liveSource)}</small><button type="button" onClick={() => selectedPayload && onComponentOpen(selectedPayload.meta.id, allNodes)}>View published series &amp; component detail <ChevronRight size={14} /></button></div>
-                  </div>;
-                })()}
                   </>;
                 })()}
               </section>
@@ -5899,10 +5920,29 @@ useEffect(() => {
         setReleaseToasts((current) => current.filter((toast) => toast.id !== id));
       }, notice.kind === "released" ? 9000 : 6500);
 
-      if (notice.kind !== "released" || notice.region !== r) return;
+      if (notice.kind !== "released") return;
+      if (notice.region === "US" || notice.region === "UK" || notice.region === "EA") {
+        if (notice.region !== r) {
+          window.location.assign(`/country/${notice.region.toLowerCase()}?openMetric=${encodeURIComponent(notice.metricId)}`);
+          return;
+        }
+      } else {
+        return;
+      }
+
       setRecentReleaseMetricId(notice.metricId);
       setHighlightedMetricId(notice.metricId);
-      openMetric(notice.metricId, undefined, undefined, false);
+      void refreshClientJson<Record<string, DetailPayload>>(
+        `dashboard:${r}`,
+        `/api/dashboard/${r}`,
+        "Dashboard request failed"
+      ).then((payload) => {
+        setMetrics(payload);
+        setSavedSnapshot(false);
+        openMetric(notice.metricId);
+      }).catch(() => {
+        openMetric(notice.metricId);
+      });
       if (highlightTimer.current) window.clearTimeout(highlightTimer.current);
       highlightTimer.current = window.setTimeout(() => {
         setHighlightedMetricId((current) => current === notice.metricId ? null : current);
@@ -6086,13 +6126,6 @@ useEffect(() => {
             </a>
           ))}
         </nav>
-
-        <div className="year-control">
-          <CalendarDays size={16} />
-          <span>Year</span>
-          <b>{YEAR}</b>
-          <ChevronDown size={15} />
-        </div>
 
         <button
   type="button"

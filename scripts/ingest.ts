@@ -77,10 +77,10 @@ import {
   fetchBoeMapsInflation,
   fetchBoeMprInflationSeries,
   fetchBoeDailyInflationCompensation,
+  fetchBoeFiveYearInflationCompensation,
   fetchBoeAgentsPaySettlement,
 } from "../src/ingest/boe-dmp";
-import { fetchOnsPpiBulletin } from "../src/ingest/ons-ppi-bulletin";
-import { fetchBlsSeries, fetchBlsSeriesFullHistory } from "../src/ingest/bls";
+import { fetchBlsSeries, fetchBlsSeriesFullHistory, fetchUsPpiHistory } from "../src/ingest/bls";
 import { fetchLsegHistory, fetchLsegLatest } from "../src/ingest/adapters/lseg";
 
 import {
@@ -233,12 +233,13 @@ export async function ensureSchema(): Promise<void> {
   await ensureColumn("releases", "expected_value", "REAL");
 }
 
-export async function seedCatalog(opts?: { cleanupOrphans?: boolean }): Promise<void> {
+export async function seedCatalog(opts?: { cleanupOrphans?: boolean; metricIds?: string[] }): Promise<void> {
   const db = getDb();
   const client = getClient();
   const catalogIds = new Set(METRICS.map((m) => m.id));
 
-  for (const m of METRICS) {
+  const selectedMetrics = opts?.metricIds?.length ? METRICS.filter(metric => opts.metricIds!.includes(metric.id)) : METRICS;
+  for (const m of selectedMetrics) {
     await db
       .insert(metrics)
       .values({
@@ -603,11 +604,12 @@ type LiveCaches = {
   dol: {
     initial: RawPoint[];
     continuing: RawPoint[];
+    initialAverage: RawPoint[];
+    continuingAverage: RawPoint[];
   };
 
   gdpNow: RawPoint[];
 
-  onsPpi: Awaited<ReturnType<typeof fetchOnsPpiBulletin>> | undefined;
 
   rssByMetric: Map<string, FeedItem>;
 };
@@ -627,11 +629,11 @@ async function warmLiveCaches(
     dol: {
       initial: [],
       continuing: [],
+      initialAverage: [],
+      continuingAverage: [],
     },
 
     gdpNow: [],
-
-    onsPpi: undefined,
 
     rssByMetric: new Map(),
   };
@@ -766,17 +768,6 @@ async function warmLiveCaches(
     }
   }
 
-  if (providers.has("ons")) {
-    try {
-      caches.onsPpi = await fetchOnsPpiBulletin();
-
-      console.log(
-        `[live] ONS PPI bulletin in=${caches.onsPpi.inputYoy?.value} out=${caches.onsPpi.outputYoy?.value}`
-      );
-    } catch (err) {
-      console.warn(`[live] ONS PPI bulletin failed:`, err);
-    }
-  }
 
   return caches;
 }
@@ -851,9 +842,9 @@ async function loadLiveRaw(
         note: `Live NY Fed SCE ${metric.seriesId}`,
       };
     }
-    if (metric.source === "atlanta" && metric.seriesId === "BIE_EXPECTED_PRICE_1Y") {
+    if (metric.source === "atlanta" && ["BIE_EXPECTED_PRICE_1Y", "BIE_EXPECTED_UNIT_COST_1Y"].includes(metric.seriesId)) {
       return {
-        points: await fetchAtlantaBieSeries(),
+        points: await fetchAtlantaBieSeries("headline"),
         note: "Live Atlanta Fed BIE",
       };
     }
@@ -924,6 +915,12 @@ async function loadLiveRaw(
       if (ref.seriesId === "continuing" && caches.dol.continuing.length) {
         return { points: caches.dol.continuing, note: "Live DOL ETA claims" };
       }
+      if (ref.seriesId === "initial-average" && caches.dol.initialAverage.length) {
+        return { points: caches.dol.initialAverage, note: "Official DOL four-week moving average" };
+      }
+      if (ref.seriesId === "continuing-average" && caches.dol.continuingAverage.length) {
+        return { points: caches.dol.continuingAverage, note: "Official DOL four-week moving average" };
+      }
       return null;
     }
     case "atlanta_gdpnow": {
@@ -956,19 +953,6 @@ async function loadLiveRaw(
       return { points, note: `Live BEA ${ref.seriesId}` };
     }
     case "ons": {
-      // Prefer bulletin headlines for PPI annual rates (authoritative on release day)
-      if (metric.id === "uk-ppi-input-yoy" && caches.onsPpi?.inputYoy) {
-        return {
-          points: [caches.onsPpi.inputYoy],
-          note: "Live ONS PPI bulletin (input YoY)",
-        };
-      }
-      if (metric.id === "uk-ppi-output-yoy" && caches.onsPpi?.outputYoy) {
-        return {
-          points: [caches.onsPpi.outputYoy],
-          note: "Live ONS PPI bulletin (output YoY)",
-        };
-      }
       await new Promise((r) => setTimeout(r, 400));
       return {
         points: await fetchOnsSeries(ref.seriesId),
@@ -1040,6 +1024,11 @@ async function loadFredRaw(
 
 async function loadOfficialHistory(metric: MetricDef): Promise<RawPoint[]> {
   const endYear = new Date().getFullYear();
+  if (metric.source === "dol") {
+    const claims = await fetchDolClaims();
+    return metric.seriesId === "initial-average" ? claims.initialAverage : claims.continuingAverage;
+  }
+  if (metric.id.startsWith('us-ppi-')) return fetchUsPpiHistory(metric.seriesId);
 
   if (isUsCpiLsegOnlyMetric(metric.id)) {
     const config = getSourceConfig(metric.id);
@@ -1089,7 +1078,7 @@ if (metric.source === "census") {
   if (metric.source === "lseg") {
     return fetchLsegHistory(metric.seriesId, { start: "1990-01-01" });
   }
-  if (metric.source === "atlanta" && metric.seriesId === "BIE_EXPECTED_PRICE_1Y") {
+  if (metric.source === "atlanta" && ["BIE_EXPECTED_PRICE_1Y", "BIE_EXPECTED_UNIT_COST_1Y"].includes(metric.seriesId)) {
     return fetchAtlantaBieSeries();
   }
   if (metric.id === "us-atlanta-wage" && metric.source === "atlanta") {
@@ -1342,6 +1331,7 @@ async function fetchBoeBySeriesId(seriesId: string) {
   if (seriesId === "UK_INFL_COMP_5Y5Y") {
     return fetchBoeDailyInflationCompensation(seriesId);
   }
+  if (seriesId === "UK_INFL_COMP_5Y") return fetchBoeFiveYearInflationCompensation();
   if (seriesId === "IAS_Q2A") return fetchBoeInflationExpectations("1y");
   if (seriesId === "IAS_Q2B") return fetchBoeInflationExpectations("2y");
   if (seriesId === "IAS_Q2C") return fetchBoeInflationExpectations("5y");
@@ -1395,7 +1385,7 @@ export async function runIngest(
   await ensureSchema();
   // Filtered repairs/backfills should only seed their selected catalog rows;
   // avoid deleting unrelated rows from a user's local database.
-  await seedCatalog({ cleanupOrphans: !opts?.metricIds?.length });
+  await seedCatalog({ metricIds: opts?.metricIds, cleanupOrphans: !opts?.metricIds?.length });
 
   const db = getDb();
   const startedAt = new Date().toISOString();
@@ -1439,11 +1429,12 @@ const liveCaches: LiveCaches =
         dol: {
           initial: [],
           continuing: [],
+          initialAverage: [],
+          continuingAverage: [],
         },
 
         gdpNow: [],
 
-        onsPpi: undefined,
 
         rssByMetric: new Map(),
       };
@@ -1458,13 +1449,17 @@ const liveCaches: LiveCaches =
               metric.id === "us-eci-wages" ||
               (live.note.startsWith("Official LSEG") && metric.transform !== "level") ||
               live.note.includes("(change)") ||
-              live.note.includes("release page") ||
-              live.note.includes("PPI bulletin");
+              live.note.includes("release page");
             const rss = liveCaches.rssByMetric?.get(metric.id);
-            const count = await persistMetricMerge(metric, live.points, live.note, {
-              treatAsLevel: headline,
-              docsUrl: rss?.link ?? metric.docsUrl,
-            });
+            const count = metric.source === "dol"
+              ? await persistMetricReplace(metric, live.points, live.note, {
+                  treatAsLevel: headline,
+                  docsUrl: rss?.link ?? metric.docsUrl,
+                })
+              : await persistMetricMerge(metric, live.points, live.note, {
+                  treatAsLevel: headline,
+                  docsUrl: rss?.link ?? metric.docsUrl,
+                });
             return { ok: true as const, metricId: metric.id, count, via: "live" as const };
           }
         } catch (err) {

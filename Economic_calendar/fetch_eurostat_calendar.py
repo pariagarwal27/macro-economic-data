@@ -166,7 +166,18 @@ EUROSTAT_METRICS = {
 
 
 
-    "ea-ppi-yoy": "sts_inpp_m",
+    "ea-ppi-yoy": "ea-ppi:B-E36:PCH_PRE",
+    "ea-ppi-mom": "ea-ppi:B-E36:PCH_SM",
+    "ea-ppi-capital-goods-yoy": "ea-ppi:MIG_CAG:PCH_PRE",
+    "ea-ppi-capital-goods-mom": "ea-ppi:MIG_CAG:PCH_SM",
+    "ea-ppi-intermediate-goods-yoy": "ea-ppi:MIG_ING:PCH_PRE",
+    "ea-ppi-intermediate-goods-mom": "ea-ppi:MIG_ING:PCH_SM",
+    "ea-ppi-durable-consumer-goods-yoy": "ea-ppi:MIG_DCOG:PCH_PRE",
+    "ea-ppi-durable-consumer-goods-mom": "ea-ppi:MIG_DCOG:PCH_SM",
+    "ea-ppi-non-durable-consumer-goods-yoy": "ea-ppi:MIG_NDCOG:PCH_PRE",
+    "ea-ppi-non-durable-consumer-goods-mom": "ea-ppi:MIG_NDCOG:PCH_SM",
+    "ea-ppi-energy-yoy": "ea-ppi:MIG_NRG:PCH_PRE",
+    "ea-ppi-energy-mom": "ea-ppi:MIG_NRG:PCH_SM",
 
 
 
@@ -254,6 +265,15 @@ EUROSTAT_METRICS = {
 }
 
 RELEASE_FAMILIES = {
+    # Eurostat publishes annual and monthly rates for these EA special
+    # aggregates in BOTH flash estimates and final HICP releases:
+    # https://ec.europa.eu/eurostat/web/hicp/information-data
+    "HICP_AGGREGATES": {
+        "event_regex": re.compile(
+            r"^(?:Flash estimate inflation euro area|Inflation\s+\(HICP\))(?:$|[\s,(-])",
+            re.IGNORECASE,
+        ),
+    },
     "HICP": {
     "event_regex": re.compile(
         r"^(?!.*\bflash\b)Inflation\s+\(HICP\).*",
@@ -264,7 +284,7 @@ RELEASE_FAMILIES = {
 
         "event_regex": re.compile(
 
-            r"^Industrial producer prices,\s*external & total",
+            r"^Industrial producer prices",
 
             re.IGNORECASE,
 
@@ -290,19 +310,13 @@ RELEASE_FAMILIES = {
 
     "GDP_EMPLOYMENT": {
 
-        # Regular GDP/main-aggregate release.
-
-        # Excludes:
-
-        #   Preliminary flash estimate GDP...
-
-        #   Flash estimate GDP and employment...
+        # Match the preliminary flash, later flash, and regular GDP releases.
+        # The calendar database keeps the nearest upcoming event per metric;
+        # after it passes, the next refresh advances to the next release stage.
 
         "event_regex": re.compile(
 
-            r"^(?!Preliminary flash estimate)"
-
-            r"(?!Flash estimate)"
+            r"^"
 
             r"(?=.*GDP)"
 
@@ -376,7 +390,7 @@ RELEASE_FAMILIES = {
 
         "event_regex": re.compile(
 
-            r"^Labour cost index$",
+            r"^Labour cost index(?:\s*[-,:].*)?$",
 
             re.IGNORECASE,
 
@@ -460,6 +474,18 @@ def add_family(family, metrics):
 
 
 
+add_family(
+    "HICP_AGGREGATES",
+    [
+        "ea-hicp-yoy",
+        "ea-core-hicp-yoy",
+        "ea-hicp-mom",
+        "ea-core-hicp-mom",
+        "ea-services-hicp-yoy",
+        "ea-services-hicp-mom",
+    ],
+)
+
 # HICP / country HICP
 
 add_family(
@@ -467,18 +493,6 @@ add_family(
     "HICP",
 
     [
-
-        "ea-hicp-yoy",
-
-        "ea-core-hicp-yoy",
-
-        "ea-hicp-mom",
-
-        "ea-core-hicp-mom",
-
-        "ea-services-hicp-yoy",
-
-        "ea-services-hicp-mom",
 
         "ea-goods-hicp-yoy",
 
@@ -509,6 +523,17 @@ add_family(
     [
 
         "ea-ppi-yoy",
+        "ea-ppi-capital-goods-yoy",
+        "ea-ppi-intermediate-goods-yoy",
+        "ea-ppi-durable-consumer-goods-yoy",
+        "ea-ppi-non-durable-consumer-goods-yoy",
+        "ea-ppi-energy-yoy",
+        "ea-ppi-mom",
+        "ea-ppi-capital-goods-mom",
+        "ea-ppi-intermediate-goods-mom",
+        "ea-ppi-durable-consumer-goods-mom",
+        "ea-ppi-non-durable-consumer-goods-mom",
+        "ea-ppi-energy-mom",
 
     ],
 
@@ -1419,7 +1444,8 @@ def fetch_ecfin_next_release():
 
 def find_next_release(events, family_name, config):
 
-    today = datetime.now(timezone.utc).date()
+    now = datetime.now(timezone.utc)
+    today = now.date()
 
 
 
@@ -1445,6 +1471,9 @@ def find_next_release(events, family_name, config):
 
         if config["event_regex"].search(summary):
 
+            release_at = resolve_release_at(event, family_name)
+            if release_at and datetime.fromisoformat(release_at) <= now:
+                continue
             candidates.append(event)
 
 
@@ -1613,7 +1642,6 @@ def fetch_family_dates(events):
                 + results[family_name]["error"]
 
             )
-
 
 
     return results

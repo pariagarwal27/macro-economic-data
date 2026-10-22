@@ -199,7 +199,7 @@ function MatrixCell({ events }: { events: TapeEvent[] }) {
 export function ReleaseCalendar() {
   const [region, setRegion] = useState<(typeof REGIONS)[number]>("ALL");
   const [kind, setKind] = useState<Kind>("all");
-  const [view, setView] = useState<ViewMode>("table");
+  const [view, setView] = useState<ViewMode>("matrix");
   const [data, setData] = useState<TapeResponse | null>(
     () => getClientJsonCache<TapeResponse>("release-tape:ALL:all") ?? null
   );
@@ -213,7 +213,7 @@ export function ReleaseCalendar() {
     setError(null);
     const params = new URLSearchParams({
       region,
-      days: "7",
+      days: "10",
       kind,
       forwardOnly: "true",
     });
@@ -346,8 +346,7 @@ export function ReleaseCalendar() {
 
       {!events.length && !error && (
         <p className="mt-8 text-sm text-[var(--muted)]">
-          No events in the forward 7-day window for this filter. Try All regions or capture fresh
-          calendar data.
+          No scheduled releases match this region and release type in the next 10 days.
         </p>
       )}
 

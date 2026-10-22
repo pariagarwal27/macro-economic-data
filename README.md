@@ -66,7 +66,7 @@ Create `.env` from `.env.example` and set `BEA_API_KEY`. A registered `BLS_API_K
 
 - Production must set `CRON_SECRET`; the cron endpoint fails closed when it is missing.
 - Production should use the remote LibSQL/Turso database configured by the existing `DATABASE_URL`/`DATABASE_AUTH_TOKEN` settings. A Vercel function cannot use a mutable local SQLite file as a durable production database.
-- The weekly calendar workflow lives at `.github/workflows/weekly_calendar_refresh.yml` and refreshes `Economic_calendar/economic_calendar.db`. It requires the GitHub Actions secret `FRED_API_KEY`.
+- The calendar workflow lives at `.github/workflows/weekly_calendar_refresh.yml` and refreshes `Economic_calendar/economic_calendar.db` daily. The local calendar worker also refreshes after known publication times, with a one-hour retry backoff. Optional FRED schedules use the GitHub Actions secret `FRED_API_KEY`; agency calendars are fetched independently.
 - If LSEG-backed metrics are enabled, the LSEG Desktop bridge must be reachable at `LSEG_WORKER_URL`. On a local Windows machine, run `npm run release:lseg` or set `LSEG_WORKER_AUTOSTART=1` before `npm run dev`.
 - Metrics without an announced official future release date are covered by a lower-frequency safety poll; the system does not invent an exact release time.
 

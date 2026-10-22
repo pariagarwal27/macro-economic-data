@@ -104,6 +104,33 @@ test("released event uses the previous observation when the release omits priorP
   assert.equal(result.recentEvents.length, 1);
 });
 
+test("PCE diary uses four rate readings with rate-based previous and released values", () => {
+  const releaseName = "Personal Income and Outlays";
+  const ids = ["us-pce", "us-core-pce", "us-pce-mom", "us-pce-yoy", "us-core-pce-mom", "us-core-pce-yoy"];
+  const catalog = ids.map(id => ({
+    id, name: id, region: "US", source: "bea", releaseName, frequency: "monthly", unit: "percent",
+  })) as MetricDef[];
+  const rates = ["us-pce-mom", "us-pce-yoy", "us-core-pce-mom", "us-core-pce-yoy"];
+  const scheduled = inheritSharedReleaseSchedules([
+    { metricId: "us-pce", nextReleaseDate: "2026-10-29", nextReleaseAt: "2026-10-29T12:30:00Z" },
+  ], catalog);
+  const actuals = rates.map((metricId, index) => ({
+    metricId, periodDate: "2026-09-01", releasedAt: "2026-10-29T12:30:00Z",
+    value: 1 + index, expectedValue: null, priorPeriodValue: 0.5 + index,
+  }));
+  const result = buildEconomicCalendar(scheduled as never[], actuals, catalog, new Date("2026-10-29T14:00:00Z"), {
+    latestValues: new Map(rates.map((id, index) => [id, 0.5 + index])),
+  });
+
+  assert.deepEqual(result.allEvents.map(event => event.metricId).sort(), rates.slice().sort());
+  for (const [index, id] of rates.entries()) {
+    const event = result.allEvents.find(item => item.metricId === id)!;
+    assert.equal(event.previous, 0.5 + index);
+    assert.equal(event.actual, 1 + index);
+    assert.equal(event.status, "released");
+  }
+});
+
 test("all-metrics next release advances to the earliest confirmed future schedule while retaining history", () => {
   const metric = { id: "us-cpi", name: "CPI", region: "US", frequency: "monthly", unit: "percent" } as MetricDef;
   const published = { metricId: metric.id, metricName: "CPI", source: "BLS", family: "CPI", nextReleaseDate: "2026-10-14", nextReleaseAt: "2026-10-14T12:30:00Z", status: "success", officialSource: null, updatedAt: null };

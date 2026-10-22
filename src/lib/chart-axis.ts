@@ -39,6 +39,19 @@ export function getNiceTickDomain(ticks: number[]): [number, number] {
   return [ticks[0] ?? 0, ticks.at(-1) ?? 1];
 }
 
+/** Keep paired series on independent scales when their units/ranges differ. */
+export function getPairedAxisTicks(
+  primaryValues: number[],
+  secondaryValues: number[],
+  target = 7,
+  minimumStep = 0.1,
+) {
+  return {
+    primaryTicks: getNiceTicks(primaryValues, target, minimumStep),
+    secondaryTicks: getNiceTicks(secondaryValues, target, minimumStep),
+  };
+}
+
 /** Choose enough decimal places to distinguish adjacent axis ticks. */
 export function getTickPrecision(ticks: number[], maxDigits = 8): number {
   const step = ticks.length > 1 ? Math.abs(ticks[1]! - ticks[0]!) : 0.1;

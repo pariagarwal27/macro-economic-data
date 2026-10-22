@@ -1,0 +1,6955 @@
+{
+  "generatedAt": "2026-10-22T07:28:52.328Z",
+  "database": "data/macro.db",
+  "duplicateLatestRows": 0,
+  "metrics": [
+    {
+      "id": "us-cpi",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 956,
+      "derivedCount": 950,
+      "first": {
+        "date": "1947-04-01",
+        "value": 10.040768610332119
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 4.562342321211887
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cpi-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 955,
+      "derivedCount": 951,
+      "first": {
+        "date": "1947-04-01",
+        "value": 10.04076614351106
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 4.562195955509241
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cpi-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 944,
+      "derivedCount": 951,
+      "first": {
+        "date": "1947-04-01",
+        "value": 10.04076614351106
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 4.562195955509241
+      },
+      "mismatches": 0,
+      "companionId": "us-cpi-mom"
+    },
+    {
+      "id": "us-cpi-core",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 836,
+      "derivedCount": 830,
+      "first": {
+        "date": "1957-04-01",
+        "value": 4.277476078298981
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.4124037788220596
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-core-cpi-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 835,
+      "derivedCount": 831,
+      "first": {
+        "date": "1957-04-01",
+        "value": 4.2776440075501965
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.4120804171204
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-core-cpi-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 824,
+      "derivedCount": 831,
+      "first": {
+        "date": "1957-04-01",
+        "value": 4.2776440075501965
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.4120804171204
+      },
+      "mismatches": 0,
+      "companionId": "us-core-cpi-mom"
+    },
+    {
+      "id": "us-core-goods-cpi-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 824,
+      "derivedCount": 831,
+      "first": {
+        "date": "1957-04-01",
+        "value": 3.282781208938701
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.4392756821023154
+      },
+      "mismatches": 0,
+      "companionId": "us-core-goods-cpi-mom"
+    },
+    {
+      "id": "us-core-goods-cpi-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 835,
+      "derivedCount": 831,
+      "first": {
+        "date": "1957-04-01",
+        "value": 3.282781208938701
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.4392756821023154
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-services-cpi-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 704,
+      "derivedCount": 711,
+      "first": {
+        "date": "1967-04-01",
+        "value": 4.231930912301474
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.7594560684813594
+      },
+      "mismatches": 0,
+      "companionId": "us-services-cpi-mom"
+    },
+    {
+      "id": "us-services-cpi-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 715,
+      "derivedCount": 711,
+      "first": {
+        "date": "1967-04-01",
+        "value": 4.231930912301474
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.7594560684813594
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cpi-nsa",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 956,
+      "derivedCount": 950,
+      "first": {
+        "date": "1947-04-01",
+        "value": 7.652128146680637
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.627278124090738
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cpi-core-nsa",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 836,
+      "derivedCount": 830,
+      "first": {
+        "date": "1957-04-01",
+        "value": 4.277476078298981
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.886324263560369
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cpi-food",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 956,
+      "derivedCount": 950,
+      "first": {
+        "date": "1947-04-01",
+        "value": 12.857924998361113
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.9968140695004513
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cpi-energy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 836,
+      "derivedCount": 830,
+      "first": {
+        "date": "1957-04-01",
+        "value": 5.753948351547455
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 25.334938952432438
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cpi-apparel",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 956,
+      "derivedCount": 950,
+      "first": {
+        "date": "1947-04-01",
+        "value": 14.244980949126674
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.659372583171459
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cpi-new-vehicles",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 885,
+      "derivedCount": 882,
+      "first": {
+        "date": "1953-04-01",
+        "value": 8.923251942860745
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.1324760558408373
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cpi-used-cars",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 885,
+      "derivedCount": 882,
+      "first": {
+        "date": "1953-04-01",
+        "value": -5.4594433319541835
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.883033154795725
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cpi-medical-commodities",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 716,
+      "derivedCount": 710,
+      "first": {
+        "date": "1967-04-01",
+        "value": -2.6343228743325398
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": -5.873252192213984
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cpi-recreation-commodities",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 200,
+      "derivedCount": 194,
+      "first": {
+        "date": "2010-04-01",
+        "value": -1.9356057921190772
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 6.0563690269378245
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cpi-education-commodities",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 200,
+      "derivedCount": 194,
+      "first": {
+        "date": "2010-04-01",
+        "value": -2.778362640676235
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 9.581691489597532
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cpi-other-goods",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 200,
+      "derivedCount": 194,
+      "first": {
+        "date": "2010-04-01",
+        "value": 1.2558210425045901
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.6946007680541015
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cpi-shelter",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 884,
+      "derivedCount": 878,
+      "first": {
+        "date": "1953-04-01",
+        "value": 3.7379171467219363
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.218521553697129
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cpi-medical-services",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 848,
+      "derivedCount": 842,
+      "first": {
+        "date": "1956-04-01",
+        "value": 2.5077153014900766
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.389063859878049
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cpi-recreation-services",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 200,
+      "derivedCount": 194,
+      "first": {
+        "date": "2010-04-01",
+        "value": 1.195849194560572
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.2127529778839907
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cpi-transport-services",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 848,
+      "derivedCount": 842,
+      "first": {
+        "date": "1956-04-01",
+        "value": 0
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.415838190545941
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cpi-education-services",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 200,
+      "derivedCount": 194,
+      "first": {
+        "date": "2010-04-01",
+        "value": 2.374908542703369
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 9.814129359816093
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cpi-other-services",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 716,
+      "derivedCount": 710,
+      "first": {
+        "date": "1967-04-01",
+        "value": 3.4430150302480644
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.42526851427847
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-pce",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 812,
+      "derivedCount": 809,
+      "first": {
+        "date": "1959-04-01",
+        "value": 1.4587167667754253
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 1.0341523717954715
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-core-pce",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 812,
+      "derivedCount": 809,
+      "first": {
+        "date": "1959-04-01",
+        "value": 1.7924541879959177
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 2.046398408308314
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-pce-goods",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 812,
+      "derivedCount": 809,
+      "first": {
+        "date": "1959-04-01",
+        "value": 0.38892944385473527
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": -1.6529116286000844
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-pce-durable-goods",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 812,
+      "derivedCount": 809,
+      "first": {
+        "date": "1959-04-01",
+        "value": 1.1447338230895943
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 1.5185701615712865
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-pce-furnishings",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 812,
+      "derivedCount": 809,
+      "first": {
+        "date": "1959-04-01",
+        "value": 1.3026941527644054
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": -2.89995173717027
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-pce-clothing",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 812,
+      "derivedCount": 809,
+      "first": {
+        "date": "1959-04-01",
+        "value": 0.8227587793861568
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": -0.5282038784568233
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-pce-food",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 812,
+      "derivedCount": 809,
+      "first": {
+        "date": "1959-04-01",
+        "value": -3.3498675454919025
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 0.806051991439749
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-pce-energy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 812,
+      "derivedCount": 809,
+      "first": {
+        "date": "1959-04-01",
+        "value": 10.873655612298204
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": -27.82703220613747
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-pce-services",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 812,
+      "derivedCount": 809,
+      "first": {
+        "date": "1959-04-01",
+        "value": 2.746518925050645
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 2.2731397581398305
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-pce-household-services",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 812,
+      "derivedCount": 809,
+      "first": {
+        "date": "1959-04-01",
+        "value": 2.5606093166168575
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 2.710582416972951
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-pce-healthcare",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 812,
+      "derivedCount": 809,
+      "first": {
+        "date": "1959-04-01",
+        "value": 3.199450477651977
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 3.0617182453829717
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-pce-food-services",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 812,
+      "derivedCount": 809,
+      "first": {
+        "date": "1959-04-01",
+        "value": 5.403907576592526
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 1.3055182133063337
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-pce-housing",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 812,
+      "derivedCount": 809,
+      "first": {
+        "date": "1959-04-01",
+        "value": 2.231340073044108
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 2.6962551921307254
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-final-demand",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 3.232146665003155
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 8.143994058840253
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-final-demand-mom"
+    },
+    {
+      "id": "us-ppi-core",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 146,
+      "derivedCount": 155,
+      "first": {
+        "date": "2013-11-01",
+        "value": 1.609621171781206
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.112496059633798
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-core-mom"
+    },
+    {
+      "id": "us-core-pce-mom",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 811,
+      "derivedCount": 809,
+      "first": {
+        "date": "1959-04-01",
+        "value": 0.14816666666666667
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 0.16896666666666668
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cleveland-median-cpi",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 514,
+      "derivedCount": 512,
+      "first": {
+        "date": "1984-02-01",
+        "value": 4.2515
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.6278
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cleveland-trimmed-cpi",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 514,
+      "derivedCount": 512,
+      "first": {
+        "date": "1984-02-01",
+        "value": 3.9920333333333335
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.6130999999999998
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-sticky-cpi",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 705,
+      "derivedCount": 703,
+      "first": {
+        "date": "1968-03-01",
+        "value": 3.8756
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.7733333333333334
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-core-sticky-cpi",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 705,
+      "derivedCount": 703,
+      "first": {
+        "date": "1968-03-01",
+        "value": 3.8226148151407604
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.7309922764641823
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-flexible-cpi",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 705,
+      "derivedCount": 703,
+      "first": {
+        "date": "1968-03-01",
+        "value": 3.304133333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.249300000000001
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-umich-inflation-exp-1y",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 585,
+      "derivedCount": 582,
+      "first": {
+        "date": "1978-03-01",
+        "value": 5.966666666666668
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 4.266666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cleveland-exp-inf-1y",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 538,
+      "derivedCount": 536,
+      "first": {
+        "date": "1982-03-01",
+        "value": 6.404766666666666
+      },
+      "latest": {
+        "date": "2026-10-01",
+        "value": 2.6780333333333335
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cleveland-exp-inf-2y",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 538,
+      "derivedCount": 536,
+      "first": {
+        "date": "1982-03-01",
+        "value": 6.4068000000000005
+      },
+      "latest": {
+        "date": "2026-10-01",
+        "value": 2.6630333333333334
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cleveland-exp-inf-5y",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 538,
+      "derivedCount": 536,
+      "first": {
+        "date": "1982-03-01",
+        "value": 6.3045
+      },
+      "latest": {
+        "date": "2026-10-01",
+        "value": 2.6178333333333335
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cleveland-exp-inf-30y",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 538,
+      "derivedCount": 536,
+      "first": {
+        "date": "1982-03-01",
+        "value": 4.898
+      },
+      "latest": {
+        "date": "2026-10-01",
+        "value": 2.6255333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-umich-sentiment",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 676,
+      "derivedCount": 582,
+      "first": {
+        "date": "1978-03-01",
+        "value": 82.26666666666667
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 52.13333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-import-prices",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 466,
+      "derivedCount": 437,
+      "first": {
+        "date": "1990-02-01",
+        "value": 2.1434333333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 6.951333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-manufacturers-new-orders",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 414,
+      "derivedCount": 412,
+      "first": {
+        "date": "1992-05-01",
+        "value": 2.8317666666666668
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 1.2806666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ahe",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 235,
+      "derivedCount": 233,
+      "first": {
+        "date": "2007-05-01",
+        "value": 3.3314
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.1152333333333337
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ahe-mom",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 246,
+      "derivedCount": 244,
+      "first": {
+        "date": "2006-06-01",
+        "value": 0.29916666666666664
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.1947333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-atlanta-wage",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 356,
+      "derivedCount": 352,
+      "first": {
+        "date": "1997-03-01",
+        "value": 4.466666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.933333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-gdp-real",
+      "region": "US",
+      "method": "published-saar",
+      "label": "QoQ SAAR",
+      "sourceCount": 270,
+      "derivedCount": 270,
+      "first": {
+        "date": "1959-01-01",
+        "value": 7.9,
+        "rawValue": 7.9
+      },
+      "latest": {
+        "date": "2026-04-01",
+        "value": 2.2,
+        "rawValue": 2.2
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-industrial-production",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 1280,
+      "derivedCount": 1278,
+      "first": {
+        "date": "1920-03-01",
+        "value": 19.43433333333333
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 1.298
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-capacity-utilization",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 716,
+      "derivedCount": 714,
+      "first": {
+        "date": "1967-03-01",
+        "value": 88.14956666666666
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 76.28046666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-retail-sales",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 416,
+      "derivedCount": 414,
+      "first": {
+        "date": "1992-04-01",
+        "value": 1.8823441074751202
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.884140438305296
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-retail-sales-ex-auto",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 415,
+      "derivedCount": 413,
+      "first": {
+        "date": "1992-04-01",
+        "value": 1.5010096864810363
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 3.4624615293549654
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-durable-goods",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 414,
+      "derivedCount": 412,
+      "first": {
+        "date": "1992-05-01",
+        "value": 3.1943
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 0.4595666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-housing-starts",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 812,
+      "derivedCount": 810,
+      "first": {
+        "date": "1959-03-01",
+        "value": 1648
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 1341
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-building-permits",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 800,
+      "derivedCount": 798,
+      "first": {
+        "date": "1960-03-01",
+        "value": 1045
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 1403.3333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-empire-state",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 303,
+      "derivedCount": 301,
+      "first": {
+        "date": "2001-09-01",
+        "value": -11.266666666666666
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 14.600000000000001
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-dallas-fed-activity",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 268,
+      "derivedCount": 266,
+      "first": {
+        "date": "2004-08-01",
+        "value": 41.166666666666664
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 7.566666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-mfg-employment",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 1053,
+      "derivedCount": 1051,
+      "first": {
+        "date": "1939-03-01",
+        "value": 9175.666666666666
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 12641
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cfnai",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 714,
+      "derivedCount": 712,
+      "first": {
+        "date": "1967-05-01",
+        "value": -0.30333333333333334
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 0.010000000000000002
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-personal-spending",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 811,
+      "derivedCount": 809,
+      "first": {
+        "date": "1959-04-01",
+        "value": 0.6846
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 0.2544666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-nfp",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 1052,
+      "derivedCount": 1050,
+      "first": {
+        "date": "1939-04-01",
+        "value": 57
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 70.66666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-adp-change",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 200,
+      "derivedCount": 198,
+      "first": {
+        "date": "2010-04-01",
+        "value": -1666.6666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 15376
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-adp-level",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 201,
+      "derivedCount": 199,
+      "first": {
+        "date": "2010-03-01",
+        "value": 104237.66666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 132817
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-payrolls-level",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 1053,
+      "derivedCount": 1051,
+      "first": {
+        "date": "1939-03-01",
+        "value": 30101
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 159010.66666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-unemployment",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 944,
+      "derivedCount": 940,
+      "first": {
+        "date": "1948-03-01",
+        "value": 3.733333333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 4.133333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-u6",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 391,
+      "derivedCount": 387,
+      "first": {
+        "date": "1994-03-01",
+        "value": 11.533333333333333
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 7.833333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-participation",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 944,
+      "derivedCount": 940,
+      "first": {
+        "date": "1948-03-01",
+        "value": 58.666666666666664
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 61.6
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-employment-population",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 943,
+      "derivedCount": 939,
+      "first": {
+        "date": "1948-03-01",
+        "value": 56.46666666666667
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 59
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-jolts-openings",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 44,
+      "derivedCount": 42,
+      "first": {
+        "date": "2023-03-01",
+        "value": 9943.333333333334
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 7198.666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-jolts-quits",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 309,
+      "derivedCount": 307,
+      "first": {
+        "date": "2001-02-01",
+        "value": 2.3
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 1.9333333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-jolts-hires",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 309,
+      "derivedCount": 307,
+      "first": {
+        "date": "2001-02-01",
+        "value": 4.133333333333333
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 3.2999999999999994
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-jolts-layoffs",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 309,
+      "derivedCount": 307,
+      "first": {
+        "date": "2001-02-01",
+        "value": 1.5333333333333332
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 1.0666666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-initial-claims",
+      "region": "US",
+      "method": "agency-average",
+      "label": "4-week average",
+      "sourceCount": 3119,
+      "derivedCount": 3116,
+      "first": {
+        "date": "1967-01-28",
+        "value": 209000
+      },
+      "latest": {
+        "date": "2026-10-10",
+        "value": 197500
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-temp-help",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 429,
+      "derivedCount": 427,
+      "first": {
+        "date": "1991-03-01",
+        "value": -3.060166666666666
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.44239999999999996
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-avg-workweek",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 247,
+      "derivedCount": 245,
+      "first": {
+        "date": "2006-05-01",
+        "value": 34.266666666666666
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 34.36666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-cpi-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 4.966666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.1666666666666665
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-cpih-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 5.8
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.3333333333333335
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-alcohol-cpi-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 4.033333333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.566666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-clothing-cpi-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 4.066666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.26666666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-furniture-cpi-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 3.733333333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.9333333333333332
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-health-cpi-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 7.433333333333334
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.6333333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-transport-cpi-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 5.466666666666666
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 4.933333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-communication-cpi-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 0.4666666666666666
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.366666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-recreation-cpi-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 3.6333333333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.7666666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-education-cpi-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 7.066666666666666
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.066666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-restaurants-hotels-cpi-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 6.333333333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.9666666666666663
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-miscellaneous-cpi-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 7
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.9
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-alcohol-cpih-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 4.066666666666666
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.566666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-clothing-cpih-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 4.033333333333334
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.26666666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-furniture-cpih-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 3.766666666666666
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.9333333333333332
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-health-cpih-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 7.433333333333334
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.6333333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-transport-cpih-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 5.466666666666666
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 4.933333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-communication-cpih-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 0.6
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.366666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-recreation-cpih-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 3.6333333333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.7666666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-education-cpih-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 7.066666666666666
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.066666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-restaurants-hotels-cpih-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 6.333333333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.9666666666666663
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-miscellaneous-cpih-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 6.8
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.9
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-core-cpi-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 5.266666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.6666666666666665
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-cpi-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 464,
+      "derivedCount": 462,
+      "first": {
+        "date": "1988-04-01",
+        "value": 0.6
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.4000000000000001
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-core-cpi-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 465,
+      "derivedCount": 463,
+      "first": {
+        "date": "1988-03-01",
+        "value": 0.18883333333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.07186666666666668
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-services-cpi-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 6.833333333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.5
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-services-cpi-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 464,
+      "derivedCount": 462,
+      "first": {
+        "date": "1988-04-01",
+        "value": 0.8666666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.26666666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-goods-cpi-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 4.2
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.7000000000000006
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-goods-cpi-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 464,
+      "derivedCount": 462,
+      "first": {
+        "date": "1988-04-01",
+        "value": 0.5
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.5333333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-food-cpi-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 4.166666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.3
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-energy-cpi-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 6.233333333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 6.266666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-housing-cpi-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 6.533333333333334
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 4.933333333333334
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-rpi-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 940,
+      "derivedCount": 938,
+      "first": {
+        "date": "1948-08-01",
+        "value": 8.266666666666666
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.5
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-output-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 825,
+      "derivedCount": 823,
+      "first": {
+        "date": "1958-03-01",
+        "value": 0.3876
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.9282333333333335
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-awe-regular-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 306,
+      "derivedCount": 304,
+      "first": {
+        "date": "2001-05-01",
+        "value": 4.433333333333334
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 3.5666666666666664
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-paye-median-pay-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 146,
+      "derivedCount": 144,
+      "first": {
+        "date": "2014-10-01",
+        "value": 0.06269999999999999
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.2775666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-awe-regular-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 320,
+      "derivedCount": 318,
+      "first": {
+        "date": "2000-03-01",
+        "value": 0
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 0.3801333333333334
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 501,
+      "derivedCount": 499,
+      "first": {
+        "date": "1985-03-01",
+        "value": 6.356533333333332
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 7.016633333333334
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-gdp-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 355,
+      "derivedCount": 353,
+      "first": {
+        "date": "1997-04-01",
+        "value": 0.4666666666666666
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 0.26666666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-gdp-3m-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 342,
+      "derivedCount": 340,
+      "first": {
+        "date": "1998-05-01",
+        "value": 3.9333333333333336
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 1.4000000000000001
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-industrial-production",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 931,
+      "derivedCount": 929,
+      "first": {
+        "date": "1949-03-01",
+        "value": 4.884266666666667
+      },
+      "latest": {
+        "date": "2026-07-01",
+        "value": 0.6853000000000001
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-retail-sales",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 356,
+      "derivedCount": 354,
+      "first": {
+        "date": "1997-03-01",
+        "value": 2.5216
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 2.3129666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-cli",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 825,
+      "derivedCount": 823,
+      "first": {
+        "date": "1958-02-01",
+        "value": 97.37913333333334
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 100.90213333333334
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-business-confidence",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 594,
+      "derivedCount": 592,
+      "first": {
+        "date": "1977-05-01",
+        "value": -3.6833333333333336
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": -17.799366666666668
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-unemployment",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 668,
+      "derivedCount": 666,
+      "first": {
+        "date": "1971-03-01",
+        "value": 3.8333333333333335
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 4.833333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-unemployed-persons",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 666,
+      "derivedCount": 664,
+      "first": {
+        "date": "1971-03-01",
+        "value": 986
+      },
+      "latest": {
+        "date": "2026-06-01",
+        "value": 1770
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-long-term-unemployed",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 412,
+      "derivedCount": 409,
+      "first": {
+        "date": "1992-06-01",
+        "value": 1015.6666666666666
+      },
+      "latest": {
+        "date": "2026-06-01",
+        "value": 453
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-employment-level",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 667,
+      "derivedCount": 665,
+      "first": {
+        "date": "1971-03-01",
+        "value": 24600.333333333332
+      },
+      "latest": {
+        "date": "2026-07-01",
+        "value": 34508
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-awe-total-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 305,
+      "derivedCount": 303,
+      "first": {
+        "date": "2001-05-01",
+        "value": 5.8
+      },
+      "latest": {
+        "date": "2026-07-01",
+        "value": 4.166666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-vacancies",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 305,
+      "derivedCount": 303,
+      "first": {
+        "date": "2001-06-01",
+        "value": 678
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 699.6666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "ea-hicp-yoy",
+      "region": "EA",
+      "method": "moving-average",
+      "label": "3-month avg YoY",
+      "sourceCount": 357,
+      "derivedCount": 355,
+      "first": {
+        "date": "1997-03-01",
+        "value": 1.8
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.2999999999999994
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "ea-core-hicp-yoy",
+      "region": "EA",
+      "method": "moving-average",
+      "label": "3-month avg YoY",
+      "sourceCount": 310,
+      "derivedCount": 308,
+      "first": {
+        "date": "2001-02-01",
+        "value": 1.1
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.466666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "ea-services-hicp-yoy",
+      "region": "EA",
+      "method": "moving-average",
+      "label": "3-month avg YoY",
+      "sourceCount": 310,
+      "derivedCount": 308,
+      "first": {
+        "date": "2001-02-01",
+        "value": 1.8999999999999997
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.1666666666666665
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "ea-goods-hicp-yoy",
+      "region": "EA",
+      "method": "moving-average",
+      "label": "3-month avg YoY",
+      "sourceCount": 310,
+      "derivedCount": 308,
+      "first": {
+        "date": "2001-02-01",
+        "value": 0.09999999999999999
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.0666666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "ea-food-hicp-yoy",
+      "region": "EA",
+      "method": "moving-average",
+      "label": "3-month avg YoY",
+      "sourceCount": 357,
+      "derivedCount": 355,
+      "first": {
+        "date": "1997-03-01",
+        "value": 1.3333333333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.2
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "ea-energy-hicp-yoy",
+      "region": "EA",
+      "method": "moving-average",
+      "label": "3-month avg YoY",
+      "sourceCount": 357,
+      "derivedCount": 355,
+      "first": {
+        "date": "1997-03-01",
+        "value": 4.466666666666666
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 14.5
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "ea-ppi-yoy",
+      "region": "EA",
+      "method": "moving-average",
+      "label": "3-month avg YoY",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-03-01",
+        "value": -0.03333333333333335
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 6.199999999999999
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "ea-unemployment",
+      "region": "EA",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 320,
+      "derivedCount": 318,
+      "first": {
+        "date": "2000-03-01",
+        "value": 9.466666666666667
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 6.400000000000001
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "ea-youth-unemployment",
+      "region": "EA",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 320,
+      "derivedCount": 318,
+      "first": {
+        "date": "2000-03-01",
+        "value": 18
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 15.1
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-payrolled-employees-level",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 147,
+      "derivedCount": 145,
+      "first": {
+        "date": "2014-09-01",
+        "value": 26830.866333333335
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 30253.814333333332
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-employment-change",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 145,
+      "derivedCount": 143,
+      "first": {
+        "date": "2014-10-01",
+        "value": 48.183
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": -22.49466666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "ea-wage-growth",
+      "region": "EA",
+      "method": "published-3m3m",
+      "label": "QoQ (3m/3m)",
+      "sourceCount": 66,
+      "derivedCount": 69,
+      "first": {
+        "date": "2009-04-01",
+        "value": 0.5,
+        "rawValue": 0.5
+      },
+      "latest": {
+        "date": "2026-04-01",
+        "value": 0.8,
+        "rawValue": 0.8
+      },
+      "mismatches": 0,
+      "companionId": "ea-wage-growth-qoq"
+    },
+    {
+      "id": "uk-dmp-wage-growth-3m",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 51,
+      "derivedCount": 48,
+      "first": {
+        "date": "2022-09-01",
+        "value": 5.828
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 4.032
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-dmp-wage-exp-1y-3m",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 51,
+      "derivedCount": 48,
+      "first": {
+        "date": "2022-09-01",
+        "value": 5.253
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 3.4296666666666664
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-dmp-wage-exp-1y",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 51,
+      "derivedCount": 48,
+      "first": {
+        "date": "2022-09-01",
+        "value": 5.253
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 3.4296666666666664
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-retail-sales-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 367,
+      "derivedCount": 365,
+      "first": {
+        "date": "1996-04-01",
+        "value": 1.2333333333333334
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 0.19999999999999998
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-umich-inflation-exp-5y",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 481,
+      "derivedCount": 447,
+      "first": {
+        "date": "1981-03-01",
+        "value": 6.666666666666667
+      },
+      "latest": {
+        "date": "2026-10-01",
+        "value": 3.4
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-nyfed-sce-1y-uncertainty",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 160,
+      "derivedCount": 158,
+      "first": {
+        "date": "2013-08-01",
+        "value": 32.9845
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 32.6574
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cleveland-exp-inf-5-10y",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 538,
+      "derivedCount": 536,
+      "first": {
+        "date": "1982-03-01",
+        "value": 6.3045
+      },
+      "latest": {
+        "date": "2026-10-01",
+        "value": 2.613566666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-atlanta-bie-1y",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 10,
+      "derivedCount": 8,
+      "first": {
+        "date": "2026-03-01",
+        "value": 2.5999999999999996
+      },
+      "latest": {
+        "date": "2026-10-01",
+        "value": 2.3
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-atlanta-bie-unit-cost-1y",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 10,
+      "derivedCount": 8,
+      "first": {
+        "date": "2026-03-01",
+        "value": 2.5999999999999996
+      },
+      "latest": {
+        "date": "2026-10-01",
+        "value": 2.3
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cleveland-exp-inf-3y",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 538,
+      "derivedCount": 536,
+      "first": {
+        "date": "1982-03-01",
+        "value": 6.391933333333334
+      },
+      "latest": {
+        "date": "2026-10-01",
+        "value": 2.6430333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cleveland-exp-inf-10y",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 538,
+      "derivedCount": 536,
+      "first": {
+        "date": "1982-03-01",
+        "value": 5.974966666666667
+      },
+      "latest": {
+        "date": "2026-10-01",
+        "value": 2.602066666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-citi-yougov-inflation-exp-1y",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 52,
+      "derivedCount": 49,
+      "first": {
+        "date": "2022-10-31",
+        "value": 2.7613333333333334
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 4.583666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-citi-yougov-inflation-exp-5-10y",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 52,
+      "derivedCount": 49,
+      "first": {
+        "date": "2022-10-31",
+        "value": 3.126333333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.9529999999999994
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-dmp-inflation-exp-1y",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 13,
+      "derivedCount": 9,
+      "first": {
+        "date": "2025-12-01",
+        "value": 3.233333333333333
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 3.4
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-dmp-inflation-exp-3y",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 8,
+      "derivedCount": 4,
+      "first": {
+        "date": "2026-01-01",
+        "value": 2.9333333333333336
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 2.8333333333333335
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-dmp-own-price-exp-1y",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 35,
+      "derivedCount": 31,
+      "first": {
+        "date": "2023-11-01",
+        "value": 4.566666666666667
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 3.9333333333333336
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-maps-inflation-1y",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 6,
+      "derivedCount": 1,
+      "first": {
+        "date": "2026-04-01",
+        "value": 2.5
+      },
+      "latest": {
+        "date": "2026-04-01",
+        "value": 2.5
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-maps-inflation-2y",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 6,
+      "derivedCount": 1,
+      "first": {
+        "date": "2026-04-01",
+        "value": 2.1333333333333333
+      },
+      "latest": {
+        "date": "2026-04-01",
+        "value": 2.1333333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-maps-inflation-3y",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 6,
+      "derivedCount": 1,
+      "first": {
+        "date": "2026-04-01",
+        "value": 2
+      },
+      "latest": {
+        "date": "2026-04-01",
+        "value": 2
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-maps-inflation-5y",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 6,
+      "derivedCount": 1,
+      "first": {
+        "date": "2026-04-01",
+        "value": 2
+      },
+      "latest": {
+        "date": "2026-04-01",
+        "value": 2
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-inflation-comp-1y",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 48,
+      "derivedCount": 46,
+      "first": {
+        "date": "2022-10-31",
+        "value": 8.199333333333334
+      },
+      "latest": {
+        "date": "2026-07-31",
+        "value": 3.5909999999999997
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-unemployed-persons",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 943,
+      "derivedCount": 939,
+      "first": {
+        "date": "1948-03-01",
+        "value": 2253.6666666666665
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 7013.666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-long-term-unemployed",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 943,
+      "derivedCount": 939,
+      "first": {
+        "date": "1948-03-01",
+        "value": 5.400000000000001
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 26.599999999999998
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-private-payrolls",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 956,
+      "derivedCount": 954,
+      "first": {
+        "date": "1947-03-01",
+        "value": 37962
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 135643.66666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-government-payrolls",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 956,
+      "derivedCount": 954,
+      "first": {
+        "date": "1947-03-01",
+        "value": 5604.333333333333
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 23316.333333333332
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-civilian-labor-force",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 943,
+      "derivedCount": 939,
+      "first": {
+        "date": "1948-03-01",
+        "value": 60229.666666666664
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 169409.66666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-not-in-labor-force",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 620,
+      "derivedCount": 616,
+      "first": {
+        "date": "1975-03-01",
+        "value": 58964.333333333336
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 105706.33333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-average-weekly-earnings",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 246,
+      "derivedCount": 244,
+      "first": {
+        "date": "2006-05-01",
+        "value": 689.2199999999999
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 1293.1133333333332
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-cpih-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 464,
+      "derivedCount": 462,
+      "first": {
+        "date": "1988-04-01",
+        "value": 0.6666666666666666
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.4000000000000001
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-core-cpih-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 6.366666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.966666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-food-cpih-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 4.166666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.3
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-food-cpih-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 464,
+      "derivedCount": 462,
+      "first": {
+        "date": "1988-04-01",
+        "value": 0.5
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.06666666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-housing-cpih-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 453,
+      "derivedCount": 451,
+      "first": {
+        "date": "1989-03-01",
+        "value": 8.133333333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 4.3
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-housing-cpih-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 465,
+      "derivedCount": 463,
+      "first": {
+        "date": "1988-03-01",
+        "value": 0.17206666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.1598333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-nyfed-sce-labor-earnings-1y",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 160,
+      "derivedCount": 158,
+      "first": {
+        "date": "2013-08-01",
+        "value": 2.0225666666666666
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.7660666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-nyfed-sce-labor-job-separation-1y",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 160,
+      "derivedCount": 158,
+      "first": {
+        "date": "2013-08-01",
+        "value": 15.541199999999998
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 13.845333333333334
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-nyfed-sce-labor-job-finding-1y",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 160,
+      "derivedCount": 158,
+      "first": {
+        "date": "2013-08-01",
+        "value": 47.053733333333334
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 45.924566666666664
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-nyfed-sce-labor-unemployment-1y",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 160,
+      "derivedCount": 158,
+      "first": {
+        "date": "2013-08-01",
+        "value": 38.93516666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 43.68926666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-nyfed-sce-finance-income-1y",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 160,
+      "derivedCount": 158,
+      "first": {
+        "date": "2013-08-01",
+        "value": 2.3985000000000003
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.0277
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-nyfed-sce-finance-spending-1y",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 160,
+      "derivedCount": 158,
+      "first": {
+        "date": "2013-08-01",
+        "value": 4.872599999999999
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.206
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-nyfed-sce-finance-tax-1y",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 160,
+      "derivedCount": 158,
+      "first": {
+        "date": "2013-08-01",
+        "value": 4.412466666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.3808333333333334
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-retail-motor-vehicles",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 80,
+      "derivedCount": 78,
+      "first": {
+        "date": "2020-04-01",
+        "value": -13.1179
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": -0.34400000000000003
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-retail-gasoline",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 79,
+      "derivedCount": 77,
+      "first": {
+        "date": "2020-04-01",
+        "value": -14.238766666666669
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": -0.8527000000000001
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-retail-food-beverage",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 79,
+      "derivedCount": 77,
+      "first": {
+        "date": "2020-04-01",
+        "value": 4.490566666666667
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": -0.0006666666666666673
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-retail-general-merchandise",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 79,
+      "derivedCount": 77,
+      "first": {
+        "date": "2020-04-01",
+        "value": -2.1850333333333336
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 0.38856666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-retail-nonstore",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 79,
+      "derivedCount": 77,
+      "first": {
+        "date": "2020-04-01",
+        "value": 6.591866666666667
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 0.4627333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-retail-food-services",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 79,
+      "derivedCount": 77,
+      "first": {
+        "date": "2020-04-01",
+        "value": -21.6079
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 0.6968
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-retail-sales-total",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 80,
+      "derivedCount": 78,
+      "first": {
+        "date": "2020-04-01",
+        "value": -62.93635951895944
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.884140438305296
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-retail-sales-control-group",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 416,
+      "derivedCount": 414,
+      "first": {
+        "date": "1992-04-01",
+        "value": 5.408062823080972
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 4.464507570946319
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-retail-food-stores",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 464,
+      "derivedCount": 462,
+      "first": {
+        "date": "1988-03-01",
+        "value": -0.15446666666666667
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 0.29763333333333336
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-retail-non-food-stores",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 464,
+      "derivedCount": 462,
+      "first": {
+        "date": "1988-03-01",
+        "value": -0.19373333333333323
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": -0.15616666666666668
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-retail-nonstore",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 464,
+      "derivedCount": 462,
+      "first": {
+        "date": "1988-03-01",
+        "value": -0.31870000000000004
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 0.7445666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-retail-automotive-fuel",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-03-01",
+        "value": 1.815566666666667
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 0.20639999999999992
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-retail-sales-total-ex-fuel",
+      "region": "UK",
+      "method": "published-3m3m",
+      "label": "3m/3m",
+      "sourceCount": 367,
+      "derivedCount": 363,
+      "first": {
+        "date": "1996-06-01",
+        "value": 2.3,
+        "rawValue": 2.3
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 0.9,
+        "rawValue": 0.9
+      },
+      "mismatches": 0,
+      "companionId": "uk-retail-sales-total-3m3m"
+    },
+    {
+      "id": "uk-retail-sales-ex-fuel",
+      "region": "UK",
+      "method": "published-3m3m",
+      "label": "3m/3m",
+      "sourceCount": 463,
+      "derivedCount": 459,
+      "first": {
+        "date": "1988-06-01",
+        "value": 1.9,
+        "rawValue": 1.9
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 1.2,
+        "rawValue": 1.2
+      },
+      "mismatches": 0,
+      "companionId": "uk-retail-sales-ex-fuel-3m3m"
+    },
+    {
+      "id": "uk-retail-sales-total-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 356,
+      "derivedCount": 354,
+      "first": {
+        "date": "1997-03-01",
+        "value": 3.766666666666667
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 2.3333333333333335
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-retail-sales-ex-fuel-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 452,
+      "derivedCount": 450,
+      "first": {
+        "date": "1989-03-01",
+        "value": 4.433333333333334
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 3
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "ea-retail-sales-total-ex-motor-vehicles",
+      "region": "EA",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 319,
+      "derivedCount": 316,
+      "first": {
+        "date": "2000-05-01",
+        "value": 4.502116837885395
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": -0.7633552901589402
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "ea-retail-sales-ex-fuel",
+      "region": "EA",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 331,
+      "derivedCount": 328,
+      "first": {
+        "date": "1999-05-01",
+        "value": -1.5257190191980907
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": -0.7597306541204829
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-retail-total-ex-auto-gas",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 79,
+      "derivedCount": 77,
+      "first": {
+        "date": "2020-04-01",
+        "value": -5.539466666666667
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 0.4313666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-employment-rate",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 666,
+      "derivedCount": 664,
+      "first": {
+        "date": "1971-03-01",
+        "value": 60.73333333333333
+      },
+      "latest": {
+        "date": "2026-06-01",
+        "value": 60.73333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-inactivity-rate",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 666,
+      "derivedCount": 664,
+      "first": {
+        "date": "1971-03-01",
+        "value": 24.933333333333334
+      },
+      "latest": {
+        "date": "2026-06-01",
+        "value": 20.9
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-inactive-persons",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 666,
+      "derivedCount": 664,
+      "first": {
+        "date": "1971-03-01",
+        "value": 8379.666666666666
+      },
+      "latest": {
+        "date": "2026-06-01",
+        "value": 9113.333333333334
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-inactivity-change",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 399,
+      "derivedCount": 397,
+      "first": {
+        "date": "1993-06-01",
+        "value": 90.66666666666667
+      },
+      "latest": {
+        "date": "2026-06-01",
+        "value": 30.666666666666668
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-inactivity-student",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 400,
+      "derivedCount": 397,
+      "first": {
+        "date": "1993-06-01",
+        "value": 1439.3333333333333
+      },
+      "latest": {
+        "date": "2026-06-01",
+        "value": 2456
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-inactivity-family",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 400,
+      "derivedCount": 397,
+      "first": {
+        "date": "1993-06-01",
+        "value": 3012
+      },
+      "latest": {
+        "date": "2026-06-01",
+        "value": 1533.3333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-inactivity-temporary-sick",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 400,
+      "derivedCount": 397,
+      "first": {
+        "date": "1993-06-01",
+        "value": 204
+      },
+      "latest": {
+        "date": "2026-06-01",
+        "value": 192.66666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-inactivity-long-term-sick",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 400,
+      "derivedCount": 397,
+      "first": {
+        "date": "1993-06-01",
+        "value": 1834.6666666666667
+      },
+      "latest": {
+        "date": "2026-06-01",
+        "value": 2767
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-inactivity-discouraged",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 400,
+      "derivedCount": 397,
+      "first": {
+        "date": "1993-06-01",
+        "value": 167.66666666666666
+      },
+      "latest": {
+        "date": "2026-06-01",
+        "value": 32.333333333333336
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-inactivity-retired",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 400,
+      "derivedCount": 397,
+      "first": {
+        "date": "1993-06-01",
+        "value": 1096
+      },
+      "latest": {
+        "date": "2026-06-01",
+        "value": 1050
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-inactivity-other",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 400,
+      "derivedCount": 397,
+      "first": {
+        "date": "1993-06-01",
+        "value": 809
+      },
+      "latest": {
+        "date": "2026-06-01",
+        "value": 1082.3333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-vacancy-rate",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 302,
+      "derivedCount": 298,
+      "first": {
+        "date": "2001-08-01",
+        "value": 2.5
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 2.1666666666666665
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-vacancy-change",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 301,
+      "derivedCount": 299,
+      "first": {
+        "date": "2001-09-01",
+        "value": -22.666666666666668
+      },
+      "latest": {
+        "date": "2026-07-01",
+        "value": -7.666666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-awe-real-total-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 305,
+      "derivedCount": 303,
+      "first": {
+        "date": "2001-05-01",
+        "value": 4.466666666666667
+      },
+      "latest": {
+        "date": "2026-07-01",
+        "value": 1.0999999999999999
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-awe-real-regular-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 305,
+      "derivedCount": 303,
+      "first": {
+        "date": "2001-05-01",
+        "value": 3.0666666666666664
+      },
+      "latest": {
+        "date": "2026-07-01",
+        "value": 0.5
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-payrolled-employees-annual-change",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 134,
+      "derivedCount": 132,
+      "first": {
+        "date": "2015-09-01",
+        "value": 2.731866666666667
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": -0.3575333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-sticky-cpi-mom",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 716,
+      "derivedCount": 714,
+      "first": {
+        "date": "1967-04-01",
+        "value": 0.2222666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.2729666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-core-sticky-cpi-mom",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 716,
+      "derivedCount": 714,
+      "first": {
+        "date": "1967-04-01",
+        "value": 0.2066381386767994
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.27576718608263606
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-flexible-cpi-mom",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 716,
+      "derivedCount": 714,
+      "first": {
+        "date": "1967-04-01",
+        "value": 0.02073333333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.6607999999999999
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cleveland-median-cpi-mom",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 525,
+      "derivedCount": 523,
+      "first": {
+        "date": "1983-03-01",
+        "value": 0.36946666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.2202333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-cleveland-trimmed-cpi-mom",
+      "region": "US",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 525,
+      "derivedCount": 523,
+      "first": {
+        "date": "1983-03-01",
+        "value": 0.31559999999999994
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.24416666666666664
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-goods-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 3.6306491253066175
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 14.137691564111798
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-goods-mom"
+    },
+    {
+      "id": "us-ppi-goods-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 3.6306491253066175
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 14.137691564111798
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-foods-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 8.217534881803168
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": -0.29300960533596987
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-foods-mom"
+    },
+    {
+      "id": "us-ppi-foods-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 8.217534881803168
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": -0.29300960533596987
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-energy-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 3.1493653238670705
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 67.55344843094196
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-energy-mom"
+    },
+    {
+      "id": "us-ppi-energy-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 3.1493653238670705
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 67.55344843094196
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-goods-ex-food-energy-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 2.832384409656097
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.534019351954143
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-goods-ex-food-energy-mom"
+    },
+    {
+      "id": "us-ppi-goods-ex-food-energy-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 2.832384409656097
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.534019351954143
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-services-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 2.8266815249559096
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.528800121906552
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-services-mom"
+    },
+    {
+      "id": "us-ppi-services-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 2.8266815249559096
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.528800121906552
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-services-ex-trade-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 1.6080229412066993
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.913630272926305
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-services-ex-trade-mom"
+    },
+    {
+      "id": "us-ppi-services-ex-trade-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 1.6080229412066993
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.913630272926305
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-construction-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 0.8024032016000104
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 9.32025923685853
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-construction-mom"
+    },
+    {
+      "id": "us-ppi-construction-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 0.8024032016000104
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 9.32025923685853
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-final-demand-trade-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 4.468656522164749
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.607451922760598
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-final-demand-trade-mom"
+    },
+    {
+      "id": "us-ppi-final-demand-trade-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 4.468656522164749
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.607451922760598
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-final-demand-transport-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 3.6266028141703988
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 19.5079172169774
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-final-demand-transport-mom"
+    },
+    {
+      "id": "us-ppi-final-demand-transport-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 3.6266028141703988
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 19.5079172169774
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-intermediate-stage-1-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 14.175378580387532
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 16.1978804513913
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-intermediate-stage-1-mom"
+    },
+    {
+      "id": "us-ppi-intermediate-stage-1-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 14.175378580387532
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 16.1978804513913
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-intermediate-stage-2-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 13.810026219641824
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 18.83011371197547
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-intermediate-stage-2-mom"
+    },
+    {
+      "id": "us-ppi-intermediate-stage-2-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 13.810026219641824
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 18.83011371197547
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-intermediate-stage-3-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 7.351462518829854
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 7.6601586877234285
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-intermediate-stage-3-mom"
+    },
+    {
+      "id": "us-ppi-intermediate-stage-3-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 7.351462518829854
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 7.6601586877234285
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-intermediate-stage-4-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 2.4144981782841857
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 8.945512747923967
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-intermediate-stage-4-mom"
+    },
+    {
+      "id": "us-ppi-intermediate-stage-4-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 2.4144981782841857
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 8.945512747923967
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-intermediate-processed-goods-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 945,
+      "derivedCount": 951,
+      "first": {
+        "date": "1947-07-01",
+        "value": 1.7430204890295897
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 16.991823827971018
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-intermediate-processed-goods-mom"
+    },
+    {
+      "id": "us-ppi-intermediate-processed-goods-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 953,
+      "derivedCount": 951,
+      "first": {
+        "date": "1947-07-01",
+        "value": 1.7430204890295897
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 16.991823827971018
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-intermediate-unprocessed-goods-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 945,
+      "derivedCount": 951,
+      "first": {
+        "date": "1947-07-01",
+        "value": 3.966523196130889
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 41.51639532622491
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-intermediate-unprocessed-goods-mom"
+    },
+    {
+      "id": "us-ppi-intermediate-unprocessed-goods-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 953,
+      "derivedCount": 951,
+      "first": {
+        "date": "1947-07-01",
+        "value": 3.966523196130889
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 41.51639532622491
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-intermediate-services-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 1.20428553156402
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 7.445694741010733
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-intermediate-services-mom"
+    },
+    {
+      "id": "us-ppi-intermediate-services-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 1.20428553156402
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 7.445694741010733
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-intermediate-construction-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 2.010975225445266
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.345675050017503
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-intermediate-construction-mom"
+    },
+    {
+      "id": "us-ppi-intermediate-construction-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 2.010975225445266
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.345675050017503
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-food-beverages-tobacco-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 357,
+      "derivedCount": 355,
+      "first": {
+        "date": "1997-03-01",
+        "value": 1.0656333333333334
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.23383333333333334
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-food-beverages-tobacco-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-04-01",
+        "value": 0.5571666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.06986666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-alcohol-tobacco-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 1.2962666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.8294
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-alcohol-tobacco-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 213,
+      "derivedCount": 211,
+      "first": {
+        "date": "2009-03-01",
+        "value": 0.6926000000000001
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.18923333333333334
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-textiles-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 357,
+      "derivedCount": 355,
+      "first": {
+        "date": "1997-03-01",
+        "value": 2.4741666666666666
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.9156333333333335
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-textiles-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-04-01",
+        "value": 0.16496666666666668
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.40406666666666663
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-paper-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 357,
+      "derivedCount": 355,
+      "first": {
+        "date": "1997-03-01",
+        "value": -2.220066666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.4802
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-paper-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-04-01",
+        "value": -0.19596666666666665
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.14926666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-petroleum-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 357,
+      "derivedCount": 355,
+      "first": {
+        "date": "1997-03-01",
+        "value": 10.906833333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 49.90846666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-petroleum-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-04-01",
+        "value": 0.08660000000000008
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 6.632466666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-chemicals-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 357,
+      "derivedCount": 355,
+      "first": {
+        "date": "1997-03-01",
+        "value": -1.1569
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.7845333333333335
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-chemicals-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-04-01",
+        "value": 0.12893333333333334
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": -0.12906666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-metals-machinery-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 357,
+      "derivedCount": 355,
+      "first": {
+        "date": "1997-03-01",
+        "value": 0.17836666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.941666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-metals-machinery-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-04-01",
+        "value": 0.0892
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.49146666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-computers-electronics-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 357,
+      "derivedCount": 355,
+      "first": {
+        "date": "1997-03-01",
+        "value": -10.442966666666665
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.170266666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-computers-electronics-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-04-01",
+        "value": -0.11683333333333334
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.7641666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-vehicles-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 357,
+      "derivedCount": 355,
+      "first": {
+        "date": "1997-03-01",
+        "value": 1.4572666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": -1.5361
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-vehicles-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-04-01",
+        "value": 0.12873333333333334
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.4979333333333334
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-manufactured-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 3.1813000000000002
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 7.041066666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-manufactured-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 213,
+      "derivedCount": 211,
+      "first": {
+        "date": "2009-03-01",
+        "value": 0.4028666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.5192
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-fuel-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 357,
+      "derivedCount": 355,
+      "first": {
+        "date": "1997-03-01",
+        "value": -3.999233333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.7478666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-fuel-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-04-01",
+        "value": -5.1385
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.15226666666666663
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-petroleum-ores-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 621,
+      "derivedCount": 619,
+      "first": {
+        "date": "1975-03-01",
+        "value": -2.757733333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 35.83773333333334
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-petroleum-ores-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 632,
+      "derivedCount": 630,
+      "first": {
+        "date": "1974-04-01",
+        "value": -2.5571
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.3124333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-beverages-tobacco-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 0.4643666666666666
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.6793666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-beverages-tobacco-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 213,
+      "derivedCount": 211,
+      "first": {
+        "date": "2009-03-01",
+        "value": 0.6512666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.16923333333333335
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-other-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 357,
+      "derivedCount": 355,
+      "first": {
+        "date": "1997-03-01",
+        "value": -9.031233333333335
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.948566666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-other-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-04-01",
+        "value": -0.9035666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.09956666666666665
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-chemicals-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 0.11313333333333338
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 6.0558000000000005
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-chemicals-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 213,
+      "derivedCount": 211,
+      "first": {
+        "date": "2009-03-01",
+        "value": -0.24683333333333332
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": -0.16866666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-metals-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 357,
+      "derivedCount": 355,
+      "first": {
+        "date": "1997-03-01",
+        "value": -11.4293
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 9.505866666666668
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-metals-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-04-01",
+        "value": -0.3898
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.29410000000000003
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-equipment-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 357,
+      "derivedCount": 355,
+      "first": {
+        "date": "1997-03-01",
+        "value": -9.370266666666668
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.005733333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-equipment-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-04-01",
+        "value": 0.05503333333333332
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.18159999999999998
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-domestic-food-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 357,
+      "derivedCount": 355,
+      "first": {
+        "date": "1997-03-01",
+        "value": -11.539966666666666
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": -1.3857666666666668
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-domestic-food-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-04-01",
+        "value": 0.636
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.13050000000000003
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-imported-food-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 357,
+      "derivedCount": 355,
+      "first": {
+        "date": "1997-03-01",
+        "value": -6.594
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.3746
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-imported-food-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-04-01",
+        "value": 0.22616666666666663
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.06083333333333334
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-import-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 0.38356666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 7.5697
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-import-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 213,
+      "derivedCount": 211,
+      "first": {
+        "date": "2009-03-01",
+        "value": 0.7985333333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.5826333333333333
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-export-yoy",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 357,
+      "derivedCount": 355,
+      "first": {
+        "date": "1997-03-01",
+        "value": -4.208433333333333
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 7.5195
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-export-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-04-01",
+        "value": -0.17233333333333334
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": -0.032900000000000075
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-final-demand-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 3.232146665003155
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 8.143994058840253
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-core-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 157,
+      "derivedCount": 155,
+      "first": {
+        "date": "2013-11-01",
+        "value": 1.609621171781206
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.112496059633798
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-input-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 512,
+      "derivedCount": 510,
+      "first": {
+        "date": "1984-04-01",
+        "value": 0.2733666666666667
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.4991666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "uk-ppi-output-mom",
+      "region": "UK",
+      "method": "moving-average",
+      "label": "3-month average",
+      "sourceCount": 836,
+      "derivedCount": 834,
+      "first": {
+        "date": "1957-04-01",
+        "value": 0
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 0.6485666666666666
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-consumer-foods-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 945,
+      "derivedCount": 951,
+      "first": {
+        "date": "1947-07-01",
+        "value": -6.199386288465714
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": -3.9802061883697393
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-consumer-foods-mom"
+    },
+    {
+      "id": "us-ppi-consumer-foods-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 953,
+      "derivedCount": 951,
+      "first": {
+        "date": "1947-07-01",
+        "value": -6.199386288465714
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": -3.9802061883697393
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-government-foods-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 14.29426918772776
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": -4.9722526893386965
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-government-foods-mom"
+    },
+    {
+      "id": "us-ppi-government-foods-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 14.29426918772776
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": -4.9722526893386965
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-export-foods-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": -1.1746007814424697
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 25.382648020773214
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-export-foods-mom"
+    },
+    {
+      "id": "us-ppi-export-foods-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": -1.1746007814424697
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 25.382648020773214
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-consumer-energy-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 621,
+      "derivedCount": 630,
+      "first": {
+        "date": "1974-04-01",
+        "value": 156.0722435907612
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 57.57305050716366
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-consumer-energy-mom"
+    },
+    {
+      "id": "us-ppi-consumer-energy-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 632,
+      "derivedCount": 630,
+      "first": {
+        "date": "1974-04-01",
+        "value": 156.0722435907612
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 57.57305050716366
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-government-energy-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 10.993795267131201
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 98.98370801772228
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-government-energy-mom"
+    },
+    {
+      "id": "us-ppi-government-energy-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 10.993795267131201
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 98.98370801772228
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-export-energy-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 19.521497301080657
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 114.82306460433307
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-export-energy-mom"
+    },
+    {
+      "id": "us-ppi-export-energy-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 19.521497301080657
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 114.82306460433307
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-finished-goods-ex-food-energy-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 633,
+      "derivedCount": 630,
+      "first": {
+        "date": "1974-04-01",
+        "value": 11.752525721876218
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.883163187616945
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-finished-goods-ex-food-energy-mom"
+    },
+    {
+      "id": "us-ppi-finished-goods-ex-food-energy-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 632,
+      "derivedCount": 630,
+      "first": {
+        "date": "1974-04-01",
+        "value": 11.752525721876218
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.883163187616945
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-government-goods-ex-food-energy-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 2.414310805405262
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.7659701895623057
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-government-goods-ex-food-energy-mom"
+    },
+    {
+      "id": "us-ppi-government-goods-ex-food-energy-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 2.414310805405262
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.7659701895623057
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-export-goods-ex-food-energy-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 7.3890039238377225
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.12963783570126
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-export-goods-ex-food-energy-mom"
+    },
+    {
+      "id": "us-ppi-export-goods-ex-food-energy-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 7.3890039238377225
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.12963783570126
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-finished-other-services-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 2.01506467958259
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.924785292099675
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-finished-other-services-mom"
+    },
+    {
+      "id": "us-ppi-finished-other-services-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 2.01506467958259
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.924785292099675
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-government-other-services-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 0.000006395200080611119
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.113724014765442
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-government-other-services-mom"
+    },
+    {
+      "id": "us-ppi-government-other-services-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 0.000006395200080611119
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.113724014765442
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-export-other-services-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 0.4002553249627727
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.6415428297395627
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-export-other-services-mom"
+    },
+    {
+      "id": "us-ppi-export-other-services-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 0.4002553249627727
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.6415428297395627
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-passenger-transport-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 3.1903160881207704
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 18.569912079567487
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-passenger-transport-mom"
+    },
+    {
+      "id": "us-ppi-passenger-transport-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 3.1903160881207704
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 18.569912079567487
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-goods-transport-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 4.0479339885382215
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 19.81198599969336
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-goods-transport-mom"
+    },
+    {
+      "id": "us-ppi-goods-transport-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 4.0479339885382215
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 19.81198599969336
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-trade-finished-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 4.8820998623590794
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 4.483905050211345
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-trade-finished-mom"
+    },
+    {
+      "id": "us-ppi-trade-finished-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 4.8820998623590794
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 4.483905050211345
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-trade-government-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 3.649065257449058
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 10.387410826295884
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-trade-government-mom"
+    },
+    {
+      "id": "us-ppi-trade-government-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 3.649065257449058
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 10.387410826295884
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-trade-exports-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 2.421719362331487
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 13.345260254715253
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-trade-exports-mom"
+    },
+    {
+      "id": "us-ppi-trade-exports-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 2.421719362331487
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 13.345260254715253
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-private-construction-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": -3.999999886872274e-7
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 9.700105649359259
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-private-construction-mom"
+    },
+    {
+      "id": "us-ppi-private-construction-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": -3.999999886872274e-7
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 9.700105649359259
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-government-construction-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 2.0150484383798073
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 8.469040554053686
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-government-construction-mom"
+    },
+    {
+      "id": "us-ppi-government-construction-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 2.0150484383798073
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 8.469040554053686
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-intermediate-manufacturing-materials-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 945,
+      "derivedCount": 642,
+      "first": {
+        "date": "1973-04-01",
+        "value": 16.336648753526607
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.051793461678387
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-intermediate-manufacturing-materials-mom"
+    },
+    {
+      "id": "us-ppi-intermediate-manufacturing-materials-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 644,
+      "derivedCount": 642,
+      "first": {
+        "date": "1973-04-01",
+        "value": 16.336648753526607
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.051793461678387
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-intermediate-construction-materials-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 945,
+      "derivedCount": 642,
+      "first": {
+        "date": "1973-04-01",
+        "value": 21.497871564941917
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 6.094582235670076
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-intermediate-construction-materials-mom"
+    },
+    {
+      "id": "us-ppi-intermediate-construction-materials-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 644,
+      "derivedCount": 642,
+      "first": {
+        "date": "1973-04-01",
+        "value": 21.497871564941917
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 6.094582235670076
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-intermediate-processed-fuels-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 945,
+      "derivedCount": 642,
+      "first": {
+        "date": "1973-04-01",
+        "value": 9.967606498441839
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 81.62928418145164
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-intermediate-processed-fuels-mom"
+    },
+    {
+      "id": "us-ppi-intermediate-processed-fuels-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 644,
+      "derivedCount": 642,
+      "first": {
+        "date": "1973-04-01",
+        "value": 9.967606498441839
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 81.62928418145164
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-intermediate-containers-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 945,
+      "derivedCount": 642,
+      "first": {
+        "date": "1973-04-01",
+        "value": 7.456090946517158
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 11.487985756055119
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-intermediate-containers-mom"
+    },
+    {
+      "id": "us-ppi-intermediate-containers-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 644,
+      "derivedCount": 642,
+      "first": {
+        "date": "1973-04-01",
+        "value": 7.456090946517158
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 11.487985756055119
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-intermediate-supplies-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 945,
+      "derivedCount": 606,
+      "first": {
+        "date": "1976-04-01",
+        "value": 1.2698223980046386
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.680009728196886
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-intermediate-supplies-mom"
+    },
+    {
+      "id": "us-ppi-intermediate-supplies-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 608,
+      "derivedCount": 606,
+      "first": {
+        "date": "1976-04-01",
+        "value": 1.2698223980046386
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 2.680009728196886
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-intermediate-food-feed-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 945,
+      "derivedCount": 690,
+      "first": {
+        "date": "1969-04-01",
+        "value": 7.820051563225294
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 8.850136909716078
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-intermediate-food-feed-mom"
+    },
+    {
+      "id": "us-ppi-intermediate-food-feed-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 692,
+      "derivedCount": 690,
+      "first": {
+        "date": "1969-04-01",
+        "value": 7.820051563225294
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 8.850136909716078
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-intermediate-nonfood-ex-fuel-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 945,
+      "derivedCount": 642,
+      "first": {
+        "date": "1973-04-01",
+        "value": 32.879458112598755
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 73.51722345685745
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-intermediate-nonfood-ex-fuel-mom"
+    },
+    {
+      "id": "us-ppi-intermediate-nonfood-ex-fuel-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 644,
+      "derivedCount": 642,
+      "first": {
+        "date": "1973-04-01",
+        "value": 32.879458112598755
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 73.51722345685745
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-intermediate-unprocessed-fuel-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 945,
+      "derivedCount": 448,
+      "first": {
+        "date": "1973-04-01",
+        "value": 11.927942120917834
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.106477427565981
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-intermediate-unprocessed-fuel-mom"
+    },
+    {
+      "id": "us-ppi-intermediate-unprocessed-fuel-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 452,
+      "derivedCount": 448,
+      "first": {
+        "date": "1973-04-01",
+        "value": 11.927942120917834
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 5.106477427565981
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-intermediate-other-services-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 0.8024333819635299
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.2027448772169675
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-intermediate-other-services-mom"
+    },
+    {
+      "id": "us-ppi-intermediate-other-services-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 0.8024333819635299
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 3.2027448772169675
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-intermediate-transport-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 4.852804279389056
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 11.993498667260937
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-intermediate-transport-mom"
+    },
+    {
+      "id": "us-ppi-intermediate-transport-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 4.852804279389056
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 11.993498667260937
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-intermediate-trade-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 191,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 0.8007605691677133
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 19.570791036009496
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-intermediate-trade-mom"
+    },
+    {
+      "id": "us-ppi-intermediate-trade-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 202,
+      "derivedCount": 200,
+      "first": {
+        "date": "2010-02-01",
+        "value": 0.8007605691677133
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 19.570791036009496
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-stage-1-goods-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 186,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": -12.934152206201844
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 20.659796417588062
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-stage-1-goods-mom"
+    },
+    {
+      "id": "us-ppi-stage-1-goods-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 197,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": -12.934152206201844
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 20.659796417588062
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-stage-1-services-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 186,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": 0.803283987003045
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 10.733691548542135
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-stage-1-services-mom"
+    },
+    {
+      "id": "us-ppi-stage-1-services-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 197,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": 0.803283987003045
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 10.733691548542135
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-stage-1-construction-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 186,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": 1.6096244111422298
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.3448666916948238
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-stage-1-construction-mom"
+    },
+    {
+      "id": "us-ppi-stage-1-construction-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 197,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": 1.6096244111422298
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.3448666916948238
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-stage-2-goods-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 186,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": -4.332294276934756
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 42.75662358941534
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-stage-2-goods-mom"
+    },
+    {
+      "id": "us-ppi-stage-2-goods-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 197,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": -4.332294276934756
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 42.75662358941534
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-stage-2-services-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 186,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": 1.2054172658731765
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 4.570580270485891
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-stage-2-services-mom"
+    },
+    {
+      "id": "us-ppi-stage-2-services-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 197,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": 1.2054172658731765
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 4.570580270485891
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-stage-2-construction-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 186,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": 1.6096244111422298
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.3448666916948238
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-stage-2-construction-mom"
+    },
+    {
+      "id": "us-ppi-stage-2-construction-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 197,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": 1.6096244111422298
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.3448666916948238
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-stage-3-goods-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 186,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": -0.00006991867756989123
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 10.397115553746804
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-stage-3-goods-mom"
+    },
+    {
+      "id": "us-ppi-stage-3-goods-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 197,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": -0.00006991867756989123
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 10.397115553746804
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-stage-3-services-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 186,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": 4.482215284799462
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 4.843758330440839
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-stage-3-services-mom"
+    },
+    {
+      "id": "us-ppi-stage-3-services-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 197,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": 4.482215284799462
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 4.843758330440839
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-stage-3-construction-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 186,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": 1.6096244111422298
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.3448666916948238
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-stage-3-construction-mom"
+    },
+    {
+      "id": "us-ppi-stage-3-construction-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 197,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": 1.6096244111422298
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.3448666916948238
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-stage-4-goods-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 186,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": 0.40179117695891
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 9.345240746599881
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-stage-4-goods-mom"
+    },
+    {
+      "id": "us-ppi-stage-4-goods-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 197,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": 0.40179117695891
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 9.345240746599881
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-stage-4-services-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 186,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": 2.017080227900392
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 8.579657315929978
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-stage-4-services-mom"
+    },
+    {
+      "id": "us-ppi-stage-4-services-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 197,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": 2.017080227900392
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 8.579657315929978
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "us-ppi-stage-4-construction-yoy",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 186,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": 1.6096244111422298
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.3448666916948238
+      },
+      "mismatches": 0,
+      "companionId": "us-ppi-stage-4-construction-mom"
+    },
+    {
+      "id": "us-ppi-stage-4-construction-mom",
+      "region": "US",
+      "method": "saar-3m3m",
+      "label": "3m/3m SAAR",
+      "sourceCount": 197,
+      "derivedCount": 195,
+      "first": {
+        "date": "2010-07-01",
+        "value": 1.6096244111422298
+      },
+      "latest": {
+        "date": "2026-09-01",
+        "value": 1.3448666916948238
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "ea-ppi-capital-goods-yoy",
+      "region": "EA",
+      "method": "moving-average",
+      "label": "3-month avg YoY",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-03-01",
+        "value": 1.0666666666666667
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 2.466666666666667
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "ea-ppi-intermediate-goods-yoy",
+      "region": "EA",
+      "method": "moving-average",
+      "label": "3-month avg YoY",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-03-01",
+        "value": -0.06666666666666665
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 6.3999999999999995
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "ea-ppi-durable-consumer-goods-yoy",
+      "region": "EA",
+      "method": "moving-average",
+      "label": "3-month avg YoY",
+      "sourceCount": 308,
+      "derivedCount": 306,
+      "first": {
+        "date": "2001-03-01",
+        "value": 1.7666666666666666
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 3.0666666666666664
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "ea-ppi-non-durable-consumer-goods-yoy",
+      "region": "EA",
+      "method": "moving-average",
+      "label": "3-month avg YoY",
+      "sourceCount": 368,
+      "derivedCount": 366,
+      "first": {
+        "date": "1996-03-01",
+        "value": 1.5333333333333334
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": -0.7333333333333334
+      },
+      "mismatches": 0
+    },
+    {
+      "id": "ea-ppi-energy-yoy",
+      "region": "EA",
+      "method": "moving-average",
+      "label": "3-month avg YoY",
+      "sourceCount": 308,
+      "derivedCount": 306,
+      "first": {
+        "date": "2001-03-01",
+        "value": 10.200000000000001
+      },
+      "latest": {
+        "date": "2026-08-01",
+        "value": 14.266666666666666
+      },
+      "mismatches": 0
+    }
+  ],
+  "mismatches": [],
+  "unavailable": [
+    {
+      "id": "us-nyfed-sce-inflation-exp-1y",
+      "method": "moving-average",
+      "sourceCount": 1
+    },
+    {
+      "id": "us-nyfed-sce-inflation-exp-3y",
+      "method": "moving-average",
+      "sourceCount": 1
+    },
+    {
+      "id": "us-nyfed-sce-inflation-exp-5y",
+      "method": "moving-average",
+      "sourceCount": 1
+    },
+    {
+      "id": "us-nyfed-sce-1y",
+      "method": "moving-average",
+      "sourceCount": 1
+    },
+    {
+      "id": "us-nyfed-sce-3y",
+      "method": "moving-average",
+      "sourceCount": 1
+    },
+    {
+      "id": "us-nyfed-sce-5y",
+      "method": "moving-average",
+      "sourceCount": 1
+    },
+    {
+      "id": "us-jolts-hires-level",
+      "method": "moving-average",
+      "sourceCount": 1
+    },
+    {
+      "id": "us-jolts-quits-level",
+      "method": "moving-average",
+      "sourceCount": 1
+    },
+    {
+      "id": "us-jolts-layoffs-level",
+      "method": "moving-average",
+      "sourceCount": 1
+    },
+    {
+      "id": "us-jolts-total-separations",
+      "method": "moving-average",
+      "sourceCount": 1
+    },
+    {
+      "id": "us-ism-manufacturing-pmi",
+      "method": "moving-average",
+      "sourceCount": 0
+    },
+    {
+      "id": "us-ism-services-pmi",
+      "method": "moving-average",
+      "sourceCount": 0
+    },
+    {
+      "id": "us-sp-global-manufacturing-pmi",
+      "method": "moving-average",
+      "sourceCount": 0
+    },
+    {
+      "id": "us-sp-global-services-pmi",
+      "method": "moving-average",
+      "sourceCount": 0
+    },
+    {
+      "id": "uk-sp-global-manufacturing-pmi",
+      "method": "moving-average",
+      "sourceCount": 0
+    },
+    {
+      "id": "uk-sp-global-services-pmi",
+      "method": "moving-average",
+      "sourceCount": 0
+    },
+    {
+      "id": "uk-sp-global-composite-pmi",
+      "method": "moving-average",
+      "sourceCount": 0
+    }
+  ],
+  "checkedValues": 166457
+}
