@@ -7333,3 +7333,17 @@ html[data-theme="dark"]{
 .history-chart-scrollport {
   scrollbar-width: none;
 }
+/* Wage-growth component table */
+.uk-wage-component-table { margin: 18px 0 24px; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); }
+.uk-wage-component-table .flight-deck-field-head { margin-bottom: 12px; }
+.uk-wage-table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+.uk-wage-table-scroll table { width: 100%; min-width: 720px; border-collapse: collapse; text-align: left; }
+.uk-wage-table-scroll th, .uk-wage-table-scroll td { padding: 11px 12px; border-bottom: 1px solid var(--line); }
+.uk-wage-table-scroll thead { background: var(--panel-2, var(--panel)); }
+.uk-wage-table-scroll th { font-weight: 650; }
+.uk-wage-table-scroll td:not(:first-child) { white-space: nowrap; }
+.uk-wage-table-scroll tbody tr:last-child th, .uk-wage-table-scroll tbody tr:last-child td { border-bottom: 0; }
+.uk-wage-table-scroll tbody tr:hover { background: color-mix(in srgb, var(--country-series) 7%, transparent); }
+.uk-wage-table-scroll td:last-child { width: 48px; text-align: right; }
+.uk-wage-table-scroll td:last-child button { width: 34px; height: 34px; display: inline-grid; place-items: center; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--country-series); cursor: pointer; }
+.uk-wage-table-scroll td:last-child button:hover { border-color: var(--country-series); }

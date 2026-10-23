@@ -1,0 +1,114 @@
+[
+  {
+    "id": "uk-retail-sales-total-ex-fuel",
+    "series": "J5EC",
+    "officialUrl": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/j5ec/drsi",
+    "count": 368,
+    "first": "1996-02-01",
+    "latest": {
+      "date": "2026-09-01",
+      "value": -0.4
+    },
+    "changed": [],
+    "missing": [],
+    "extra": [],
+    "duplicates": 0,
+    "august2026": 0.7
+  },
+  {
+    "id": "uk-retail-sales-mom",
+    "series": "J5EC",
+    "officialUrl": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/j5ec/drsi",
+    "count": 368,
+    "first": "1996-02-01",
+    "latest": {
+      "date": "2026-09-01",
+      "value": -0.4
+    },
+    "changed": [],
+    "missing": [],
+    "extra": [],
+    "duplicates": 0,
+    "august2026": 0.7
+  },
+  {
+    "id": "uk-retail-sales-ex-fuel",
+    "series": "J45W",
+    "officialUrl": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/j45w/drsi",
+    "count": 464,
+    "first": "1988-02-01",
+    "latest": {
+      "date": "2026-09-01",
+      "value": -0.7
+    },
+    "changed": [],
+    "missing": [],
+    "extra": [],
+    "duplicates": 0,
+    "august2026": 0.9
+  },
+  {
+    "id": "uk-retail-sales-total-yoy",
+    "series": "J5EB",
+    "officialUrl": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/j5eb/drsi",
+    "count": 357,
+    "first": "1997-01-01",
+    "latest": {
+      "date": "2026-09-01",
+      "value": 0.8
+    },
+    "changed": [],
+    "missing": [],
+    "extra": [],
+    "duplicates": 0,
+    "august2026": 2.7
+  },
+  {
+    "id": "uk-retail-sales-ex-fuel-yoy",
+    "series": "J45U",
+    "officialUrl": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/j45u/drsi",
+    "count": 453,
+    "first": "1989-01-01",
+    "latest": {
+      "date": "2026-09-01",
+      "value": 0.8
+    },
+    "changed": [],
+    "missing": [],
+    "extra": [],
+    "duplicates": 0,
+    "august2026": 2.9
+  },
+  {
+    "id": "uk-retail-sales-total-3m3m",
+    "series": "J5EG",
+    "officialUrl": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/j5eg/drsi",
+    "count": 364,
+    "first": "1996-06-01",
+    "latest": {
+      "date": "2026-09-01",
+      "value": 0.7
+    },
+    "changed": [],
+    "missing": [],
+    "extra": [],
+    "duplicates": 0,
+    "august2026": 1
+  },
+  {
+    "id": "uk-retail-sales-ex-fuel-3m3m",
+    "series": "J45R",
+    "officialUrl": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/j45r/drsi",
+    "count": 460,
+    "first": "1988-06-01",
+    "latest": {
+      "date": "2026-09-01",
+      "value": 0.4
+    },
+    "changed": [],
+    "missing": [],
+    "extra": [],
+    "duplicates": 0,
+    "august2026": 1.3
+  }
+]

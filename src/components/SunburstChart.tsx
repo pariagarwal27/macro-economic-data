@@ -28,6 +28,15 @@ const polar = (radius: number, angle: number) => ({
 });
 
 function ringPath(inner: number, outer: number, start: number, end: number) {
+  // SVG's A command cannot draw a full circle with one arc. A one-item
+  // sunburst (common when only one component has a reading for a month) must
+  // use two half-circle arcs or the segment collapses into oversized blobs.
+  if (end - start >= TAU - 0.001) {
+    const middle = start + Math.PI;
+    const outerStart = polar(outer, start), outerMiddle = polar(outer, middle), outerEnd = polar(outer, start + TAU);
+    const innerEnd = polar(inner, start + TAU), innerMiddle = polar(inner, middle), innerStart = polar(inner, start);
+    return `M ${outerStart.x} ${outerStart.y} A ${outer} ${outer} 0 1 1 ${outerMiddle.x} ${outerMiddle.y} A ${outer} ${outer} 0 1 1 ${outerEnd.x} ${outerEnd.y} L ${innerEnd.x} ${innerEnd.y} A ${inner} ${inner} 0 1 0 ${innerMiddle.x} ${innerMiddle.y} A ${inner} ${inner} 0 1 0 ${innerStart.x} ${innerStart.y} Z`;
+  }
   const a0 = start - 0.008;
   const a1 = end + 0.008;
   const large = a1 - a0 > Math.PI ? 1 : 0;

@@ -476,10 +476,46 @@ case "jvs_q_nace2": {
   return fetchEurostatSeries("lc_lci_r2_q", {
     geo: "EA21",
     unit: "PCH_SM",
-    s_adj: "SCA",
+    // YoY LCI rates are published calendar-adjusted (CA), not
+    // seasonally and calendar-adjusted (SCA). Match Eurostat's release table.
+    s_adj: "CA",
     nace_r2: "B-S",
     lcstruct: "D11",
   });
+    case "lc_lci_total_yoy":
+      return fetchEurostatSeries("lc_lci_r2_q", {
+        geo: "EA21",
+        unit: "PCH_SM",
+        // Keep the total-cost series on the same official adjustment basis
+        // as wages and salaries so the two plotted rates are comparable.
+        s_adj: "CA",
+        nace_r2: "B-S",
+        lcstruct: "D1_D4_MD5",
+      });
+    case "lc_lci_nonwage_yoy":
+      return fetchEurostatSeries("lc_lci_r2_q", {
+        geo: "EA21",
+        unit: "PCH_SM",
+        s_adj: "CA",
+        nace_r2: "B-S",
+        lcstruct: "D12_D4_MD5",
+      });
+    case "lc_lci_business_yoy":
+      return fetchEurostatSeries("lc_lci_r2_q", {
+        geo: "EA21",
+        unit: "PCH_SM",
+        s_adj: "CA",
+        nace_r2: "B-N",
+        lcstruct: "D1_D4_MD5",
+      });
+    case "lc_lci_nonbusiness_yoy":
+      return fetchEurostatSeries("lc_lci_r2_q", {
+        geo: "EA21",
+        unit: "PCH_SM",
+        s_adj: "CA",
+        nace_r2: "O-S",
+        lcstruct: "D1_D4_MD5",
+      });
     case "ea_household_consumption":
       return fetchEurostatSeries("namq_10_gdp", {
         geo: "EA21",

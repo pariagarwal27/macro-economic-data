@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { compareCalendarMetricEvents, filterReleaseDiaryEvents, type CalendarRegionFilter } from "@/lib/economic-calendar-view";
 import { formatLiveSourceLabel } from "@/lib/live-source-label";
 import { getClientJsonCache, refreshClientJson } from "@/lib/client-json-cache";
+import { formatClaimsCount } from "@/lib/claims-display";
 
 type CalendarEvent = {
   metricId: string;
@@ -98,6 +99,13 @@ function formatValue(value: number | null, unit: string) {
     hours: " hrs", posts: " posts",
   };
   return `${number}${suffix[unit] ?? ""}`;
+}
+
+function formatCalendarValue(event: CalendarEvent, value: number | null) {
+  if (event.metricId === "us-initial-claims" || event.metricId === "us-continuing-claims") {
+    return formatClaimsCount(value);
+  }
+  return formatValue(value, event.unit);
 }
 
 function statusLabel(status: CalendarEvent["status"]) {
@@ -417,8 +425,8 @@ function CalendarDiary({ groups, onSelect, emptyText }: {
             {timeUnavailable ? <>Time<br />unavailable</> : timeLabel}
           </span>
           <span className="release-diary-name"><i>{FLAG[event.region]}</i><span>{event.metricName}</span></span>
-          <span className="release-diary-value">{formatValue(event.previous, event.unit)}</span>
-          <span className="release-diary-value">{formatValue(event.actual, event.unit)}</span>
+          <span className="release-diary-value">{formatCalendarValue(event, event.previous)}</span>
+          <span className="release-diary-value">{formatCalendarValue(event, event.actual)}</span>
           <span className={`release-diary-status ${event.status}`}><i />{event.scheduleType === "hourly" ? "Hourly" : event.scheduleType === "daily" ? "Daily" : statusLabel(event.status)}</span>
         </div>;
       })}

@@ -31,6 +31,14 @@ test("release diary omits chart-only metric series", () => {
   assert.equal(metricIds.has("uk-retail-sales-total-yoy"), false);
 });
 
+test('UK retail diary shows both published MoM series exactly once', () => {
+  const retail = getDashboardCalendarMetrics().filter(metric => metric.id.startsWith('uk-retail-sales'));
+  assert.deepEqual(retail.map(metric => [metric.id,metric.name]).sort(), [
+    ['uk-retail-sales-ex-fuel','Retail Sales ex Fuel MoM'],
+    ['uk-retail-sales-total-ex-fuel','Retail Sales Headline MoM'],
+  ]);
+});
+
 test("release diary lists PCE rates instead of PCE price index levels", () => {
   const metrics = getDashboardCalendarMetrics();
   const byId = new Map(metrics.map(metric => [metric.id, metric]));

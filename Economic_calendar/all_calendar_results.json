@@ -1,11 +1,11 @@
 {
-  "generated_at_utc": "2026-10-22T13:23:18.727860+00:00",
-  "total_source_records": 530,
-  "unique_metrics": 565,
-  "metrics_with_release_date": 350,
-  "metrics_without_release_date": 215,
-  "metrics_with_release_time": 306,
-  "metrics_without_release_time": 259,
+  "generated_at_utc": "2026-10-23T11:32:11.626079+00:00",
+  "total_source_records": 531,
+  "unique_metrics": 594,
+  "metrics_with_release_date": 351,
+  "metrics_without_release_date": 243,
+  "metrics_with_release_time": 307,
+  "metrics_without_release_time": 287,
   "duplicate_metric_ids": 3,
   "duplicate_source_records": 3,
   "source_summary": {
@@ -23,8 +23,8 @@
     },
     "Census": {
       "file": "census_retail_fetch_results.json",
-      "records_loaded": 10,
-      "records_accepted": 10,
+      "records_loaded": 11,
+      "records_accepted": 11,
       "missing_metric_id": 0
     },
     "ECB": {
@@ -165,7 +165,7 @@
       "source": "ECB",
       "source_metric_id": "ea-ces-inflation-exp-1y",
       "family": "CES",
-      "next_release": "2026-10-23",
+      "next_release": "2026-11-27",
       "next_release_at": null,
       "release_status": null,
       "success": true,
@@ -182,7 +182,7 @@
       "source": "ECB",
       "source_metric_id": "ea-ces-inflation-exp-3y",
       "family": "CES",
-      "next_release": "2026-10-23",
+      "next_release": "2026-11-27",
       "next_release_at": null,
       "release_status": null,
       "success": true,
@@ -199,7 +199,7 @@
       "source": "ECB",
       "source_metric_id": "ea-ces-inflation-exp-5y",
       "family": "CES",
-      "next_release": "2026-10-23",
+      "next_release": "2026-11-27",
       "next_release_at": null,
       "release_status": null,
       "success": true,
@@ -216,7 +216,7 @@
       "source": "ECB",
       "source_metric_id": "ea-ces-inflation-uncertainty",
       "family": "CES",
-      "next_release": "2026-10-23",
+      "next_release": "2026-11-27",
       "next_release_at": null,
       "release_status": null,
       "success": true,
@@ -226,6 +226,18 @@
       "release_deadline_at": null,
       "release_time_kind": null,
       "release_title": "ECB Consumer Expectations Survey"
+    },
+    {
+      "metric_id": "ea-compensation-employee-yoy",
+      "source": "ecb",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://data.ecb.europa.eu/data/datasets/MNA",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "Euro Area Compensation per Employee YoY"
     },
     {
       "metric_id": "ea-core-hicp-mom",
@@ -808,6 +820,54 @@
       "release_title": "Job vacancy"
     },
     {
+      "metric_id": "ea-labour-cost-business-yoy",
+      "source": "eurostat",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://ec.europa.eu/eurostat/web/labour-market/information-data/labour-costs",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "Euro Area Business Economy Total Labour Costs YoY"
+    },
+    {
+      "metric_id": "ea-labour-cost-nonbusiness-yoy",
+      "source": "eurostat",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://ec.europa.eu/eurostat/web/labour-market/information-data/labour-costs",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "Euro Area Mainly Non-business Economy Total Labour Costs YoY"
+    },
+    {
+      "metric_id": "ea-labour-cost-nonwage-yoy",
+      "source": "eurostat",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://ec.europa.eu/eurostat/web/labour-market/information-data/labour-costs",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "Euro Area Non-wage Labour Costs YoY"
+    },
+    {
+      "metric_id": "ea-labour-cost-total-yoy",
+      "source": "eurostat",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://ec.europa.eu/eurostat/web/labour-market/information-data/labour-costs",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "Euro Area Total Hourly Labour Costs YoY"
+    },
+    {
       "metric_id": "ea-long-term-unemployment",
       "metric": "Euro Area Long-Term Unemployment Rate",
       "source": "Eurostat",
@@ -823,6 +883,18 @@
       "release_deadline_at": null,
       "release_time_kind": null,
       "release_title": "Unemployment"
+    },
+    {
+      "metric_id": "ea-negotiated-wages-yoy",
+      "source": "ecb",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://data.ecb.europa.eu/data/datasets/INW",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "Euro Area Negotiated Wages YoY"
     },
     {
       "metric_id": "ea-ppi-capital-goods-mom",
@@ -1666,6 +1738,18 @@
       "release_time_kind": null
     },
     {
+      "metric_id": "uk-alcohol-cpi-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7ji/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Alcohol & tobacco CPI monthly rate"
+    },
+    {
       "metric_id": "uk-alcohol-cpi-yoy",
       "metric": "UK Alcohol & Tobacco CPI YoY",
       "source": "ONS",
@@ -1682,6 +1766,18 @@
       "release_time_kind": null,
       "series_id": "D7G9",
       "release_title": "Consumer price inflation, UK: October 2026"
+    },
+    {
+      "metric_id": "uk-alcohol-cpih-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59e/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Alcohol & tobacco CPIH monthly rate"
     },
     {
       "metric_id": "uk-alcohol-cpih-yoy",
@@ -1745,7 +1841,7 @@
     },
     {
       "metric_id": "uk-awe-regular-yoy",
-      "metric": "UK Average Weekly Earnings (Regular Pay) YoY",
+      "metric": "UK Wage Growth — Regular Pay YoY (3-month average)",
       "source": "ONS",
       "source_metric_id": "uk-awe-regular-yoy",
       "family": "AWE",
@@ -1763,7 +1859,7 @@
     },
     {
       "metric_id": "uk-awe-total-yoy",
-      "metric": "UK Average Weekly Earnings (Total Pay) YoY",
+      "metric": "UK AWE Total Pay YoY (3-month average)",
       "source": "ONS",
       "source_metric_id": "uk-awe-total-yoy",
       "family": "AWE",
@@ -1882,6 +1978,18 @@
       "release_time_kind": null
     },
     {
+      "metric_id": "uk-clothing-cpi-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jj/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Clothing & footwear CPI monthly rate"
+    },
+    {
       "metric_id": "uk-clothing-cpi-yoy",
       "metric": "UK Clothing & Footwear CPI YoY",
       "source": "ONS",
@@ -1898,6 +2006,18 @@
       "release_time_kind": null,
       "series_id": "D7GA",
       "release_title": "Consumer price inflation, UK: October 2026"
+    },
+    {
+      "metric_id": "uk-clothing-cpih-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59f/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Clothing & footwear CPIH monthly rate"
     },
     {
       "metric_id": "uk-clothing-cpih-yoy",
@@ -1918,6 +2038,18 @@
       "release_title": "Consumer price inflation, UK: October 2026"
     },
     {
+      "metric_id": "uk-communication-cpi-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jo/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Communication CPI monthly rate"
+    },
+    {
       "metric_id": "uk-communication-cpi-yoy",
       "metric": "UK Communication CPI YoY",
       "source": "ONS",
@@ -1934,6 +2066,18 @@
       "release_time_kind": null,
       "series_id": "D7GF",
       "release_title": "Consumer price inflation, UK: October 2026"
+    },
+    {
+      "metric_id": "uk-communication-cpih-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59k/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Communication CPIH monthly rate"
     },
     {
       "metric_id": "uk-communication-cpih-yoy",
@@ -2178,6 +2322,18 @@
       "source_id": "DMP_WAGE_REALISED_3M"
     },
     {
+      "metric_id": "uk-education-cpi-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jq/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Education CPI monthly rate"
+    },
+    {
       "metric_id": "uk-education-cpi-yoy",
       "metric": "UK Education CPI YoY",
       "source": "ONS",
@@ -2194,6 +2350,18 @@
       "release_time_kind": null,
       "series_id": "D7GH",
       "release_title": "Consumer price inflation, UK: October 2026"
+    },
+    {
+      "metric_id": "uk-education-cpih-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59m/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Education CPIH monthly rate"
     },
     {
       "metric_id": "uk-education-cpih-yoy",
@@ -2298,6 +2466,18 @@
       "release_title": "Consumer price inflation, UK: October 2026"
     },
     {
+      "metric_id": "uk-food-cpi-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jh/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Food & non-alcoholic beverages CPI monthly rate"
+    },
+    {
       "metric_id": "uk-food-cpi-yoy",
       "metric": "UK Food CPI YoY",
       "source": "ONS",
@@ -2352,6 +2532,18 @@
       "release_title": "Consumer price inflation, UK: October 2026"
     },
     {
+      "metric_id": "uk-furniture-cpi-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jl/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Furniture & household goods CPI monthly rate"
+    },
+    {
       "metric_id": "uk-furniture-cpi-yoy",
       "metric": "UK Furniture & Household Goods CPI YoY",
       "source": "ONS",
@@ -2368,6 +2560,18 @@
       "release_time_kind": null,
       "series_id": "D7GC",
       "release_title": "Consumer price inflation, UK: October 2026"
+    },
+    {
+      "metric_id": "uk-furniture-cpih-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59h/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Furniture & household goods CPIH monthly rate"
     },
     {
       "metric_id": "uk-furniture-cpih-yoy",
@@ -2580,6 +2784,18 @@
       "release_title": "GDP quarterly national accounts, UK: July to September 2026"
     },
     {
+      "metric_id": "uk-health-cpi-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jm/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Health CPI monthly rate"
+    },
+    {
       "metric_id": "uk-health-cpi-yoy",
       "metric": "UK Health CPI YoY",
       "source": "ONS",
@@ -2596,6 +2812,18 @@
       "release_time_kind": null,
       "series_id": "D7GD",
       "release_title": "Consumer price inflation, UK: October 2026"
+    },
+    {
+      "metric_id": "uk-health-cpih-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59i/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Health CPIH monthly rate"
     },
     {
       "metric_id": "uk-health-cpih-yoy",
@@ -2632,6 +2860,18 @@
       "release_time_kind": null,
       "series_id": "ABJR",
       "release_title": "Consumer trends, UK: July to September 2026"
+    },
+    {
+      "metric_id": "uk-housing-cpi-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jk/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Housing & household services CPI monthly rate"
     },
     {
       "metric_id": "uk-housing-cpi-yoy",
@@ -3022,6 +3262,18 @@
       "release_time_kind": null
     },
     {
+      "metric_id": "uk-miscellaneous-cpi-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7js/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Miscellaneous goods & services CPI monthly rate"
+    },
+    {
       "metric_id": "uk-miscellaneous-cpi-yoy",
       "metric": "UK Miscellaneous Goods & Services CPI YoY",
       "source": "ONS",
@@ -3038,6 +3290,18 @@
       "release_time_kind": null,
       "series_id": "D7GJ",
       "release_title": "Consumer price inflation, UK: October 2026"
+    },
+    {
+      "metric_id": "uk-miscellaneous-cpih-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59o/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Miscellaneous goods & services CPIH monthly rate"
     },
     {
       "metric_id": "uk-miscellaneous-cpih-yoy",
@@ -3958,6 +4222,18 @@
       "release_title": "Producer price inflation, UK: October 2026"
     },
     {
+      "metric_id": "uk-recreation-cpi-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jp/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Recreation & culture CPI monthly rate"
+    },
+    {
       "metric_id": "uk-recreation-cpi-yoy",
       "metric": "UK Recreation & Culture CPI YoY",
       "source": "ONS",
@@ -3974,6 +4250,18 @@
       "release_time_kind": null,
       "series_id": "D7GG",
       "release_title": "Consumer price inflation, UK: October 2026"
+    },
+    {
+      "metric_id": "uk-recreation-cpih-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59l/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Recreation & culture CPIH monthly rate"
     },
     {
       "metric_id": "uk-recreation-cpih-yoy",
@@ -3994,6 +4282,18 @@
       "release_title": "Consumer price inflation, UK: October 2026"
     },
     {
+      "metric_id": "uk-restaurants-hotels-cpi-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jr/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Restaurants & hotels CPI monthly rate"
+    },
+    {
       "metric_id": "uk-restaurants-hotels-cpi-yoy",
       "metric": "UK Restaurants & Hotels CPI YoY",
       "source": "ONS",
@@ -4010,6 +4310,18 @@
       "release_time_kind": null,
       "series_id": "D7GI",
       "release_title": "Consumer price inflation, UK: October 2026"
+    },
+    {
+      "metric_id": "uk-restaurants-hotels-cpih-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59n/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Restaurants & hotels CPIH monthly rate"
     },
     {
       "metric_id": "uk-restaurants-hotels-cpih-yoy",
@@ -4035,17 +4347,17 @@
       "source": "ONS",
       "source_metric_id": "uk-retail-automotive-fuel",
       "family": "RETAIL_SALES",
-      "next_release": "2026-10-23",
-      "next_release_at": "2026-10-23T06:00:00+00:00",
+      "next_release": "2026-11-20",
+      "next_release_at": "2026-11-20T07:00:00+00:00",
       "release_status": "success",
       "success": true,
-      "official_source": "https://www.ons.gov.uk/releases/retailsalesgreatbritainseptember2026",
-      "official_evidence": "Retail sales, Great Britain: September 2026",
+      "official_source": "https://www.ons.gov.uk/releases/retailsalesgreatbritainoctober2026",
+      "official_evidence": "Retail sales, Great Britain: October 2026",
       "update_type": null,
       "release_deadline_at": null,
       "release_time_kind": null,
       "series_id": "J05A",
-      "release_title": "Retail sales, Great Britain: September 2026"
+      "release_title": "Retail sales, Great Britain: October 2026"
     },
     {
       "metric_id": "uk-retail-food-stores",
@@ -4053,17 +4365,17 @@
       "source": "ONS",
       "source_metric_id": "uk-retail-food-stores",
       "family": "RETAIL_SALES",
-      "next_release": "2026-10-23",
-      "next_release_at": "2026-10-23T06:00:00+00:00",
+      "next_release": "2026-11-20",
+      "next_release_at": "2026-11-20T07:00:00+00:00",
       "release_status": "success",
       "success": true,
-      "official_source": "https://www.ons.gov.uk/releases/retailsalesgreatbritainseptember2026",
-      "official_evidence": "Retail sales, Great Britain: September 2026",
+      "official_source": "https://www.ons.gov.uk/releases/retailsalesgreatbritainoctober2026",
+      "official_evidence": "Retail sales, Great Britain: October 2026",
       "update_type": null,
       "release_deadline_at": null,
       "release_time_kind": null,
       "series_id": "EAPT",
-      "release_title": "Retail sales, Great Britain: September 2026"
+      "release_title": "Retail sales, Great Britain: October 2026"
     },
     {
       "metric_id": "uk-retail-non-food-stores",
@@ -4071,17 +4383,17 @@
       "source": "ONS",
       "source_metric_id": "uk-retail-non-food-stores",
       "family": "RETAIL_SALES",
-      "next_release": "2026-10-23",
-      "next_release_at": "2026-10-23T06:00:00+00:00",
+      "next_release": "2026-11-20",
+      "next_release_at": "2026-11-20T07:00:00+00:00",
       "release_status": "success",
       "success": true,
-      "official_source": "https://www.ons.gov.uk/releases/retailsalesgreatbritainseptember2026",
-      "official_evidence": "Retail sales, Great Britain: September 2026",
+      "official_source": "https://www.ons.gov.uk/releases/retailsalesgreatbritainoctober2026",
+      "official_evidence": "Retail sales, Great Britain: October 2026",
       "update_type": null,
       "release_deadline_at": null,
       "release_time_kind": null,
       "series_id": "EAPV",
-      "release_title": "Retail sales, Great Britain: September 2026"
+      "release_title": "Retail sales, Great Britain: October 2026"
     },
     {
       "metric_id": "uk-retail-nonstore",
@@ -4089,17 +4401,17 @@
       "source": "ONS",
       "source_metric_id": "uk-retail-nonstore",
       "family": "RETAIL_SALES",
-      "next_release": "2026-10-23",
-      "next_release_at": "2026-10-23T06:00:00+00:00",
+      "next_release": "2026-11-20",
+      "next_release_at": "2026-11-20T07:00:00+00:00",
       "release_status": "success",
       "success": true,
-      "official_source": "https://www.ons.gov.uk/releases/retailsalesgreatbritainseptember2026",
-      "official_evidence": "Retail sales, Great Britain: September 2026",
+      "official_source": "https://www.ons.gov.uk/releases/retailsalesgreatbritainoctober2026",
+      "official_evidence": "Retail sales, Great Britain: October 2026",
       "update_type": null,
       "release_deadline_at": null,
       "release_time_kind": null,
       "series_id": "J5DZ",
-      "release_title": "Retail sales, Great Britain: September 2026"
+      "release_title": "Retail sales, Great Britain: October 2026"
     },
     {
       "metric_id": "uk-retail-sales",
@@ -4107,17 +4419,17 @@
       "source": "ONS",
       "source_metric_id": "uk-retail-sales",
       "family": "RETAIL_SALES",
-      "next_release": "2026-10-23",
-      "next_release_at": "2026-10-23T06:00:00+00:00",
+      "next_release": "2026-11-20",
+      "next_release_at": "2026-11-20T07:00:00+00:00",
       "release_status": "success",
       "success": true,
-      "official_source": "https://www.ons.gov.uk/releases/retailsalesgreatbritainseptember2026",
-      "official_evidence": "Retail sales, Great Britain: September 2026",
+      "official_source": "https://www.ons.gov.uk/releases/retailsalesgreatbritainoctober2026",
+      "official_evidence": "Retail sales, Great Britain: October 2026",
       "update_type": null,
       "release_deadline_at": null,
       "release_time_kind": null,
       "series_id": "J5EK",
-      "release_title": "Retail sales, Great Britain: September 2026"
+      "release_title": "Retail sales, Great Britain: October 2026"
     },
     {
       "metric_id": "uk-retail-sales-ex-fuel",
@@ -4161,17 +4473,17 @@
       "source": "ONS",
       "source_metric_id": "uk-retail-sales-mom",
       "family": "RETAIL_SALES",
-      "next_release": "2026-10-23",
-      "next_release_at": "2026-10-23T06:00:00+00:00",
+      "next_release": "2026-11-20",
+      "next_release_at": "2026-11-20T07:00:00+00:00",
       "release_status": "success",
       "success": true,
-      "official_source": "https://www.ons.gov.uk/releases/retailsalesgreatbritainseptember2026",
-      "official_evidence": "Retail sales, Great Britain: September 2026",
+      "official_source": "https://www.ons.gov.uk/releases/retailsalesgreatbritainoctober2026",
+      "official_evidence": "Retail sales, Great Britain: October 2026",
       "update_type": null,
       "release_deadline_at": null,
       "release_time_kind": null,
       "series_id": "J5EC",
-      "release_title": "Retail sales, Great Britain: September 2026"
+      "release_title": "Retail sales, Great Britain: October 2026"
     },
     {
       "metric_id": "uk-retail-sales-total-3m3m",
@@ -4191,17 +4503,17 @@
       "source": "ONS",
       "source_metric_id": "uk-retail-sales-total-ex-fuel",
       "family": "RETAIL_SALES",
-      "next_release": "2026-10-23",
-      "next_release_at": "2026-10-23T06:00:00+00:00",
+      "next_release": "2026-11-20",
+      "next_release_at": "2026-11-20T07:00:00+00:00",
       "release_status": "success",
       "success": true,
-      "official_source": "https://www.ons.gov.uk/releases/retailsalesgreatbritainseptember2026",
-      "official_evidence": "Retail sales, Great Britain: September 2026",
+      "official_source": "https://www.ons.gov.uk/releases/retailsalesgreatbritainoctober2026",
+      "official_evidence": "Retail sales, Great Britain: October 2026",
       "update_type": null,
       "release_deadline_at": null,
       "release_time_kind": null,
       "series_id": "J5EC",
-      "release_title": "Retail sales, Great Britain: September 2026"
+      "release_title": "Retail sales, Great Britain: October 2026"
     },
     {
       "metric_id": "uk-retail-sales-total-yoy",
@@ -4318,6 +4630,18 @@
       "release_time_kind": null
     },
     {
+      "metric_id": "uk-transport-cpi-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jn/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Transport CPI monthly rate"
+    },
+    {
       "metric_id": "uk-transport-cpi-yoy",
       "metric": "UK Transport CPI YoY",
       "source": "ONS",
@@ -4334,6 +4658,18 @@
       "release_time_kind": null,
       "series_id": "D7GE",
       "release_title": "Consumer price inflation, UK: October 2026"
+    },
+    {
+      "metric_id": "uk-transport-cpih-mom",
+      "source": "ons",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59j/mm23",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "UK Transport CPIH monthly rate"
     },
     {
       "metric_id": "uk-transport-cpih-yoy",
@@ -5848,6 +6184,18 @@
       "update_type": null,
       "release_deadline_at": null,
       "release_time_kind": null
+    },
+    {
+      "metric_id": "us-jolts-total-separations-rate",
+      "source": "bls",
+      "family": null,
+      "next_release": null,
+      "next_release_at": null,
+      "release_status": "source_error",
+      "success": false,
+      "official_source": "https://www.bls.gov/jlt",
+      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
+      "metric": "JOLTS Total Separations Rate"
     },
     {
       "metric_id": "us-long-term-unemployed",
@@ -9111,12 +9459,12 @@
       "source": "Census",
       "source_metric_id": "us-retail-food-beverage",
       "family": "US_RETAIL_SALES",
-      "next_release": "2026-11-17",
-      "next_release_at": "2026-11-17T08:30:00-05:00",
+      "next_release": "2027-01-15",
+      "next_release_at": "2027-01-15T08:30:00-05:00",
       "release_status": null,
       "success": true,
-      "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | January 15, 2027 | 8:30 AM | December 2026 | A202701150830 | A202612",
       "update_type": null,
       "release_deadline_at": null,
       "release_time_kind": null
@@ -9127,12 +9475,12 @@
       "source": "Census",
       "source_metric_id": "us-retail-food-services",
       "family": "US_RETAIL_SALES",
-      "next_release": "2026-11-17",
-      "next_release_at": "2026-11-17T08:30:00-05:00",
+      "next_release": "2027-01-15",
+      "next_release_at": "2027-01-15T08:30:00-05:00",
       "release_status": null,
       "success": true,
-      "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | January 15, 2027 | 8:30 AM | December 2026 | A202701150830 | A202612",
       "update_type": null,
       "release_deadline_at": null,
       "release_time_kind": null
@@ -9143,12 +9491,12 @@
       "source": "Census",
       "source_metric_id": "us-retail-gasoline",
       "family": "US_RETAIL_SALES",
-      "next_release": "2026-11-17",
-      "next_release_at": "2026-11-17T08:30:00-05:00",
+      "next_release": "2027-01-15",
+      "next_release_at": "2027-01-15T08:30:00-05:00",
       "release_status": null,
       "success": true,
-      "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | January 15, 2027 | 8:30 AM | December 2026 | A202701150830 | A202612",
       "update_type": null,
       "release_deadline_at": null,
       "release_time_kind": null
@@ -9159,12 +9507,12 @@
       "source": "Census",
       "source_metric_id": "us-retail-general-merchandise",
       "family": "US_RETAIL_SALES",
-      "next_release": "2026-11-17",
-      "next_release_at": "2026-11-17T08:30:00-05:00",
+      "next_release": "2027-01-15",
+      "next_release_at": "2027-01-15T08:30:00-05:00",
       "release_status": null,
       "success": true,
-      "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | January 15, 2027 | 8:30 AM | December 2026 | A202701150830 | A202612",
       "update_type": null,
       "release_deadline_at": null,
       "release_time_kind": null
@@ -9175,12 +9523,12 @@
       "source": "Census",
       "source_metric_id": "us-retail-motor-vehicles",
       "family": "US_RETAIL_SALES",
-      "next_release": "2026-11-17",
-      "next_release_at": "2026-11-17T08:30:00-05:00",
+      "next_release": "2027-01-15",
+      "next_release_at": "2027-01-15T08:30:00-05:00",
       "release_status": null,
       "success": true,
-      "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | January 15, 2027 | 8:30 AM | December 2026 | A202701150830 | A202612",
       "update_type": null,
       "release_deadline_at": null,
       "release_time_kind": null
@@ -9191,12 +9539,12 @@
       "source": "Census",
       "source_metric_id": "us-retail-nonstore",
       "family": "US_RETAIL_SALES",
-      "next_release": "2026-11-17",
-      "next_release_at": "2026-11-17T08:30:00-05:00",
+      "next_release": "2027-01-15",
+      "next_release_at": "2027-01-15T08:30:00-05:00",
       "release_status": null,
       "success": true,
-      "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | January 15, 2027 | 8:30 AM | December 2026 | A202701150830 | A202612",
       "update_type": null,
       "release_deadline_at": null,
       "release_time_kind": null
@@ -9207,27 +9555,31 @@
       "source": "Census",
       "source_metric_id": "us-retail-sales",
       "family": "US_RETAIL_SALES",
-      "next_release": "2026-11-17",
-      "next_release_at": "2026-11-17T08:30:00-05:00",
+      "next_release": "2027-01-15",
+      "next_release_at": "2027-01-15T08:30:00-05:00",
       "release_status": null,
       "success": true,
-      "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | January 15, 2027 | 8:30 AM | December 2026 | A202701150830 | A202612",
       "update_type": null,
       "release_deadline_at": null,
       "release_time_kind": null
     },
     {
       "metric_id": "us-retail-sales-control-group",
-      "source": "census",
-      "family": null,
-      "next_release": null,
-      "next_release_at": null,
-      "release_status": "source_error",
-      "success": false,
-      "official_source": "https://www.census.gov/retail/marts/www/timeseries.html",
-      "official_evidence": "No calendar provider mapping supplied a schedule for this catalog metric; announcement status has not been verified.",
-      "metric": "US Retail Sales Control Group (calculated)"
+      "metric": "US Retail Sales Control Group (calculated)",
+      "source": "Census",
+      "source_metric_id": "us-retail-sales-control-group",
+      "family": "US_RETAIL_SALES",
+      "next_release": "2027-01-15",
+      "next_release_at": "2027-01-15T08:30:00-05:00",
+      "release_status": null,
+      "success": true,
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | January 15, 2027 | 8:30 AM | December 2026 | A202701150830 | A202612",
+      "update_type": null,
+      "release_deadline_at": null,
+      "release_time_kind": null
     },
     {
       "metric_id": "us-retail-sales-ex-auto",
@@ -9235,12 +9587,12 @@
       "source": "Census",
       "source_metric_id": "us-retail-sales-ex-auto",
       "family": "US_RETAIL_SALES",
-      "next_release": "2026-11-17",
-      "next_release_at": "2026-11-17T08:30:00-05:00",
+      "next_release": "2027-01-15",
+      "next_release_at": "2027-01-15T08:30:00-05:00",
       "release_status": null,
       "success": true,
-      "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | January 15, 2027 | 8:30 AM | December 2026 | A202701150830 | A202612",
       "update_type": null,
       "release_deadline_at": null,
       "release_time_kind": null
@@ -9251,12 +9603,12 @@
       "source": "Census",
       "source_metric_id": "us-retail-sales-total",
       "family": "US_RETAIL_SALES",
-      "next_release": "2026-11-17",
-      "next_release_at": "2026-11-17T08:30:00-05:00",
+      "next_release": "2027-01-15",
+      "next_release_at": "2027-01-15T08:30:00-05:00",
       "release_status": null,
       "success": true,
-      "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | January 15, 2027 | 8:30 AM | December 2026 | A202701150830 | A202612",
       "update_type": null,
       "release_deadline_at": null,
       "release_time_kind": null
@@ -9267,12 +9619,12 @@
       "source": "Census",
       "source_metric_id": "us-retail-total-ex-auto-gas",
       "family": "US_RETAIL_SALES",
-      "next_release": "2026-11-17",
-      "next_release_at": "2026-11-17T08:30:00-05:00",
+      "next_release": "2027-01-15",
+      "next_release_at": "2027-01-15T08:30:00-05:00",
       "release_status": null,
       "success": true,
-      "official_source": "https://www.census.gov/retail/release_schedule.html",
-      "official_evidence": "Advance Monthly Retail Trade Report | October 2026 | November 17, 2026 | Release time 08:30",
+      "official_source": "https://www.census.gov/economic-indicators/calendar-listview.html",
+      "official_evidence": "Advance Monthly Sales for Retail and Food Services | January 15, 2027 | 8:30 AM | December 2026 | A202701150830 | A202612",
       "update_type": null,
       "release_deadline_at": null,
       "release_time_kind": null

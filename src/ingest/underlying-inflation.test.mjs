@@ -4,6 +4,7 @@ import * as XLSX from "xlsx";
 import { parseAtlantaStickyWorkbook, fetchAtlantaStickyCpi } from "./atlanta-sticky-cpi.ts";
 import { withFreshReleaseFetch } from "./release-fetch-context.js";
 import { parseClevelandCpiCsv } from "./cleveland-cpi-measures.ts";
+import { parseMedianPceCsv, parseDallasTrimmedMeanWorkbook } from "./us-pce-underlying.ts";
 import { LIVE_MAP } from "../catalog/live-map.ts";
 import { cpiUnderlyingScheduleRows, cpiReleaseCandidates } from "./cpi-release-schedule.ts";
 import { METRICS } from "../catalog/metrics.ts";
@@ -127,4 +128,28 @@ test("release retries request a fresh Atlanta workbook instead of replaying cach
     await fetchAtlantaStickyCpi("us-sticky-cpi");
     assert.equal(calls, 4, "ordinary history requests can still reuse the provider snapshot");
   } finally { globalThis.fetch = originalFetch; }
+});
+
+test("parses Cleveland Fed Median PCE official monthly and 12-month CSV rates", () => {
+  const csv = "Date,\"Median PCE Inflation, monthly percent change\",\"Median PCE Inflation, year-over-year percent change\"\n01/01/2025,0.3,3.1\n02/01/2025,0.2,3.2";
+  assert.deepEqual(parseMedianPceCsv(csv, "mom"), [{ date: "2025-01-01", value: 0.3 }, { date: "2025-02-01", value: 0.2 }]);
+  assert.deepEqual(parseMedianPceCsv(csv, "yoy"), [{ date: "2025-01-01", value: 3.1 }, { date: "2025-02-01", value: 3.2 }]);
+});
+
+test("parses Dallas Fed historical workbook and converts its annualized one-month rate", () => {
+  const sheet = XLSX.utils.aoa_to_sheet([["", "", "", "", "Trimmed mean PCE inflation rates"], ["", "", "", "", "All series are at annual rates"], [], ["", "1-month", "6-month", "12-month"], ["Jan-25", 3.0, 2.8, 2.8]]);
+  const bytes = XLSX.write({ SheetNames: ["History"], Sheets: { History: sheet } }, { type: "buffer", bookType: "xlsx" });
+  assert.deepEqual(parseDallasTrimmedMeanWorkbook(bytes, "yoy"), [{ date: "2025-01-01", value: 2.8 }]);
+  assert.ok(Math.abs(parseDallasTrimmedMeanWorkbook(bytes, "mom")[0].value - (Math.pow(1.03, 1 / 12) - 1) * 100) < 1e-9);
+});
+
+test("routes and catalogs both official PCE measures with monthly counterparts", () => {
+  const ids = ["us-cleveland-median-pce", "us-cleveland-median-pce-mom", "us-dallas-trimmed-mean-pce", "us-dallas-trimmed-mean-pce-mom"];
+  for (const id of ids) {
+    const metric = METRICS.find(item => item.id === id);
+    assert.ok(metric, id + " must be backfillable");
+    assert.equal(metric.frequency, "monthly");
+    assert.equal(metric.transform, "published_rate");
+    assert.equal(LIVE_MAP[id].provider, id.includes("dallas") ? "dallas_pce" : "cleveland_cpi");
+  }
 });

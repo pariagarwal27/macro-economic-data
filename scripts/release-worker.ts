@@ -1,16 +1,17 @@
 import { loadEnvConfig } from "@next/env";
 import { logReleaseEvent } from "../src/ingest/release-logging";
 import { METRICS } from "../src/catalog/metrics";
+import { UK_RETAIL_RELEASE_IDS } from "../src/lib/uk-retail";
 
 loadEnvConfig(process.cwd());
 
 async function main() {
   const { ensureSchema, seedCatalog } = await import("../src/ingest/pipeline");
   const underlyingIds = METRICS
-    .filter(metric => metric.id === "us-sticky-cpi" || metric.id === "us-core-sticky-cpi" || metric.id === "us-flexible-cpi" || metric.id === "us-cleveland-median-cpi" || metric.id === "us-cleveland-trimmed-cpi" || metric.id.endsWith("-sticky-cpi-mom") || metric.id.endsWith("-flexible-cpi-mom") || metric.id.endsWith("-cleveland-median-cpi-mom") || metric.id.endsWith("-cleveland-trimmed-cpi-mom"))
+    .filter(metric => metric.id === "us-sticky-cpi" || metric.id === "us-core-sticky-cpi" || metric.id === "us-flexible-cpi" || metric.id === "us-cleveland-median-pce" || metric.id === "us-cleveland-median-pce-mom" || metric.id === "us-dallas-trimmed-mean-pce" || metric.id === "us-dallas-trimmed-mean-pce-mom" || metric.id === "us-cleveland-median-cpi" || metric.id === "us-cleveland-trimmed-cpi" || metric.id.endsWith("-sticky-cpi-mom") || metric.id.endsWith("-flexible-cpi-mom") || metric.id.endsWith("-cleveland-median-cpi-mom") || metric.id.endsWith("-cleveland-trimmed-cpi-mom"))
     .map(metric => metric.id);
   await ensureSchema();
-  await seedCatalog({ metricIds: underlyingIds });
+  await seedCatalog({ metricIds: [...underlyingIds, ...UK_RETAIL_RELEASE_IDS] });
 
   const { dispatchDueReleases } = await import("../src/ingest/release-dispatcher");
 

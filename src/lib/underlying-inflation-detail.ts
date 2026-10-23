@@ -14,7 +14,8 @@ export type UnderlyingInflationHistories = Record<
 const UNDERLYING_INFLATION_DETAIL_IDS = new Set([
   "us-sticky-cpi",
   "us-core-sticky-cpi",
-  "us-flexible-cpi",
+  "us-cleveland-median-pce",
+  "us-dallas-trimmed-mean-pce",
   "us-cleveland-median-cpi",
   "us-cleveland-trimmed-cpi",
 ]);

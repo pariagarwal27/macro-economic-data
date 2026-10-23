@@ -51,6 +51,8 @@ export function calendarMetricDisplayName(metric: Pick<MetricDef, "id" | "name" 
   return `${expectationCategory} (${component})`;
 }
 export function compareCalendarMetricEvents(a: { metricId: string; metricName: string }, b: { metricId: string; metricName: string }) {
+  const retailOrder = ['uk-retail-sales-total-ex-fuel', 'uk-retail-sales-ex-fuel'];
+  if (retailOrder.includes(a.metricId) && retailOrder.includes(b.metricId)) return retailOrder.indexOf(a.metricId) - retailOrder.indexOf(b.metricId);
   const aOrder = EA_HICP_DISPLAY[a.metricId]?.order;
   const bOrder = EA_HICP_DISPLAY[b.metricId]?.order;
   if (aOrder != null || bOrder != null) return (aOrder ?? Number.MAX_SAFE_INTEGER) - (bOrder ?? Number.MAX_SAFE_INTEGER);

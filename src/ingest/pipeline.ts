@@ -63,6 +63,7 @@ import {
 import { fetchFredSeries, mapPool } from "./fred";
 import { fetchEurostatPreset } from "./eurostat";
 import { fetchOnsSeries } from "./ons";
+import { UK_RETAIL_RELEASE_IDS } from "@/lib/uk-retail";
 import {
   fetchEcbSpfHicp1y,
   fetchEcbSpfSeries,
@@ -105,6 +106,7 @@ import { fetchClevelandExpectedInflationWithFallback } from "./cleveland-expecta
 import { fetchAtlantaStickyCpi } from "./atlanta-sticky-cpi";
 import { fetchAtlantaWageTracker } from "./atlanta-wage-tracker";
 import { fetchClevelandCpiMeasure } from "./cleveland-cpi-measures";
+import { fetchUsUnderlyingPce } from "./us-pce-underlying";
 import {
   fetchAtlantaBieSeries,
   fetchClevelandSofieSeries,
@@ -1073,7 +1075,7 @@ async function loadLiveRaw(
         };
       }
     }
-    if (metric.source === "cleveland_sofie") {
+  if (metric.source === "cleveland_sofie") {
       return {
         points: await fetchClevelandSofieSeries(metric.seriesId === "SOFIE_5Y" ? "5y" : "1y"),
         note: `Live Cleveland Fed SoFIE ${metric.seriesId}`,
@@ -1159,8 +1161,13 @@ async function loadLiveRaw(
       return { points: await fetchAtlantaWageTracker(), note: "Live Atlanta Fed official Wage Growth Tracker workbook (3-month overall unweighted)" };
     }
     case "cleveland_cpi": {
+      if (metric.id.includes("median-pce")) return { points: await fetchUsUnderlyingPce(metric.id), note: "Live Cleveland Fed official Median PCE history download" };
       return { points: await fetchClevelandCpiMeasure(metric.id), note: "Live Cleveland Fed official Median CPI download" };
     }
+    case "dallas_pce": {
+      return { points: await fetchUsUnderlyingPce(metric.id), note: "Live Dallas Fed official Trimmed Mean PCE historical workbook" };
+    }
+
     case "bea": {
       if (!process.env.BEA_API_KEY) return null;
       const [table, line] = ref.seriesId.split(":");
@@ -1267,6 +1274,7 @@ export async function fetchOfficialLatestFromPipeline(metricId: string) {
     releaseStage: latest.releaseStage,
     releasedAt: new Date().toISOString(),
     note: live.note,
+    ...(UK_RETAIL_RELEASE_IDS.includes(metric.id) ? { history: prepared.map(point => ({ date: point.date, value: point.value })) } : {}),
   };
 }
 
@@ -1295,6 +1303,8 @@ async function loadFredRaw(
 
 async function loadOfficialHistory(metric: MetricDef): Promise<RawPoint[]> {
   const endYear = new Date().getFullYear();
+  if (metric.source === "cleveland" && ["us-cleveland-median-pce", "us-cleveland-median-pce-mom"].includes(metric.id)) return fetchUsUnderlyingPce(metric.id);
+  if (metric.source === "dallas" && ["us-dallas-trimmed-mean-pce", "us-dallas-trimmed-mean-pce-mom"].includes(metric.id)) return fetchUsUnderlyingPce(metric.id);
   if (metric.source === "dol") {
     const claims = await fetchDolClaims();
     return metric.seriesId === "initial-average" ? claims.initialAverage : claims.continuingAverage;
@@ -1391,6 +1401,19 @@ async function loadPrimaryOrFallback(
 }
 
 async function fetchEcbBySeriesId(seriesId: string): Promise<RawPoint[]> {
+  if (seriesId.startsWith("INW.")) {
+    return fetchEcbSdmxSeries("INW", seriesId);
+  }
+  if (seriesId.startsWith("MNA.")) {
+    const points = await fetchEcbSdmxSeries("MNA", seriesId);
+    return points.map((point) => {
+      const quarter = point.date.match(/^(\d{4})-Q([1-4])$/i);
+      return quarter
+        ? { ...point, date: `${quarter[1]}-${String((Number(quarter[2]) - 1) * 3 + 1).padStart(2, "0")}-01` }
+        : point;
+    });
+  }
+
   // ---------------------------------------------------------------------------
   // ECB Consumer Expectations Survey (CES)
   // ---------------------------------------------------------------------------

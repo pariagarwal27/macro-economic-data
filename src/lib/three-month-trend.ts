@@ -146,7 +146,10 @@ export function buildThreeMonthMethodMap(metrics: MetricDef[]): Map<string, Thre
       // indicator and can be compounded into an annualized three-month rate.
       entry = { method: "saar-3m3m", label: "3m/3m SAAR", frequency: metric.frequency, seasonallyAdjusted: false, sourceMetricIds: [momMetric.id] };
     } else if (metric.region === "UK" && metric.id === "uk-awe-regular-yoy" && momMetric) {
-      entry = { method: "saar-3m3m", label: "3m/3m SAAR", frequency: metric.frequency, seasonallyAdjusted: true, sourceMetricIds: [momMetric.id] };
+      // KAI9 is already a published rolling 3-month YoY rate. Derive SAAR
+      // from the matching KAI7 monthly index changes, not from this smoothed
+      // annual rate or from LSEG's unverified proxy series.
+      entry = { method: "saar-3m3m", label: "3m/3m SAAR", frequency: metric.frequency, seasonallyAdjusted: true, sourceMetricIds: ["uk-awe-regular-mom"] };
     } else if (metric.region === "UK" && metric.category === "inflation" && metric.subcategory === "producer_prices" && metric.transform === "pct_change_yoy" && momMetric) {
       // ONS PPI is not seasonally adjusted. Retain the requested annualized
       // three-month rate, and disclose the NSA source in the trend note.
@@ -312,7 +315,7 @@ export function buildThreeMonthTrend(
   if (method.method === "saar-3m3m" && metric.region === "UK" && metric.id === "uk-awe-regular-yoy" && companionPublishedHistory?.length) {
     return {
       label: method.label,
-      note: "Annualized change compounded from three monthly changes in the seasonally adjusted ONS AWE regular-pay index.",
+      note: "Annualized change compounded from monthly changes in the seasonally adjusted ONS regular-pay index (KAI7). The headline YoY series is the ONS three-month average (KAI9).",
       frequency: method.frequency,
       history: annualizedThreeMonthRates(companionPublishedHistory),
     };

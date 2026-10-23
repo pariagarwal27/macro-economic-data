@@ -10,6 +10,8 @@ const SOURCE_LABELS: Record<string, string> = {
   census: "Census Bureau",
   cleveland: "Cleveland Fed",
   cleveland_cpi: "Cleveland Fed",
+  dallas_pce: "Dallas Fed",
+  dallas: "Dallas Fed",
   cleveland_sofie: "Cleveland Fed",
   dol: "DOL",
   ecb: "ECB",

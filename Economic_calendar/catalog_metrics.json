@@ -996,7 +996,7 @@
     },
     {
       "id": "uk-awe-regular-yoy",
-      "name": "UK Average Weekly Earnings (Regular Pay) YoY",
+      "name": "UK Wage Growth — Regular Pay YoY (3-month average)",
       "source": "ons",
       "frequency": "monthly",
       "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours"
@@ -1122,7 +1122,7 @@
     },
     {
       "id": "uk-awe-total-yoy",
-      "name": "UK Average Weekly Earnings (Total Pay) YoY",
+      "name": "UK AWE Total Pay YoY (3-month average)",
       "source": "ons",
       "frequency": "monthly",
       "official_url": "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/earningsandworkinghours"
@@ -1420,6 +1420,48 @@
       "source": "eurostat",
       "frequency": "quarterly",
       "official_url": "https://ec.europa.eu/eurostat/web/labour-market"
+    },
+    {
+      "id": "ea-labour-cost-total-yoy",
+      "name": "Euro Area Total Hourly Labour Costs YoY",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/web/labour-market/information-data/labour-costs"
+    },
+    {
+      "id": "ea-labour-cost-nonwage-yoy",
+      "name": "Euro Area Non-wage Labour Costs YoY",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/web/labour-market/information-data/labour-costs"
+    },
+    {
+      "id": "ea-labour-cost-business-yoy",
+      "name": "Euro Area Business Economy Total Labour Costs YoY",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/web/labour-market/information-data/labour-costs"
+    },
+    {
+      "id": "ea-labour-cost-nonbusiness-yoy",
+      "name": "Euro Area Mainly Non-business Economy Total Labour Costs YoY",
+      "source": "eurostat",
+      "frequency": "quarterly",
+      "official_url": "https://ec.europa.eu/eurostat/web/labour-market/information-data/labour-costs"
+    },
+    {
+      "id": "ea-negotiated-wages-yoy",
+      "name": "Euro Area Negotiated Wages YoY",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/INW"
+    },
+    {
+      "id": "ea-compensation-employee-yoy",
+      "name": "Euro Area Compensation per Employee YoY",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/MNA"
     },
     {
       "id": "ea-inflation-exp-1y",
@@ -2136,6 +2178,13 @@
       "official_url": "https://www.bls.gov/jlt"
     },
     {
+      "id": "us-jolts-total-separations-rate",
+      "name": "JOLTS Total Separations Rate",
+      "source": "bls",
+      "frequency": "monthly",
+      "official_url": "https://www.bls.gov/jlt"
+    },
+    {
       "id": "us-average-weekly-earnings",
       "name": "Average Weekly Earnings",
       "source": "bls",
@@ -2183,6 +2232,160 @@
       "source": "ons",
       "frequency": "monthly",
       "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices"
+    },
+    {
+      "id": "uk-food-cpi-mom",
+      "name": "UK Food & non-alcoholic beverages CPI monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jh/mm23"
+    },
+    {
+      "id": "uk-alcohol-cpi-mom",
+      "name": "UK Alcohol & tobacco CPI monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7ji/mm23"
+    },
+    {
+      "id": "uk-alcohol-cpih-mom",
+      "name": "UK Alcohol & tobacco CPIH monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59e/mm23"
+    },
+    {
+      "id": "uk-clothing-cpi-mom",
+      "name": "UK Clothing & footwear CPI monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jj/mm23"
+    },
+    {
+      "id": "uk-clothing-cpih-mom",
+      "name": "UK Clothing & footwear CPIH monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59f/mm23"
+    },
+    {
+      "id": "uk-housing-cpi-mom",
+      "name": "UK Housing & household services CPI monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jk/mm23"
+    },
+    {
+      "id": "uk-furniture-cpi-mom",
+      "name": "UK Furniture & household goods CPI monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jl/mm23"
+    },
+    {
+      "id": "uk-furniture-cpih-mom",
+      "name": "UK Furniture & household goods CPIH monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59h/mm23"
+    },
+    {
+      "id": "uk-health-cpi-mom",
+      "name": "UK Health CPI monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jm/mm23"
+    },
+    {
+      "id": "uk-health-cpih-mom",
+      "name": "UK Health CPIH monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59i/mm23"
+    },
+    {
+      "id": "uk-transport-cpi-mom",
+      "name": "UK Transport CPI monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jn/mm23"
+    },
+    {
+      "id": "uk-transport-cpih-mom",
+      "name": "UK Transport CPIH monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59j/mm23"
+    },
+    {
+      "id": "uk-communication-cpi-mom",
+      "name": "UK Communication CPI monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jo/mm23"
+    },
+    {
+      "id": "uk-communication-cpih-mom",
+      "name": "UK Communication CPIH monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59k/mm23"
+    },
+    {
+      "id": "uk-recreation-cpi-mom",
+      "name": "UK Recreation & culture CPI monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jp/mm23"
+    },
+    {
+      "id": "uk-recreation-cpih-mom",
+      "name": "UK Recreation & culture CPIH monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59l/mm23"
+    },
+    {
+      "id": "uk-education-cpi-mom",
+      "name": "UK Education CPI monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jq/mm23"
+    },
+    {
+      "id": "uk-education-cpih-mom",
+      "name": "UK Education CPIH monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59m/mm23"
+    },
+    {
+      "id": "uk-restaurants-hotels-cpi-mom",
+      "name": "UK Restaurants & hotels CPI monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7jr/mm23"
+    },
+    {
+      "id": "uk-restaurants-hotels-cpih-mom",
+      "name": "UK Restaurants & hotels CPIH monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59n/mm23"
+    },
+    {
+      "id": "uk-miscellaneous-cpi-mom",
+      "name": "UK Miscellaneous goods & services CPI monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/d7js/mm23"
+    },
+    {
+      "id": "uk-miscellaneous-cpih-mom",
+      "name": "UK Miscellaneous goods & services CPIH monthly rate",
+      "source": "ons",
+      "frequency": "monthly",
+      "official_url": "https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/l59o/mm23"
     },
     {
       "id": "uk-household-consumption-level",
@@ -2448,7 +2651,7 @@
       "name": "UK Retail Sales — Headline",
       "source": "ons",
       "frequency": "monthly",
-      "official_url": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/j45w/drsi"
+      "official_url": "https://www.ons.gov.uk/businessindustryandtrade/retailindustry/timeseries/j5ec/drsi"
     },
     {
       "id": "uk-retail-sales-ex-fuel",

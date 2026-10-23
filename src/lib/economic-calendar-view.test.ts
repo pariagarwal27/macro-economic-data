@@ -2,6 +2,19 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import type { MetricDef } from "@/catalog/metrics";
 import { buildEconomicCalendar, inheritSharedReleaseSchedules, filterReleaseDiaryEvents, filterScheduledCalendarEvents, isWithinLastSevenCalendarDays, isWithinPastAndNextSevenCalendarDays } from "./economic-calendar-view";
+import { getDashboardCalendarMetrics } from './dashboard-calendar-metrics';
+
+test('retail diary inherits one release time and displays independent previous and actual MoM values', () => {
+  const catalog = getDashboardCalendarMetrics().filter(metric => ['uk-retail-sales-total-ex-fuel','uk-retail-sales-ex-fuel'].includes(metric.id));
+  const schedule = inheritSharedReleaseSchedules([{ metricId: 'uk-retail-sales-total-ex-fuel', nextReleaseDate: '2026-10-23', nextReleaseAt: '2026-10-23T06:00:00Z' }],catalog);
+  const result = buildEconomicCalendar(schedule as never[],[
+    {metricId:'uk-retail-sales-total-ex-fuel',periodDate:'2026-09-01',releasedAt:'2026-10-23T06:01:00Z',value:-0.4,expectedValue:null,priorPeriodValue:0.7},
+    {metricId:'uk-retail-sales-ex-fuel',periodDate:'2026-09-01',releasedAt:'2026-10-23T06:02:00Z',value:-0.7,expectedValue:null,priorPeriodValue:0.9},
+  ],catalog,new Date('2026-10-23T07:00:00Z'));
+  assert.deepEqual(result.todayEvents.map(event => [event.metricName,event.previous,event.actual,event.status]),[
+    ['Retail Sales Headline MoM',0.7,-0.4,'released'],['Retail Sales ex Fuel MoM',0.9,-0.7,'released'],
+  ]);
+});
 
 test("a placeholder without a date inherits the official calendar from its release family", () => {
   const catalog = [

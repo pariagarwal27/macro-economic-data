@@ -4,7 +4,7 @@ export type ClaimsChartPoint = { date: string; value: number };
 
 export function formatClaimsCount(value: number | null | undefined) {
   if (value == null || !Number.isFinite(value)) return "—";
-  return Math.round(value).toLocaleString("en-US");
+  return `${Math.round(value / 1000).toLocaleString("en-US")}k`;
 }
 
 export function claimsChartPoints(history: readonly ClaimsObservation[], limit?: number): ClaimsChartPoint[] {

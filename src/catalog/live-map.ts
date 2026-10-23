@@ -18,6 +18,7 @@ export type LiveProvider =
   | "nyfed"
   | "cleveland"
   | "cleveland_cpi"
+  | "dallas_pce"
   | "ecb"
   | "boe"
   | "lseg";
@@ -41,6 +42,10 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
   "us-flexible-cpi": { provider: "atlanta_sticky", seriesId: "us-flexible-cpi" },
   "us-flexible-cpi-mom": { provider: "atlanta_sticky", seriesId: "us-flexible-cpi-mom" },
   "us-atlanta-wage": { provider: "atlanta_wage", seriesId: "WGT_OVERALL_3M_UNWEIGHTED" },
+  "us-cleveland-median-pce": { provider: "cleveland_cpi", seriesId: "us-cleveland-median-pce" },
+  "us-cleveland-median-pce-mom": { provider: "cleveland_cpi", seriesId: "us-cleveland-median-pce-mom" },
+  "us-dallas-trimmed-mean-pce": { provider: "dallas_pce", seriesId: "us-dallas-trimmed-mean-pce" },
+  "us-dallas-trimmed-mean-pce-mom": { provider: "dallas_pce", seriesId: "us-dallas-trimmed-mean-pce-mom" },
   "us-cleveland-median-cpi": { provider: "cleveland_cpi", seriesId: "us-cleveland-median-cpi" },
   "us-cleveland-median-cpi-mom": { provider: "cleveland_cpi", seriesId: "us-cleveland-median-cpi-mom" },
   "us-cleveland-trimmed-cpi": { provider: "cleveland_cpi", seriesId: "us-cleveland-trimmed-cpi" },
@@ -315,6 +320,10 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
   "us-jolts-layoffs": {
     provider: "bls",
     seriesId: "JTS000000000000000LDR",
+  },
+  "us-jolts-total-separations-rate": {
+    provider: "bls",
+    seriesId: "JTS000000000000000TSR",
   },
 
   "us-jolts-hires-level": {
@@ -593,6 +602,10 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
   "uk-awe-regular-yoy": {
     provider: "ons",
     seriesId: "KAI9",
+  },
+  "uk-awe-regular-mom": {
+    provider: "ons",
+    seriesId: "KAI7",
   },
   "uk-awe-total-yoy": {
     provider: "ons",

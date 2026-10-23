@@ -107,6 +107,7 @@ import {
 import { fetchAtlantaStickyCpi } from "../src/ingest/atlanta-sticky-cpi";
 import { fetchAtlantaWageTracker } from "../src/ingest/atlanta-wage-tracker";
 import { fetchClevelandCpiMeasure } from "../src/ingest/cleveland-cpi-measures";
+import { fetchUsUnderlyingPce } from "../src/ingest/us-pce-underlying";
 export interface IngestSummary {
   runId: number;
   mode: "backfill" | "refresh";
@@ -940,10 +941,11 @@ async function loadLiveRaw(
       };
     }
     case "cleveland_cpi": {
-      return {
-        points: await fetchClevelandCpiMeasure(metric.id),
-        note: "Live Cleveland Fed official CPI measures download",
-      };
+      if (metric.id.includes("median-pce")) return { points: await fetchUsUnderlyingPce(metric.id), note: "Live Cleveland Fed official Median PCE history download" };
+      return { points: await fetchClevelandCpiMeasure(metric.id), note: "Live Cleveland Fed official CPI measures download" };
+    }
+    case "dallas_pce": {
+      return { points: await fetchUsUnderlyingPce(metric.id), note: "Live Dallas Fed official Trimmed Mean PCE historical workbook" };
     }
     case "bea": {
       if (!process.env.BEA_API_KEY) return null;
@@ -1024,6 +1026,8 @@ async function loadFredRaw(
 
 async function loadOfficialHistory(metric: MetricDef): Promise<RawPoint[]> {
   const endYear = new Date().getFullYear();
+  if (metric.source === "cleveland" && ["us-cleveland-median-pce", "us-cleveland-median-pce-mom"].includes(metric.id)) return fetchUsUnderlyingPce(metric.id);
+  if (metric.source === "dallas" && ["us-dallas-trimmed-mean-pce", "us-dallas-trimmed-mean-pce-mom"].includes(metric.id)) return fetchUsUnderlyingPce(metric.id);
   if (metric.source === "dol") {
     const claims = await fetchDolClaims();
     return metric.seriesId === "initial-average" ? claims.initialAverage : claims.continuingAverage;
@@ -1124,6 +1128,19 @@ async function loadPrimaryOrFallback(
 }
 
 async function fetchEcbBySeriesId(seriesId: string): Promise<RawPoint[]> {
+  if (seriesId.startsWith("INW.")) {
+    return fetchEcbSdmxSeries("INW", seriesId);
+  }
+  if (seriesId.startsWith("MNA.")) {
+    const points = await fetchEcbSdmxSeries("MNA", seriesId);
+    return points.map((point) => {
+      const quarter = point.date.match(/^(\d{4})-Q([1-4])$/i);
+      return quarter
+        ? { ...point, date: `${quarter[1]}-${String((Number(quarter[2]) - 1) * 3 + 1).padStart(2, "0")}-01` }
+        : point;
+    });
+  }
+
   // ---------------------------------------------------------------------------
   // ECB Consumer Expectations Survey (CES)
   // ---------------------------------------------------------------------------

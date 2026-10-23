@@ -1,4 +1,4 @@
-import { getDb, getD1Database } from "@/db";
+import { getDb, getD1Database, executeSql } from "@/db";
 import { ingestRuns } from "@/db/schema";
 import {
   getEconomicCalendarRows,
@@ -29,6 +29,8 @@ import {
 } from "./cpi-release-schedule";
 import { isOnScheduledReleaseDay, retryableHistoricalSchedules } from "./release-schedule-retries";
 import { createReleaseAttemptRunner } from "./release-attempt-runner";
+import { retailReleaseCandidates, UK_RETAIL_RELEASE_IDS, isUkRetailReleasePeriod } from "@/lib/uk-retail";
+import { persistUkRetailHistory } from "./uk-retail-history";
 
 const attemptRunner = createReleaseAttemptRunner();
 
@@ -85,6 +87,25 @@ type Candidate = {
   mode: "scheduled";
 };
 
+const PCE_RELEASE_METRICS = [
+  "us-cleveland-median-pce", "us-cleveland-median-pce-mom",
+  "us-dallas-trimmed-mean-pce", "us-dallas-trimmed-mean-pce-mom",
+];
+
+function pceReleaseCandidates(rows: ScheduledCalendarRow[], now: Date): Candidate[] {
+  const schedule = rows.find(row =>
+    Boolean(row.nextReleaseDate) &&
+    (row.metricId === "us-pce" || row.metricId === "us-pce-yoy" ||
+      row.metricId === "us-core-pce" || row.metricId === "us-core-pce-yoy" ||
+      /personal income and outlays/i.test(row.metricName ?? ""))
+  );
+  if (!schedule || !schedule.metricId || !isDue(schedule, now)) return [];
+  const scheduledAt = schedule.nextReleaseAt ?? schedule.nextReleaseDate!.slice(0, 10);
+  const scheduled = Date.parse(schedule.nextReleaseAt ?? `${schedule.nextReleaseDate!.slice(0, 10)}T23:59:59Z`);
+  if (now.getTime() - scheduled > 3 * 24 * 60 * 60_000) return [];
+  return PCE_RELEASE_METRICS.map(metricId => ({ metricId, scheduledAt, mode: "scheduled" as const }));
+}
+
 async function buildCandidates(now: Date): Promise<Candidate[]> {
   const calendarRows = await getEconomicCalendarRows();
   const historyRows = await getEconomicCalendarRows({ history: true });
@@ -98,7 +119,7 @@ async function buildCandidates(now: Date): Promise<Candidate[]> {
     // These metrics share the official BLS CPI release, but some have no
     // calendar row of their own (or a stale Cleveland Fed date). Their
     // schedule is derived from the BLS CPI event below.
-    if (CPI_CALENDAR_DEPENDENT_METRIC_IDS.has(row.metricId)) continue;
+    if (CPI_CALENDAR_DEPENDENT_METRIC_IDS.has(row.metricId) || UK_RETAIL_RELEASE_IDS.includes(row.metricId)) continue;
     if (!row.metricId || !isDue(row, now)) continue;
     const scheduled = Date.parse(row.nextReleaseAt ?? `${row.nextReleaseDate!.slice(0, 10)}T23:59:59Z`);
     if (now.getTime() - scheduled > 3 * 24 * 60 * 60_000) continue;
@@ -114,6 +135,8 @@ async function buildCandidates(now: Date): Promise<Candidate[]> {
   }
 
   candidates.push(...cpiReleaseCandidates(calendarRows, now));
+  candidates.push(...pceReleaseCandidates(calendarRows, now));
+  candidates.push(...retailReleaseCandidates(currentAndHistoricalRows, now));
 
   // Keep calendar order (release date ascending) but de-duplicate metric IDs.
   const seen = new Set<string>();
@@ -181,7 +204,9 @@ async function processCandidate(candidate: Candidate) {
   let stage = "source_fetch";
   const fetchStartedMs = Date.now();
   try {
-    const result = await fetchMetricFromOfficialSource(candidate.metricId);
+    const fetched = await fetchMetricFromOfficialSource(candidate.metricId);
+    const isUkRetail = UK_RETAIL_RELEASE_IDS.includes(candidate.metricId);
+    const result = isUkRetail && fetched && !isUkRetailReleasePeriod(candidate.scheduledAt, fetched.periodDate) ? null : fetched;
     const sourceFetchMs = Date.now() - fetchStartedMs;
 
     logReleaseEvent({
@@ -217,6 +242,15 @@ async function processCandidate(candidate: Candidate) {
     }
 
     stage = "database_update";
+    if (isUkRetail) {
+      const history = (result as { history?: { date: string; value: number }[] }).history;
+      if (!history?.length || history.at(-1)?.date !== result.periodDate || history.at(-1)?.value !== result.value) {
+        throw new Error("ONS retail release did not include a matching published history");
+      }
+      // Publish one complete observation vintage before recording release
+      // metadata. A failed batch leaves the preceding vintage intact.
+      await persistUkRetailHistory(candidate.metricId, history, result.releasedAt ?? new Date().toISOString());
+    }
     const processed = await processFetchedRelease({
       metricId: candidate.metricId,
       scheduledAt: candidate.scheduledAt,
@@ -233,6 +267,12 @@ async function processCandidate(candidate: Candidate) {
     const alreadyRecorded = processed.reason === "already-recorded";
     const confirmedUnchanged = processed.reason === "confirmed-unchanged";
     if (processed.updated || alreadyRecorded || confirmedUnchanged) {
+  if (isUkRetail) {
+    // Release metadata persistence may append a vintage of the same newest
+    // observation. The canonical ONS chart history keeps one row per month;
+    // the separate releases table retains its publication history.
+    await executeSql({ sql: 'DELETE FROM observations WHERE metric_id=? AND date=? AND is_latest=0', args: [candidate.metricId, result.periodDate] });
+  }
   /*
    * The source returned a genuinely new observation, or an earlier refresh
    * already persisted this scheduled release.

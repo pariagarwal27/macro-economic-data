@@ -58,7 +58,8 @@ export async function GET(
       ? [
           "us-sticky-cpi", "us-sticky-cpi-mom",
           "us-core-sticky-cpi", "us-core-sticky-cpi-mom",
-          "us-flexible-cpi", "us-flexible-cpi-mom",
+          "us-cleveland-median-pce", "us-cleveland-median-pce-mom",
+          "us-dallas-trimmed-mean-pce", "us-dallas-trimmed-mean-pce-mom",
           "us-cleveland-median-cpi", "us-cleveland-median-cpi-mom",
           "us-cleveland-trimmed-cpi", "us-cleveland-trimmed-cpi-mom",
         ]

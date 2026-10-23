@@ -2,6 +2,7 @@ import { and, desc, eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { metrics, observations, releases } from "@/db/schema";
 import { persistRelease } from "./db-writer";
+import { UK_RETAIL_RELEASE_IDS, isUkRetailReleasePeriod } from "@/lib/uk-retail";
 import { wasRecordedAfterSchedule } from "./release-schedule-retries";
 import { releaseStageFromNote, VINTAGE_TRACKED_METRICS, type ReleaseStage } from "./release-stages";
 
@@ -177,7 +178,8 @@ export async function processFetchedRelease(input: {
       // number matches an earlier value (for example, final matching flash).
       if (!committedStageMatches && (
         (VINTAGE_TRACKED_METRICS.has(input.metricId) && Boolean(releaseStage)) ||
-        isScheduledEurostatHicpPeriod(input.metricId, input.scheduledAt, input.result.periodDate)
+        isScheduledEurostatHicpPeriod(input.metricId, input.scheduledAt, input.result.periodDate) ||
+        (UK_RETAIL_RELEASE_IDS.includes(input.metricId) && isUkRetailReleasePeriod(input.scheduledAt, input.result.periodDate))
       )) {
         const confirmed = await persistRelease({
           metricId: input.metricId,

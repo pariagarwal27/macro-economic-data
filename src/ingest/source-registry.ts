@@ -1,5 +1,6 @@
 import { METRICS } from "@/catalog/metrics";
 import { LIVE_MAP } from "@/catalog/live-map";
+import { UK_RETAIL_RELEASE_IDS } from "@/lib/uk-retail";
 
 export type AdapterName =
   | "lseg"
@@ -62,10 +63,10 @@ const LSEG: MetricSourceConfig[] = [
   ["uk-cpi-yoy","GBHICY=ECI"],["uk-alcohol-cpi-yoy","GBCPXY=ECI"],["uk-cpi-mom","GBHICM=ECI"],
   ["uk-core-cpi-mom","GBCPXM=ECI"],["uk-services-cpi-yoy","pGBCPXY=4295870355"],
   ["uk-housing-cpi-yoy","GBNHP=ECI"],
-  ["uk-awe-regular-yoy","GBAWEY=ECI"],["uk-gdp-yoy","GBGDPY=ECI"],
+  ["uk-gdp-yoy","GBGDPY=ECI"],
   ["uk-industrial-production","GBIPY=ECI"],
   ["uk-retail-sales","GBRSLY=ECI"],["uk-cli","aGBCLEAD"],["uk-business-confidence","aGBEUSRCIR"],
-  ["uk-unemployment","GBUNR=ECI"],["uk-awe-total-yoy","GBATOY=ECI"],["uk-vacancies","GBVAC=ECI"],
+  ["uk-unemployment","GBUNR=ECI"],["uk-vacancies","GBVAC=ECI"],
   ["uk-payrolled-employees-level","GBPYR=ECI"],["uk-employment-change","GBEMP=ECI"],
   ["uk-retail-sales-mom","GBRSL=ECI"],
   ["uk-retail-food-stores","aGBRSLSVFS/CA"],
@@ -149,6 +150,13 @@ export const SOURCE_REGISTRY_MAP = new Map(
 );
 
 export function getSourceConfig(metricId: string) {
+  // These chart measures are one ONS release family, including the legacy
+  // headline MoM alias that otherwise routes to a separate LSEG feed.
+  if (UK_RETAIL_RELEASE_IDS.includes(metricId)) {
+    const metric = METRICS.find(item => item.id === metricId)!;
+    return { metricId, adapter: "pipeline" as const, source: "ons", sourceId: metric.seriesId,
+      releaseStrategy: "release-day-poll" as const, pollSeconds: 15 };
+  }
   if (isUsCpiMetric(metricId)) {
     const metric = METRICS.find((item) => item.id === metricId);
     if (metric) return {

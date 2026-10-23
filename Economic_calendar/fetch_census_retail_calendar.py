@@ -93,6 +93,12 @@ METRICS = [
         "census_id": "44W72",
         "family": "US_RETAIL_SALES",
     },
+    {
+        "metric_id": "us-retail-sales-control-group",
+        "metric": "US Retail Sales — Control Group",
+        "census_id": "44X72 minus 441, 447, 444 and 722",
+        "family": "US_RETAIL_SALES",
+    },
 ]
 
 
@@ -249,17 +255,16 @@ def extract_from_release_schedule(html: str) -> list[dict]:
         if not dates:
             continue
 
-        # A release row has the release date as the date that is closest
-        # to the report row. Use the first parsed date in the row.
+        # Census rows show report month first and release date second.
         release_date = dates[-1]
 
         candidates.append(
             {
                 "date": release_date,
                 "release_time": extract_release_time(row_text) or header_time,
-                "report_type": "Advance Monthly Retail Trade Report",
+                "report_type": "Advance Monthly Retail Trade Report / Monthly Retail Trade Report",
                 "source": RELEASE_SCHEDULE_URL,
-                "evidence": f"Advance Monthly Retail Trade Report | {row_text} | Release time {header_time}",
+                "evidence": f"Advance Monthly Retail Trade Report | {row_text} | Release time {header_time}. Detailed category data are published in the Monthly Retail Trade Report on the same scheduled date.",
             }
         )
 

@@ -18,6 +18,32 @@ const GENERATOR = "https://www.ons.gov.uk/generator";
 const SERIES_URI: Record<string, string> = {
   D7G7: "/economy/inflationandpriceindices/timeseries/d7g7/mm23", // CPI annual rate
   D7OE: "/economy/inflationandpriceindices/timeseries/d7oe/mm23", // CPI monthly rate
+  // Official division-level CPI monthly rates (MM23), divisions 01–12.
+  D7JH: "/economy/inflationandpriceindices/timeseries/d7jh/mm23",
+  D7JI: "/economy/inflationandpriceindices/timeseries/d7ji/mm23",
+  D7JJ: "/economy/inflationandpriceindices/timeseries/d7jj/mm23",
+  D7JK: "/economy/inflationandpriceindices/timeseries/d7jk/mm23",
+  D7JL: "/economy/inflationandpriceindices/timeseries/d7jl/mm23",
+  D7JM: "/economy/inflationandpriceindices/timeseries/d7jm/mm23",
+  D7JN: "/economy/inflationandpriceindices/timeseries/d7jn/mm23",
+  D7JO: "/economy/inflationandpriceindices/timeseries/d7jo/mm23",
+  D7JP: "/economy/inflationandpriceindices/timeseries/d7jp/mm23",
+  D7JQ: "/economy/inflationandpriceindices/timeseries/d7jq/mm23",
+  D7JR: "/economy/inflationandpriceindices/timeseries/d7jr/mm23",
+  D7JS: "/economy/inflationandpriceindices/timeseries/d7js/mm23",
+  // Official division-level CPIH monthly rates (MM23), divisions 01–12.
+  L59D: "/economy/inflationandpriceindices/timeseries/l59d/mm23",
+  L59E: "/economy/inflationandpriceindices/timeseries/l59e/mm23",
+  L59F: "/economy/inflationandpriceindices/timeseries/l59f/mm23",
+  L59G: "/economy/inflationandpriceindices/timeseries/l59g/mm23",
+  L59H: "/economy/inflationandpriceindices/timeseries/l59h/mm23",
+  L59I: "/economy/inflationandpriceindices/timeseries/l59i/mm23",
+  L59J: "/economy/inflationandpriceindices/timeseries/l59j/mm23",
+  L59K: "/economy/inflationandpriceindices/timeseries/l59k/mm23",
+  L59L: "/economy/inflationandpriceindices/timeseries/l59l/mm23",
+  L59M: "/economy/inflationandpriceindices/timeseries/l59m/mm23",
+  L59N: "/economy/inflationandpriceindices/timeseries/l59n/mm23",
+  L59O: "/economy/inflationandpriceindices/timeseries/l59o/mm23",
   D7G8: "/economy/inflationandpriceindices/timeseries/d7g8/mm23", // food annual
   D7GT: "/economy/inflationandpriceindices/timeseries/d7gt/mm23", // electricity/gas/fuels annual
   D7GB: "/economy/inflationandpriceindices/timeseries/d7gb/mm23",
@@ -151,9 +177,11 @@ KG7Q: "/economy/grossdomesticproductgdp/timeseries/kg7q/qna",
 };
 
 const ONS_MONTHLY_ONLY_SERIES = new Set([
+  "D7JH", "D7JI", "D7JJ", "D7JK", "D7JL", "D7JM", "D7JN", "D7JO", "D7JP", "D7JQ", "D7JR", "D7JS",
+  "L59D", "L59E", "L59F", "L59G", "L59H", "L59I", "L59J", "L59K", "L59L", "L59M", "L59N", "L59O",
   "GB7S", "GHIP", "GBA7", "GB7V", "GB7W", "GB7X", "GB7Y", "GB7Z", "GB82", "GB83", "GB84",
   "FSQT", "FSQ2", "FSQ3", "FSQ4", "FSQ5", "FSQ6", "FSQ7", "FSQ8", "FSQ9", "FSP7", "FSP9", "GD74", "GB7R",
-  "J5EB", "J45U", "J5EG", "J45R", "ECY2",
+  "J5EC", "J45W", "J5EB", "J45U", "J5EG", "J45R", "ECY2",
 ]);
 
 export async function fetchOnsSeries(seriesId: string): Promise<RawPoint[]> {

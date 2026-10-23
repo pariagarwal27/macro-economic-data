@@ -43,7 +43,7 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
  {
   id: "us-cpi-card",
   metricId: "us-cpi",
-  chartMetricIds: ["us-sticky-cpi", "us-core-sticky-cpi", "us-flexible-cpi", "us-cleveland-median-cpi"],
+  chartMetricIds: ["us-sticky-cpi", "us-core-sticky-cpi", "us-cleveland-median-pce", "us-dallas-trimmed-mean-pce", "us-cleveland-median-cpi"],
   yoyMetricId: "us-cpi-yoy",
   momMetricId: "us-cpi-mom",
   title: "CPI (Headline)",
@@ -367,10 +367,10 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
         id: "us-jolts-card", metricId: "us-jolts-openings", title: "Job Openings & Labor Turnover",
         components: [
           n("openings", "Job Openings", "us-jolts-openings"),
-          n("hires", "Hires", "us-jolts-hires-level"),
-          n("quits", "Quits", "us-jolts-quits-level"),
-          n("layoffs", "Layoffs & Discharges", "us-jolts-layoffs-level"),
-          n("separations", "Total Separations", "us-jolts-total-separations"),
+          n("hires", "Hires", "us-jolts-hires"),
+          n("quits", "Quits", "us-jolts-quits"),
+          n("layoffs", "Layoffs & Discharges", "us-jolts-layoffs"),
+          n("separations", "Total Separations", "us-jolts-total-separations-rate"),
         ],
       },
       {
@@ -1060,10 +1060,14 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
       {
         id: "ea-wages-card",
         metricId: "ea-wage-growth",
-        title: "Wage Growth / Labour Costs",
+        title: "Wage Growth",
+        chartMetricIds: ["ea-labour-cost-total-yoy"],
         components: [
-          n("yoy", "Wage Growth YoY", "ea-wage-growth"),
-          n("qoq", "Wage Growth QoQ", "ea-wage-growth-qoq"),
+          n("nonwage", "Non-wage costs YoY", "ea-labour-cost-nonwage-yoy"),
+          n("business-costs", "Business economy, total labour costs YoY", "ea-labour-cost-business-yoy"),
+          n("nonbusiness-costs", "(Mainly) non-business economy, total labour costs YoY", "ea-labour-cost-nonbusiness-yoy"),
+          n("negotiated-wages", "Negotiated wages (actual)", "ea-negotiated-wages-yoy"),
+          n("compensation-per-employee", "Compensation per employee YoY", "ea-compensation-employee-yoy"),
         ],
       },
     ],

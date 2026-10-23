@@ -28,6 +28,13 @@ export function getDashboardCalendarMetrics() {
     }
   }
   // The claims card displays two separately published weekly readings.
+  for (const [id, name] of [
+    ['uk-retail-sales-total-ex-fuel', 'Retail Sales Headline MoM'],
+    ['uk-retail-sales-ex-fuel', 'Retail Sales ex Fuel MoM'],
+  ]) {
+    displayed.add(id);
+    titles.set(id, name);
+  }
   // Keep both in the release diary rather than only the card's primary metric.
   for (const id of ['us-initial-claims', 'us-continuing-claims']) {
     displayed.add(id);
@@ -44,7 +51,7 @@ export function getDashboardCalendarMetrics() {
     displayed.add(id);
     titles.set(id, name);
   }
-  for (const id of ["us-sticky-cpi", "us-core-sticky-cpi", "us-flexible-cpi", "us-cleveland-median-cpi", "us-cleveland-trimmed-cpi"]) {
+  for (const id of ["us-sticky-cpi", "us-core-sticky-cpi", "us-cleveland-median-pce", "us-dallas-trimmed-mean-pce", "us-cleveland-median-cpi", "us-cleveland-trimmed-cpi"]) {
     displayed.add(id);
     const metric = METRICS.find(item => item.id === id);
     if (metric) titles.set(id, metric.name);
