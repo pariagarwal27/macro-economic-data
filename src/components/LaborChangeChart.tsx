@@ -13,10 +13,12 @@ type LaborMetric = {
 };
 
 export function LaborChangeChart({ metric, height = 360, compact = false }: { metric: LaborMetric; height?: number; compact?: boolean }) {
-  // Most labour-change cards compare period-over-period changes. U.S. Job
-  // Openings is intentionally shown as its published level and level average.
+  // Most labour-change cards compare period-over-period changes. ADP already
+  // publishes monthly changes, while U.S. Job Openings stays at its published
+  // level; neither should be differenced again.
   const actualLevel = metric.meta.id === "us-jolts-openings";
-  const primary = actualLevel ? metric.history : laborPeriodChanges(metric.history);
+  const alreadyMonthlyChange = metric.meta.id === "us-adp-change";
+  const primary = actualLevel || alreadyMonthlyChange ? metric.history : laborPeriodChanges(metric.history);
   const data = primary.map((point, index) => {
     const window = primary.slice(Math.max(0, index - 2), index + 1);
     const consecutive = window.length === 3 && window.every((entry, offset) => {

@@ -11,6 +11,8 @@ export type PersistReleaseInput = {
   releasedAt: string;
   vintageDate?: string | null;
   releaseStage?: ReleaseStage;
+  /** Record a distinct scheduled publication even when its value is unchanged. */
+  forceNewRelease?: boolean;
   expectedValue?: number | null;
   priorPeriodValue?: number | null;
   priorPeriodDate?: string | null;
@@ -68,8 +70,16 @@ export async function persistRelease(input: PersistReleaseInput) {
   const existingRelease = input.releaseStage
     ? existingReleases.find(row => releaseStageFromNote(row.notes) === input.releaseStage)
     : existingReleases[0];
+  const latestExistingRelease = existingReleases[0];
+  const expectedValue = input.expectedValue ?? latestExistingRelease?.expectedValue ?? null;
+  const priorPeriodValue = input.priorPeriodValue ?? latestExistingRelease?.priorPeriodValue ?? null;
+  const priorPeriodDate = input.priorPeriodDate ?? latestExistingRelease?.priorPeriodDate ?? null;
+  const priorReleaseValue = input.priorReleaseValue ?? latestExistingRelease?.value ?? null;
+  const changeVsPriorPeriod = input.changeVsPriorPeriod ?? (priorPeriodValue == null ? null : input.value - Number(priorPeriodValue));
+  const changeVsPriorRelease = input.changeVsPriorRelease ?? (priorReleaseValue == null ? null : input.value - Number(priorReleaseValue));
 
   if (
+    !input.forceNewRelease &&
     existingRelease &&
     Number(existingRelease.value) === Number(input.value)
   ) {
@@ -109,9 +119,9 @@ export async function persistRelease(input: PersistReleaseInput) {
       database.prepare(`INSERT INTO releases(metric_id,period_date,released_at,value,expected_value,prior_period_value,
           prior_period_date,prior_release_value,change_vs_prior_period,change_vs_prior_release,supporting_doc_url,notes)
         VALUES(?,?,?,?,?,?,?,?,?,?,?,?) RETURNING id`).bind(
-        input.metricId, input.periodDate, input.releasedAt, input.value, input.expectedValue ?? null,
-        input.priorPeriodValue ?? null, input.priorPeriodDate ?? null, input.priorReleaseValue ?? null,
-        input.changeVsPriorPeriod ?? null, input.changeVsPriorRelease ?? null, input.supportingDocUrl ?? null,
+        input.metricId, input.periodDate, input.releasedAt, input.value, expectedValue,
+        priorPeriodValue, priorPeriodDate, priorReleaseValue,
+        changeVsPriorPeriod, changeVsPriorRelease, input.supportingDocUrl ?? null,
         input.releaseStage ? withReleaseStageNote(input.releaseStage, input.notes) : input.notes ?? null,
       ),
       database.prepare("UPDATE metrics SET last_ingested_at = ? WHERE id = ?").bind(input.releasedAt, input.metricId),
@@ -172,15 +182,15 @@ export async function persistRelease(input: PersistReleaseInput) {
       releasedAt: input.releasedAt,
       value: input.value,
 
-      expectedValue: input.expectedValue ?? null,
+      expectedValue,
 
-      priorPeriodValue: input.priorPeriodValue ?? null,
-      priorPeriodDate: input.priorPeriodDate ?? null,
+      priorPeriodValue,
+      priorPeriodDate,
 
-      priorReleaseValue: input.priorReleaseValue ?? null,
+      priorReleaseValue,
 
-      changeVsPriorPeriod: input.changeVsPriorPeriod ?? null,
-      changeVsPriorRelease: input.changeVsPriorRelease ?? null,
+      changeVsPriorPeriod,
+      changeVsPriorRelease,
 
       supportingDocUrl: input.supportingDocUrl ?? null,
       notes: input.releaseStage ? withReleaseStageNote(input.releaseStage, input.notes) : input.notes ?? null,

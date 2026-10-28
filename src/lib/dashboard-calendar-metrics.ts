@@ -41,6 +41,18 @@ export function getDashboardCalendarMetrics() {
     const metric = METRICS.find(item => item.id === id);
     if (metric) titles.set(id, metric.name);
   }
+  // UMich publishes preliminary and final readings for both inflation horizons.
+  // Keep each horizon in the calendar so its release date and actual value are
+  // visible even when the final value matches the preliminary estimate.
+  for (const [id, name] of [
+    ['us-umich-inflation-exp-1y', 'UMich Inflation Expectations 1Y'],
+    ['us-umich-inflation-exp-5y', 'UMich Inflation Expectations 5Y'],
+  ]) {
+    displayed.add(id);
+    titles.set(id, name);
+  }
+  displayed.add('us-adp-change');
+  titles.set('us-adp-change', 'ADP Nonfarm Private Employment Change');
   // PCE diary rows should report published inflation rates, not price-index levels.
   for (const [id, name] of [
     ['us-pce-mom', 'PCE (Headline) MoM'],

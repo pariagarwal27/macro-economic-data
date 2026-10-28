@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Area, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { COUNTRY_META } from "@/catalog/hierarchy";
 import { HistoryChartViewport } from "@/components/HistoryChartViewport";
+import { ChartTrace } from "@/components/ChartTrace";
 import { filterHistoryByYearRange, filterHistoryToTrailing12Months } from "@/lib/history-range";
 import { buildExpectationsOverviewSeries, EXPECTATIONS_OVERVIEW_CATEGORIES, expectationsOverviewCategory, expectationsOverviewHorizons, type ExpectationsOverviewCategory, type ExpectationsOverviewHorizon } from "@/lib/expectations-overview";
 import { OVERVIEW_REGIONS, overviewAxisDigits, overviewAxisDomain, overviewAxisTicks, type OverviewPayload } from "@/lib/overview-data";
@@ -45,7 +46,7 @@ export function ExpectationsOverviewChart({ payload, loading, onBack }: { payloa
     <div className="overview-chart-heading overview-expectations-legend" aria-label="Country series and mapped measures">
       {OVERVIEW_REGIONS.map(region => <span key={region}><i style={{ background: color(region) }} aria-hidden="true" />{COUNTRY_META[region].name}<small>{category.metricLabels[region]} · {coverageFor(region)}{dualAxis ? ` · ${axisFor(region)} axis` : ""}</small></span>)}
     </div>
-    <HistoryChartViewport dates={data.map(point => point.date)} label="Inflation expectations history" height={352}>
+    <ChartTrace key={`${categoryId}-${horizon}`} enabled><HistoryChartViewport dates={data.map(point => point.date)} label="Inflation expectations history" height={352}>
       {(_, fromYear, toYear, isDefaultWindow) => {
         const visibleData = isDefaultWindow ? filterHistoryToTrailing12Months(data) : filterHistoryByYearRange(data, fromYear, toYear);
         const hasData = visibleData.some(point => OVERVIEW_REGIONS.some(region => point[region] !== null));
@@ -69,7 +70,7 @@ export function ExpectationsOverviewChart({ payload, loading, onBack }: { payloa
           </ResponsiveContainer>}
         </div>;
       }}
-    </HistoryChartViewport>
+    </HistoryChartViewport></ChartTrace>
     <p className="overview-chart-note">{category.note}. {categoryId === "wage" ? "Release frequencies and wage definitions vary by source." : "Release frequencies and CPI/HICP definitions vary by source. Only categories with a mapped measure in all three regions are offered; country-only model-based series are excluded."}{categoryId === "consumer" && (horizon === "1y" ? " Euro Area ECB CES history uses the EA6 aggregate through March 2022 and the EA11 aggregate from April 2022." : " Euro Area ECB CES 5Y history begins in August 2022, when the ECB added this horizon to the survey.")}{categoryId === "business" && " Each line begins at its source's first published observation; gaps before that date reflect survey coverage, not zero values."}</p>
   </section>;
 }

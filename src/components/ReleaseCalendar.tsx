@@ -201,7 +201,7 @@ export function ReleaseCalendar() {
   const [kind, setKind] = useState<Kind>("all");
   const [view, setView] = useState<ViewMode>("matrix");
   const [data, setData] = useState<TapeResponse | null>(
-    () => getClientJsonCache<TapeResponse>("release-tape:ALL:all") ?? null
+    () => getClientJsonCache<TapeResponse>("release-tape:ALL:all", false) ?? null
   );
   const [error, setError] = useState<string | null>(null);
 

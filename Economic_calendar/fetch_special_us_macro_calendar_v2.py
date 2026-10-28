@@ -95,7 +95,7 @@ METRICS = [
     # Regional Fed / private payroll
     ("us-dallas-business-activity", "Dallas Fed Business Activity Index", "DALLAS_BUSINESS_ACTIVITY"),
     ("us-chicago-cfnai", "Chicago Fed National Activity Index", "CHICAGO_CFNAI"),
-    ("us-adp-employment-change", "ADP Nonfarm Private Employment Change", "ADP_NER"),
+    ("us-adp-change", "ADP Nonfarm Private Employment Change", "ADP_NER"),
     ("us-adp-employment-level", "ADP Nonfarm Private Employment Level", "ADP_NER"),
     ("us-initial-jobless-claims", "Initial Jobless Claims", "JOBLESS_CLAIMS"),
     ("us-continuing-jobless-claims", "Continuing Jobless Claims", "JOBLESS_CLAIMS"),

@@ -614,6 +614,10 @@ html[data-theme="dark"] .editorial-dashboard .detail-button {
 .labour-studio-plot > p { margin:0 0 14px; color:var(--muted); font-size:11px; }
 .labour-studio-reading { display:flex; flex-direction:column; padding:20px; border-left:1px solid var(--border); }
 .labour-studio-reading h4 { font:18px Georgia,serif; margin:0 0 18px; }
+.labour-studio-published-pair { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px 10px; width:100%; margin-bottom:16px; }
+.labour-studio-published-pair > div { display:flex; flex-direction:column; gap:6px; min-width:0; }
+.labour-studio-published-pair > div > span { color:var(--muted); font-size:11px; line-height:1.35; }
+.labour-studio-published-pair > div > strong { font:500 26px/1.15 var(--font-display); font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
 .labour-studio-reading > span { font-size:11px; color:var(--muted); }
 .labour-studio-reading > strong { font:30px Georgia,serif; margin:6px 0 15px; }
 .labour-studio-reading > .labour-studio-secondary { font-size:22px; }
@@ -692,6 +696,8 @@ html[data-theme="dark"] .editorial-dashboard .detail-button {
 .labour-studio-pair > span { display:flex; flex-direction:column; gap:5px; color:var(--muted); font-size:9px; }
 .labour-studio-pair b { color:var(--ink); font:500 18px/1.2 var(--font-display); font-variant-numeric:tabular-nums; }
 .labour-studio-selector.is-active .labour-studio-pair > span,.labour-studio-selector.is-active .labour-studio-pair b { color:#fff; }
+.labour-studio-pair.wage-growth-selector-pair > span { font-size:12px; line-height:1.3; }
+.labour-studio-pair.wage-growth-selector-pair b { font-size:20px; }
 .inflation-studio { border:1px solid var(--line); background:var(--panel); }
 .inflation-mode-tabs { display:flex; gap:18px; overflow:auto; border-bottom:1px solid var(--line-strong); background:var(--bg); }
 .inflation-mode-tabs button { flex:0 0 auto; padding:11px 2px; border:0; border-bottom:2px solid transparent; background:transparent; color:var(--muted); font-size:11px; cursor:pointer; }
@@ -821,6 +827,20 @@ button.economic-calendar-event-name { border:0; padding:0; background:transparen
   .inflation-chart-title { min-width:0; flex-wrap:wrap; gap:4px 9px; }
   .inflation-chart-legend { justify-content:flex-start; gap:6px 10px; }
   .labour-studio-selectors { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+
+/* The labour cards are rendered by LabourChartStudio, not the generic card grid. */
+.editorial-dashboard[data-region="us"] #economic-us-labour .labour-studio-selectors {
+  grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+}
+@media (max-width: 900px) {
+  .editorial-dashboard[data-region="us"] #economic-us-labour .labour-studio-selectors {
+    grid-template-columns: none !important;
+    grid-auto-flow: column !important;
+    grid-auto-columns: minmax(180px, 1fr) !important;
+    overflow-x: auto !important;
+    overscroll-behavior-inline: contain;
+  }
 }
 @media(max-width:1100px) {
   .inflation-data-layout { grid-template-columns:minmax(0,1fr); }
@@ -1210,3 +1230,13 @@ button.economic-calendar-event-name { border:0; padding:0; background:transparen
 
 /* Keep the UK CPI/CPIH selector compact like the adjacent measure toggles. */
 .uk-inflation-toggle { width: fit-content; border-radius: 5px; overflow: hidden; }
+
+.retail-sales-tooltip { max-width:calc(100vw - 32px); padding:12px 14px; border:1px solid var(--line); border-radius:8px; background:var(--panel); color:var(--ink); box-shadow:0 8px 24px rgb(30 40 40 / 16%); font-size:12px; }
+.retail-sales-tooltip-date { display:block; margin-bottom:8px; font-size:13px; }
+.retail-sales-tooltip table { width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; }
+.retail-sales-tooltip th,.retail-sales-tooltip td { padding:7px 9px; text-align:right; vertical-align:top; }
+.retail-sales-tooltip thead th { border-bottom:1px solid var(--line); color:var(--muted); font-size:11px; font-weight:500; }
+.retail-sales-tooltip th:first-child { max-width:180px; padding-left:0; text-align:left; }
+.retail-sales-tooltip tbody th { font-weight:500; }
+.retail-sales-tooltip td { white-space:nowrap; font-weight:600; }
+.retail-sales-tooltip tbody i { display:inline-block; width:8px; height:8px; margin-right:7px; border-radius:50%; }

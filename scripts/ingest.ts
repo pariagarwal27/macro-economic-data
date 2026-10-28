@@ -102,7 +102,7 @@ import { fetchNyfedSeries, type NyfedSeriesId } from "../src/ingest/nyfed";
 import {
   fetchAtlantaBieSeries,
   fetchClevelandSofieSeries,
-  fetchUmichPx5Series,
+  fetchUmichInflationExpectations,
 } from "../src/ingest/us-expectations";
 import { fetchAtlantaStickyCpi } from "../src/ingest/atlanta-sticky-cpi";
 import { fetchAtlantaWageTracker } from "../src/ingest/atlanta-wage-tracker";
@@ -855,10 +855,10 @@ async function loadLiveRaw(
         note: `Live Cleveland Fed SoFIE ${metric.seriesId}`,
       };
     }
-    if (metric.source === "umich" && metric.seriesId === "PX5") {
+    if (metric.source === "umich" && (metric.seriesId === "PX1" || metric.seriesId === "PX5")) {
       return {
-        points: await fetchUmichPx5Series(),
-        note: "Live University of Michigan PX5",
+        points: await fetchUmichInflationExpectations(metric.seriesId),
+        note: `Live University of Michigan official ${metric.seriesId}`,
       };
     }
     return null;
@@ -1103,8 +1103,8 @@ if (metric.source === "census") {
   if (metric.source === "cleveland_sofie") {
     return fetchClevelandSofieSeries(metric.seriesId === "SOFIE_5Y" ? "5y" : "1y");
   }
-  if (metric.source === "umich" && metric.seriesId === "PX5") {
-    return fetchUmichPx5Series();
+  if (metric.source === "umich" && (metric.seriesId === "PX1" || metric.seriesId === "PX5")) {
+    return fetchUmichInflationExpectations(metric.seriesId);
   }
 
   return [];

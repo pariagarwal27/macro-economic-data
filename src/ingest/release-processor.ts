@@ -1,4 +1,4 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, lt } from "drizzle-orm";
 import { getDb } from "@/db";
 import { metrics, observations, releases } from "@/db/schema";
 import { persistRelease } from "./db-writer";
@@ -76,6 +76,20 @@ export async function processFetchedRelease(input: {
     .where(eq(observations.metricId, input.metricId))
     .orderBy(desc(observations.date))
     .limit(1);
+
+  const priorPeriod = await db
+    .select({
+      date: observations.date,
+      value: observations.value,
+    })
+    .from(observations)
+    .where(and(
+      eq(observations.metricId, input.metricId),
+      lt(observations.date, input.result.periodDate),
+    ))
+    .orderBy(desc(observations.date))
+    .limit(1);
+  const releasePriorPeriod = priorPeriod[0];
 
   const priorVintageRows = await db
     .select({ value: releases.value, notes: releases.notes, releasedAt: releases.releasedAt })
@@ -158,20 +172,49 @@ export async function processFetchedRelease(input: {
         ))
         .orderBy(desc(releases.releasedAt))
         .limit(8);
-      const committedStageMatches = committed.some(row => releaseStageFromNote(row.notes) === releaseStage);
+      // Untracked releases have no stage: the note parser returns null while
+      // releaseStage is undefined. Normalize them so an already committed
+      // scheduled release completes dispatch instead of retrying indefinitely.
+      const expectedStage = releaseStage ?? null;
+      const committedStageMatches = committed.some(row => releaseStageFromNote(row.notes) === expectedStage);
       const committedAfterSchedule = committed.some(row =>
-        releaseStageFromNote(row.notes) === releaseStage && wasRecordedAfterSchedule(row.releasedAt, input.scheduledAt!)
+        releaseStageFromNote(row.notes) === expectedStage && wasRecordedAfterSchedule(row.releasedAt, input.scheduledAt!)
       );
       if (committedAfterSchedule) {
         return {
           updated: false,
           reason: "already-recorded",
-          releaseId: committed.find(row => releaseStageFromNote(row.notes) === releaseStage)?.id,
+          releaseId: committed.find(row => releaseStageFromNote(row.notes) === expectedStage && wasRecordedAfterSchedule(row.releasedAt, input.scheduledAt!))?.id,
           latestDbPeriod: latest[0].date,
           latestDbValue: latest[0].value,
           sourcePeriod: input.result.periodDate,
           sourceValue: input.result.value,
         };
+      }
+
+      // If this observation period already has a same-valued publication
+      // before the current scheduled release, the current event is a distinct
+      // preliminary/final or repeat publication. Record its timestamp even
+      // though the numerical observation did not change.
+      const earlierSameValueRelease = committed.some(row => {
+        const releasedAt = Date.parse(row.releasedAt);
+        const scheduledAt = Date.parse(input.scheduledAt!);
+        return Number.isFinite(releasedAt) && Number.isFinite(scheduledAt) && releasedAt < scheduledAt;
+      });
+      if (earlierSameValueRelease) {
+        return persistRelease({
+          metricId: input.metricId,
+          periodDate: input.result.periodDate,
+          value: input.result.value,
+          rawValue: input.result.rawValue ?? null,
+          releasedAt: input.result.releasedAt ?? new Date().toISOString(),
+          priorPeriodValue: releasePriorPeriod?.value ?? null,
+          priorPeriodDate: releasePriorPeriod?.date ?? null,
+          supportingDocUrl: metric[0].docsUrl,
+          releaseStage,
+          forceNewRelease: true,
+          notes: input.result.note ?? `Official scheduled release confirmed unchanged for ${input.result.periodDate}`,
+        });
       }
 
       // An official HICP schedule confirms a release even when the published
@@ -187,6 +230,8 @@ export async function processFetchedRelease(input: {
           value: input.result.value,
           rawValue: input.result.rawValue ?? null,
           releasedAt: input.result.releasedAt ?? new Date().toISOString(),
+          priorPeriodValue: releasePriorPeriod?.value ?? null,
+          priorPeriodDate: releasePriorPeriod?.date ?? null,
           supportingDocUrl: metric[0].docsUrl,
           releaseStage,
           notes: input.result.note ?? `Official scheduled Eurostat HICP release confirmed unchanged for ${input.result.periodDate}`,
@@ -236,6 +281,8 @@ export async function processFetchedRelease(input: {
     rawValue: input.result.rawValue ?? null,
     releasedAt:
       input.result.releasedAt ?? new Date().toISOString(),
+    priorPeriodValue: releasePriorPeriod?.value ?? null,
+    priorPeriodDate: releasePriorPeriod?.date ?? null,
     supportingDocUrl: metric[0].docsUrl,
     releaseStage,
     notes:

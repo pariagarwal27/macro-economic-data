@@ -4,7 +4,7 @@ import {
   CalendarDays,
   RefreshCw,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { compareCalendarMetricEvents, filterReleaseDiaryEvents, type CalendarRegionFilter } from "@/lib/economic-calendar-view";
 import { formatLiveSourceLabel } from "@/lib/live-source-label";
 import { getClientJsonCache, refreshClientJson } from "@/lib/client-json-cache";
@@ -134,8 +134,9 @@ function formatLastUpdated(timestamp: string) {
   });
 }
 
-export function EconomicCalendarSidebar({ onReleaseSelect }: { onReleaseSelect?: (event: { metricId: string; region: string; metricName: string }) => void }) {
-  const initialPayload = getClientJsonCache<CalendarPayload>("economic-calendar:sidebar") ?? null;
+export function EconomicCalendarSidebar({ onReleaseSelect, active = true }: { active?: boolean; onReleaseSelect?: (event: { metricId: string; region: string; metricName: string }) => void }) {
+  const countrySelectId = useId();
+  const initialPayload = getClientJsonCache<CalendarPayload>("economic-calendar:sidebar", false) ?? null;
   const [tab, setTab] = useState<Tab>("upcoming");
   const [country, setCountry] = useState<CalendarRegionFilter>("ALL");
   const [payload, setPayload] = useState<CalendarPayload | null>(initialPayload);
@@ -222,6 +223,9 @@ export function EconomicCalendarSidebar({ onReleaseSelect }: { onReleaseSelect?:
   }, []);
 
   useEffect(() => {
+    if (!active) return;
+    const saved = getClientJsonCache<CalendarPayload>("economic-calendar:sidebar");
+    if (saved) { previousPayload.current = saved; setPayload(saved); setLoading(false); }
     void load();
 
     // Status changes throughout release day, so refresh the UI
@@ -231,7 +235,7 @@ export function EconomicCalendarSidebar({ onReleaseSelect }: { onReleaseSelect?:
     }, 10_000);
 
     return () => window.clearInterval(timer);
-  }, [load]);
+  }, [active, load]);
 
   const diaryGroups = useMemo(() => {
     if (!payload) return [] as { date: string; events: CalendarEvent[] }[];
@@ -292,8 +296,8 @@ export function EconomicCalendarSidebar({ onReleaseSelect }: { onReleaseSelect?:
       </div>
 
       <div className="economic-calendar-country-filter">
-        <label htmlFor="release-diary-country">Country</label>
-        <select id="release-diary-country" value={country} onChange={event => setCountry(event.target.value as CalendarRegionFilter)}>
+        <label htmlFor={countrySelectId}>Country</label>
+        <select id={countrySelectId} value={country} onChange={event => setCountry(event.target.value as CalendarRegionFilter)}>
           <option value="ALL">All countries</option>
           <option value="US">United States</option>
           <option value="UK">United Kingdom</option>

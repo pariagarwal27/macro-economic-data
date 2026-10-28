@@ -1,2 +1,4 @@
-import { CountryDashboard } from '@/components/CountryDashboard';
-export default async function CountryPage({params}:{params:Promise<{region:string}>}){const {region}=await params;const normalizedRegion=region.toUpperCase();return <CountryDashboard key={normalizedRegion} region={normalizedRegion}/>}
+export default async function CountryPage({ params }: { params: Promise<{ region: string }> }) {
+  const { region } = await params;
+  return ["US", "UK", "EA"].includes(region.toUpperCase()) ? null : <div className="p-10">Unknown country.</div>;
+}

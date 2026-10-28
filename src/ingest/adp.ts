@@ -1,4 +1,5 @@
 import type { RawPoint } from "./transforms";
+import AdmZip from "adm-zip";
 
 /**
  * Live ADP National Employment Report via the site's production JSON feed
@@ -65,6 +66,41 @@ export async function fetchAdpNational(): Promise<{
       ?.map((s) => s.jsonFile)
       .filter(Boolean) ?? [];
 
+  // ADP's official history archive contains the national monthly seasonally
+  // adjusted employment level. Use it for a long backfill and derive monthly
+  // changes from adjacent monthly observations.
+  const historyZipUrl = json.chartSections?.[0]?.chartSubsections
+    ?.find((section) => section.tab_title === "National")?.downloadLink;
+  if (historyZipUrl) {
+    try {
+      const response = await fetch(historyZipUrl, {
+        headers: { Accept: "application/zip,application/octet-stream,*/*", "User-Agent": "Mozilla/5.0 MacroHub/1.0" },
+      });
+      if (!response.ok) throw new Error(`ADP history archive HTTP ${response.status}`);
+      const zip = new AdmZip(Buffer.from(await response.arrayBuffer()));
+      const csvEntry = zip.getEntries().find(entry => /ADP_NER_history\.csv$/i.test(entry.entryName));
+      if (!csvEntry) throw new Error("ADP history archive has no national CSV");
+      const parsed = parseAdpNationalArchive(csvEntry.getData().toString("utf8"));
+      if (parsed.level.length >= 2) {
+        level.splice(0, level.length, ...parsed.level);
+        change.splice(0, change.length, ...parsed.change);
+      }
+    } catch (err) {
+      console.warn("ADP official history archive unavailable:", err instanceof Error ? err.message : String(err));
+    }
+  }
+
+  if (date && card) {
+    const raw = Number(String(card.metricValue).replace(/,/g, ""));
+    if (Number.isFinite(raw)) {
+      const thousands = Math.abs(raw) >= 1000 ? raw / 1000 : raw;
+      const value = card.metricDirection === "down" && thousands > 0 ? -thousands : thousands;
+      const current = change.find(point => point.date === date);
+      if (current) current.value = value;
+      else change.push({ date, value });
+    }
+  }
+
   for (const rel of histUrls.slice(0, 3)) {
     try {
       const url = rel!.startsWith("http")
@@ -116,7 +152,7 @@ interface AdpReport {
     }>;
   };
   chartSections?: Array<{
-    chartSubsections?: Array<{ jsonFile?: string }>;
+    chartSubsections?: Array<{ jsonFile?: string; tab_title?: string; downloadLink?: string }>;
   }>;
 }
 
@@ -156,6 +192,39 @@ function parseAdpHistory(hist: unknown): { level: RawPoint[]; change: RawPoint[]
     }
   }
   return { level, change };
+}
+
+function parseAdpNationalArchive(csv: string): { level: RawPoint[]; change: RawPoint[] } {
+  const levels = csv.split(/\r?\n/).flatMap(line => {
+    const fields: string[] = [];
+    let field = "";
+    let quoted = false;
+    for (let i = 0; i < line.length; i += 1) {
+      const char = line[i]!;
+      if (char === '"') {
+        if (quoted && line[i + 1] === '"') { field += '"'; i += 1; }
+        else quoted = !quoted;
+      } else if (char === "," && !quoted) { fields.push(field); field = ""; }
+      else field += char;
+    }
+    fields.push(field);
+    if (fields[0] !== "M" || fields[1] !== "National" || fields[2] !== "U.S." || !/^\d{4}-\d{2}-\d{2}$/.test(fields[3] ?? "")) return [];
+    const seasonallyAdjusted = Number(fields[5]);
+    return Number.isFinite(seasonallyAdjusted)
+      ? [{ date: fields[3]!, value: seasonallyAdjusted / 1000 }]
+      : [];
+  }).sort((a, b) => a.date.localeCompare(b.date));
+
+  const changes: RawPoint[] = [];
+  for (let index = 1; index < levels.length; index += 1) {
+    const previous = levels[index - 1]!;
+    const current = levels[index]!;
+    const previousDate = new Date(`${previous.date.slice(0, 7)}-01T00:00:00Z`);
+    const currentDate = new Date(`${current.date.slice(0, 7)}-01T00:00:00Z`);
+    const monthGap = (currentDate.getUTCFullYear() - previousDate.getUTCFullYear()) * 12 + currentDate.getUTCMonth() - previousDate.getUTCMonth();
+    if (monthGap === 1) changes.push({ date: current.date, value: Number((current.value - previous.value).toFixed(3)) });
+  }
+  return { level: levels, change: changes };
 }
 
 function pickMonth(title?: string): string | undefined {

@@ -10,6 +10,20 @@ test("payroll chart and headline both use the latest monthly job change", () => 
   assert.equal(formatLaborChange(-31, { id: "us-payrolls-level", unit: "thousands" }), "-31K");
 });
 
+test("ADP published changes stay direct, with latest and prior release values", () => {
+  const history = [
+    { date: "2026-07-01", value: 44 },
+    { date: "2026-08-01", value: 36 },
+    { date: "2026-09-01", value: 90 },
+  ];
+  assert.equal(isLaborChangeMetric("us-adp-change"), true);
+  assert.equal(laborChangeKpis("us-adp-change", history)?.leftValue, 90);
+  assert.deepEqual(
+    [laborPublishedKpis("us-adp-change", history)?.leftValue, laborPublishedKpis("us-adp-change", history)?.rightValue],
+    [90, 36],
+  );
+});
+
 test("participation uses percentage-point differences rather than relative growth or levels", () => {
   const history = [{ date: "2026-08-01", value: 61.6 }, { date: "2026-09-01", value: 61.8 }];
   assert.equal(laborChangeKpis("us-participation", history)?.leftValue, 0.2);

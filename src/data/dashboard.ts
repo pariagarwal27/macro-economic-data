@@ -82,7 +82,7 @@ function pickDisplayRelease(
   if (latestPeriod) {
     const pool = rows.filter((r) => r.periodDate === latestPeriod);
     if (pool.length) {
-      return [...pool].sort((a, b) => score(b) - score(a))[0];
+      return [...pool].sort((a, b) => Date.parse(b.releasedAt) - Date.parse(a.releasedAt) || score(b) - score(a))[0];
     }
   }
 

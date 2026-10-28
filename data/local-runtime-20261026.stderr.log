@@ -1,0 +1,119 @@
+(node:41996) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Calendar refresh partially completed: 223 provider schedules could not be fetched. Retry is required.
+[calendar-worker] Calendar refresh exited 1
+Calendar refresh partially completed: 223 provider schedules could not be fetched. Retry is required.
+[calendar-worker] Calendar refresh exited 1
+ ⨯ Error: Unmapped US dashboard cards: us-adp-card
+    at <unknown> (src\components\macro-ui-hierarchy.ts:1138:13)
+    at __TURBOPACK__module__evaluation__ (src\components\macro-ui-hierarchy.ts:1250:2)
+    at __TURBOPACK__module__evaluation__ (src\components\CountryDashboard.tsx:25:1)
+    at __TURBOPACK__module__evaluation__ (src\components\CountryDashboardPanels.tsx:5:1)
+  1136 |
+  1137 |     if (remaining.size) {
+> 1138 |       throw new Error(`Unmapped ${region} dashboard cards: ${[...remaining.keys()].join(", ")}`);
+       |             ^
+  1139 |     }
+  1140 |
+  1141 |     // Put the expenditure-side GDP components beneath the GDP headline so {
+  digest: '1253659958'
+}
+ ⨯ Error: Unmapped US dashboard cards: us-adp-card
+    at <unknown> (src\components\macro-ui-hierarchy.ts:1138:13)
+    at __TURBOPACK__module__evaluation__ (src\components\macro-ui-hierarchy.ts:1250:2)
+    at <unknown> (src\app\api\dashboard\[region]\route.ts:3:1)
+    at __TURBOPACK__module__evaluation__ (C:\Users\pari.agarwal\Downloads\macro_economic_data_patched\macro_economic_data - Copy\.next-dev\server\chunks\[root-of-the-server]__d3846a0a._.js:15150:30)
+    at Object.<anonymous> (C:\Users\pari.agarwal\Downloads\macro_economic_data_patched\macro_economic_data - Copy\.next-dev\server\app\api\dashboard\[region]\route.js:7:3)
+  1136 |
+  1137 |     if (remaining.size) {
+> 1138 |       throw new Error(`Unmapped ${region} dashboard cards: ${[...remaining.keys()].join(", ")}`);
+       |             ^
+  1139 |     }
+  1140 |
+  1141 |     // Put the expenditure-side GDP components beneath the GDP headline so {
+  page: '/api/dashboard/US'
+}
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Fast Refresh had to perform a full reload when ./src/components/macro-ui-hierarchy.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ Error: Unmapped US dashboard cards: us-adp-card
+    at <unknown> (src\components\macro-ui-hierarchy.ts:1138:13)
+    at __TURBOPACK__module__evaluation__ (src\components\macro-ui-hierarchy.ts:1250:2)
+    at __TURBOPACK__module__evaluation__ (src\components\CountryDashboard.tsx:25:1)
+    at __TURBOPACK__module__evaluation__ (src\components\CountryDashboardPanels.tsx:5:1)
+  1136 |
+  1137 |     if (remaining.size) {
+> 1138 |       throw new Error(`Unmapped ${region} dashboard cards: ${[...remaining.keys()].join(", ")}`);
+       |             ^
+  1139 |     }
+  1140 |
+  1141 |     // Put the expenditure-side GDP components beneath the GDP headline so {
+  digest: '1253659958'
+}
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ Error: Unmapped US dashboard cards: us-adp-card
+    at <unknown> (src\components\macro-ui-hierarchy.ts:1138:13)
+    at __TURBOPACK__module__evaluation__ (src\components\macro-ui-hierarchy.ts:1250:2)
+    at __TURBOPACK__module__evaluation__ (src\components\CountryDashboard.tsx:25:1)
+    at __TURBOPACK__module__evaluation__ (src\components\CountryDashboardPanels.tsx:5:1)
+  1136 |
+  1137 |     if (remaining.size) {
+> 1138 |       throw new Error(`Unmapped ${region} dashboard cards: ${[...remaining.keys()].join(", ")}`);
+       |             ^
+  1139 |     }
+  1140 |
+  1141 |     // Put the expenditure-side GDP components beneath the GDP headline so {
+  digest: '1253659958'
+}
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Fast Refresh had to perform a full reload when ./src/components/CountryDashboard.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ Error: Unmapped US dashboard cards: us-adp-card
+    at <unknown> (src\components\macro-ui-hierarchy.ts:1138:13)
+    at __TURBOPACK__module__evaluation__ (src\components\macro-ui-hierarchy.ts:1250:2)
+    at __TURBOPACK__module__evaluation__ (src\components\CountryDashboard.tsx:25:1)
+    at __TURBOPACK__module__evaluation__ (src\components\CountryDashboardPanels.tsx:5:1)
+  1136 |
+  1137 |     if (remaining.size) {
+> 1138 |       throw new Error(`Unmapped ${region} dashboard cards: ${[...remaining.keys()].join(", ")}`);
+       |             ^
+  1139 |     }
+  1140 |
+  1141 |     // Put the expenditure-side GDP components beneath the GDP headline so {
+  digest: '1253659958'
+}
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ Error: Unmapped US dashboard cards: us-adp-card
+    at <unknown> (src\components\macro-ui-hierarchy.ts:1138:13)
+    at __TURBOPACK__module__evaluation__ (src\components\macro-ui-hierarchy.ts:1250:2)
+    at __TURBOPACK__module__evaluation__ (src\components\CountryDashboard.tsx:25:1)
+    at __TURBOPACK__module__evaluation__ (src\components\CountryDashboardPanels.tsx:5:1)
+  1136 |
+  1137 |     if (remaining.size) {
+> 1138 |       throw new Error(`Unmapped ${region} dashboard cards: ${[...remaining.keys()].join(", ")}`);
+       |             ^
+  1139 |     }
+  1140 |
+  1141 |     // Put the expenditure-side GDP components beneath the GDP headline so {
+  digest: '1253659958'
+}
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ Error: Unmapped US dashboard cards: us-adp-card
+    at <unknown> (src\components\macro-ui-hierarchy.ts:1138:13)
+    at __TURBOPACK__module__evaluation__ (src\components\macro-ui-hierarchy.ts:1250:2)
+    at __TURBOPACK__module__evaluation__ (src\components\CountryDashboard.tsx:25:1)
+    at __TURBOPACK__module__evaluation__ (src\components\CountryDashboardPanels.tsx:5:1)
+  1136 |
+  1137 |     if (remaining.size) {
+> 1138 |       throw new Error(`Unmapped ${region} dashboard cards: ${[...remaining.keys()].join(", ")}`);
+       |             ^
+  1139 |     }
+  1140 |
+  1141 |     // Put the expenditure-side GDP components beneath the GDP headline so {
+  digest: '1253659958'
+}
+Calendar refresh partially completed: 223 provider schedules could not be fetched. Retry is required.
+[calendar-worker] Calendar refresh exited 1
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Fast Refresh had to perform a full reload when ./src/components/macro-ui-hierarchy.ts changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.

@@ -17,6 +17,8 @@ export const VINTAGE_TRACKED_METRICS = new Set([
   "ea-energy-hicp-mom",
   "ea-wage-growth",
   "ea-wage-growth-qoq",
+  "us-umich-inflation-exp-1y",
+  "us-umich-inflation-exp-5y",
 ]);
 
 const STAGE_NOTE = /^\[release-stage:(flash|estimate|final|revised)\]/i;

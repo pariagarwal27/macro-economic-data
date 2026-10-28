@@ -391,6 +391,10 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
           n("continuing", "Continuing Jobless Claims", "us-continuing-claims"),
         ],
       },
+      {
+        id: "us-adp-card", metricId: "us-adp-change", title: "ADP Employment Change",
+        components: [n("change", "Private Employment Change", "us-adp-change")],
+      },
     ],
   },
 
@@ -1089,7 +1093,7 @@ const CATEGORY_SPEC_IDS: Record<Region, Record<MacroCategory, string[]>> = {
   US: {
     prices: ["us-cpi-card", "us-core-cpi-card", "us-pce-card", "us-core-pce-card", "us-ppi-card"],
     activity: ["us-gdp-card", "us-retail-sales-card", "us-pmi-card", "us-pce-growth-card", "us-investment-card", "us-government-card", "us-net-exports-card"],
-    labour: ["us-unemployment-card", "us-payrolls-card", "us-participation-card", "us-jolts-card", "us-wages-card", "us-claims-card"],
+    labour: ["us-unemployment-card", "us-payrolls-card", "us-participation-card", "us-jolts-card", "us-wages-card", "us-claims-card", "us-adp-card"],
     monetary: [],
     expectations: ["us-inflation-expectations-consumer", "us-inflation-expectations-wage", "us-inflation-expectations-business", "us-inflation-expectations-market", "us-inflation-expectations-model"],
     external: [],

@@ -9,6 +9,7 @@ import { getSeriesHistories } from "@/data/dashboard";
 import { METRICS } from "@/catalog/metrics";
 import { contributionMetricIds } from "@/lib/inflation-contributions";
 import { buildThreeMonthMethodMap, buildThreeMonthTrend } from "@/lib/three-month-trend";
+import { compactDashboardPayload } from "@/lib/dashboard-payload";
 
 const THREE_MONTH_METHODS = buildThreeMonthMethodMap(METRICS);
 
@@ -96,7 +97,7 @@ export async function GET(
       .map((metric) => metric.id);
     if (hourlyIds.length) Object.assign(result, await getSeriesHistories(hourlyIds, 800));
 
-    return NextResponse.json(result, {
+    return NextResponse.json(compactDashboardPayload(result), {
       headers: {
         "Cache-Control": "no-store",
       },

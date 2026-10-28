@@ -1,4 +1,5 @@
 import type { RawPoint } from "./transforms";
+import { load } from "cheerio";
 import * as cheerio from "cheerio";
 const ATLANTA_BIE_URL =
   "https://www.atlantafed.org/research-and-data/surveys/business-inflation-expectations";
@@ -446,16 +447,42 @@ async function fetchClevelandSofieWorkbook(
  *
  * PX5 = Expected Change in Prices During the Next 5 Years.
  */
-const UMICH_PX5_URL =
+const UMICH_EXPECTATIONS_CSV_URL =
   "https://www.sca.isr.umich.edu/files/tbmpx1px5.csv";
+const UMICH_RELEASE_URL = "https://www.sca.isr.umich.edu/";
+
+/** Read the public release summary, which is updated on release day. */
+export async function fetchUmichReleaseSeries(series: "PX1" | "PX5"): Promise<RawPoint[]> {
+  const response = await fetch(UMICH_RELEASE_URL, {
+    headers: { Accept: "text/html", "User-Agent": "Mozilla/5.0 MacroHub/1.0" },
+    cache: "no-store",
+  });
+  if (!response.ok) throw new Error(`University of Michigan release page failed: HTTP ${response.status}`);
+
+  const $ = load(await response.text());
+  $("script, style, noscript").remove();
+  const text = $("body").text().replace(/\s+/g, " ").trim();
+  const release = text.match(/(Preliminary|Final) Results for ([A-Za-z]+) (20\d{2})/i);
+  if (!release) return [];
+  const month = new Date(`${release[2]} 1, ${release[3]} UTC`);
+  if (!Number.isFinite(month.getTime())) return [];
+
+  const measure = series === "PX1" ? "year-ahead inflation expectations" : "long-run inflation expectations";
+  const match = text.match(new RegExp(`${measure}[\\s\\S]{0,300}?\\bto\\s+(\\d+(?:\\.\\d+)?)\\s*%`, "i"));
+  if (!match) return [];
+  const value = Number(match[1]);
+  if (!Number.isFinite(value)) return [];
+
+  return [{
+    date: `${release[3]}-${String(month.getUTCMonth() + 1).padStart(2, "0")}-01`,
+    value,
+    releaseStage: release[1].toLowerCase() === "preliminary" ? "flash" : "final",
+  }];
+}
 
 
-export async function fetchUmichPx5Series(): Promise<RawPoint[]> {
-  const configuredUrl =
-    process.env.UMICH_PX5_URL;
-
-  const url =
-    configuredUrl || UMICH_PX5_URL;
+export async function fetchUmichInflationExpectations(series: "PX1" | "PX5"): Promise<RawPoint[]> {
+  const url = UMICH_EXPECTATIONS_CSV_URL;
 
   const response = await fetch(url, {
     headers: {
@@ -468,7 +495,7 @@ export async function fetchUmichPx5Series(): Promise<RawPoint[]> {
 
   if (!response.ok) {
     throw new Error(
-      `University of Michigan PX5 request failed: HTTP ${response.status}`
+      `University of Michigan ${series} request failed: HTTP ${response.status}`
     );
   }
 
@@ -493,7 +520,7 @@ export async function fetchUmichPx5Series(): Promise<RawPoint[]> {
   ) {
     return parseExcelPoints(
       buffer,
-      "umich-px5"
+      `umich-${series.toLowerCase()}`
     );
   }
 
@@ -524,7 +551,7 @@ export async function fetchUmichPx5Series(): Promise<RawPoint[]> {
    * Primary UMich PX5 parser.
    */
   const points =
-    parseUmichPx5Csv(text);
+    parseUmichInflationCsv(text, series);
 
   if (points.length) {
     return points;
@@ -536,7 +563,7 @@ export async function fetchUmichPx5Series(): Promise<RawPoint[]> {
    * row-scanning parser before giving up.
    */
   const scannedPoints =
-    parseUmichPx5Loose(text);
+    parseUmichInflationLoose(text, series);
 
   if (scannedPoints.length) {
     return scannedPoints;
@@ -565,7 +592,7 @@ export async function fetchUmichPx5Series(): Promise<RawPoint[]> {
  * - MM/YYYY
  * - normal date strings
  */
-function parseUmichPx5Csv(text: string): RawPoint[] {
+function parseUmichInflationCsv(text: string, series: "PX1" | "PX5"): RawPoint[] {
   const lines = text
     .split(/\r?\n/)
     .map((line) => line.trim())
@@ -587,9 +614,9 @@ function parseUmichPx5Csv(text: string): RawPoint[] {
   ]);
 
   const valueIndex = findHeaderIndex(headers, [
-    "px5_md",
-    "px5 md",
-    "px5",
+    `${series.toLowerCase()}_md`,
+    `${series.toLowerCase()} md`,
+    series.toLowerCase(),
   ]);
 
   if (
@@ -677,8 +704,9 @@ function parseUmichPx5Csv(text: string): RawPoint[] {
  * This fallback never fabricates a value; it only parses
  * an actual numeric value present in the official response.
  */
-function parseUmichPx5Loose(
-  text: string
+function parseUmichInflationLoose(
+  text: string,
+  series: "PX1" | "PX5"
 ): RawPoint[] {
   const lines =
     text
@@ -696,6 +724,7 @@ function parseUmichPx5Loose(
    */
   let headerIndex = -1;
   let headers: string[] = [];
+  const horizonLabel = series === "PX1" ? "1 year" : "5 year";
 
   for (
     let i = 0;
@@ -706,8 +735,7 @@ function parseUmichPx5Loose(
       splitCsvLine(lines[i])
         .map(normalizeHeader);
 
-    const joined =
-      candidate.join(" ");
+    const joined = candidate.join(" ");
 
     if (
       candidate.some(
@@ -718,9 +746,9 @@ function parseUmichPx5Loose(
           x.includes("observation date")
       ) &&
       (
-        joined.includes("px5") ||
-        joined.includes("5 year") ||
-        joined.includes("five year") ||
+        joined.includes(series.toLowerCase()) ||
+        joined.includes(horizonLabel) ||
+        joined.includes(series === "PX1" ? "one year" : "five year") ||
         candidate.length === 2
       )
     ) {
@@ -745,18 +773,14 @@ function parseUmichPx5Loose(
         "yyyymm",
       ]);
 
-    let valueIndex =
-      findHeaderIndex(headers, [
-        "px5",
-        "px5 md",
-        "px5_md",
-        "five year inflation expectation",
-        "five-year inflation expectation",
-        "5 year inflation expectation",
-        "5-year inflation expectation",
-        "expected change in prices during the next 5 years",
-        "expected change in prices during the next five years",
-      ]);
+    let valueIndex = findHeaderIndex(headers, [
+      series.toLowerCase(),
+      `${series.toLowerCase()} md`,
+      `${series.toLowerCase()}_md`,
+      `${horizonLabel} inflation expectation`,
+      `${horizonLabel}-year inflation expectation`,
+      `expected change in prices during the next ${horizonLabel}s`,
+    ]);
 
     if (
       valueIndex === -1
@@ -764,9 +788,9 @@ function parseUmichPx5Loose(
       valueIndex =
         headers.findIndex((header) => {
           return (
-            header.includes("px5") ||
-            header.includes("five year") ||
-            header.includes("5 year")
+            header.includes(series.toLowerCase()) ||
+            header.includes(horizonLabel) ||
+            header.includes(series.toLowerCase()) || header.includes(horizonLabel)
           );
         });
     }
@@ -912,10 +936,7 @@ function parseUmichPx5Loose(
      * common UMich PX5 export layout while still requiring
      * an actual value from the response.
      */
-    const selected =
-      numericValues[
-        numericValues.length - 1
-      ];
+    const selected = series === "PX1" ? numericValues[0] : numericValues[numericValues.length - 1];
 
     if (!selected) {
       continue;
@@ -1289,6 +1310,15 @@ function findExcelValueColumn(
           "5 year",
           "5-year",
           "next 5 years",
+        ]
+      : series === "umich-px1"
+      ? [
+          "px1",
+          "px1 md",
+          "px1_md",
+          "one year inflation expectation",
+          "1 year inflation expectation",
+          "expected change in prices during the next year",
         ]
       : series === "umich-px5"
       ? [

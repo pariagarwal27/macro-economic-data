@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { COUNTRY_META } from "@/catalog/hierarchy";
 import { OverviewChart } from "./OverviewChart";
 import { InflationOverviewChart } from "./InflationOverviewChart";
@@ -21,10 +22,12 @@ const INDICATORS: { id: OverviewIndicator; label: string; detail: string }[] = [
 const CORE_INFLATION_METRICS = { US: "us-cpi-core", UK: "uk-core-cpi-yoy", EA: "ea-core-hicp-yoy" } as const;
 
 export function HomeDashboard() {
+  const router = useRouter();
   const [selectedIndicator, setSelectedIndicator] = useState<OverviewIndicator>("inflation");
+  const [overviewRun, setOverviewRun] = useState(0);
   const [showExpectations, setShowExpectations] = useState(false);
-  const [payload, setPayload] = useState<OverviewPayload>(() => getClientJsonCache<OverviewPayload>("overview") ?? {});
-  const [loading, setLoading] = useState(() => getClientJsonCache<OverviewPayload>("overview") == null);
+  const [payload, setPayload] = useState<OverviewPayload>(() => getClientJsonCache<OverviewPayload>("overview", false) ?? {});
+  const [loading, setLoading] = useState(() => getClientJsonCache<OverviewPayload>("overview", false) == null);
   const [error, setError] = useState("");
   const [now, setNow] = useState(() => new Date());
   const load = useCallback(async (isActive: () => boolean = () => true) => {
@@ -43,6 +46,8 @@ export function HomeDashboard() {
   }, []);
   useEffect(() => {
     let active = true;
+    const saved = getClientJsonCache<OverviewPayload>("overview");
+    if (saved) { setPayload(saved); setLoading(false); }
     void load(() => active);
     const timer = window.setInterval(() => void load(() => active), 30_000);
     return () => { active = false; window.clearInterval(timer); };
@@ -55,7 +60,7 @@ export function HomeDashboard() {
     <section className="overview-comparison" id="country-comparison" aria-labelledby="overview-comparison-title" aria-busy={loading}>
       <div className="overview-comparison-scroll" tabIndex={0} role="region" aria-label="Three-country key indicator comparison">
         <table><thead><tr><th scope="col"><h2 id="overview-comparison-title">Key indicators</h2></th>{OVERVIEW_REGIONS.map(region => <th key={region} scope="col" data-country={region.toLowerCase()}><div className="overview-country-heading"><span className="overview-country-flag" aria-hidden="true">{COUNTRY_META[region].flag}</span><div><h3>{COUNTRY_META[region].name}</h3><Link href={`/country/${region.toLowerCase()}`}>Open country view →</Link></div></div></th>)}</tr></thead>
-          <tbody>{INDICATORS.map(indicator => <tr key={indicator.id} data-selected={selectedIndicator === indicator.id}><th scope="row"><button type="button" className="overview-indicator-select" aria-pressed={selectedIndicator === indicator.id} aria-controls="overview-selected-chart" onClick={() => { setSelectedIndicator(indicator.id); if (indicator.id !== "inflation") setShowExpectations(false); }}><strong>{indicator.label}</strong>{indicator.detail && <span>{indicator.detail}</span>}</button></th>{OVERVIEW_REGIONS.map(region => {
+          <tbody>{INDICATORS.map(indicator => <tr key={indicator.id} data-selected={selectedIndicator === indicator.id}><th scope="row"><button type="button" className="overview-indicator-select" aria-pressed={selectedIndicator === indicator.id} aria-controls="overview-selected-chart" onClick={() => { setSelectedIndicator(indicator.id); setOverviewRun(run => run + 1); setShowExpectations(false); }}><strong>{indicator.label}</strong>{indicator.detail && <span>{indicator.detail}</span>}</button></th>{OVERVIEW_REGIONS.map(region => {
             const reading = latestOverviewMovement(payload, indicator.id, region, now);
             const metric = payload[OVERVIEW_METRICS[region][indicator.id]];
             const period = reading ? overviewPeriodLabel(reading.date, indicator.id === "gdp" || indicator.id === "wage" && region === "EA") : "";
@@ -98,14 +103,14 @@ export function HomeDashboard() {
       </div>
     </section>
     <section id="overview-selected-chart" className="overview-selected-chart" aria-live="polite" aria-label={`${INDICATORS.find(item => item.id === selectedIndicator)?.label ?? "Selected indicator"} chart`}>
-      {selectedIndicator === "inflation" && showExpectations ? <ExpectationsOverviewChart payload={payload} loading={loading} onBack={() => setShowExpectations(false)} /> : selectedIndicator === "inflation" ? <InflationOverviewChart payload={payload} loading={loading} onShowExpectations={() => setShowExpectations(true)} /> : <OverviewChart indicator={selectedIndicator} data={charts[selectedIndicator]} loading={loading} />}
+      {selectedIndicator === "inflation" && showExpectations ? <ExpectationsOverviewChart key={`expectations-${overviewRun}`} payload={payload} loading={loading} onBack={() => setShowExpectations(false)} /> : selectedIndicator === "inflation" ? <InflationOverviewChart key={`inflation-${overviewRun}`} payload={payload} loading={loading} onShowExpectations={() => setShowExpectations(true)} /> : <OverviewChart key={`${selectedIndicator}-${overviewRun}`} indicator={selectedIndicator} data={charts[selectedIndicator]} loading={loading} />}
     </section>
     <footer className="overview-footer"><span>Charts default to the latest rolling 12 months of published data; release schedules may lag.</span><span>Country views retain the original published series and full indicator breakdowns.</span></footer>
     </div>
     <aside className="overview-release-sidebar" aria-label="Economic release diary">
       <EconomicCalendarSidebar onReleaseSelect={event => {
         if (event.region === "US" || event.region === "UK" || event.region === "EA") {
-          window.location.assign(`/country/${event.region.toLowerCase()}?openMetric=${encodeURIComponent(event.metricId)}`);
+          router.push(`/country/${event.region.toLowerCase()}?openMetric=${encodeURIComponent(event.metricId)}`);
         }
       }} />
     </aside>

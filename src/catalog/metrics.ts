@@ -31,7 +31,8 @@ export type Source =
   | "census"
   | "pmi_scrape"
   | "lseg"
-  | "dol";
+  | "dol"
+  | "adp";
 export interface MetricDef {
   id: string;
   region: Region;
@@ -636,8 +637,8 @@ export const METRICS: MetricDef[] = [
     name: "UMich Expected Inflation (1-Year)",
     shortName: "UMich 1Y Exp",
     description: "University of Michigan consumer inflation expectations, 1-year ahead.",
-    source: "fred",
-    seriesId: "MICH",
+    source: "umich",
+    seriesId: "PX1",
     transform: "published_rate",
     frequency: "monthly",
     unit: "percent",
@@ -1365,9 +1366,9 @@ id: "ea-safe-input-cost-exp-1y",
     name: "ADP Nonfarm Private Employment Change",
     shortName: "ADP Change",
     description: "Monthly change in ADP National Employment Report private payrolls (thousands).",
-    source: "fred",
+    source: "adp",
     seriesId: "ADPMNUSNERSA",
-    transform: "diff",
+    transform: "level",
     frequency: "monthly",
     unit: "thousands",
     importance: "critical",
@@ -1383,7 +1384,7 @@ id: "ea-safe-input-cost-exp-1y",
     name: "ADP Nonfarm Private Employment Level",
     shortName: "ADP Level",
     description: "ADP National Employment Report — private nonfarm employment level (thousands).",
-    source: "fred",
+    source: "adp",
     seriesId: "ADPMNUSNERSA",
     transform: "level",
     frequency: "monthly",

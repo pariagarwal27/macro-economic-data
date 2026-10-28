@@ -2,7 +2,7 @@ type Reading = { date: string; value: number };
 export type LaborChangePoint = { date: string; value: number | null };
 
 const CHANGE_METRICS = new Set([
-  "us-payrolls-level", "us-participation", "us-jolts-openings",
+  "us-payrolls-level", "us-participation", "us-jolts-openings", "us-adp-change",
   "uk-employment-level", "uk-vacancies", "uk-payrolled-employees-level",
 ]);
 
@@ -29,10 +29,11 @@ export function laborPeriodChanges(history: readonly Reading[]): LaborChangePoin
 
 export function laborChangeKpis(id: string, history: readonly Reading[]) {
   if (!isLaborChangeMetric(id)) return null;
+  const ordered = [...history].sort((a, b) => a.date.localeCompare(b.date));
   return {
     mode: "absolute-change" as const,
     leftLabel: id === "uk-employment-level" || id === "uk-vacancies" ? "Change vs prior period" : "Monthly Change",
-    leftValue: laborPeriodChanges(history).at(-1)?.value ?? null,
+    leftValue: id === "us-adp-change" ? ordered.at(-1)?.value ?? null : laborPeriodChanges(history).at(-1)?.value ?? null,
     rightLabel: "",
     rightValue: null,
     showRight: false,

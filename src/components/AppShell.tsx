@@ -2,13 +2,46 @@
 
 import Link from "next/link";
 import { CalendarDays, Globe2 } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { GlobalMetricSearch } from "./GlobalMetricSearch";
+import { prefetchClientJson } from "@/lib/client-json-cache";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const isCountryPage = pathname?.startsWith("/country/");
+
+  useEffect(() => {
+    let cancelled = false;
+    const warmLink = (event: Event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const link = target.closest<HTMLAnchorElement>("a[href]");
+      if (!link || link.origin !== window.location.origin) return;
+      const country = /^\/country\/(us|uk|ea)$/i.exec(link.pathname)?.[1]?.toUpperCase();
+      if (country) void prefetchClientJson(`dashboard:${country}`, `/api/dashboard/${country}`);
+    };
+    document.addEventListener("pointerover", warmLink);
+    document.addEventListener("focusin", warmLink);
+    const timer = window.setTimeout(async () => {
+      // Warm sequentially so background countries do not compete with the visible page.
+      const current = /^\/country\/(us|uk|ea)$/i.exec(window.location.pathname)?.[1]?.toUpperCase();
+      const countries = [...new Set([...(current ? [current] : []), "US", "UK", "EA"])];
+      for (const country of countries) {
+        if (cancelled) return;
+        router.prefetch(`/country/${country.toLowerCase()}`);
+        await prefetchClientJson(`dashboard:${country}`, `/api/dashboard/${country}`);
+      }
+      if (!cancelled) await prefetchClientJson("overview", "/api/overview");
+    }, 1000);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+      document.removeEventListener("pointerover", warmLink);
+      document.removeEventListener("focusin", warmLink);
+    };
+  }, [router]);
 
   useEffect(() => {
     const saved = window.localStorage.getItem("macrohub-editorial-theme");

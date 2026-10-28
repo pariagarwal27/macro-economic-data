@@ -36,7 +36,6 @@ const LSEG: MetricSourceConfig[] = [
   ["us-cpi-food","USCPFOD=ECI"],["us-cpi-energy","USCPNRG=ECI"],["us-cpi-apparel","aUSCPICL/A"],
   ["us-cpi-other-goods","aUSCPOF/C"],["us-cpi-shelter","USCPSHL=ECI"],
   ["us-cpi-medical-services","aUSCWSMF/C"],["us-cpi-transport-services","aUSCWSTF/C"],
-  ["us-umich-inflation-exp-1y","USUM1P=ECI"],
   ["us-umich-sentiment","USUMSF=ECI"],
   ["us-manufacturers-new-orders","USDGN=ECI"],["us-eci-wages","USECIW=ECI"],
   ["us-eci-total","USECI=ECI"],["us-ahe","USAHEY=ECI"],["us-ahe-mom","USAHE=ECI"],
@@ -45,12 +44,11 @@ const LSEG: MetricSourceConfig[] = [
   ["us-durable-goods","USDUR=ECI"],["us-housing-starts","USHST=ECI"],
   ["us-building-permits","USBP=ECI"],["us-empire-state","USEMP=ECI"],
   ["us-dallas-fed-activity","USDFED=ECI"],["us-cfnai","USCFNA=ECI"],
-  ["us-personal-spending","USPSPD=ECI"],["us-nfp","USNFAR=ECI"],["us-adp-change","USADPC=ECI"],
+  ["us-personal-spending","USPSPD=ECI"],["us-nfp","USNFAR=ECI"],
   ["us-unemployment","USUNR=ECI"],["us-u6","USUDEP=ECI"],["us-employment-population","USEMPO=ECI"],
   ["us-jolts-openings","USJOLT=ECI"],["us-jolts-quits","USJQU=ECI"],
   ["us-jolts-hires","USJHI=ECI"],["us-jolts-layoffs","USJLA=ECI"],
   ["us-temp-help","aUSNFTHS/A"],["us-avg-workweek","USAHW=ECI"],
-  ["us-umich-inflation-exp-5y","USUM5P=ECI"],
   ["us-unemployed-persons","aUS3B010"],["us-long-term-unemployed","pUSRECOAP=O"],
   ["us-private-payrolls","USPRP=ECI"],["us-government-payrolls","USGOV=ECI"],
   ["us-civilian-labor-force","USLBFB=ECI"],["us-jolts-hires-level","aUSJBHIREO/A"],
@@ -114,6 +112,7 @@ const CATALOG_FALLBACK: MetricSourceConfig[] = METRICS
   .filter((m) => !PCE_FAMILY.has(m.id))
   .filter((m) => !isUsCpiLsegOnlyMetric(m.id))
   .filter((m) => !LSEG.some((x) => x.metricId === m.id))
+  .filter((m) => !["us-umich-inflation-exp-1y", "us-umich-inflation-exp-5y"].includes(m.id))
   .map((m) => ({
     metricId: m.id,
     adapter: m.source === "philadelphia" ? "philadelphia" : "pipeline",
@@ -135,6 +134,19 @@ const PCE_BEA: MetricSourceConfig[] = METRICS
     notes: "PCE family explicitly routed to BEA; LSEG excluded by project decision.",
   }));
 
+const UMICH_EXPECTATIONS: MetricSourceConfig[] = [
+  ["us-umich-inflation-exp-1y", "PX1"],
+  ["us-umich-inflation-exp-5y", "PX5"],
+].map(([metricId, sourceId]) => ({
+  metricId,
+  adapter: "pipeline",
+  source: "umich",
+  sourceId,
+  releaseStrategy: "release-day-poll",
+  pollSeconds: 15,
+  notes: "Official University of Michigan Surveys of Consumers source",
+}));
+
 export const SOURCE_REGISTRY: MetricSourceConfig[] = [
   ...LSEG.map((x) => ({
     ...x,
@@ -142,6 +154,7 @@ export const SOURCE_REGISTRY: MetricSourceConfig[] = [
     pollSeconds: 5,
   })),
   ...PCE_BEA,
+  ...UMICH_EXPECTATIONS,
   ...CATALOG_FALLBACK,
 ];
 
@@ -251,6 +264,8 @@ export function getActiveLiveMapping(metricId: string, isCloud: boolean) {
       ? { provider: "bls" as const, seriesId: config.sourceId }
       : undefined;
   }
+  const umich = SOURCE_REGISTRY_MAP.get(metricId);
+  if (umich?.source === "umich") return { provider: "umich" as const, seriesId: umich.sourceId };
   const mapped = LIVE_MAP[metricId];
   return isCloud && mapped?.provider === "lseg" ? undefined : mapped;
 }

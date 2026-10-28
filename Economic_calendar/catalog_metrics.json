@@ -323,6 +323,34 @@
       "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
     },
     {
+      "id": "us-cleveland-median-pce",
+      "name": "Cleveland Fed Median PCE Inflation YoY",
+      "source": "cleveland",
+      "frequency": "monthly",
+      "official_url": "https://www.clevelandfed.org/indicators-and-data/median-pce-inflation"
+    },
+    {
+      "id": "us-dallas-trimmed-mean-pce",
+      "name": "Dallas Fed Trimmed Mean PCE Inflation YoY",
+      "source": "dallas",
+      "frequency": "monthly",
+      "official_url": "https://www.dallasfed.org/research/pce"
+    },
+    {
+      "id": "us-cleveland-median-pce-mom",
+      "name": "Cleveland Fed Median PCE Inflation MoM",
+      "source": "cleveland",
+      "frequency": "monthly",
+      "official_url": "https://www.clevelandfed.org/indicators-and-data/median-pce-inflation"
+    },
+    {
+      "id": "us-dallas-trimmed-mean-pce-mom",
+      "name": "Dallas Fed Trimmed Mean PCE Inflation MoM",
+      "source": "dallas",
+      "frequency": "monthly",
+      "official_url": "https://www.dallasfed.org/research/pce"
+    },
+    {
       "id": "us-cleveland-median-cpi",
       "name": "Cleveland Fed Median CPI YoY",
       "source": "cleveland",
@@ -360,7 +388,7 @@
     {
       "id": "us-umich-inflation-exp-1y",
       "name": "UMich Expected Inflation (1-Year)",
-      "source": "fred",
+      "source": "umich",
       "frequency": "monthly",
       "official_url": "https://data.sca.isr.umich.edu/"
     },
@@ -640,14 +668,14 @@
     {
       "id": "us-adp-change",
       "name": "ADP Nonfarm Private Employment Change",
-      "source": "fred",
+      "source": "adp",
       "frequency": "monthly",
       "official_url": "https://adpemploymentreport.com/"
     },
     {
       "id": "us-adp-level",
       "name": "ADP Nonfarm Private Employment Level",
-      "source": "fred",
+      "source": "adp",
       "frequency": "monthly",
       "official_url": "https://adpemploymentreport.com/"
     },

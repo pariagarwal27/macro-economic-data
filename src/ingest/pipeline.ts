@@ -110,7 +110,8 @@ import { fetchUsUnderlyingPce } from "./us-pce-underlying";
 import {
   fetchAtlantaBieSeries,
   fetchClevelandSofieSeries,
-  fetchUmichPx5Series,
+  fetchUmichReleaseSeries,
+  fetchUmichInflationExpectations,
 } from "./us-expectations";
 
 export interface IngestSummary {
@@ -342,7 +343,7 @@ function effectiveTransform(
   opts?: { treatAsLevel?: boolean }
 ): Parameters<typeof applyTransform>[1] {
   if (opts?.treatAsLevel) return "level";
-  if (metric.id === "us-nfp" || metric.id === "us-adp-change") return "diff";
+  if (metric.id === "us-nfp") return "diff";
   return metric.transform;
 }
 
@@ -1081,10 +1082,10 @@ async function loadLiveRaw(
         note: `Live Cleveland Fed SoFIE ${metric.seriesId}`,
       };
     }
-    if (metric.source === "umich" && metric.seriesId === "PX5") {
+    if (metric.source === "umich" && (metric.seriesId === "PX1" || metric.seriesId === "PX5")) {
       return {
-        points: await fetchUmichPx5Series(),
-        note: "Live University of Michigan PX5",
+        points: await fetchUmichInflationExpectations(metric.seriesId),
+        note: `Live University of Michigan official ${metric.seriesId}`,
       };
     }
     return null;
@@ -1253,6 +1254,24 @@ export async function fetchOfficialLatestFromPipeline(metricId: string) {
   const metric = METRICS.find((m) => m.id === metricId);
   if (!metric) throw new Error(`Unknown metric ${metricId}`);
 
+  // UMich's public release page is updated on release day. Its downloadable
+  // time-series archive is embargoed until four weeks after the final release,
+  // so use the release summary for scheduled preliminary/final polling.
+  if (metric.source === "umich" && (metric.seriesId === "PX1" || metric.seriesId === "PX5")) {
+    const points = await fetchUmichReleaseSeries(metric.seriesId);
+    if (!points.length) return null;
+    const latest = preparePoints(metric, points).at(-1);
+    if (!latest) return null;
+    return {
+      periodDate: latest.date,
+      value: latest.value,
+      rawValue: latest.rawValue,
+      releaseStage: latest.releaseStage,
+      releasedAt: new Date().toISOString(),
+      note: `Official University of Michigan ${metric.seriesId} release page`,
+    };
+  }
+
   const caches = await warmLiveCaches([metric], { skipFeeds: true });
   const live = await loadLiveRaw(metric, caches);
   if (!live?.points?.length) return null;
@@ -1303,6 +1322,10 @@ async function loadFredRaw(
 
 async function loadOfficialHistory(metric: MetricDef): Promise<RawPoint[]> {
   const endYear = new Date().getFullYear();
+  if (metric.source === "adp") {
+    const report = await fetchAdpNational();
+    return metric.id === "us-adp-level" ? report.level : report.change;
+  }
   if (metric.source === "cleveland" && ["us-cleveland-median-pce", "us-cleveland-median-pce-mom"].includes(metric.id)) return fetchUsUnderlyingPce(metric.id);
   if (metric.source === "dallas" && ["us-dallas-trimmed-mean-pce", "us-dallas-trimmed-mean-pce-mom"].includes(metric.id)) return fetchUsUnderlyingPce(metric.id);
   if (metric.source === "dol") {
@@ -1376,8 +1399,8 @@ async function loadOfficialHistory(metric: MetricDef): Promise<RawPoint[]> {
   if (metric.source === "cleveland_sofie") {
     return fetchClevelandSofieSeries(metric.seriesId === "SOFIE_5Y" ? "5y" : "1y");
   }
-  if (metric.source === "umich" && metric.seriesId === "PX5") {
-    return fetchUmichPx5Series();
+  if (metric.source === "umich" && (metric.seriesId === "PX1" || metric.seriesId === "PX5")) {
+    return fetchUmichInflationExpectations(metric.seriesId);
   }
 
   return [];
@@ -1876,7 +1899,7 @@ function pickDisplayRelease(
   if (latestPeriod) {
     const pool = rows.filter((r) => r.periodDate === latestPeriod);
     if (pool.length) {
-      return [...pool].sort((a, b) => score(b) - score(a))[0];
+      return [...pool].sort((a, b) => Date.parse(b.releasedAt) - Date.parse(a.releasedAt) || score(b) - score(a))[0];
     }
   }
   const investing = rows.find(isInvesting);

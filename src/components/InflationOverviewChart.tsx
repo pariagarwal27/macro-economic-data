@@ -7,6 +7,7 @@ import { filterHistoryByYearRange, filterHistoryToTrailing12Months } from "@/lib
 import { buildOverviewInflationSeries, OVERVIEW_INFLATION_SERIES, overviewAxisDomain, type OverviewInflationMode, type OverviewPayload } from "@/lib/overview-data";
 import { getNiceTicks, getTickPrecision } from "@/lib/chart-axis";
 import { HistoryChartViewport } from "./HistoryChartViewport";
+import { ChartTrace } from "@/components/ChartTrace";
 
 const color = (region: string) => `var(--country-${region.toLowerCase()})`;
 
@@ -48,7 +49,7 @@ export function InflationOverviewChart({ payload, loading, onShowExpectations }:
       </div>
     </div>
     <div className="overview-chart-unit">{mode === "yoy" ? "Year-on-year and three-month trend (%)" : "Month-on-month change (%)"}</div>
-    <HistoryChartViewport dates={allData.map(point => point.period)} label="Inflation comparison" height={352}>
+    <ChartTrace enabled><HistoryChartViewport dates={allData.map(point => point.period)} label="Inflation comparison" height={352}>
       {(_plotWidth, fromYear, toYear, isDefaultWindow) => {
         const data = isDefaultWindow ? filterHistoryToTrailing12Months(allData) : filterHistoryByYearRange(allData, fromYear, toYear);
         const valuesFor = (items: typeof plotSeries) => data.flatMap(point => items.map(item => point[item.key]).filter((value): value is number => typeof value === "number" && Number.isFinite(value)));
@@ -92,7 +93,7 @@ export function InflationOverviewChart({ payload, loading, onShowExpectations }:
           </ResponsiveContainer>}
         </div>;
       }}
-    </HistoryChartViewport>
+    </HistoryChartViewport></ChartTrace>
     <p className="overview-chart-note">Published annual or monthly rates. CPI and HICP use different basket methodologies; missing observations remain gaps.</p>
   </figure>;
 }

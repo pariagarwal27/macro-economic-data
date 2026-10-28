@@ -13,6 +13,7 @@ import { Fragment } from "react";
 import { getExpectationAxisTicks, getNiceTickDomain, getTickPrecision } from "@/lib/chart-axis";
 import { HistoryChartViewport } from "@/components/HistoryChartViewport";
 import { filterHistoryByYearRange, filterHistoryToTrailing12Months } from "@/lib/history-range";
+import { useChartTrace } from "@/components/ChartTrace";
 
 type Point = {
   date: string;
@@ -108,6 +109,7 @@ export function ExpectationComparisonChart({
   hideMarkers = false,
   showAlternateMonthlyTicks = false,
 }: Props) {
+  const traceRef = useChartTrace();
   /*
    * Expectations are monthly economic observations.
    *
@@ -170,7 +172,7 @@ export function ExpectationComparisonChart({
 
   if (!valid.length) {
     return (
-      <div className="expectation-comparison-card">
+      <div ref={traceRef} data-chart-trace="" className="expectation-comparison-card">
         <div className="expectation-comparison-heading mb-3">
         <h4 className="text-sm font-semibold text-[var(--ink)]">
           {title}
@@ -227,7 +229,7 @@ export function ExpectationComparisonChart({
   });
 
   return (
-    <div className="expectation-comparison-card">
+    <div ref={traceRef} data-chart-trace="" className="expectation-comparison-card">
       <div className="expectation-comparison-heading mb-3">
         <h4 className="text-base font-semibold text-[var(--ink)]">
           {title}

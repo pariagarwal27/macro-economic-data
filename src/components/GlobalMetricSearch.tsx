@@ -1,12 +1,15 @@
 "use client";
 
 import { Search } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 type Entry = { id: string; region: "US" | "UK" | "EA"; category: string; label: string; searchText: string };
 const regionName = { US: "United States", UK: "United Kingdom", EA: "Euro Area" };
 
 export function GlobalMetricSearch() {
+  const router = useRouter();
+  const resultsId = useId();
   const [query, setQuery] = useState("");
   const [entries, setEntries] = useState<Entry[]>([]);
   const [open, setOpen] = useState(false);
@@ -39,16 +42,23 @@ export function GlobalMetricSearch() {
   }, [entries, query]);
 
   const navigate = (entry: Entry) => {
-    window.location.assign("/country/" + entry.region.toLowerCase() + "?openMetric=" + encodeURIComponent(entry.id));
+    setOpen(false);
+    setQuery("");
+    if (window.location.pathname === "/country/" + entry.region.toLowerCase()) {
+      window.dispatchEvent(new CustomEvent("macrohub:open-metric", { detail: { metricId: entry.id } }));
+      return;
+    }
+    router.push("/country/" + entry.region.toLowerCase() + "?openMetric=" + encodeURIComponent(entry.id));
   };
 
   return <div className="global-metric-search" ref={root}>
     <Search size={16} aria-hidden="true" />
     <input
       type="search"
+      role="combobox"
       aria-label="Search all dashboard metrics"
       aria-expanded={open && matches.length > 0}
-      aria-controls="global-metric-search-results"
+      aria-controls={resultsId}
       placeholder="Search metrics…"
       value={query}
       onFocus={() => setOpen(true)}
@@ -58,8 +68,8 @@ export function GlobalMetricSearch() {
         if (event.key === "Enter" && matches[0]) navigate(matches[0]);
       }}
     />
-    {open && query.trim() && <div id="global-metric-search-results" className="global-metric-search-results" role="listbox" aria-label="Matching metrics">
-      {matches.length ? matches.map(entry => <button key={entry.region + ":" + entry.id} type="button" role="option" onClick={() => navigate(entry)}>
+    {open && query.trim() && <div id={resultsId} className="global-metric-search-results" role="listbox" aria-label="Matching metrics">
+      {matches.length ? matches.map(entry => <button key={entry.region + ":" + entry.id} type="button" role="option" aria-selected={false} onClick={() => navigate(entry)}>
         <span>{entry.label}</span><small>{regionName[entry.region]} · {entry.category}</small>
       </button>) : <p>No matching metrics</p>}
     </div>}

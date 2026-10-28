@@ -3,6 +3,7 @@
 import { Area, Bar, BarChart, CartesianGrid, LabelList, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { COUNTRY_META } from "@/catalog/hierarchy";
 import { HistoryChartViewport } from "@/components/HistoryChartViewport";
+import { ChartTrace } from "@/components/ChartTrace";
 import { filterHistoryByYearRange, filterHistoryToTrailing12Months } from "@/lib/history-range";
 import { OVERVIEW_REGIONS, overviewAxisDigits, overviewAxisDomain, overviewAxisTicks, overviewRegionAxisTicks, type OverviewChartPoint, type OverviewIndicator } from "@/lib/overview-data";
 
@@ -19,9 +20,9 @@ const trendLabel = (indicator: OverviewIndicator, region: string) => indicator =
   ? "3-month average"
   : indicator === "retail" && region === "UK"
     ? "3m/3m"
-    : indicator === "wage" && region === "EA"
-      ? "QoQ (3m/3m)"
-      : "3m/3m SAAR";
+    : "3m/3m SAAR";
+
+const trendRegions = (indicator: OverviewIndicator) => indicator === "wage" ? ["US", "UK"] as const : OVERVIEW_REGIONS;
 
 export function OverviewChart({ indicator, data, loading }: { indicator: OverviewIndicator; data: OverviewChartPoint[]; loading: boolean }) {
   const config = CONFIG[indicator];
@@ -30,11 +31,11 @@ export function OverviewChart({ indicator, data, loading }: { indicator: Overvie
       <div><h2 id={`overview-chart-${indicator}`}>{config.title}</h2><p>{config.description}</p></div>
       <div className="overview-chart-legend" aria-label="Country legend">
         {OVERVIEW_REGIONS.map(region => <span key={`${region}-primary`}><i style={{ background: color(region) }} aria-hidden="true" />{COUNTRY_META[region].name}{indicator === "unemployment" ? region === "EA" ? " · Rate (right)" : " · Rate (left)" : indicator === "inflation" ? region === "EA" ? " (HICP · YoY)" : " (CPI · YoY)" : indicator === "wage" ? `${region === "US" ? " (AHE" : region === "UK" ? " (Regular pay" : " (Labour cost index"} · YoY)` : indicator === "retail" ? " · YoY" : ""}</span>)}
-        {indicator !== "gdp" && indicator !== "inflation" && OVERVIEW_REGIONS.filter(region => data.some(point => typeof point[`${region}Trend`] === "number")).map(region => <span key={`${region}-trend`}><i className="is-three-month" style={{ borderColor: color(region) }} aria-hidden="true" />{COUNTRY_META[region].name} · {trendLabel(indicator, region)}</span>)}
+        {indicator !== "gdp" && indicator !== "inflation" && trendRegions(indicator).filter(region => data.some(point => typeof point[`${region}Trend`] === "number")).map(region => <span key={`${region}-trend`}><i className="is-three-month" style={{ borderColor: color(region) }} aria-hidden="true" />{COUNTRY_META[region].name} · {trendLabel(indicator, region)}</span>)}
       </div>
     </figcaption>
     <div className="overview-chart-unit">{config.unit}</div>
-    <HistoryChartViewport dates={data.map(point => point.date)} label={`${config.title} history`} height={352}>
+    <ChartTrace enabled kind={indicator === "gdp" ? "bars" : "line"}><HistoryChartViewport dates={data.map(point => point.date)} label={`${config.title} history`} height={352}>
       {(_, fromYear, toYear, isDefaultWindow) => {
         const visibleData = isDefaultWindow ? filterHistoryToTrailing12Months(data) : filterHistoryByYearRange(data, fromYear, toYear);
         const hasData = visibleData.some(point => OVERVIEW_REGIONS.some(region => point[region] !== null));
@@ -57,11 +58,11 @@ export function OverviewChart({ indicator, data, loading }: { indicator: Overvie
             };
             return <div className="inflation-paired-tooltip">
               <strong className="inflation-paired-tooltip-period">{label}</strong>
-              <div className="inflation-paired-tooltip-head"><span>Region</span><span>{primaryLabel(indicator)}</span><span>{indicator === "unemployment" ? "3-month avg" : indicator === "wage" ? "3m3m / QoQ" : "3m3m / avg"}</span></div>
+              <div className="inflation-paired-tooltip-head"><span>Region</span><span>{primaryLabel(indicator)}</span><span>{indicator === "unemployment" ? "3-month avg" : "3m/3m SAAR"}</span></div>
               {OVERVIEW_REGIONS.map(region => <div className="inflation-paired-tooltip-row" key={region}>
                 <span><i style={{ background: color(region) }} />{COUNTRY_META[region].name}</span>
                 <b>{valueFor(region, region)}</b>
-                <b>{valueFor(`${region}Trend`, region)}</b>
+                <b>{indicator === "wage" && region === "EA" ? "—" : valueFor(`${region}Trend`, region)}</b>
               </div>)}
             </div>;
           }} formatter={(value, name) => [`${Number(value).toFixed(Math.max(1, indicator === "unemployment" && name === "Euro Area" ? overviewAxisDigits(unemploymentRightTicks) : overviewAxisDigits(unemploymentLeftTicks)))}%`, name]} filterNull />
@@ -74,12 +75,12 @@ export function OverviewChart({ indicator, data, loading }: { indicator: Overvie
             </BarChart> : <LineChart data={visibleData} margin={{ top: 12, right: 16, bottom: 6, left: 0 }} accessibilityLayer>
               {axes}
               {OVERVIEW_REGIONS.map(region => <Line key={region} yAxisId={indicator === "unemployment" && region === "EA" ? "right" : "left"} dataKey={region} name={`${COUNTRY_META[region].name} · ${primaryLabel(indicator)}`} type="linear" stroke={color(region)} strokeWidth={2.2} dot={{ r: 3, strokeWidth: 0, fill: color(region) }} activeDot={{ r: 5, stroke: "var(--panel)", strokeWidth: 2 }} connectNulls={indicator === "wage" && region === "EA"} isAnimationActive={false} />)}
-              {OVERVIEW_REGIONS.filter(region => visibleData.some(point => typeof point[`${region}Trend`] === "number")).map(region => <Line key={`${region}-trend`} yAxisId={indicator === "unemployment" && region === "EA" ? "right" : "left"} dataKey={`${region}Trend`} name={`${COUNTRY_META[region].name} · ${trendLabel(indicator, region)}`} type="linear" stroke={color(region)} strokeWidth={2} strokeDasharray="2 4" dot={{ r: 1.5, strokeWidth: 0, fill: color(region) }} activeDot={{ r: 5, stroke: "var(--panel)", strokeWidth: 2 }} connectNulls={false} isAnimationActive={false} />)}
+              {trendRegions(indicator).filter(region => visibleData.some(point => typeof point[`${region}Trend`] === "number")).map(region => <Line key={`${region}-trend`} yAxisId={indicator === "unemployment" && region === "EA" ? "right" : "left"} dataKey={`${region}Trend`} name={`${COUNTRY_META[region].name} · ${trendLabel(indicator, region)}`} type="linear" stroke={color(region)} strokeWidth={2} strokeDasharray="2 4" dot={{ r: 1.5, strokeWidth: 0, fill: color(region) }} activeDot={{ r: 5, stroke: "var(--panel)", strokeWidth: 2 }} connectNulls={false} isAnimationActive={false} />)}
             </LineChart>}
           </ResponsiveContainer>}
         </div>;
       }}
-    </HistoryChartViewport>
-    <p className="overview-chart-note">{indicator === "gdp" ? "US annualized GDP is converted to QoQ for comparison. Only completed quarters are shown." : indicator === "unemployment" ? "UK observations are published three-month estimates. Euro Area dotted values average three published monthly rates. Missing observations remain gaps." : indicator === "wage" ? "US average hourly earnings, UK regular weekly pay and Euro Area labour cost index wages. The dotted Euro Area series uses the official quarterly QoQ reading; definitions and frequency differ." : indicator === "retail" ? "Uses the mapped country-dashboard series: U.S. retail and food services total, UK headline retail sales including automotive fuel, and Euro Area retail trade excluding motor vehicles. Euro Area 3m/3m SAAR uses the official seasonally and calendar-adjusted volume index." : "Published annual rates. CPI and HICP use different basket methodologies. Euro Area dotted values average three published YoY observations. Missing observations remain gaps."}</p>
+    </HistoryChartViewport></ChartTrace>
+    <p className="overview-chart-note">{indicator === "gdp" ? "US annualized GDP is converted to QoQ for comparison. Only completed quarters are shown." : indicator === "unemployment" ? "UK observations are published three-month estimates. Euro Area dotted values average three published monthly rates. Missing observations remain gaps." : indicator === "wage" ? "US average hourly earnings, UK regular weekly pay and Euro Area labour cost index wages. Dotted lines show the US and UK three-month trends; definitions and frequency differ." : indicator === "retail" ? "Uses the mapped country-dashboard series: U.S. retail and food services total, UK headline retail sales including automotive fuel, and Euro Area retail trade excluding motor vehicles. Euro Area 3m/3m SAAR uses the official seasonally and calendar-adjusted volume index." : "Published annual rates. CPI and HICP use different basket methodologies. Euro Area dotted values average three published YoY observations. Missing observations remain gaps."}</p>
   </figure>;
 }

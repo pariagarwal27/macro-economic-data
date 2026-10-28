@@ -38,6 +38,8 @@ const EA_HICP_DISPLAY: Readonly<Record<string, { name: string; order: number }>>
   "ea-services-hicp-yoy": { name: "Services HICP YoY", order: 5 },
 };
 export function calendarMetricDisplayName(metric: Pick<MetricDef, "id" | "name" | "category" | "subcategory" | "source" | "shortName" | "releaseName">) {
+  if (metric.id === "us-umich-inflation-exp-1y") return "UMich Inflation Expectations 1Y";
+  if (metric.id === "us-umich-inflation-exp-5y") return "UMich Inflation Expectations 5Y";
   const specialName = EA_HICP_DISPLAY[metric.id]?.name;
   if (specialName) return specialName;
   const expectationCategory = metric.category === "inflation" ? INFLATION_EXPECTATION_LABELS[metric.subcategory] : null;
@@ -163,7 +165,10 @@ export function buildEconomicCalendar(schedule: ScheduledCalendarRow[], actuals:
     return {
       metricId: metric.id, metricName: calendarMetricDisplayName(metric), region: metric.region as "US" | "UK" | "EA",
       unit: metric.unit,
-      source: row?.source ?? metric.source, liveSource: metric.liveSource ?? null, family: row?.family ?? null,
+      source: metric.id.startsWith("us-umich-inflation-exp-")
+        ? "University of Michigan"
+        : metric.id === "us-adp-change" ? "ADP" : row?.source ?? metric.source,
+      liveSource: metric.liveSource ?? null, family: row?.family ?? null,
       scheduledDate, scheduledTime, scheduledTimeLabel, scheduledAt, deadlineAt, scheduleType, scheduleNote,
       status, actual: actual?.value ?? null, forecast: actual?.expectedValue ?? null,
       previous: actual
