@@ -76,6 +76,30 @@ export const releases = sqliteTable(
   ]
 );
 
+export const nfpForecastRuns = sqliteTable(
+  "nfp_forecast_runs",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    targetMonth: text("target_month").notNull(),
+    releaseAt: text("release_at").notNull(),
+    modelId: text("model_id").notNull(),
+    status: text("status").notNull(),
+    modelStatus: text("model_status").notNull(),
+    consensusValue: real("consensus_value"),
+    predictedSurprise: real("predicted_surprise").notNull(),
+    forecastValue: real("forecast_value"),
+    featureCount: integer("feature_count").notNull(),
+    featureTotal: integer("feature_total").notNull(),
+    inputHash: text("input_hash").notNull(),
+    inputsJson: text("inputs_json").notNull(),
+    createdAt: text("created_at").notNull(),
+  },
+  (t) => [
+    uniqueIndex("nfp_forecast_input_uniq").on(t.targetMonth, t.modelId, t.inputHash),
+    index("nfp_forecast_latest_idx").on(t.targetMonth, t.createdAt),
+  ],
+);
+
 /** Raw economic-calendar dumps (Investing.com etc.) before / after metric mapping. */
 export const calendarEvents = sqliteTable(
   "calendar_events",
