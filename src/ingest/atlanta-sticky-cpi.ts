@@ -92,7 +92,7 @@ async function fetchDataset(): Promise<Parsed> {
   const pageResponse = await fetch(PAGE, { cache: "no-store", headers: { Accept: "text/html", "User-Agent": "MacroHub/1.0" } });
   if (!pageResponse.ok) throw new Error(`Atlanta Fed sticky CPI page HTTP ${pageResponse.status}`);
   const $ = cheerio.load(await pageResponse.text());
-  const href = $("a[href]").toArray().map(el => $(el).attr("href") ?? "").find(value => /stickprice\/stickyprice\.xlsx/i.test(value));
+  const href = $("a[href]").toArray().map(el => $(el).attr("href") ?? "").find(value => /(?:stickprice\/stickyprice|sticky-price\/sticky-price-data)\.xlsx/i.test(value));
   if (!href) throw new Error("Atlanta Fed official sticky CPI workbook link not found");
   const response = await fetch(new URL(href, PAGE), { cache: "no-store", headers: { Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*", "User-Agent": "MacroHub/1.0" } });
   if (!response.ok) throw new Error(`Atlanta Fed sticky CPI workbook HTTP ${response.status}`);

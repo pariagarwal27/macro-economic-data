@@ -82,6 +82,13 @@ export async function refreshClientJson<T>(key: string, url: string, errorMessag
   }
 }
 
+/** Apply a committed release to a cached dashboard before its next full refresh. */
+export function updateClientJsonCache<T>(key: string, update: (value: T) => T): void {
+  if (!values.has(key)) return;
+  const payload = update(values.get(key) as T);
+  remember(key, payload);
+}
+
 /** Keep the visible dashboard available after a reload, within browser quotas. */
 export function persistClientJsonCache(key: string): void {
   if (values.has(key)) {

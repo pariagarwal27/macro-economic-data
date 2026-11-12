@@ -1,13 +1,12 @@
 type Point = {date:string;value:number;rawValue?:number|null};
 type Metrics = Record<string,{history:Point[]}|undefined>;
 export function retailDriverRate(metrics:Metrics,id:string,measure:'mom'|'yoy',period:string):number|null {
-  if (id === 'us-retail-sales-control-group') {
+  if (id === 'us-retail-sales-control-group' && measure === 'mom') {
     const control = metrics[id]?.history?.find(point => point.date.slice(0,7) === period);
-    if (control) return Number.isFinite(control.value) ? control.value : null;
-    const ids = ['us-retail-sales-total','us-retail-motor-vehicles','us-retail-gasoline','us-retail-total-ex-auto-gas','us-retail-food-services'];
-    const rates = ids.map(seriesId => retailDriverRate(metrics,seriesId,measure,period));
-    if (rates.some(value => value == null)) return null;
-    return rates[0]! - rates[1]! - rates[2]! - rates[3]! - rates[4]!;
+    // The stored control-group value is a monthly rate. YoY must instead use
+    // the underlying levels below; subtracting other percentage rates cannot
+    // reconstruct a missing control-group series.
+    return control && Number.isFinite(control.value) ? control.value : null;
   }
   const publishedYoy = id === 'uk-retail-sales-total-ex-fuel' ? 'uk-retail-sales-total-yoy' : id === 'uk-retail-sales-ex-fuel' ? 'uk-retail-sales-ex-fuel-yoy' : null;
   const history = metrics[measure === 'yoy' && publishedYoy ? publishedYoy : id]?.history ?? [];

@@ -16,6 +16,7 @@ export function formatObsDate(date: string | null | undefined): string {
 
 export function formatValue(value: number | null | undefined, unit: string): string {
   if (value === null || value === undefined || !Number.isFinite(value)) return "—";
+  if (unit === "usd_millions") return formatEconomicLevel(value, unit);
   const abs = Math.abs(value);
   const digits = abs >= 100 ? 1 : abs >= 10 ? 2 : 2;
   if (unit === "percent") return `${value.toFixed(digits)}%`;
@@ -34,6 +35,9 @@ export function formatEconomicLevel(value: number | null | undefined, unit: stri
 
   if (normalizedUnit === "usd_billions") {
     amount = value;
+    symbol = "$";
+  } else if (normalizedUnit === "usd_millions") {
+    amount = value / 1_000;
     symbol = "$";
   } else if (normalizedUnit === "gbp_millions") {
     amount = value / 1_000;
@@ -54,6 +58,7 @@ export function formatEconomicLevel(value: number | null | undefined, unit: stri
 
 export function formatDelta(delta: number | null | undefined, unit: string): string {
   if (delta === null || delta === undefined || !Number.isFinite(delta)) return "—";
+  if (unit === "usd_millions") return `${delta > 0 ? "+" : ""}${formatEconomicLevel(delta, unit)}`;
   const sign = delta > 0 ? "+" : "";
   if (unit === "percent") return `${sign}${delta.toFixed(2)}pp`;
   if (unit === "thousands" || unit === "number") {
@@ -68,6 +73,7 @@ export function formatMatrixValue(
   unit: string
 ): string {
   if (value === null || value === undefined || !Number.isFinite(value)) return "—";
+  if (unit === "usd_millions") return formatEconomicLevel(value, unit);
   const abs = Math.abs(value);
   if (unit === "percent") {
     const digits = abs >= 10 ? 1 : 2;

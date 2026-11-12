@@ -1,13 +1,16 @@
 import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import { pipeChildOutput, startFetchLogRetention } from "./fetch-log-file";
+
+startFetchLogRetention();
 
 const isWindows = process.platform === "win32";
 const npm = isWindows ? "npm.cmd" : "npm";
 const port = process.env.PORT || "3000";
 
 const spawnOptions = {
-  stdio: "inherit" as const,
+  stdio: ["inherit", "pipe", "pipe"] as ["inherit", "pipe", "pipe"],
   env: { ...process.env, PORT: port },
   shell: isWindows,
 };
@@ -40,15 +43,18 @@ async function main() {
     spawn(npm, ["run", "calendar:worker"], spawnOptions),
   ];
 
+  pipeChildOutput(children[0], "next");
+  pipeChildOutput(children[1], "release-worker");
+  pipeChildOutput(children[2], "calendar-worker");
+
   if (process.env.LSEG_WORKER_AUTOSTART === "1") {
-    const python = isWindows ? "python" : "python3";
-    children.push(
-      spawn(
-        python,
-        ["Economic_calendar/lseg_worker.py"],
+    const lseg = spawn(
+        npm,
+        ["run", "release:lseg"],
         spawnOptions
-      )
-    );
+      );
+    children.push(lseg);
+    pipeChildOutput(lseg, "lseg-worker");
   }
 
   let stopping = false;

@@ -774,6 +774,15 @@ html[data-theme="dark"] .editorial-dashboard .detail-button {
 .expectation-group-tabs { display:flex; gap:18px; overflow:auto; border-bottom:1px solid var(--line-strong); }
 .expectation-group-tabs button { flex:0 0 auto; padding:11px 2px; border:0; border-bottom:2px solid transparent; background:transparent; color:var(--muted); font-size:11px; cursor:pointer; }
 .expectation-group-tabs button[aria-selected="true"] { color:var(--country-series); border-bottom-color:var(--country-series); }
+.expectation-target-tabs { display:flex; flex-wrap:wrap; gap:8px; }
+.spf-forecast-overview { display:flex; flex-direction:column; gap:16px; min-width:0; }
+.expectation-target-tabs button { padding:7px 12px; border:1px solid var(--line-strong); border-radius:999px; background:var(--panel); color:var(--muted); font-size:11px; cursor:pointer; }
+.expectation-target-tabs button[aria-selected="true"] { border-color:var(--country-series); background:var(--accent-soft); color:var(--country-series); }
+.detail-drawer .spf-forecast-detail-scroll { height:auto !important; min-height:0 !important; max-height:none !important; overflow:visible !important; }
+.detail-drawer .spf-forecast-detail { display:flex !important; width:100%; min-width:0; min-height:0; flex-direction:column; align-items:stretch; gap:12px; }
+.detail-drawer .spf-forecast-detail > .expectation-target-tabs { display:flex; width:100%; min-height:0; flex:0 0 auto; align-items:center; align-self:stretch; gap:8px; }
+.detail-drawer .spf-forecast-detail .expectation-target-tabs > button { width:auto; height:34px; min-height:34px; flex:0 0 auto; padding:0 13px; line-height:1; }
+.detail-drawer .spf-forecast-detail .expectation-comparison-card { width:100%; max-width:none; }
 .expectation-studio-panel { display:grid; grid-template-columns:minmax(0,82fr) minmax(160px,18fr); border:1px solid var(--line); background:var(--panel); }
 .expectation-studio-panel--nyfed-wide { grid-template-columns:minmax(0,7fr) minmax(280px,3fr); }
 .expectation-studio-chart { min-width:0; padding:14px; border-right:1px solid var(--line); }
@@ -887,7 +896,7 @@ button.economic-calendar-event-name { border:0; padding:0; background:transparen
 .labour-studio-plot .recharts-responsive-container { min-width:0; }
 .economic-calendar-head h2 { font-size: 27px; }
 .economic-calendar-list.release-diary { padding: 0 9px 8px; overflow-x: hidden; }
-.release-diary-head,.release-diary-row { display: grid; grid-template-columns: 50px minmax(0,1fr) 42px 44px 66px; align-items: center; gap: 10px; }
+.release-diary-head,.release-diary-row { display: grid; grid-template-columns: 50px minmax(0,1fr) 38px 46px 38px 62px; align-items: center; gap: 6px; }
 .release-diary-head { position: sticky; top: 0; z-index: 2; padding: 8px 4px 7px; border-bottom: 1px solid var(--line-strong); background: var(--panel); color: var(--muted); font-size: 9px; line-height: 1.25; }
 .release-diary-head span:nth-child(n+3) { text-align: right; }
 .release-diary-group h3 { margin: 0; padding: 8px 3px 6px; border-bottom: 1px solid var(--line); color: var(--ink); background: var(--panel-2); font: 600 10px/1.3 var(--font-body); }
@@ -920,6 +929,7 @@ button.economic-calendar-event-name { border:0; padding:0; background:transparen
 .release-diary-window-note { padding:7px 14px; color:var(--muted); font-size:9px; line-height:1.25; border-bottom:1px solid var(--line); }
 @media(max-width:1400px) {
   .editorial-dashboard .macro-dashboard-layout { grid-template-columns: 140px minmax(0,1fr) minmax(280px,300px) !important; gap: 14px !important; }
+  .release-diary-head,.release-diary-row { grid-template-columns: 40px minmax(35px,1fr) 35px 40px 35px 48px; gap: 4px; }
   .labour-studio-selector { padding-inline: 7px; }
   .labour-studio-name { font-size: 9px; }
 }
@@ -933,7 +943,7 @@ button.economic-calendar-event-name { border:0; padding:0; background:transparen
   .editorial-dashboard .macro-dashboard-layout { grid-template-columns: minmax(0,1fr) !important; }
   .labour-studio[data-category="activity"] .labour-studio-selectors { grid-template-columns: repeat(4,minmax(0,1fr)); }
   .labour-studio[data-category="labour"] .labour-studio-selectors { grid-template-columns: repeat(3,minmax(0,1fr)); }
-  .release-diary-head,.release-diary-row { grid-template-columns: 56px minmax(0,1fr) 62px 62px 80px; gap: 10px; }
+  .release-diary-head,.release-diary-row { grid-template-columns: 56px minmax(0,1fr) 50px 62px 50px 80px; gap: 8px; }
   .release-diary-head { font-size: 9px; }
   .release-diary-row { font-size: 10px; }
 }
@@ -941,7 +951,7 @@ button.economic-calendar-event-name { border:0; padding:0; background:transparen
   .labour-studio[data-category="activity"] .labour-studio-selectors { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .labour-studio[data-category="labour"] .labour-studio-selectors { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .economic-calendar-list.release-diary { overflow-x: auto; }
-  .release-diary-head,.release-diary-row { min-width: 420px; }
+  .release-diary-head,.release-diary-row { min-width: 480px; }
 }
 
 /* Concept C: compact component flight deck for metric detail dialogs. */

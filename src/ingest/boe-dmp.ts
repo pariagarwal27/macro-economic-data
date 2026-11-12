@@ -2,10 +2,17 @@
 import type { RawPoint } from "./transforms";
 import AdmZip from "adm-zip";
 import * as XLSX from "xlsx";
-const DMP_INDEX =
-  "https://www.bankofengland.co.uk/decision-maker-panel/2026/august-2026";
+import { isFreshReleaseFetch } from "./release-fetch-context.js";
+const DMP_MONTHS = [
+  "january", "february", "march", "april", "may", "june",
+  "july", "august", "september", "october", "november", "december",
+];
+function currentDmpIndex(date = new Date()) {
+  const month = DMP_MONTHS[date.getUTCMonth()];
+  return `https://www.bankofengland.co.uk/decision-maker-panel/${date.getUTCFullYear()}/${month}-${date.getUTCFullYear()}`;
+}
 const MPS_INDEX = "https://www.bankofengland.co.uk/markets/market-intelligence/survey-results";
-const MPR_INDEX = "https://www.bankofengland.co.uk/monetary-policy-report/2026/july-2026";
+const MPR_INDEX = "https://www.bankofengland.co.uk/sitemap/monetary-policy-report";
 const BOE_DAILY_INFLATION_ARCHIVE =
   "https://www.bankofengland.co.uk/-/media/boe/files/statistics/yield-curves/glcinflationddata.zip";
 const BOE_DAILY_INFLATION_LATEST =
@@ -17,20 +24,16 @@ export type DmpWageSeries =
   | "DMP_WAGE_REALISED_1M"
   | "DMP_WAGE_EXPECTED_1M";
 
-const SERIES_COL: Record<DmpWageSeries, string> = {
-  DMP_WAGE_REALISED_3M: "C",
-  DMP_WAGE_REALISED_1M: "B",
-  DMP_WAGE_EXPECTED_3M: "F",
-  DMP_WAGE_EXPECTED_1M: "E",
-};
-
 let cachedXlsx: { url: string; buf: Buffer; at: number } | null = null;
 const CACHE_MS = 10 * 60 * 1000;
-const cachedBoeDailyInflation = new Map<string, { points: RawPoint[]; at: number }>();
+type BoeDailyInflationSeries = "UK_INFL_COMP_5Y" | "UK_INFL_COMP_10Y" | "UK_INFL_COMP_5Y5Y";
+type BoeDailyInflationCurve = Record<BoeDailyInflationSeries, RawPoint[]>;
+let cachedBoeDailyInflation: { curve: BoeDailyInflationCurve; at: number } | null = null;
+let pendingBoeDailyInflation: Promise<BoeDailyInflationCurve> | null = null;
 const BOE_DAILY_CURVE_CACHE_MS = 60 * 60 * 1000;
 
 /**
- * Daily UK 5Y inflation compensation and 5Y5Y forward from the BoE's gilt curve.
+ * Daily UK 5Y and 10Y implied inflation spot rates, plus 5Y5Y forward, from the BoE gilt curve.
  * The BoE publishes daily spot inflation zero-coupon rates at 5Y and 10Y;
  * with continuous compounding, the five-year forward rate starting in five
  * years is 2 * 10Y spot - 5Y spot. The 1Y point is not published in this
@@ -38,12 +41,25 @@ const BOE_DAILY_CURVE_CACHE_MS = 60 * 60 * 1000;
  * existing monthly MPR series until a valid daily one-year source is added.
  */
 export async function fetchBoeDailyInflationCompensation(
-  seriesId: "UK_INFL_COMP_5Y5Y"
+  seriesId: BoeDailyInflationSeries
 ): Promise<RawPoint[]> {
   const now = Date.now();
-  const cached = cachedBoeDailyInflation.get(seriesId);
-  if (cached && now - cached.at < BOE_DAILY_CURVE_CACHE_MS) return cached.points;
+  if (cachedBoeDailyInflation && now - cachedBoeDailyInflation.at < BOE_DAILY_CURVE_CACHE_MS) {
+    return cachedBoeDailyInflation.curve[seriesId];
+  }
+  if (!pendingBoeDailyInflation) pendingBoeDailyInflation = fetchBoeDailyInflationCurve();
+  try {
+    const curve = await pendingBoeDailyInflation;
+    cachedBoeDailyInflation = { curve, at: Date.now() };
+    const points = curve[seriesId];
+    if (!points.length) throw new Error(`${seriesId} returned no daily BoE curve observations`);
+    return points;
+  } finally {
+    pendingBoeDailyInflation = null;
+  }
+}
 
+async function fetchBoeDailyInflationCurve(): Promise<BoeDailyInflationCurve> {
   const [archiveResponse, latestResponse] = await Promise.all([
     fetch(BOE_DAILY_INFLATION_ARCHIVE, {
       headers: { "User-Agent": "macro-economy-tracker/1.0", Accept: "*/*" },
@@ -61,9 +77,13 @@ export async function fetchBoeDailyInflationCompensation(
   );
   if (!recentEntry) throw new Error("BoE daily inflation archive is missing its current-history workbook");
 
-  const points = new Map<string, number>();
-  for (const point of parseBoeDailyInflationSeries(recentEntry.getData(), seriesId)) {
-    points.set(point.date, point.value);
+  const points = new Map<BoeDailyInflationSeries, Map<string, number>>([
+    ["UK_INFL_COMP_5Y", new Map()],
+    ["UK_INFL_COMP_10Y", new Map()],
+    ["UK_INFL_COMP_5Y5Y", new Map()],
+  ]);
+  for (const [seriesId, seriesPoints] of Object.entries(parseBoeDailyInflationCurve(recentEntry.getData())) as [BoeDailyInflationSeries, RawPoint[]][]) {
+    for (const point of seriesPoints) points.get(seriesId)!.set(point.date, point.value);
   }
 
   const latest = new AdmZip(Buffer.from(await latestResponse.arrayBuffer()));
@@ -71,27 +91,28 @@ export async function fetchBoeDailyInflationCompensation(
     /GLC Inflation daily data current month\.xlsx$/i.test(entry.entryName)
   );
   if (!latestEntry) throw new Error("BoE latest yield curve ZIP is missing its inflation workbook");
-  for (const point of parseBoeDailyInflationSeries(latestEntry.getData(), seriesId)) {
-    points.set(point.date, point.value);
+  for (const [seriesId, seriesPoints] of Object.entries(parseBoeDailyInflationCurve(latestEntry.getData())) as [BoeDailyInflationSeries, RawPoint[]][]) {
+    for (const point of seriesPoints) points.get(seriesId)!.set(point.date, point.value);
   }
 
-  const result = [...points.entries()]
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([date, value]) => ({ date, value }));
-  if (!result.length) throw new Error(`${seriesId} returned no daily BoE curve observations`);
-  cachedBoeDailyInflation.set(seriesId, { points: result, at: now });
-  return result;
+  const curve = Object.fromEntries([...points.entries()].map(([seriesId, seriesPoints]) => [
+    seriesId,
+    [...seriesPoints.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([date, value]) => ({ date, value })),
+  ])) as BoeDailyInflationCurve;
+  if (!curve.UK_INFL_COMP_5Y5Y.length) throw new Error("BoE daily inflation curve returned no 5Y5Y observations");
+  return curve;
 }
 
-function parseBoeDailyInflationSeries(
-  workbook: Buffer,
-  seriesId: "UK_INFL_COMP_5Y" | "UK_INFL_COMP_5Y5Y",
-): RawPoint[] {
+function parseBoeDailyInflationCurve(workbook: Buffer): BoeDailyInflationCurve {
   const zip = new AdmZip(workbook);
   const shared = parseSharedStrings(
     zip.getEntry("xl/sharedStrings.xml")?.getData().toString("utf8") ?? ""
   );
-  const points = new Map<string, number>();
+  const points = new Map<BoeDailyInflationSeries, Map<string, number>>([
+    ["UK_INFL_COMP_5Y", new Map()],
+    ["UK_INFL_COMP_10Y", new Map()],
+    ["UK_INFL_COMP_5Y5Y", new Map()],
+  ]);
 
   for (const sheet of zip.getEntries().filter((entry) =>
     /^xl\/worksheets\/sheet\d+\.xml$/i.test(entry.entryName)
@@ -117,16 +138,17 @@ function parseBoeDailyInflationSeries(
       const fiveYear = parseNumber(row[fiveYearColumn] ?? "");
       const tenYear = parseNumber(row[tenYearColumn] ?? "");
       if (fiveYear == null || tenYear == null) continue;
-      const value = 2 * tenYear - fiveYear;
-      if (Number.isFinite(value) && value >= -5 && value <= 15) {
-        points.set(date, value);
-      }
+      if (fiveYear >= -5 && fiveYear <= 15) points.get("UK_INFL_COMP_5Y")!.set(date, fiveYear);
+      if (tenYear >= -5 && tenYear <= 15) points.get("UK_INFL_COMP_10Y")!.set(date, tenYear);
+      const forward = 2 * tenYear - fiveYear;
+      if (forward >= -5 && forward <= 15) points.get("UK_INFL_COMP_5Y5Y")!.set(date, forward);
     }
   }
 
-  return [...points.entries()]
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([date, value]) => ({ date, value }));
+  return Object.fromEntries([...points.entries()].map(([seriesId, seriesPoints]) => [
+    seriesId,
+    [...seriesPoints.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([date, value]) => ({ date, value })),
+  ])) as BoeDailyInflationCurve;
 }
 
 /**
@@ -195,21 +217,8 @@ function parseBoEIadbDate(value: string): string | null {
 }
 
 export async function fetchBoeDmpWages(seriesId: DmpWageSeries): Promise<RawPoint[]> {
-  const col = SERIES_COL[seriesId];
   const buf = await loadLatestDmpXlsx();
- const parsed = parseDmpWageSheet(buf, col);
-
-console.log("[DMP WAGE PARSED]", seriesId, parsed);
-
-return parsed
-  .map((row) => {
-      const date = dmpDateToIso(row.date);
-      return date && row.value != null && Number.isFinite(row.value)
-        ? { date, value: row.value }
-        : null;
-    })
-    .filter((p): p is RawPoint => p != null)
-    .sort((a, b) => a.date.localeCompare(b.date));
+  return parseDmpWageSheet(buf, seriesId);
 }
 
 /** DMP CPI / own-price / expected wage series. */
@@ -372,44 +381,6 @@ console.log(`[MAPS] Total pages found: ${urls.length}`);
  * ZIP from the report page, then scan spreadsheet/CSV members by semantic
  * column names. This avoids hard-coding a volatile file name.
  */
-async function fetchCitiYouGovMonthlySeries(seriesId: string): Promise<RawPoint[]> {
-  if (
-    seriesId !== "CITI_YOUGOV_INFLATION_1Y" &&
-    seriesId !== "CITI_YOUGOV_INFLATION_5_10Y"
-  ) {
-    return [];
-  }
-
-  /*
-   * The July 2026 MPR explicitly reports the Citi/YouGov July observations:
-   *   1Y   = 3.4%
-   *   5-10Y = 3.7%
-   *
-   * The September 2026 release reports:
-   *   August 1Y    = 3.9%
-   *   September 1Y = 4.5%
-   *   August 5-10Y = 4.1%
-   *   September 5-10Y = 4.3%
-   *
-   * The MPR chart-data ZIP can contain a stale/misaligned Chart 1.9 block
-   * for the latest period, so these latest observations are kept explicit
-   * here rather than trusting the generic chart parser for July onward.
-   */
-  if (seriesId === "CITI_YOUGOV_INFLATION_1Y") {
-    return [
-      { date: "2026-07-01", value: 3.4 },
-      { date: "2026-08-01", value: 3.9 },
-      { date: "2026-09-01", value: 4.5 },
-    ];
-  }
-
-  return [
-    { date: "2026-07-01", value: 3.7 },
-    { date: "2026-08-01", value: 4.1 },
-    { date: "2026-09-01", value: 4.3 },
-  ];
-}
-
 export async function fetchBoeMprInflationSeries(seriesId: string): Promise<RawPoint[]> {
   if (
     ![
@@ -422,74 +393,9 @@ export async function fetchBoeMprInflationSeries(seriesId: string): Promise<RawP
     throw new Error(`Unknown MPR inflation series ${seriesId}`);
   }
 
-  /*
-   * Citi/YouGov needs special handling:
-   * - use the existing MPR parser for historical observations;
-   * - discard its July-2026-and-later output because Chart 1.9 can be
-   *   stale/misaligned there;
-   * - append the verified July, August and September 2026 observations.
-   */
-  if (
-    seriesId === "CITI_YOUGOV_INFLATION_1Y" ||
-    seriesId === "CITI_YOUGOV_INFLATION_5_10Y"
-  ) {
-    const reportUrls = await findRecentMprPages();
-    const historical: RawPoint[] = [];
-
-    for (const pageUrl of reportUrls) {
-      try {
-        const html = await fetchText(pageUrl);
-        const zipHref = [...html.matchAll(/href=["']([^"']+\.zip)["']/gi)]
-          .map((m) => absolutizeBoEUrl(m[1]!))
-          .find((u) => /chart|data|slides/i.test(u));
-        if (!zipHref) continue;
-
-        const res = await fetch(zipHref, {
-          headers: { "User-Agent": "macro-economy-tracker/1.0" },
-        });
-        if (!res.ok) continue;
-
-        const zip = new AdmZip(Buffer.from(await res.arrayBuffer()));
-        console.log("[MPR] testing series:", seriesId);
-
-        const points = scanMprZip(zip, seriesId);
-        if (points.length) {
-          for (const point of points) {
-            if (point.date < "2026-07-01") {
-              historical.push(point);
-            }
-          }
-
-          if (historical.length) break;
-        }
-      } catch {
-        // try the previous report
-      }
-    }
-
-    const latest = await fetchCitiYouGovMonthlySeries(seriesId);
-    const byDate = new Map<string, RawPoint>();
-
-    for (const point of historical) {
-      byDate.set(point.date, point);
-    }
-
-    for (const point of latest) {
-      byDate.set(point.date, point);
-    }
-
-    const result = [...byDate.values()].sort((a, b) =>
-      a.date.localeCompare(b.date)
-    );
-
-    if (result.length) {
-      console.log(`[CITI/YOUGOV] final ${seriesId}:`, result.slice(-5));
-      return result;
-    }
-
-    throw new Error(`Citi/YouGov series ${seriesId} returned no observations`);
-  }
-
+  // Fetch actual official chart data on each refresh. Saved history is merged
+  // by the ingestion pipeline; a missing source must never be replaced with a
+  // successful, fixed September 2026 snapshot.
   const reportUrls = await findRecentMprPages();
   for (const pageUrl of reportUrls) {
     try {
@@ -582,9 +488,9 @@ export async function fetchBoeAgentsPaySettlement(): Promise<RawPoint[]> {
 }
 async function loadLatestDmpXlsx(): Promise<Buffer> {
   const now = Date.now();
-  if (cachedXlsx && now - cachedXlsx.at < CACHE_MS) return cachedXlsx.buf;
+  if (!isFreshReleaseFetch() && cachedXlsx && now - cachedXlsx.at < CACHE_MS) return cachedXlsx.buf;
   const url = await resolveLatestDmpMonthlyXlsxUrl();
-  const res = await fetch(url, { headers: { "User-Agent": "macro-economy-tracker/1.0", Accept: "*/*" } });
+  const res = await fetch(url, { cache: "no-store", headers: { "User-Agent": "macro-economy-tracker/1.0", Accept: "*/*" } });
   if (!res.ok) throw new Error(`BoE DMP xlsx ${res.status}`);
   const buf = Buffer.from(await res.arrayBuffer());
   cachedXlsx = { url, buf, at: now };
@@ -593,7 +499,7 @@ async function loadLatestDmpXlsx(): Promise<Buffer> {
 
 async function resolveLatestDmpMonthlyXlsxUrl(): Promise<string> {
   const pages = [
-    DMP_INDEX,
+    currentDmpIndex(),
     "https://www.bankofengland.co.uk/decision-maker-panel",
     "https://decisionmakerpanel.co.uk/data/",
     "https://decisionmakerpanel.co.uk/data/data-archive/",
@@ -672,9 +578,9 @@ async function resolveLatestDmpMonthlyXlsxUrl(): Promise<string> {
 }
 
 async function fetchDmpMonthlyHistoryByHeader(seriesId: string): Promise<RawPoint[]> {
-  // DMP CPI expectations are published directly in the monthly release pages.
-  // Reading the release text avoids workbook layout changes that previously
-  // paired unrelated columns and produced incorrect values.
+  // Read the official aggregate workbook. The prose release rounds values and
+  // reports three-month averages, while these CPI metric IDs use the labeled
+  // single-month series from the workbook.
   if (seriesId === "DMP_CPI_EXPECTED_1Y" || seriesId === "DMP_CPI_EXPECTED_3Y") {
     return fetchDmpCpiExpectationHistory(seriesId);
   }
@@ -689,93 +595,27 @@ async function fetchDmpMonthlyHistoryByHeader(seriesId: string): Promise<RawPoin
 async function fetchDmpCpiExpectationHistory(
   seriesId: "DMP_CPI_EXPECTED_1Y" | "DMP_CPI_EXPECTED_3Y"
 ): Promise<RawPoint[]> {
-  // The DMP's published aggregate workbook contains the complete monthly
-  // single-month CPI-expectations table, including the earlier observations
-  // omitted from recent release-page prose.
+  // The DMP workbook has single-month and three-month columns side by side.
+  // These IDs represent the monthly single-month series, so resolve their
+  // columns from the labels instead of assuming a fixed offset.
   const workbook = XLSX.read(await loadLatestDmpXlsx(), { type: "buffer", cellDates: true });
   const sheetName = workbook.SheetNames.find((name) => normalize(name) === "cpi expectations");
   const sheet = sheetName ? workbook.Sheets[sheetName] : undefined;
   if (!sheet) throw new Error("DMP workbook is missing the CPI expectations sheet");
   const rows = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: null, raw: true });
-  const horizonColumn = seriesId === "DMP_CPI_EXPECTED_1Y" ? 2 : 3;
-  const points: RawPoint[] = [];
-  for (const row of rows.slice(4)) {
-    const rawDate = row[0];
-    const date = rawDate instanceof Date
-      ? `${rawDate.getUTCFullYear()}-${String(rawDate.getUTCMonth() + 1).padStart(2, "0")}-01`
-      : normalizeDate(String(rawDate ?? ""));
-    const rawValue = row[horizonColumn];
-    const value = typeof rawValue === "number" ? rawValue : parseNumber(String(rawValue ?? ""));
-    if (date && value != null && Number.isFinite(value)) points.push({ date, value });
-  }
-  const result = dedupe(points);
-  if (!result.length) throw new Error(`DMP workbook has no CPI expectation values for ${seriesId}`);
-  return result;
+  const group = seriesId === "DMP_CPI_EXPECTED_1Y" ? /1\s*year.*ahead/ : /3\s*year.*ahead/;
+  return parseDmpGroupedSheet(rows, group, /single month/, `CPI expectations (${seriesId})`);
 }
 
 async function fetchDmpOwnPriceExpectationHistory(): Promise<RawPoint[]> {
-  const points: RawPoint[] = [];
-
-  const months = [
-    "january",
-    "february",
-    "march",
-    "april",
-    "may",
-    "june",
-    "july",
-    "august",
-    "september",
-    "october",
-    "november",
-    "december",
-  ];
-
-  const years = [2026, 2025, 2024, 2023, 2022];
-
-  for (const year of years) {
-    for (const month of months) {
-      // September 2026 has not been released yet.
-      if (year === 2026 && month === "september") continue;
-
-      const url =
-        `https://www.bankofengland.co.uk/decision-maker-panel/` +
-        `${year}/${month}-${year}`;
-
-      try {
-        const html = await fetchText(url);
-
-        // IMPORTANT: do NOT use normalize() here because it removes
-        // decimal points from values such as 3.8 -> "3 8".
-        const text = stripHtml(html).replace(/\s+/g, " ");
-
-        const match = text.match(
-          /year[-\s]+ahead\s+own[-\s]+price\s+inflation[\s\S]{0,100}?\b([0-9]+(?:\.[0-9]+)?)\s*(?:%|percent)/i
-        );
-
-        if (!match) {
-          continue;
-        }
-
-        const value = Number(match[1]);
-
-        if (!Number.isFinite(value)) continue;
-
-        const date = `${year}-${monthNum(month)}-01`;
-
-        points.push({
-          date,
-          value,
-        });
-
-        console.log(`[DMP own-price] ${date}: ${value}`);
-      } catch (error) {
-        // Ignore months/pages that do not exist.
-      }
-    }
-  }
-
-  return dedupe(points).sort((a, b) => a.date.localeCompare(b.date));
+  // Release prose rounds this three-month measure to one decimal. Use the
+  // official aggregate workbook so historical values retain source precision.
+  const workbook = XLSX.read(await loadLatestDmpXlsx(), { type: "buffer", cellDates: true });
+  const sheetName = workbook.SheetNames.find((name) => normalize(name) === "price growth");
+  const sheet = sheetName ? workbook.Sheets[sheetName] : undefined;
+  if (!sheet) throw new Error("DMP workbook is missing the Price growth sheet");
+  const rows = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: null, raw: true });
+  return parseDmpGroupedSheet(rows, /expected price growth/, /3\s*month average/, "own-price expectations");
 }
 async function fetchDmpOwnPriceHistoryFromPages(): Promise<RawPoint[]> {
   const months = [
@@ -1114,89 +954,42 @@ function extractCitiYouGovFromChart19(
   rows: string[][],
   horizon: "1Y" | "5-10Y"
 ): RawPoint[] {
-  const target =
-    "market-based measures of inflation compensation and survey-based measures of business and household inflation expectations";
-
-  const chartIndexes: number[] = [];
-
+  const points: RawPoint[] = [];
+  // Each chart panel has its own date column. Locate the named household
+  // panel and its header row; never borrow dates from market/DMP columns.
   for (let i = 0; i < rows.length; i++) {
-    const rowText = rows[i]?.join(" ").toLowerCase() ?? "";
-
-    if (rowText.includes(target)) {
-      chartIndexes.push(i);
+    const group = rows[i] ?? [];
+    const householdColumn = group.findIndex(cell => /citi/.test(normalize(cell)) && /yougov/.test(normalize(cell)));
+    if (householdColumn < 0) continue;
+    const nextGroup = group.findIndex((cell, col) => col > householdColumn && cell.trim() !== "");
+    const groupEnd = nextGroup < 0 ? Infinity : nextGroup;
+    for (let h = i + 1; h <= Math.min(i + 4, rows.length - 1); h++) {
+      const headers = rows[h] ?? [];
+      const valueColumn = headers.findIndex((cell, col) => {
+        if (col < householdColumn || col >= groupEnd || /average/.test(normalize(cell))) return false;
+        return horizon === "1Y"
+          ? /short term|one year|1 year|12 month/.test(normalize(cell))
+          : /medium term|long.*term|five.*ten|5.*10/.test(normalize(cell));
+      });
+      if (valueColumn < 0) continue;
+      let dateColumn = -1;
+      for (let col = valueColumn - 1; col >= 0; col--) {
+        if (normalize(headers[col] ?? "") === "date") { dateColumn = col; break; }
+      }
+      if (dateColumn < 0) continue;
+      for (let r = h + 1; r < rows.length; r++) {
+        const row = rows[r] ?? [];
+        if (/^chart\s+[a-z0-9]+\.\d+/i.test(row[0] ?? "") || /^__SHEET_(?:START|END)__$/.test(row[0] ?? "")) break;
+        const date = normalizeDate(row[dateColumn] ?? "");
+        const value = parseNumber(row[valueColumn] ?? "");
+        if (date && value != null && value >= -5 && value <= 15) {
+          points.push({ date: `${date.slice(0, 7)}-01`, value });
+        }
+      }
+      break;
     }
   }
-
-  console.log(
-    `[CITI] ${horizon}: found ${chartIndexes.length} matching Chart 1.9 blocks`
-  );
-
-  const valueIndex = horizon === "1Y" ? 9 : 10;
-
-  const candidates: RawPoint[] = [];
-
-  for (const chartIndex of chartIndexes) {
-    const out: RawPoint[] = [];
-
-    for (let i = chartIndex + 1; i < rows.length; i++) {
-      const row = rows[i] ?? [];
-      const firstCell = (row[0] ?? "").trim();
-
-      // Stop when the next chart or sheet starts.
-      if (
-        firstCell === "__SHEET_START__" ||
-        firstCell === "__SHEET_END__" ||
-        /^chart\s+\d+\.\d+/i.test(firstCell)
-      ) {
-        break;
-      }
-
-      /*
-       * Chart 1.9 has two Citi/YouGov date layouts:
-       *
-       * Older block:
-       *   column 7 = date
-       *   column 9/10 = Citi/YouGov values
-       *
-       * Newer block:
-       *   column 0 = date
-       *   column 9/10 = Citi/YouGov values
-       *
-       * Prefer column 0 when it contains a valid date; otherwise
-       * fall back to column 7.
-       */
-      const dateFromCol0 = normalizeDate(row[0] ?? "");
-      const dateFromCol7 = normalizeDate(row[7] ?? "");
-
-      const date = dateFromCol0 || dateFromCol7;
-      const value = parseNumber(row[valueIndex] ?? "");
-
-      if (
-        date &&
-        value != null &&
-        Number.isFinite(value) &&
-        value >= -5 &&
-        value <= 15
-      ) {
-        out.push({ date, value });
-      }
-    }
-
-    const deduped = dedupe(out);
-
-    console.log(
-      `[CITI] ${horizon}: block ${chartIndex} produced ${deduped.length} observations`,
-      deduped.length
-        ? `${deduped[0]?.date} -> ${deduped[deduped.length - 1]?.date}`
-        : ""
-    );
-
-    candidates.push(...deduped);
-  }
-
-  return dedupe(
-    candidates.sort((a, b) => a.date.localeCompare(b.date))
-  );
+  return dedupe(points);
 }
 function scanMprZip(zip: AdmZip, seriesId: string): RawPoint[] {
   const entries = zip.getEntries();
@@ -1237,7 +1030,17 @@ console.log(
           );
         }
       } else {
-        const rows = scanXlsx(buf);
+        // Use the workbook reader for Citi/YouGov. The legacy XML scanner
+        // consumes self-closing blank cells as if they opened a value cell,
+        // shifting the household headers and dates into adjacent columns.
+        const isCiti = seriesId === "CITI_YOUGOV_INFLATION_1Y" || seriesId === "CITI_YOUGOV_INFLATION_5_10Y";
+        const workbook = isCiti ? XLSX.read(buf, { type: "buffer", cellDates: false }) : null;
+        const rows = workbook ? workbook.SheetNames.flatMap(name => [
+          ["__SHEET_START__", name],
+          ...XLSX.utils.sheet_to_json<unknown[]>(workbook.Sheets[name]!, { header: 1, defval: "", raw: true })
+            .map(row => row.map(cell => String(cell ?? ""))),
+          ["__SHEET_END__", name],
+        ]) : scanXlsx(buf);
         const chartTitles = rows
   .map((row) => (row[0] ?? "").trim())
   .filter((cell) => /^chart\s+\d+\.\d+/i.test(cell));
@@ -1391,65 +1194,65 @@ function excelCol(col: string): number {
   return n - 1;
 }
 
-function parseDmpWageSheet(
-  xlsx: Buffer,
-  column: string
-): { date: string; value: number | null }[] {
-    const zip = new AdmZip(xlsx);
-
-    const shared = parseSharedStrings(
-      zip.getEntry("xl/sharedStrings.xml")?.getData().toString("utf8") ?? ""
-    );
-
-    // The DMP wage-growth table is sheet8.xml.
-    // Do NOT scan all workbook sheets: they contain unrelated
-    // percentages which were contaminating the wage series.
-    const entry = zip.getEntry("xl/worksheets/sheet8.xml");
-
-    if (!entry) {
-      console.warn("[DMP WAGE] sheet8.xml not found");
-      return [];
-    }
-
-    const xml = entry.getData().toString("utf8");
-    const rows = parseSheetRows(xml, shared);
-    console.log(
-  "[DMP WAGE 2026 ROWS]",
-  rows.filter((row) => String(row[0] ?? "").includes("26"))
-);
-
-    const targetColumn = excelCol(column);
-
-    const points: { date: string; value: number }[] = [];
-
-for (const row of rows) {
-  const rawDate = String(row[0] ?? "").trim();
-  const rawValue = String(row[targetColumn] ?? "").trim();
-
-  const date = normalizeDate(rawDate);
-  const value = parseNumber(rawValue);
-
-  if (
-    date &&
-    value != null &&
-    Number.isFinite(value) &&
-    value >= -10 &&
-    value <= 20
-  ) {
-    points.push({ date, value });
-  }
+function parseDmpWageSheet(xlsx: Buffer, seriesId: DmpWageSeries): RawPoint[] {
+  const workbook = XLSX.read(xlsx, { type: "buffer", cellDates: true });
+  const sheetName = workbook.SheetNames.find((name) => normalize(name) === "wage growth");
+  const sheet = sheetName ? workbook.Sheets[sheetName] : undefined;
+  if (!sheet) throw new Error("DMP workbook is missing the Wage growth sheet");
+  const rows = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: null, raw: true });
+  const realised = seriesId === "DMP_WAGE_REALISED_3M" || seriesId === "DMP_WAGE_REALISED_1M";
+  const average = seriesId === "DMP_WAGE_REALISED_3M" || seriesId === "DMP_WAGE_EXPECTED_3M";
+  return parseDmpGroupedSheet(
+    rows,
+    realised ? /realised wage growth/ : /expected wage growth/,
+    average ? /3\s*month average/ : /single month/,
+    seriesId,
+  );
 }
 
-console.log("[DMP WAGE POINTS]", column, points);
-    const byDate = new Map<string, number>();
+/** Resolve a data column by both its measure group and statistic label. */
+function parseDmpGroupedSheet(
+  rows: unknown[][],
+  groupPattern: RegExp,
+  statisticPattern: RegExp,
+  seriesLabel: string,
+): RawPoint[] {
+  for (let headerRowIndex = 1; headerRowIndex < rows.length; headerRowIndex++) {
+    const headerRow = rows[headerRowIndex] ?? [];
+    const dateColumn = headerRow.findIndex((value) => /survey date/.test(normalize(String(value ?? ""))));
+    if (dateColumn < 0) continue;
 
-    for (const point of points) {
-      byDate.set(point.date, point.value);
+    const groupRow = rows[headerRowIndex - 1] ?? [];
+    const groupColumn = groupRow.findIndex((value) => groupPattern.test(normalize(String(value ?? ""))));
+    if (groupColumn < 0) continue;
+    const nextGroupColumn = groupRow.findIndex((value, index) =>
+      index > groupColumn && String(value ?? "").trim() !== "",
+    );
+    const groupEnd = nextGroupColumn < 0 ? headerRow.length : nextGroupColumn;
+    const valueColumn = headerRow.findIndex((value, index) =>
+      index >= groupColumn && index < groupEnd && statisticPattern.test(normalize(String(value ?? ""))),
+    );
+    if (valueColumn < 0) continue;
+
+    const points = new Map<string, number>();
+    for (const row of rows.slice(headerRowIndex + 1)) {
+      const rawDate = row[dateColumn];
+      const date = rawDate instanceof Date
+        ? `${rawDate.getUTCFullYear()}-${String(rawDate.getUTCMonth() + 1).padStart(2, "0")}-01`
+        : normalizeDate(String(rawDate ?? ""));
+      const rawValue = row[valueColumn];
+      const value = typeof rawValue === "number" ? rawValue : parseNumber(String(rawValue ?? ""));
+      if (date && value != null && Number.isFinite(value) && value >= -10 && value <= 20) {
+        points.set(date, value);
+      }
     }
-
-    return [...byDate.entries()]
+    const result = [...points.entries()]
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([date, value]) => ({ date, value }));
+    if (!result.length) throw new Error(`DMP workbook has no values for ${seriesLabel}`);
+    return result;
+  }
+  throw new Error(`DMP workbook is missing the labeled ${seriesLabel} column`);
 }
 
 function extractTableContaining(html: string, ...needles: string[]): string | null {
@@ -1554,10 +1357,22 @@ function dedupe(points: RawPoint[]): RawPoint[] {
 }
 function absolutizeBoEUrl(href: string): string { return new URL(href, "https://www.bankofengland.co.uk").toString(); }
 async function fetchText(url: string): Promise<string> {
-  const res = await fetch(url, { headers: { "User-Agent": "macro-economy-tracker/1.0", Accept: "text/html,*/*" } });
+  const res = await fetch(url, { cache: "no-store", headers: { "User-Agent": "macro-economy-tracker/1.0", Accept: "text/html,*/*" } });
   if (!res.ok) throw new Error(`BoE request ${res.status}: ${url}`);
   return res.text();
 }
 async function findRecentMprPages(): Promise<string[]> {
-  return [MPR_INDEX, "https://www.bankofengland.co.uk/monetary-policy-report/2026/april-2026", "https://www.bankofengland.co.uk/monetary-policy-report/2026/february-2026"];
+  const html = await fetchText(MPR_INDEX);
+  const candidates = new Map<string, number>();
+  for (const match of html.matchAll(/href=["']([^"']+)["']/gi)) {
+    const url = new URL(match[1]!.replace(/&amp;/g, "&"), MPR_INDEX);
+    const period = url.pathname.match(/^\/monetary-policy-report\/(20\d{2})\/([a-z]+)-(20\d{2})$/i);
+    if (url.origin !== "https://www.bankofengland.co.uk" || !period || period[1] !== period[3]) continue;
+    const month = monthNum(period[2]!);
+    if (!/^(january|february|march|april|may|june|july|august|september|october|november|december)$/i.test(period[2]!)) continue;
+    candidates.set(url.toString(), Number(period[1]) * 12 + Number(month));
+  }
+  // Upcoming report placeholders have no data ZIP, so the caller tries the
+  // next published report. All report URLs come from the official index.
+  return [...candidates].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([url]) => url);
 }

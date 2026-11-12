@@ -2,23 +2,10 @@ import { and, desc, eq, lt } from "drizzle-orm";
 import { getDb } from "@/db";
 import { metrics, observations, releases } from "@/db/schema";
 import { persistRelease } from "./db-writer";
-import { UK_RETAIL_RELEASE_IDS, isUkRetailReleasePeriod } from "@/lib/uk-retail";
 import { wasRecordedAfterSchedule } from "./release-schedule-retries";
 import { releaseStageFromNote, VINTAGE_TRACKED_METRICS, type ReleaseStage } from "./release-stages";
-
-function isScheduledEurostatHicpPeriod(metricId: string, scheduledAt: string, periodDate: string) {
-  const eurostatHicpMetric = (metricId.startsWith("ea-") && metricId.includes("hicp")) ||
-    /^(de|fr|it|es)-cpi-yoy$/.test(metricId);
-  if (!eurostatHicpMetric) return false;
-  const scheduledDate = scheduledAt.match(/^\d{4}-\d{2}-\d{2}/)?.[0];
-  if (!scheduledDate) return false;
-  const [, yearText, monthText] = scheduledDate.match(/^(\d{4})-(\d{2})-/) ?? [];
-  if (!yearText || !monthText) return false;
-  const expectedPeriod = new Date(Date.UTC(Number(yearText), Number(monthText) - 2, 1))
-    .toISOString()
-    .slice(0, 7);
-  return periodDate.slice(0, 7) === expectedPeriod;
-}
+import { METRICS } from "@/catalog/metrics";
+import { expectedPcePeriod, isPceMonthlySeries } from "@/lib/pce-release";
 
 export async function processFetchedRelease(input: {
   metricId: string;
@@ -38,6 +25,13 @@ export async function processFetchedRelease(input: {
 
   if (!Number.isFinite(input.result.value)) {
     throw new Error(`Invalid release value for ${input.metricId}`);
+  }
+
+  const definition = METRICS.find(metric => metric.id === input.metricId);
+  const expectedPeriod = input.scheduledAt && definition && isPceMonthlySeries(definition)
+    ? expectedPcePeriod(input.scheduledAt) : null;
+  if (expectedPeriod && input.result.periodDate < expectedPeriod) {
+    return { updated: false, reason: "awaiting-pce-release-period", sourcePeriod: input.result.periodDate, expectedPeriod };
   }
 
   const db = getDb();
@@ -192,16 +186,19 @@ export async function processFetchedRelease(input: {
         };
       }
 
-      // If this observation period already has a same-valued publication
-      // before the current scheduled release, the current event is a distinct
-      // preliminary/final or repeat publication. Record its timestamp even
-      // though the numerical observation did not change.
+      // A scheduled time and a same-valued response do not prove that the
+      // provider has published: it may still be returning the prior vintage.
+      // A tracked metric can publish the same stage more than once (for
+      // example Eurostat GDP at T+30 and T+45). The dispatcher only supplies
+      // its scheduled stage after the expected new reference period appears,
+      // so a same-valued response is still a distinct scheduled vintage.
       const earlierSameValueRelease = committed.some(row => {
         const releasedAt = Date.parse(row.releasedAt);
         const scheduledAt = Date.parse(input.scheduledAt!);
         return Number.isFinite(releasedAt) && Number.isFinite(scheduledAt) && releasedAt < scheduledAt;
       });
-      if (earlierSameValueRelease) {
+      if (earlierSameValueRelease && input.result.releaseStage &&
+          (!committedStageMatches || (VINTAGE_TRACKED_METRICS.has(input.metricId) && Boolean(input.scheduledAt)))) {
         return persistRelease({
           metricId: input.metricId,
           periodDate: input.result.periodDate,
@@ -217,13 +214,8 @@ export async function processFetchedRelease(input: {
         });
       }
 
-      // An official HICP schedule confirms a release even when the published
-      // number matches an earlier value (for example, final matching flash).
-      if (!committedStageMatches && (
-        (VINTAGE_TRACKED_METRICS.has(input.metricId) && Boolean(releaseStage)) ||
-        isScheduledEurostatHicpPeriod(input.metricId, input.scheduledAt, input.result.periodDate) ||
-        (UK_RETAIL_RELEASE_IDS.includes(input.metricId) && isUkRetailReleasePeriod(input.scheduledAt, input.result.periodDate))
-      )) {
+      // An explicit new source stage can confirm an unchanged publication.
+      if (!committedStageMatches && VINTAGE_TRACKED_METRICS.has(input.metricId) && input.result.releaseStage) {
         const confirmed = await persistRelease({
           metricId: input.metricId,
           periodDate: input.result.periodDate,

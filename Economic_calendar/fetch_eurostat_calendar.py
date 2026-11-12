@@ -284,7 +284,7 @@ RELEASE_FAMILIES = {
 
         "event_regex": re.compile(
 
-            r"^Industrial producer prices",
+            r"^Industrial producer prices, domestic market",
 
             re.IGNORECASE,
 

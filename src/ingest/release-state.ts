@@ -15,6 +15,7 @@ async function ensureReleaseStateTable() {
           status TEXT NOT NULL DEFAULT 'retry',
           attempts INTEGER NOT NULL DEFAULT 0,
           last_attempt_at TEXT,
+          window_started_at TEXT,
           processed_at TEXT,
           last_error TEXT,
           PRIMARY KEY(metric_id, scheduled_at)
@@ -31,6 +32,11 @@ async function ensureReleaseStateTable() {
         try { await client.execute("ALTER TABLE release_dispatch_state ADD COLUMN release_id INTEGER"); }
         catch (error) { if (!/duplicate column/i.test(String(error))) throw error; }
       }
+      if (!columns.rows.some(row => row.name === "window_started_at")) {
+        try { await client.execute("ALTER TABLE release_dispatch_state ADD COLUMN window_started_at TEXT"); }
+        catch (error) { if (!/duplicate column/i.test(String(error))) throw error; }
+      }
+      await client.execute("UPDATE release_dispatch_state SET window_started_at=COALESCE(last_attempt_at,processed_at) WHERE window_started_at IS NULL");
       await client.execute(`CREATE TABLE IF NOT EXISTS release_poll_state (
         metric_id TEXT PRIMARY KEY, scheduled_at TEXT NOT NULL,
         status TEXT NOT NULL, last_attempt_at TEXT NOT NULL
@@ -75,15 +81,17 @@ export async function claimRelease(
       INSERT INTO release_dispatch_state (
         metric_id,
         scheduled_at,
-        status
+        status,
+        window_started_at
       )
-      VALUES (?, ?, 'retry')
+      VALUES (?, ?, 'retry', ?)
       ON CONFLICT(metric_id, scheduled_at)
       DO NOTHING
     `,
     args: [
       metricId,
       scheduledAt,
+      now,
     ],
   });
 
@@ -99,7 +107,7 @@ export async function claimRelease(
         WHERE
           metric_id = ?
           AND scheduled_at = ?
-          AND status != 'processed'
+          AND status NOT IN ('processed', 'expired')
           AND (
             status = 'retry'
             OR last_attempt_at IS NULL
@@ -150,6 +158,18 @@ export async function markReleaseRetry(
   await executeSql({ sql: "UPDATE release_poll_state SET status = 'retry' WHERE metric_id = ? AND scheduled_at = ?", args: [metricId, scheduledAt] });
 }
 
+export async function markReleaseExpired(metricId: string, scheduledAt: string) {
+  await ensureReleaseStateTable();
+  await executeSql({
+    sql: "UPDATE release_dispatch_state SET status='expired' WHERE metric_id=? AND scheduled_at=? AND status!='processed'",
+    args: [metricId, scheduledAt],
+  });
+  await executeSql({
+    sql: "UPDATE release_poll_state SET status='expired' WHERE metric_id=? AND scheduled_at=? AND status!='processed'",
+    args: [metricId, scheduledAt],
+  });
+}
+
 export async function markReleaseProcessed(
   metricId: string,
   scheduledAt: string,
@@ -182,12 +202,13 @@ export async function markReleaseProcessed(
 export async function getReleaseAttempt(metricId: string, scheduledAt: string) {
   await ensureReleaseStateTable();
   const result = await executeSql({
-    sql: "SELECT attempts, last_attempt_at FROM release_dispatch_state WHERE metric_id = ? AND scheduled_at = ? LIMIT 1",
+    sql: "SELECT attempts, last_attempt_at, window_started_at FROM release_dispatch_state WHERE metric_id = ? AND scheduled_at = ? LIMIT 1",
     args: [metricId, scheduledAt],
   });
   return {
     attempt: Number(result.rows[0]?.attempts ?? 0),
     startedAt: result.rows[0]?.last_attempt_at == null ? null : String(result.rows[0].last_attempt_at),
+    windowStartedAt: result.rows[0]?.window_started_at == null ? null : String(result.rows[0].window_started_at),
   };
 }
 
@@ -213,9 +234,12 @@ export async function getCompletedCalendarReleases(since: string) {
 
 export async function getPollState() {
   await ensureReleaseStateTable();
-  const result = await executeSql("SELECT metric_id, scheduled_at, status, last_attempt_at FROM release_poll_state");
+  const result = await executeSql(`SELECT p.metric_id, p.scheduled_at, p.status, p.last_attempt_at,
+    d.window_started_at FROM release_poll_state p LEFT JOIN release_dispatch_state d
+      ON d.metric_id=p.metric_id AND d.scheduled_at=p.scheduled_at`);
   return new Map(result.rows.map(row => [String(row.metric_id), {
     scheduledAt: String(row.scheduled_at), status: String(row.status),
     lastAttemptAt: String(row.last_attempt_at),
+    windowStartedAt: row.window_started_at == null ? null : String(row.window_started_at),
   }]));
 }

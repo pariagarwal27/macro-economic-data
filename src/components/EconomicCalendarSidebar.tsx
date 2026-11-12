@@ -142,7 +142,6 @@ export function EconomicCalendarSidebar({ onReleaseSelect, active = true }: { ac
   const [payload, setPayload] = useState<CalendarPayload | null>(initialPayload);
   const [loading, setLoading] = useState(initialPayload == null);
   const [error, setError] = useState("");
-  const previousPayload = useRef<CalendarPayload | null>(initialPayload);
   const announced = useRef(new Set<string>());
   const requestInFlight = useRef(false);
 
@@ -160,7 +159,6 @@ export function EconomicCalendarSidebar({ onReleaseSelect, active = true }: { ac
         throw new Error(data.error);
       }
 
-      const previous = previousPayload.current;
       const now = Date.now();
       for (const event of data.allEvents ?? []) {
         if (event.scheduledAt) {
@@ -186,28 +184,8 @@ export function EconomicCalendarSidebar({ onReleaseSelect, active = true }: { ac
           }
         }
 
-        if (!previous) continue;
-        const oldEvent = previous.allEvents.find((candidate) =>
-          candidate.metricId === event.metricId &&
-          (candidate.scheduledAt ?? candidate.scheduledDate) === (event.scheduledAt ?? event.scheduledDate)
-        );
-        const releaseKey = `released:${event.metricId}:${event.scheduledAt ?? event.scheduledDate ?? "unknown"}`;
-        if (event.status === "released" && oldEvent?.status !== "released" && !announced.current.has(releaseKey)) {
-          announced.current.add(releaseKey);
-          window.dispatchEvent(new CustomEvent("macrohub:release-notice", {
-            detail: {
-              kind: "released",
-              metricId: event.metricId,
-              metricName: event.metricName,
-              region: event.region,
-              actual: event.actual,
-              releasedAt: event.actualReleasedAt,
-            },
-          }));
-        }
       }
 
-      previousPayload.current = data;
       setPayload(data);
       setError("");
     } catch (err) {
@@ -225,7 +203,7 @@ export function EconomicCalendarSidebar({ onReleaseSelect, active = true }: { ac
   useEffect(() => {
     if (!active) return;
     const saved = getClientJsonCache<CalendarPayload>("economic-calendar:sidebar");
-    if (saved) { previousPayload.current = saved; setPayload(saved); setLoading(false); }
+    if (saved) { setPayload(saved); setLoading(false); }
     void load();
 
     // Status changes throughout release day, so refresh the UI
@@ -411,7 +389,7 @@ function CalendarDiary({ groups, onSelect, emptyText }: {
 }) {
   if (!groups.length) return <div className="economic-calendar-list release-diary"><div className="economic-calendar-empty">{emptyText}</div></div>;
   return <div className="economic-calendar-list release-diary">
-    <div className="release-diary-head" aria-hidden="true"><span>Date &amp; time</span><span>Release</span><span>Previous</span><span>Actual</span><span>Status</span></div>
+    <div className="release-diary-head" aria-hidden="true"><span>Date &amp; time</span><span>Release</span><span>Previous</span><span>Forecast</span><span>Actual</span><span>Status</span></div>
     {groups.map((group, groupIndex) => <section className="release-diary-group" key={`${group.date}-${groupIndex}`}>
       <h3>{group.date}</h3>
       {group.events.map((event, index) => {
@@ -430,6 +408,7 @@ function CalendarDiary({ groups, onSelect, emptyText }: {
           </span>
           <span className="release-diary-name"><i>{FLAG[event.region]}</i><span>{event.metricName}</span></span>
           <span className="release-diary-value">{formatCalendarValue(event, event.previous)}</span>
+          <span className="release-diary-value" title="Survey consensus from the public economic calendar feed">{formatCalendarValue(event, event.forecast)}</span>
           <span className="release-diary-value">{formatCalendarValue(event, event.actual)}</span>
           <span className={`release-diary-status ${event.status}`}><i />{event.scheduleType === "hourly" ? "Hourly" : event.scheduleType === "daily" ? "Daily" : statusLabel(event.status)}</span>
         </div>;

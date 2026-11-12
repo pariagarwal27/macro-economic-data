@@ -35,27 +35,27 @@ export const US_PCE_TREE: Node[] = [
   node('headline','Headline PCE','us-pce',[
     node('goods','Goods','us-pce-goods',[
       node('durable','Durable goods','us-pce-durable-goods',[
-        node('motor-vehicles','Motor vehicles and parts'),
+        node('motor-vehicles','Motor vehicles and parts','us-pce-motor-vehicles'),
         node('furnishings','Furnishings and durable household equipment','us-pce-furnishings'),
-        node('recreational-goods','Recreational goods and vehicles'),
-        node('other-durable','Other durable goods'),
+        node('recreational-goods','Recreational goods and vehicles','us-pce-recreational-goods'),
+        node('other-durable','Other durable goods','us-pce-other-durable-goods'),
       ]),
       node('nondurable','Nondurable goods',undefined,[
         node('food','Food and beverages purchased for off-premises consumption','us-pce-food'),
         node('clothing','Clothing and footwear','us-pce-clothing'),
         node('energy-goods','Gasoline and other energy goods','us-pce-energy'),
-        node('other-nondurable','Other nondurable goods'),
+        node('other-nondurable','Other nondurable goods','us-pce-other-nondurable-goods'),
       ]),
     ]),
     node('services','Services','us-pce-services',[
       node('household','Household consumption expenditures for services','us-pce-household-services',[
         node('housing','Housing','us-pce-housing'),
         node('healthcare','Health care','us-pce-healthcare'),
-        node('transportation-services','Transportation services'),
-        node('recreation-services','Recreation services'),
+        node('transportation-services','Transportation services','us-pce-transport-services'),
+        node('recreation-services','Recreation services','us-pce-recreation-services'),
         node('food-services','Food services and accommodations','us-pce-food-services'),
-        node('financial-services','Financial services and insurance'),
-        node('other-services','Other services'),
+        node('financial-services','Financial services and insurance','us-pce-financial-services'),
+        node('other-services','Other services','us-pce-other-services'),
       ]),
     ]),
   ]),

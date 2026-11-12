@@ -1,15 +1,21 @@
 import { NextResponse } from "next/server";
-import { and, desc, gte, inArray, lt } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, lt } from "drizzle-orm";
 import { getDashboardCalendarMetrics } from "@/lib/dashboard-calendar-metrics";
 import { getEconomicCalendarRows } from "@/lib/economic-calendar-db";
 import { buildEconomicCalendar, inheritSharedReleaseSchedules, type CalendarActual } from "@/lib/economic-calendar-view";
 import { METRICS } from "@/catalog/metrics";
 import { getD1Database, getDb } from "@/db";
-import { observations, releases } from "@/db/schema";
+import { calendarEvents, observations, releases } from "@/db/schema";
+import { investingForecastToMetricValue } from "@/ingest/investing-calendar";
 import { getCompletedCalendarReleases } from "@/ingest/release-state";
 import { applyTransform } from "@/ingest/transforms";
 import { cpiUnderlyingScheduleRows } from "@/ingest/cpi-release-schedule";
 import { getActiveLiveSource } from "@/ingest/source-registry";
+import { PCE_RATE_SOURCES } from "@/lib/pce-release";
+import { canonicalPceCalendarActuals } from "@/lib/pce-calendar";
+import { canonicalCpiCalendarActuals, CPI_RATE_SOURCES } from "@/lib/cpi-calendar";
+import { releaseStageFromNote } from "@/ingest/release-stages";
+import { missingEurostatGdpScheduleFallbacks } from "@/ingest/eurostat-release-schedules";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -22,7 +28,12 @@ export async function GET() {
       liveSource: getActiveLiveSource(metric.id, isCloud),
     }));
     const displayed = new Set(catalog.map(metric => metric.id));
-    const rawSchedule = (await getEconomicCalendarRows({ includeUnscheduled: true })).filter(row => displayed.has(row.metricId));
+    // Keep BEA's parent PCE schedule available for Cleveland Median PCE to
+    // inherit its exact date/time; the parent row itself is filtered from the
+    // final diary because it is not a displayed metric.
+    const scheduleInheritanceParents = new Set(["us-pce"]);
+    const rawSchedule = (await getEconomicCalendarRows({ includeUnscheduled: true }))
+      .filter(row => displayed.has(row.metricId) || scheduleInheritanceParents.has(row.metricId));
     const inheritedSchedule = inheritSharedReleaseSchedules(rawSchedule, catalog);
     const cpiSchedule = inheritedSchedule.find(row => row.metricId === "us-cpi");
     const alreadyScheduled = new Set(inheritedSchedule.map(row => row.metricId));
@@ -33,12 +44,31 @@ export async function GET() {
     const now = new Date();
     const windowStart = new Date(now.getTime() - 8 * 86_400_000).toISOString();
     const windowEnd = new Date(now.getTime() + 86_400_000).toISOString();
-    const actuals: CalendarActual[] = await getDb().select({
+    const forecastEnd = new Date(now.getTime() + 9 * 86_400_000).toISOString();
+    const forecastRows = await getDb().select({ metricId: calendarEvents.metricId, releasedAt: calendarEvents.releasedAt, forecast: calendarEvents.forecast })
+      .from(calendarEvents)
+      .where(and(eq(calendarEvents.source, "showmytrades"), gte(calendarEvents.importedAt, new Date(now.getTime() - 48 * 3600000).toISOString()), gte(calendarEvents.releasedAt, windowStart), lt(calendarEvents.releasedAt, forecastEnd)))
+      .orderBy(desc(calendarEvents.importedAt));
+    const forecasts = new Map<string, number>();
+    for (const row of forecastRows) {
+      if (!row.metricId || row.forecast == null || !Number.isFinite(row.forecast)) continue;
+      const date = new Date(row.releasedAt);
+      if (!Number.isFinite(date.getTime())) continue;
+      const day = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit" }).format(date);
+      const key = `${row.metricId}:${day}`;
+      if (!forecasts.has(key)) forecasts.set(key, investingForecastToMetricValue(row.metricId, row.forecast));
+    }
+    const actuals = await getDb().select({
       id: releases.id,
       metricId: releases.metricId, periodDate: releases.periodDate, releasedAt: releases.releasedAt,
       value: releases.value, expectedValue: releases.expectedValue,
       priorPeriodValue: releases.priorPeriodValue,
+      notes: releases.notes,
     }).from(releases).where(and(gte(releases.releasedAt, windowStart), lt(releases.releasedAt, windowEnd)));
+    const stagedActuals: CalendarActual[] = actuals.map(row => ({
+      ...row,
+      releaseStage: releaseStageFromNote(row.notes),
+    }));
     const latestRows = await getDb().select({ metricId: releases.metricId, periodDate: releases.periodDate, releasedAt: releases.releasedAt, value: releases.value })
       .from(releases)
       .where(inArray(releases.metricId, catalog.map(metric => metric.id)))
@@ -53,7 +83,8 @@ export async function GET() {
     }
     const derivedRates = catalog.filter(metric =>
       (metric.transform === "pct_change_mom" || metric.transform === "pct_change_yoy") &&
-      metric.frequency !== "daily" && metric.frequency !== "hourly" && metric.unit === "percent" && latestValues.get(metric.id) == null,
+      metric.frequency !== "daily" && metric.frequency !== "hourly" && metric.unit === "percent" &&
+      (latestValues.get(metric.id) == null || metric.id in PCE_RATE_SOURCES || metric.id in CPI_RATE_SOURCES),
     );
     const sourceByRate = new Map(derivedRates.flatMap(metric => {
       const source = METRICS.find(candidate => candidate.id !== metric.id && candidate.unit === "index" &&
@@ -61,12 +92,13 @@ export async function GET() {
       return source ? [[metric.id, source.id] as const] : [];
     }));
     const sourceIds = [...new Set(sourceByRate.values())];
+    const historyById = new Map<string, { date: string; value: number }[]>();
     if (sourceIds.length) {
-      const rows = await getDb().select({ metricId: observations.metricId, date: observations.date, value: observations.value })
-        .from(observations).where(inArray(observations.metricId, sourceIds)).orderBy(desc(observations.date));
-      const historyById = new Map<string, { date: string; value: number }[]>();
+      const rows = await getDb().select({ metricId: observations.metricId, date: observations.date, value: observations.value, id: observations.id })
+        .from(observations).where(inArray(observations.metricId, sourceIds)).orderBy(desc(observations.date), desc(observations.id));
       for (const row of rows) {
         const history = historyById.get(row.metricId) ?? [];
+        if (history.some(point => point.date === String(row.date))) continue;
         history.push({ date: String(row.date), value: Number(row.value) });
         historyById.set(row.metricId, history);
       }
@@ -82,10 +114,13 @@ export async function GET() {
     const historyScheduledKeys = new Set(rawHistory.map(row => `${row.metricId}:${row.nextReleaseDate}`));
     const derivedUnderlyingHistory = historyCpiRows.flatMap(cpiUnderlyingScheduleRows)
       .filter(row => !historyScheduledKeys.has(`${row.metricId}:${row.nextReleaseDate}`));
-    const history = [...rawHistory, ...derivedUnderlyingHistory];
+    const history = [...rawHistory, ...derivedUnderlyingHistory,
+      ...missingEurostatGdpScheduleFallbacks([...schedule, ...rawHistory, ...derivedUnderlyingHistory])];
     const completions = await getCompletedCalendarReleases(windowStart);
-    for (const completion of completions) if (completion.actual && !actuals.some(item=>item.id===completion.actual!.id)) actuals.push(completion.actual);
-    return NextResponse.json(buildEconomicCalendar(schedule, actuals, catalog, now, {history,completions,latestValues,releaseHistory}), {
+    for (const completion of completions) if (completion.actual && !stagedActuals.some(item=>item.id===completion.actual!.id)) stagedActuals.push(completion.actual);
+    const canonicalPce = canonicalPceCalendarActuals(stagedActuals, completions, historyById);
+    const canonicalCpi = canonicalCpiCalendarActuals(canonicalPce.actuals, canonicalPce.completions, historyById);
+    return NextResponse.json(buildEconomicCalendar(schedule, canonicalCpi.actuals, catalog, now, {history,completions:canonicalCpi.completions,latestValues,releaseHistory,forecasts}), {
       headers: { "Cache-Control": "no-store" },
     });
   } catch (error) {

@@ -35,17 +35,21 @@ export const CPI_COMPONENTS = [
 ] as const;
 
 export const PCE_COMPONENTS = [
-  ["us-pce-goods", "Goods", "Goods"],
-  ["us-pce-durable-goods", "Durable goods", "Goods"],
+  ["us-pce-motor-vehicles", "Motor vehicles and parts", "Goods"],
   ["us-pce-furnishings", "Furnishings & durable household equipment", "Goods"],
-  ["us-pce-clothing", "Clothing & footwear", "Goods"],
+  ["us-pce-recreational-goods", "Recreational goods and vehicles", "Goods"],
+  ["us-pce-other-durable-goods", "Other durable goods", "Goods"],
   ["us-pce-food", "Food & beverages", "Goods"],
+  ["us-pce-clothing", "Clothing & footwear", "Goods"],
   ["us-pce-energy", "Gasoline & other energy goods", "Goods"],
-  ["us-pce-services", "Services", "Services"],
-  ["us-pce-household-services", "Household services", "Services"],
+  ["us-pce-other-nondurable-goods", "Other nondurable goods", "Goods"],
+  ["us-pce-housing-utilities", "Housing and utilities", "Services"],
   ["us-pce-healthcare", "Health care", "Services"],
+  ["us-pce-transport-services", "Transportation services", "Services"],
+  ["us-pce-recreation-services", "Recreation services", "Services"],
   ["us-pce-food-services", "Food services & accommodations", "Services"],
-  ["us-pce-housing", "Housing", "Services"],
+  ["us-pce-financial-services", "Financial services and insurance", "Services"],
+  ["us-pce-other-services", "Other services", "Services"],
 ] as const;
 
 async function getHistory(id: string): Promise<Point[]> {

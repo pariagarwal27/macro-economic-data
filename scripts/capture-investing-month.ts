@@ -8,16 +8,20 @@
  */
 import fs from "fs";
 import path from "path";
+import { createInterface } from "node:readline/promises";
 import { INVESTING_BROWSER_CAPTURE_JS } from "./investing-browser-capture";
 import { isoToPickerDate } from "./investing-date-format";
 import { launchInvestingContext, parseArgs } from "./investing-browser-session";
+import { importInvestingCalendar } from "../src/ingest/investing-calendar";
+import { ensureSchema } from "../src/ingest/pipeline";
 
 type CaptureDump = { rows: Array<Record<string, unknown>>; range?: { from?: string; to?: string } };
 
 async function main() {
   const { flags, positional } = parseArgs(process.argv.slice(2));
-  const from = positional[0] ?? "2026-09-01";
-  const to = positional[1] ?? from;
+  const today = new Date();
+  const from = positional[0] ?? new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit" }).format(today);
+  const to = positional[1] ?? new Date(Date.parse(`${from}T12:00:00Z`) + 7 * 86400000).toISOString().slice(0, 10);
   const outStem = positional[2] ?? from.slice(0, 7);
   const outDir = path.join(process.cwd(), "data", "investing");
   const outFile = path.join(outDir, `${outStem}.json`);
@@ -34,6 +38,10 @@ async function main() {
     });
     await page.waitForSelector("table[class*=datatable]", { timeout: 300_000 });
 
+    if (!process.stdin.isTTY) throw new Error("Interactive terminal required to confirm the calendar timezone.");
+    const prompt = createInterface({ input: process.stdin, output: process.stdout });
+    try { await prompt.question("Set the Investing.com calendar timezone to UK time (GMT/BST), then press Enter to capture: "); }
+    finally { prompt.close(); }
     console.log(`Capturing ${from} → ${to} (${isoToPickerDate(from)} → ${isoToPickerDate(to)})…`);
 
     const { result, dump } = await page.evaluate(
@@ -53,7 +61,7 @@ async function main() {
       }
     );
 
-    if (!result?.ok || !dump?.rows?.length) {
+    if (!result?.ok || !dump?.rows?.length || result.stillHasLoadMore) {
       await page.screenshot({
         path: path.join(outDir, `capture-fail-${outStem}.png`),
         fullPage: true,
@@ -63,21 +71,21 @@ async function main() {
       return;
     }
 
-    let rows = dump.rows as Array<Record<string, unknown>>;
+    const capturedRows = dump.rows as Array<Record<string, unknown>>;
+    let rows = capturedRows;
     if (fs.existsSync(outFile)) {
       const existing = JSON.parse(fs.readFileSync(outFile, "utf8")) as {
         rows: Array<Record<string, unknown>>;
         range?: { from?: string; to?: string };
       };
-      const seen = new Set(
-        existing.rows.map((r) => `${r.date}|${r.time}|${r.country}|${r.event}`)
-      );
+      const seen = new Map(existing.rows.map((r, index) => [`${r.date}|${r.time}|${r.country}|${r.event}`, index]));
       for (const row of rows) {
         const key = `${row.date}|${row.time}|${row.country}|${row.event}`;
-        if (!seen.has(key)) {
+        const index = seen.get(key);
+        if (index === undefined) {
+          seen.set(key, existing.rows.length);
           existing.rows.push(row);
-          seen.add(key);
-        }
+        } else existing.rows[index] = row;
       }
       rows = existing.rows;
       dump.rows = rows;
@@ -88,6 +96,9 @@ async function main() {
     }
 
     fs.writeFileSync(outFile, JSON.stringify(dump, null, 2));
+    await ensureSchema();
+    const imported = await importInvestingCalendar(capturedRows, outFile);
+    console.log(`Imported ${imported.rows} calendar rows (${imported.mapped} mapped to metrics).`);
     const dates = rows.map((r) => String(r.date)).filter(Boolean);
     console.log(
       JSON.stringify(

@@ -1,6 +1,7 @@
 
 import { METRICS, X_HANDLES, type MetricDef } from "@/catalog/metrics";
 import { VINTAGE_TRACKED_METRICS } from "./release-stages";
+import { isFreshReleaseFetch } from "./release-fetch-context.js";
 import {
   DESK_MATRIX_BLOCKS,
   allDeskMatrixMetricIds,
@@ -31,7 +32,8 @@ import {
 } from "drizzle-orm";
 import { LIVE_MAP } from "@/catalog/live-map";
 import { getActiveLiveMapping, getSourceConfig, isUsCpiLsegOnlyMetric, isUsCpiMetric, shouldMergeHistoricalBackfill } from "./source-registry";
-import { fetchLsegHistory, fetchLsegLatest } from "./adapters/lseg";
+import { fetchLsegHistory, fetchLsegLatest, fetchLsegMarketRefresh } from "./adapters/lseg";
+import { EA_MARKET_METRIC_IDS } from "./ea-market-refresh";
 import { investingToCatalogScale } from "@/catalog/investing-map";
 import { getClient, getDb, getD1Database } from "@/db";
 import {
@@ -62,11 +64,13 @@ import {
 } from "@/lib/calendar-tape";
 import { fetchFredSeries, mapPool } from "./fred";
 import { fetchEurostatPreset } from "./eurostat";
+import { fetchEcbSpfRollingHistory } from "./ecb-spf-rolling";
 import { fetchOnsSeries } from "./ons";
 import { UK_RETAIL_RELEASE_IDS } from "@/lib/uk-retail";
 import {
   fetchEcbSpfHicp1y,
   fetchEcbSpfSeries,
+  fetchEcbSpfCalendarYearHistory,
   fetchEcbCesInflation1y,
   fetchEcbCesInflation3y,
   fetchEcbCesInflation5y,
@@ -84,7 +88,6 @@ import {
   fetchBoeMapsInflation,
   fetchBoeMprInflationSeries,
   fetchBoeDailyInflationCompensation,
-  fetchBoeFiveYearInflationCompensation,
   fetchBoeAgentsPaySettlement,
 } from "./boe-dmp";
 import { fetchBlsSeries, fetchBlsSeriesFullHistory, fetchUsPpiHistory } from "./bls";
@@ -96,6 +99,7 @@ import {
   fetchBlsEmpsitRelease,
 } from "./bls-releases";
 import { fetchBeaNipa, fetchBeaNipaFullHistory } from "./bea";
+import { isPceMonthlySeries } from "@/lib/pce-release";
 import { fetchAdpNational } from "./adp";
 import { fetchDolClaims } from "./dol-claims";
 import { fetchGdpNow } from "./fed-regional";
@@ -507,9 +511,10 @@ async function writeReleaseRow(
 async function persistMetricReplace(
   metric: MetricDef,
   raw: RawPoint[],
-  sourceNote: string
+  sourceNote: string,
+  opts?: { treatAsLevel?: boolean; docsUrl?: string | null }
 ): Promise<number> {
-  const unique = preparePoints(metric, raw);
+  const unique = preparePoints(metric, raw, opts);
   const client = getClient();
   const now = new Date().toISOString();
   const vintage = now.slice(0, 10);
@@ -543,7 +548,7 @@ async function persistMetricReplace(
     })
     .where(eq(metrics.id, metric.id));
 
-  await writeReleaseRow(metric, unique, sourceNote);
+  await writeReleaseRow(metric, unique, sourceNote, opts?.docsUrl);
   return unique.length;
 }
 
@@ -636,7 +641,7 @@ async function fetchBeaForCycle(
   frequency: "Q" | "M" | "A"
 ): Promise<RawPoint[]> {
   const key = `${table}:${line}:${frequency}`;
-  if (!officialSourceCycleActive) {
+  if (isFreshReleaseFetch() || !officialSourceCycleActive) {
     return fetchBeaNipa(table, line, { frequency });
   }
 
@@ -730,9 +735,13 @@ async function warmLiveCaches(targets: MetricDef[] = METRICS, options?: { skipFe
   // Also warm the official release-page fallbacks when the API returns a
   // partial set (for example, after its daily quota is reached midway).
   // The API remains preferred per series; these pages fill only missing IDs.
-  const needsEmpsitFallback = targets.some((metric) =>
-    ["us-nfp", "us-unemployment"].includes(metric.id)
-  );
+  const needsEmpsitFallback = targets.some((metric) => {
+    if (metric.id === "us-nfp") return true;
+    if (metric.id !== "us-unemployment") return false;
+    const ref = getActiveLiveMapping(metric.id, Boolean(getD1Database()));
+    const seriesId = ref?.provider === "bls" ? ref.seriesId : metric.seriesId;
+    return !caches.bls.get(seriesId)?.length;
+  });
   const needsCpiFallback = targets.some((metric) =>
     !isUsCpiMetric(metric.id) && ["us-cpi-mom", "us-cpi-yoy", "us-core-cpi-mom", "us-core-cpi-yoy"].includes(metric.id)
   );
@@ -1032,7 +1041,7 @@ async function loadLiveRaw(
     }
 
     if (metric.source === "ons") {
-      await new Promise((r) => setTimeout(r, 2000));
+      if (!isFreshReleaseFetch()) await new Promise((r) => setTimeout(r, 2000));
       return {
         points: await fetchOnsSeries(metric.seriesId),
         note: "Live ONS",
@@ -1093,6 +1102,12 @@ async function loadLiveRaw(
 
   switch (ref.provider) {
     case "bls": {
+      // The official release reports the monthly NFP change directly. Use it
+      // ahead of a level-difference calculation, which can be wrong when the
+      // prior month was revised in the current Employment Situation release.
+      if (metric.id === "us-nfp" && caches.empsit?.nfpChange) {
+        return { points: [caches.empsit.nfpChange], note: "Live BLS release page (us-nfp)" };
+      }
       const pts = caches.bls.get(ref.seriesId);
       if (pts?.length) {
         return { points: pts, note: `Live BLS API ${ref.seriesId}` };
@@ -1177,7 +1192,7 @@ async function loadLiveRaw(
       return { points, note: `Live BEA ${ref.seriesId}` };
     }
     case "ons": {
-      await new Promise((r) => setTimeout(r, 400));
+      if (!isFreshReleaseFetch()) await new Promise((r) => setTimeout(r, 400));
       return {
         points: await fetchOnsSeries(ref.seriesId),
         note: `Live ONS ${ref.seriesId}`,
@@ -1213,8 +1228,12 @@ async function loadLiveRaw(
       });
     }
     case "lseg": {
-      // LSEG is intentionally latest-value only. Historical observations
-      // remain unavailable until a historical LSEG adapter is added.
+      if (EA_MARKET_METRIC_IDS.includes(metric.id)) {
+        const latest = await getDb().select({ date: observations.date }).from(observations)
+          .where(eq(observations.metricId, metric.id)).orderBy(desc(observations.date)).limit(1);
+        return { points: await fetchLsegMarketRefresh(ref.seriesId, latest[0]?.date),
+          note: `Official LSEG ${ref.seriesId} daily market history` };
+      }
       if (caches.lseg.has(ref.seriesId)) {
         const latest = caches.lseg.get(ref.seriesId);
         if (!latest) return null;
@@ -1294,6 +1313,7 @@ export async function fetchOfficialLatestFromPipeline(metricId: string) {
     releasedAt: new Date().toISOString(),
     note: live.note,
     ...(UK_RETAIL_RELEASE_IDS.includes(metric.id) ? { history: prepared.map(point => ({ date: point.date, value: point.value })) } : {}),
+    ...(isPceMonthlySeries(metric) ? { history: prepared.map(point => ({ date: point.date, value: point.value, rawValue: point.rawValue })) } : {}),
   };
 }
 
@@ -1477,6 +1497,10 @@ async function fetchEcbBySeriesId(seriesId: string): Promise<RawPoint[]> {
   // ---------------------------------------------------------------------------
   // ECB Survey of Professional Forecasters (SPF)
   // ---------------------------------------------------------------------------
+  if (seriesId.includes("_ROLLING_")) return fetchEcbSpfRollingHistory(seriesId);
+  if (/^SPF_(HICP|CORE|GDP|UNEMP|WAGE)_TARGET_(2026|2027|2028|LT)$/.test(seriesId)) {
+    return fetchEcbSpfCalendarYearHistory(seriesId as EcbSpfSeries);
+  }
   if (seriesId === "SPF_HICP_CURRENT_YEAR") {
     return fetchEcbSdmxSeries("SPF", "A.U2.HICP.POINT.P9M.Q.AVG");
   }
@@ -1494,7 +1518,7 @@ async function fetchEcbBySeriesId(seriesId: string): Promise<RawPoint[]> {
   }
 
   if (seriesId === "SPF_HICP_LT") {
-    return fetchEcbSpfSeries("SPF_HICP_LT");
+    return fetchEcbSpfCalendarYearHistory("SPF_HICP_TARGET_LT");
   }
 
   if (seriesId === "SPF_ASSU_LAB_P12M") {
@@ -1639,10 +1663,9 @@ function parseCsvLine(line: string): string[] {
 }
 
 async function fetchBoeBySeriesId(seriesId: string) {
-  if (seriesId === "UK_INFL_COMP_5Y5Y") {
+  if (seriesId === "UK_INFL_COMP_5Y" || seriesId === "UK_INFL_COMP_10Y" || seriesId === "UK_INFL_COMP_5Y5Y") {
     return fetchBoeDailyInflationCompensation(seriesId);
   }
-  if (seriesId === "UK_INFL_COMP_5Y") return fetchBoeFiveYearInflationCompensation();
   // BoE Inflation Attitudes Survey
   if (seriesId === "IAS_Q2A") {
     return fetchBoeInflationExpectations("1y");
@@ -1771,7 +1794,7 @@ export async function runIngest(
 
   const liveCaches: LiveCaches =
   mode === "refresh"
-    ? await warmLiveCaches(targets)
+    ? await warmLiveCaches(targets, { skipFeeds: targets.every(metric => EA_MARKET_METRIC_IDS.includes(metric.id)) })
     : { bls: new Map(), lseg: new Map() };
 
   const results = await mapPool(targets, mode === "refresh" ? 2 : 1, async (metric) => {

@@ -19,6 +19,7 @@ export function getDashboardCalendarMetrics() {
       for (const id of [spec.metricId, spec.yoyMetricId, spec.momMetricId]) {
         if (id) displayed.add(id);
       }
+      for (const id of spec.chartMetricIds ?? []) displayed.add(id);
       if (region === 'UK' && spec.title) {
         if (spec.yoyMetricId) titles.set(spec.yoyMetricId, `${spec.title} YoY`);
         if (spec.momMetricId) titles.set(spec.momMetricId, `${spec.title} MoM`);
@@ -53,12 +54,28 @@ export function getDashboardCalendarMetrics() {
   }
   displayed.add('us-adp-change');
   titles.set('us-adp-change', 'ADP Nonfarm Private Employment Change');
+  // One SPF row per main component, comparing successive survey vintages
+  // for the same 2026 target year. Other horizons remain chart choices.
+  for (const metric of METRICS) {
+    if (metric.region === 'EA' && metric.releaseName === 'ECB Survey of Professional Forecasters') displayed.delete(metric.id);
+  }
+  for (const [id, name] of [
+    ['ea-spf-hicp-target-2026', 'ECB SPF HICP (2026)'],
+    ['ea-spf-gdp-target-2026', 'ECB SPF Real GDP growth (2026)'],
+    ['ea-spf-unemployment-target-2026', 'ECB SPF Unemployment rate (2026)'],
+    ['ea-spf-wage-target-2026', 'ECB SPF Wage growth (2026)'],
+  ]) {
+    displayed.add(id);
+    titles.set(id, name);
+  }
   // PCE diary rows should report published inflation rates, not price-index levels.
   for (const [id, name] of [
     ['us-pce-mom', 'PCE (Headline) MoM'],
     ['us-pce-yoy', 'PCE (Headline) YoY'],
     ['us-core-pce-yoy', 'PCE (Core) YoY'],
     ['us-core-pce-mom', 'PCE (Core) MoM'],
+    ['us-cleveland-median-pce', 'Cleveland Fed Median PCE YoY'],
+    ['us-cleveland-median-pce-mom', 'Cleveland Fed Median PCE MoM'],
   ]) {
     displayed.add(id);
     titles.set(id, name);

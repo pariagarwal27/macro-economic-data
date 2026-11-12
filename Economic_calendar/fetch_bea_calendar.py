@@ -7,36 +7,17 @@ from bs4 import BeautifulSoup
 
 from release_time_utils import extract_release_time, combine_date_time
 
-
-# ============================================================
-# CONFIG
-# ============================================================
-
 BEA_SCHEDULE_URL = "https://www.bea.gov/news/schedule"
 
 OUTPUT_FILE = "bea_fetch_results.json"
 
-
-# ============================================================
-# YOUR METRICS
-# ============================================================
-
 METRICS = {
-
-    # --------------------------------------------------------
-    # BLS CPI - NOT BEA
-    # --------------------------------------------------------
 
     "us-cpi-other-services": {
         "series_id": "CUSR0000SAS367",
         "release_family": "BLS CPI",
         "source": "BLS"
     },
-
-
-    # --------------------------------------------------------
-    # BEA PERSONAL INCOME AND OUTLAYS / PCE
-    # --------------------------------------------------------
 
     "us-pce": {
         "series_id": "T20804:1",
@@ -128,21 +109,11 @@ METRICS = {
         "source": "BEA"
     },
 
-
-    # --------------------------------------------------------
-    # BLS PRODUCTIVITY - NOT BEA
-    # --------------------------------------------------------
-
     "us-unit-labor-cost": {
         "series_id": "ULCNFB",
         "release_family": "BLS Productivity",
         "source": "BLS"
     },
-
-
-    # --------------------------------------------------------
-    # BEA GDP / NIPA
-    # --------------------------------------------------------
 
     "us-real-pce-growth": {
         "series_id": "T10106:2",
@@ -312,11 +283,6 @@ METRICS = {
     },
 }
 
-
-# ============================================================
-# BEA RELEASE FAMILY KEYWORDS
-# ============================================================
-
 FAMILY_KEYWORDS = {
 
     "Personal Income and Outlays": [
@@ -328,11 +294,6 @@ FAMILY_KEYWORDS = {
         "Gross Domestic Product"
     ]
 }
-
-
-# ============================================================
-# DATE PARSER
-# ============================================================
 
 MONTHS = {
     "January": 1,
@@ -358,10 +319,6 @@ def extract_schedule_year(soup, fallback_year=None):
     if matches:
         # Prefer the first explicit schedule year.
         return int(matches[0])
-
-    # Some BEA page variants may omit the heading in extracted text.
-    # The caller only uses this fallback for the dynamically selected
-    # current/next-year schedule pages.
     return fallback_year
 
 
@@ -397,12 +354,6 @@ def parse_date(text, schedule_year=None):
         return date(int(schedule_year), month, day)
     except ValueError:
         return None
-
-
-# ============================================================
-# FETCH BEA SCHEDULE
-# ============================================================
-
 def fetch_schedule_page(url, fallback_year=None):
     """Fetch one official BEA schedule page and parse its rows."""
     response = requests.get(

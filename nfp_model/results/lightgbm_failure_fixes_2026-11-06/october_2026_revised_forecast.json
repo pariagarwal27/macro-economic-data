@@ -1,0 +1,27 @@
+{
+  "target_month": "2026-10",
+  "as_of": "2026-11-06 before 08:30 ET scheduled release",
+  "source_database_sha256": "eef1b5959e08c0f64d51c3c24dc92476eab9fad4248f099eaf61d222e7b8af23",
+  "training_window": "rolling120",
+  "training_rows": 120,
+  "first_training_month": "2016-10",
+  "last_training_month": "2026-09",
+  "selected_lightgbm": {
+    "window": "rolling120",
+    "max_depth": 2,
+    "num_leaves": 4,
+    "min_child_samples": 20,
+    "n_estimators": 100,
+    "learning_rate": 0.03
+  },
+  "selected_validation_surprise_multiplier": 1.0,
+  "candidate_features_after_excluding_indeed": 75,
+  "selected_features_for_october_forecast": 50,
+  "current_consensus_thousands": 65.0,
+  "predicted_surprise_thousands": 43.06616388954819,
+  "forecast_thousands": 108.06616388954819,
+  "forecast_rounded_thousands": 108,
+  "forecast_rounded_jobs": 108066,
+  "october_actual": null,
+  "feature_selection": "Training-only correlation pruning; no Indeed revised-vintage fields; no seasonal features because that variant scored worse on the diagnostic test."
+}

@@ -35,7 +35,7 @@ export async function fetchLsegLatest(
 
   const url = `${worker.replace(/\/$/, "")}/latest?ric=${encodeURIComponent(sourceId)}`;
   const res = await fetch(url, {
-    signal,
+    signal: signal ?? AbortSignal.timeout(45_000),
     cache: "no-store",
     headers: { Accept: "application/json" },
   });
@@ -76,7 +76,7 @@ export async function fetchLsegHistory(
   url.searchParams.set("start", options.start ?? "1990-01-01");
   url.searchParams.set("end", options.end ?? new Date().toISOString().slice(0, 10));
   const res = await fetch(url, {
-    signal,
+    signal: signal ?? AbortSignal.timeout(120_000),
     cache: "no-store",
     headers: { Accept: "application/json" },
   });
@@ -91,4 +91,12 @@ export async function fetchLsegHistory(
   return json.observations.filter((point) =>
     /^\d{4}-\d{2}-\d{2}$/.test(point.date) && Number.isFinite(point.value)
   );
+}
+
+/** Fill missed trading days and revisit a week of recent quote corrections. */
+export function fetchLsegMarketRefresh(sourceId: string, lastStoredDate?: string) {
+  const start = lastStoredDate
+    ? new Date(Date.parse(`${lastStoredDate}T00:00:00Z`) - 7 * 86_400_000).toISOString().slice(0, 10)
+    : "1990-01-01";
+  return fetchLsegHistory(sourceId, { start });
 }

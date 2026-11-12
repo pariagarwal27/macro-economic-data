@@ -17,7 +17,7 @@ The home page intentionally contains only the three country choices. Each countr
 
 ## Automatic updates
 
-`vercel.json` schedules `/api/cron/releases` every minute. The endpoint uses a durable release-dispatch state table so a large release batch is processed across successive cron invocations without repeatedly reprocessing the same release. The endpoint uses the release calendar table when a mapped release is due and performs a small safety reconciliation when no event is due. The ingestion layer fetches from official providers and persists observations/releases. The main dashboard and release calendar poll the database-backed API every 10 seconds, so an open dashboard picks up newly persisted releases automatically.
+`vercel.json` schedules `/api/cron/releases` every minute. The endpoint uses a durable release-dispatch state table so a large release batch is processed across successive cron invocations without repeatedly reprocessing the same release. The endpoint uses the release calendar table when a mapped release is due and performs a small safety reconciliation when no event is due. A second daily job refreshes all six DMP series from the latest Bank of England workbook and merges its complete history, so revisions to earlier months are carried into the database. The ingestion layer fetches from official providers and persists observations/releases. The main dashboard and release calendar poll the database-backed API every 10 seconds, so an open dashboard picks up newly persisted releases automatically.
 
 For local continuous operation:
 
@@ -68,6 +68,23 @@ Create `.env` from `.env.example` and set `BEA_API_KEY`. A registered `BLS_API_K
 - Production should use the remote LibSQL/Turso database configured by the existing `DATABASE_URL`/`DATABASE_AUTH_TOKEN` settings. A Vercel function cannot use a mutable local SQLite file as a durable production database.
 - The calendar workflow lives at `.github/workflows/weekly_calendar_refresh.yml` and refreshes `Economic_calendar/economic_calendar.db` daily. The local calendar worker also refreshes after known publication times, with a one-hour retry backoff. Optional FRED schedules use the GitHub Actions secret `FRED_API_KEY`; agency calendars are fetched independently.
 - If LSEG-backed metrics are enabled, the LSEG Desktop bridge must be reachable at `LSEG_WORKER_URL`. On a local Windows machine, run `npm run release:lseg` or set `LSEG_WORKER_AUTOSTART=1` before `npm run dev`.
+
+The five euro-area market-based inflation-compensation series retain their LSEG
+swap RICs. Their bridge requests daily BID/ASK quotes (midpoint), with the
+published last price as fallback, and preserves negative rates. Full history is
+requested from 1990 in bounded windows and merged into existing observations.
+Run `npm run backfill:ea-market` after the bridge is connected. The local release
+worker checks these series every 15 minutes on Brussels weekdays, automatically
+backfills empty series, fills missed trading days, and revisits a week of recent
+quotes. This is an application polling interval; these market series have no
+announced economic-release date or time. Cloud-only deployments still require a
+separate authenticated LSEG connection and are not enabled by this local repair.
+
+`npm run release:lseg` uses `LSEG_PYTHON` when supplied, otherwise the isolated
+`tmp/lseg-venv` interpreter if present, then the system Python. To recreate the
+local environment on Windows, run `py -3.11 -m venv tmp/lseg-venv`, then
+`tmp/lseg-venv/Scripts/python.exe -m pip install lseg-data==2.1.1`. Workspace must
+be running and signed in with the necessary market-data entitlements.
 - Metrics without an announced official future release date are covered by a lower-frequency safety poll; the system does not invent an exact release time.
 
 Useful commands:

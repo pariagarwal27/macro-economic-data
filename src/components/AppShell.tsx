@@ -2,14 +2,18 @@
 
 import Link from "next/link";
 import { CalendarDays, Globe2 } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { GlobalMetricSearch } from "./GlobalMetricSearch";
 import { prefetchClientJson } from "@/lib/client-json-cache";
+import { DashboardViews } from "./DashboardViews";
+import { installDashboardNavigation } from "@/lib/dashboard-navigation";
+import { ReleaseAutoOpen } from "./ReleaseAutoOpen";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
+  useEffect(installDashboardNavigation, []);
+  const views = <DashboardViews pathname={pathname}>{children}</DashboardViews>;
   const isCountryPage = pathname?.startsWith("/country/");
 
   useEffect(() => {
@@ -30,7 +34,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       const countries = [...new Set([...(current ? [current] : []), "US", "UK", "EA"])];
       for (const country of countries) {
         if (cancelled) return;
-        router.prefetch(`/country/${country.toLowerCase()}`);
         await prefetchClientJson(`dashboard:${country}`, `/api/dashboard/${country}`);
       }
       if (!cancelled) await prefetchClientJson("overview", "/api/overview");
@@ -41,17 +44,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       document.removeEventListener("pointerover", warmLink);
       document.removeEventListener("focusin", warmLink);
     };
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     const saved = window.localStorage.getItem("macrohub-editorial-theme");
     document.documentElement.dataset.theme = saved === "dark" ? "dark" : "light";
   }, [isCountryPage]);
 
-  if (isCountryPage) return <>{children}</>;
+  if (isCountryPage) return <><ReleaseAutoOpen />{views}</>;
 
   return (
-    <div className="min-h-screen bg-[var(--paper)]">
+    <><ReleaseAutoOpen /><div className="min-h-screen bg-[var(--paper)]">
       <header className="site-header">
         <Link href="/" className="site-brand">
           <span className="site-brand-icon"><Globe2 size={25} /></span>
@@ -71,7 +74,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           {pathname !== "/" && <Link href="/calendar" className="header-link calendar-link"><CalendarDays size={15}/> Calendar</Link>}
         </div>
       </header>
-      <main>{children}</main>
-    </div>
+      <main>{views}</main>
+    </div></>
   );
 }

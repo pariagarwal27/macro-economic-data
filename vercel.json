@@ -3,6 +3,14 @@
     {
       "path": "/api/cron/releases",
       "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/dmp-history",
+      "schedule": "17 12 * * *"
+    },
+    {
+      "path": "/api/cron/free-consensus",
+      "schedule": "23 5 * * *"
     }
   ]
 }

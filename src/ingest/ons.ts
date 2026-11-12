@@ -159,7 +159,6 @@ const SERIES_URI: Record<string, string> = {
   L59C: "/economy/inflationandpriceindices/timeseries/l59c/mm23", // CPIH monthly rate
   L5LQ: "/economy/inflationandpriceindices/timeseries/l5lq/mm23", // core CPIH annual rate
   L55P: "/economy/inflationandpriceindices/timeseries/l55p/mm23", // CPIH food annual rate
-  L59D: "/economy/inflationandpriceindices/timeseries/l59d/mm23", // CPIH food monthly rate
   L55S: "/economy/inflationandpriceindices/timeseries/l55s/mm23", // CPIH housing annual rate
   L5PG: "/economy/inflationandpriceindices/timeseries/l5pg/mm23", // CPIH housing index
    A24M: "/economy/grossdomesticproductgdp/timeseries/a24m/qna", // household consumption QoQ growth

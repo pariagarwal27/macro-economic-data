@@ -1,6 +1,272 @@
 {
   "metrics": [
     {
+      "id": "ea-spf-hicp-rolling-current",
+      "name": "ECB SPF HICP inflation — Current year",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/prices/indic/forecast/shared/files/data_aggregates_publication.xlsx"
+    },
+    {
+      "id": "ea-spf-hicp-rolling-next",
+      "name": "ECB SPF HICP inflation — Next year",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/prices/indic/forecast/shared/files/data_aggregates_publication.xlsx"
+    },
+    {
+      "id": "ea-spf-hicp-rolling-two-years",
+      "name": "ECB SPF HICP inflation — Two years ahead",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/prices/indic/forecast/shared/files/data_aggregates_publication.xlsx"
+    },
+    {
+      "id": "ea-spf-hicp-rolling-lt",
+      "name": "ECB SPF HICP inflation — Long term",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/prices/indic/forecast/shared/files/data_aggregates_publication.xlsx"
+    },
+    {
+      "id": "ea-spf-core-rolling-current",
+      "name": "ECB SPF Core HICP inflation — Current year",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/prices/indic/forecast/shared/files/data_aggregates_publication.xlsx"
+    },
+    {
+      "id": "ea-spf-core-rolling-next",
+      "name": "ECB SPF Core HICP inflation — Next year",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/prices/indic/forecast/shared/files/data_aggregates_publication.xlsx"
+    },
+    {
+      "id": "ea-spf-core-rolling-two-years",
+      "name": "ECB SPF Core HICP inflation — Two years ahead",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/prices/indic/forecast/shared/files/data_aggregates_publication.xlsx"
+    },
+    {
+      "id": "ea-spf-core-rolling-lt",
+      "name": "ECB SPF Core HICP inflation — Long term",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/prices/indic/forecast/shared/files/data_aggregates_publication.xlsx"
+    },
+    {
+      "id": "ea-spf-gdp-rolling-current",
+      "name": "ECB SPF Real GDP growth — Current year",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/prices/indic/forecast/shared/files/data_aggregates_publication.xlsx"
+    },
+    {
+      "id": "ea-spf-gdp-rolling-next",
+      "name": "ECB SPF Real GDP growth — Next year",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/prices/indic/forecast/shared/files/data_aggregates_publication.xlsx"
+    },
+    {
+      "id": "ea-spf-gdp-rolling-two-years",
+      "name": "ECB SPF Real GDP growth — Two years ahead",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/prices/indic/forecast/shared/files/data_aggregates_publication.xlsx"
+    },
+    {
+      "id": "ea-spf-gdp-rolling-lt",
+      "name": "ECB SPF Real GDP growth — Long term",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/prices/indic/forecast/shared/files/data_aggregates_publication.xlsx"
+    },
+    {
+      "id": "ea-spf-unemployment-rolling-current",
+      "name": "ECB SPF Unemployment rate — Current year",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/prices/indic/forecast/shared/files/data_aggregates_publication.xlsx"
+    },
+    {
+      "id": "ea-spf-unemployment-rolling-next",
+      "name": "ECB SPF Unemployment rate — Next year",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/prices/indic/forecast/shared/files/data_aggregates_publication.xlsx"
+    },
+    {
+      "id": "ea-spf-unemployment-rolling-two-years",
+      "name": "ECB SPF Unemployment rate — Two years ahead",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/prices/indic/forecast/shared/files/data_aggregates_publication.xlsx"
+    },
+    {
+      "id": "ea-spf-unemployment-rolling-lt",
+      "name": "ECB SPF Unemployment rate — Long term",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/prices/indic/forecast/shared/files/data_aggregates_publication.xlsx"
+    },
+    {
+      "id": "ea-spf-wage-rolling-current",
+      "name": "ECB SPF Wage growth — Current year",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/SPF"
+    },
+    {
+      "id": "ea-spf-wage-rolling-next",
+      "name": "ECB SPF Wage growth — Next year",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/SPF"
+    },
+    {
+      "id": "ea-spf-wage-rolling-two-years",
+      "name": "ECB SPF Wage growth — Two years ahead",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/SPF"
+    },
+    {
+      "id": "ea-spf-wage-rolling-lt",
+      "name": "ECB SPF Wage growth — Long term",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://data.ecb.europa.eu/data/datasets/SPF"
+    },
+    {
+      "id": "us-pce-spend-total",
+      "name": "PCE expenditure · total",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-spend-core",
+      "name": "PCE expenditure · core",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-spend-furnishings",
+      "name": "PCE expenditure · furnishings",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-spend-motor-vehicles",
+      "name": "PCE expenditure · motor-vehicles",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-spend-recreational-goods",
+      "name": "PCE expenditure · recreational-goods",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-spend-other-durable-goods",
+      "name": "PCE expenditure · other-durable-goods",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-spend-other-nondurable-goods",
+      "name": "PCE expenditure · other-nondurable-goods",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-spend-clothing",
+      "name": "PCE expenditure · clothing",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-spend-food",
+      "name": "PCE expenditure · food",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-spend-energy",
+      "name": "PCE expenditure · energy",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-spend-healthcare",
+      "name": "PCE expenditure · healthcare",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-spend-transport-services",
+      "name": "PCE expenditure · transport-services",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-spend-recreation-services",
+      "name": "PCE expenditure · recreation-services",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-spend-food-services",
+      "name": "PCE expenditure · food-services",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-spend-financial-services",
+      "name": "PCE expenditure · financial-services",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-spend-other-services",
+      "name": "PCE expenditure · other-services",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-spend-housing",
+      "name": "PCE expenditure · housing",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-spend-housing-utilities",
+      "name": "PCE expenditure · housing-utilities",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
       "id": "us-cpi",
       "name": "CPI — Headline Index",
       "source": "bls",
@@ -225,6 +491,13 @@
       "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index-excluding-food-and-energy"
     },
     {
+      "id": "us-core-pce-ex-housing",
+      "name": "PCE (Core Ex Housing) Price Index",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://apps.bea.gov/iTable/?categories=survey&isuri=1&nipa_table_list=80&reqid=19&step=3"
+    },
+    {
       "id": "us-pce-goods",
       "name": "PCE — Goods",
       "source": "bea",
@@ -297,6 +570,69 @@
     {
       "id": "us-pce-housing",
       "name": "PCE — Housing",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-motor-vehicles",
+      "name": "PCE — Motor vehicles and parts",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-recreational-goods",
+      "name": "PCE — Recreational goods and vehicles",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-other-durable-goods",
+      "name": "PCE — Other durable goods",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-other-nondurable-goods",
+      "name": "PCE — Other nondurable goods",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-transport-services",
+      "name": "PCE — Transportation services",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-recreation-services",
+      "name": "PCE — Recreation services",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-financial-services",
+      "name": "PCE — Financial services and insurance",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-other-services",
+      "name": "PCE — Other services",
+      "source": "bea",
+      "frequency": "monthly",
+      "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us-pce-housing-utilities",
+      "name": "PCE — Housing and utilities",
       "source": "bea",
       "frequency": "monthly",
       "official_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
@@ -475,6 +811,139 @@
       "source": "ecb",
       "frequency": "annual",
       "official_url": "https://data.ecb.europa.eu/data/datasets/SPF"
+    },
+    {
+      "id": "ea-spf-hicp-target-2026",
+      "name": "ECB SPF HICP Forecast for 2026",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/all_data.en.html"
+    },
+    {
+      "id": "ea-spf-hicp-target-2027",
+      "name": "ECB SPF HICP Forecast for 2027",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/all_data.en.html"
+    },
+    {
+      "id": "ea-spf-hicp-target-2028",
+      "name": "ECB SPF HICP Forecast for 2028",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/all_data.en.html"
+    },
+    {
+      "id": "ea-spf-core-target-2026",
+      "name": "ECB SPF Core HICP Forecast for 2026",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/all_data.en.html"
+    },
+    {
+      "id": "ea-spf-core-target-2027",
+      "name": "ECB SPF Core HICP Forecast for 2027",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/all_data.en.html"
+    },
+    {
+      "id": "ea-spf-core-target-2028",
+      "name": "ECB SPF Core HICP Forecast for 2028",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/all_data.en.html"
+    },
+    {
+      "id": "ea-spf-core-target-lt",
+      "name": "ECB SPF Core HICP Longer-Term Forecast",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/all_data.en.html"
+    },
+    {
+      "id": "ea-spf-gdp-target-2026",
+      "name": "ECB SPF Real GDP Growth Forecast for 2026",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/all_data.en.html"
+    },
+    {
+      "id": "ea-spf-gdp-target-2027",
+      "name": "ECB SPF Real GDP Growth Forecast for 2027",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/all_data.en.html"
+    },
+    {
+      "id": "ea-spf-gdp-target-2028",
+      "name": "ECB SPF Real GDP Growth Forecast for 2028",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/all_data.en.html"
+    },
+    {
+      "id": "ea-spf-gdp-target-lt",
+      "name": "ECB SPF Real GDP Growth Longer-Term Forecast",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/all_data.en.html"
+    },
+    {
+      "id": "ea-spf-unemployment-target-2026",
+      "name": "ECB SPF Unemployment Rate Forecast for 2026",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/all_data.en.html"
+    },
+    {
+      "id": "ea-spf-unemployment-target-2027",
+      "name": "ECB SPF Unemployment Rate Forecast for 2027",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/all_data.en.html"
+    },
+    {
+      "id": "ea-spf-unemployment-target-2028",
+      "name": "ECB SPF Unemployment Rate Forecast for 2028",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/all_data.en.html"
+    },
+    {
+      "id": "ea-spf-unemployment-target-lt",
+      "name": "ECB SPF Unemployment Rate Longer-Term Forecast",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/all_data.en.html"
+    },
+    {
+      "id": "ea-spf-wage-target-2026",
+      "name": "ECB SPF Wage Growth Forecast for 2026",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/all_data.en.html"
+    },
+    {
+      "id": "ea-spf-wage-target-2027",
+      "name": "ECB SPF Wage Growth Forecast for 2027",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/all_data.en.html"
+    },
+    {
+      "id": "ea-spf-wage-target-2028",
+      "name": "ECB SPF Wage Growth Forecast for 2028",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/all_data.en.html"
+    },
+    {
+      "id": "ea-spf-wage-target-lt",
+      "name": "ECB SPF Wage Growth Longer-Term Forecast",
+      "source": "ecb",
+      "frequency": "quarterly",
+      "official_url": "https://www.ecb.europa.eu/stats/ecb_surveys/survey_of_professional_forecasters/html/all_data.en.html"
     },
     {
       "id": "us-umich-sentiment",
@@ -1769,14 +2238,14 @@
       "name": "Citi/YouGov UK Inflation Expectations 1-Year",
       "source": "boe",
       "frequency": "monthly",
-      "official_url": "https://www.bankofengland.co.uk/monetary-policy-report"
+      "official_url": "https://www.bankofengland.co.uk/monetary-policy-report/monetary-policy-report"
     },
     {
       "id": "uk-citi-yougov-inflation-exp-5-10y",
       "name": "Citi/YouGov UK Inflation Expectations 5–10-Year",
       "source": "boe",
       "frequency": "monthly",
-      "official_url": "https://www.bankofengland.co.uk/monetary-policy-report"
+      "official_url": "https://www.bankofengland.co.uk/monetary-policy-report/monetary-policy-report"
     },
     {
       "id": "uk-dmp-inflation-exp-1y",
@@ -1838,7 +2307,7 @@
       "id": "uk-inflation-comp-5y",
       "name": "UK 5-Year Inflation Compensation",
       "source": "boe",
-      "frequency": "monthly",
+      "frequency": "daily",
       "official_url": "https://www.bankofengland.co.uk/statistics/yield-curves"
     },
     {
@@ -1846,7 +2315,7 @@
       "name": "UK 10-Year Inflation Compensation",
       "source": "boe",
       "frequency": "daily",
-      "official_url": "https://www.bankofengland.co.uk/statistics"
+      "official_url": "https://www.bankofengland.co.uk/statistics/yield-curves"
     },
     {
       "id": "uk-inflation-comp-5y5y",

@@ -1,5 +1,6 @@
 import { fetchCensusRetailSeries } from "../src/ingest/census-retail";
 import { METRICS, X_HANDLES, type MetricDef } from "@/catalog/metrics";
+import { fetchEcbSpfRollingHistory } from "../src/ingest/ecb-spf-rolling";
 import {
   DESK_MATRIX_BLOCKS,
   allDeskMatrixMetricIds,
@@ -60,6 +61,7 @@ import { fetchOnsSeries } from "../src/ingest/ons";
 import {
   fetchEcbSpfHicp1y,
   fetchEcbSpfSeries,
+  fetchEcbSpfCalendarYearHistory,
   fetchEcbCesInflation1y,
   fetchEcbCesInflation3y,
   fetchEcbCesInflation5y,
@@ -77,11 +79,11 @@ import {
   fetchBoeMapsInflation,
   fetchBoeMprInflationSeries,
   fetchBoeDailyInflationCompensation,
-  fetchBoeFiveYearInflationCompensation,
   fetchBoeAgentsPaySettlement,
 } from "../src/ingest/boe-dmp";
 import { fetchBlsSeries, fetchBlsSeriesFullHistory, fetchUsPpiHistory } from "../src/ingest/bls";
-import { fetchLsegHistory, fetchLsegLatest } from "../src/ingest/adapters/lseg";
+import { fetchLsegHistory, fetchLsegLatest, fetchLsegMarketRefresh } from "../src/ingest/adapters/lseg";
+import { EA_MARKET_METRIC_IDS } from "../src/ingest/ea-market-refresh";
 
 import {
   blsReleaseFallbackPoints,
@@ -489,9 +491,10 @@ async function writeReleaseRow(
 async function persistMetricReplace(
   metric: MetricDef,
   raw: RawPoint[],
-  sourceNote: string
+  sourceNote: string,
+  opts?: { treatAsLevel?: boolean; docsUrl?: string | null }
 ): Promise<number> {
-  const unique = preparePoints(metric, raw);
+  const unique = preparePoints(metric, raw, opts);
   const client = getClient();
   const now = new Date().toISOString();
   const vintage = now.slice(0, 10);
@@ -525,7 +528,7 @@ async function persistMetricReplace(
     })
     .where(eq(metrics.id, metric.id));
 
-  await writeReleaseRow(metric, unique, sourceNote);
+  await writeReleaseRow(metric, unique, sourceNote, opts?.docsUrl);
   return unique.length;
 }
 
@@ -986,6 +989,12 @@ async function loadLiveRaw(
   };
 }
     case "lseg": {
+      if (EA_MARKET_METRIC_IDS.includes(metric.id)) {
+        const latest = await getDb().select({ date: observations.date }).from(observations)
+          .where(eq(observations.metricId, metric.id)).orderBy(desc(observations.date)).limit(1);
+        return { points: await fetchLsegMarketRefresh(ref.seriesId, latest[0]?.date),
+          note: `Official LSEG ${ref.seriesId} daily market history` };
+      }
       const latest = caches.lseg.has(ref.seriesId)
         ? caches.lseg.get(ref.seriesId)
         : await fetchLsegLatest(ref.seriesId);
@@ -1184,6 +1193,10 @@ async function fetchEcbBySeriesId(seriesId: string): Promise<RawPoint[]> {
   // ---------------------------------------------------------------------------
   // ECB Survey of Professional Forecasters (SPF)
   // ---------------------------------------------------------------------------
+  if (seriesId.includes("_ROLLING_")) return fetchEcbSpfRollingHistory(seriesId);
+  if (/^SPF_(HICP|CORE|GDP|UNEMP|WAGE)_TARGET_(2026|2027|2028|LT)$/.test(seriesId)) {
+    return fetchEcbSpfCalendarYearHistory(seriesId as EcbSpfSeries);
+  }
   if (seriesId === "SPF_HICP_CURRENT_YEAR") {
     return fetchEcbSdmxSeries("SPF", "A.U2.HICP.POINT.P9M.Q.AVG");
   }
@@ -1201,7 +1214,7 @@ async function fetchEcbBySeriesId(seriesId: string): Promise<RawPoint[]> {
   }
 
   if (seriesId === "SPF_HICP_LT") {
-    return fetchEcbSpfSeries("SPF_HICP_LT");
+    return fetchEcbSpfCalendarYearHistory("SPF_HICP_TARGET_LT");
   }
 
   if (seriesId === "SPF_ASSU_LAB_P12M") {
@@ -1345,10 +1358,9 @@ const SPF_SERIES_MAP = {
 } as const satisfies Record<string, EcbSpfSeries>;
 
 async function fetchBoeBySeriesId(seriesId: string) {
-  if (seriesId === "UK_INFL_COMP_5Y5Y") {
+  if (seriesId === "UK_INFL_COMP_5Y" || seriesId === "UK_INFL_COMP_10Y" || seriesId === "UK_INFL_COMP_5Y5Y") {
     return fetchBoeDailyInflationCompensation(seriesId);
   }
-  if (seriesId === "UK_INFL_COMP_5Y") return fetchBoeFiveYearInflationCompensation();
   if (seriesId === "IAS_Q2A") return fetchBoeInflationExpectations("1y");
   if (seriesId === "IAS_Q2B") return fetchBoeInflationExpectations("2y");
   if (seriesId === "IAS_Q2C") return fetchBoeInflationExpectations("5y");

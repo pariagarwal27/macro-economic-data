@@ -24,10 +24,11 @@ export async function getDueMetricIds(now = new Date()) {
     .filter((row) => {
       if (row.nextReleaseAt) {
         const t = Date.parse(row.nextReleaseAt);
-        return Number.isFinite(t) && now.getTime() >= t;
+        return Number.isFinite(t) && now.getTime() >= t &&
+          localDate(now, sourceTimeZone(row.metricId)) === localDate(new Date(t), sourceTimeZone(row.metricId));
       }
       if (!row.nextReleaseDate) return false;
-      return localDate(now, sourceTimeZone(row.metricId)) >= row.nextReleaseDate.slice(0, 10);
+      return localDate(now, sourceTimeZone(row.metricId)) === row.nextReleaseDate.slice(0, 10);
     })
     .map((row) => row.metricId))];
 }

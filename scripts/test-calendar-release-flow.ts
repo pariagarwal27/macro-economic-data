@@ -45,6 +45,9 @@ async function main() {
     assert.equal(event.status,'released'); assert.equal(event.actual,3.4);
     const unchanged = await processFetchedRelease({metricId:'us-cpi-yoy',result:{periodDate:'2026-09-01',value:3.4}});
     assert.equal(unchanged.updated,false,'Unchanged source data must not create a new release');
+    const staleAtRelease = await processFetchedRelease({metricId:'us-cpi-yoy',scheduledAt,result:{periodDate:'2026-09-01',value:3.4,releasedAt:new Date().toISOString()}});
+    assert.equal(staleAtRelease.updated,false,'A stale prior-period response after the scheduled time is not a new publication');
+    assert.equal(staleAtRelease.reason,'no-new-release');
     const refreshedAt = new Date().toISOString();
     await getClient().execute({
       sql:"INSERT INTO releases(metric_id,period_date,released_at,value) VALUES(?,?,?,?)",

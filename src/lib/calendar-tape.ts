@@ -70,6 +70,43 @@ export function formatUtcTime(iso: string): string {
   }).format(d);
 }
 
+/**
+ * Returns "BST" during British Summer Time (last Sun Mar to last Sun Oct),
+ * or "GMT" otherwise — detected from the Europe/London UTC offset.
+ */
+export function ukTimezoneLabel(iso: string): "BST" | "GMT" {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "GMT";
+  // Europe/London is UTC+1 (BST) in summer, UTC+0 (GMT) in winter.
+  // Detect by comparing the London hour to the UTC hour.
+  const londonHour = Number(
+    new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Europe/London",
+      hour: "numeric",
+      hour12: false,
+    }).format(d)
+  );
+  const utcHour = d.getUTCHours();
+  return londonHour !== utcHour ? "BST" : "GMT";
+}
+
+/**
+ * Formats a release time as "HH:MM GMT" or "HH:MM BST" depending on the
+ * UK DST state at that moment. The raw ISO timestamp is stored in UTC;
+ * this converts and labels it correctly for display.
+ */
+export function formatUkTime(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "?";
+  const time = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/London",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(d);
+  return `${time} ${ukTimezoneLabel(iso)}`;
+}
+
 export function dayKey(iso: string): string {
   return iso.slice(0, 10);
 }

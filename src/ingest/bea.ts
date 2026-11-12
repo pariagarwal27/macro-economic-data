@@ -1,4 +1,5 @@
 import type { RawPoint } from "./transforms";
+import { isFreshReleaseFetch } from "./release-fetch-context.js";
 
 const BEA_URL = "https://apps.bea.gov/api/data";
 
@@ -174,7 +175,25 @@ async function fetchBeaRowsDirect(
  *
  * 429 responses are retried automatically.
  */
-async function fetchBeaJson(
+const releaseRequests = new Map<string, Promise<BeaResponse>>();
+
+async function fetchBeaJson(params: URLSearchParams): Promise<BeaResponse> {
+  if (!isFreshReleaseFetch()) return fetchBeaJsonUncached(params);
+  // Multiple components from the same BEA table share one in-flight request.
+  // Once it settles, a later retry must fetch the source again.
+  const key = params.toString();
+  const existing = releaseRequests.get(key);
+  if (existing) return existing;
+  const request = fetchBeaJsonUncached(params);
+  releaseRequests.set(key, request);
+  void request.then(
+    () => { if (releaseRequests.get(key) === request) releaseRequests.delete(key); },
+    () => { if (releaseRequests.get(key) === request) releaseRequests.delete(key); },
+  );
+  return request;
+}
+
+async function fetchBeaJsonUncached(
   params: URLSearchParams
 ): Promise<BeaResponse> {
   const maxAttempts = 6;

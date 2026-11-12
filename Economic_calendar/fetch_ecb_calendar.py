@@ -47,6 +47,9 @@ ECB_METRICS = {
     "ea-safe-input-cost-exp-1y": "SAFE_INPUT_COST_EXP_1Y",
     "ea-safe-selling-price-exp-1y": "SAFE_SELLING_PRICE_EXP_1Y",
     "ea-spf-current-year": "SPF_HICP_CURRENT_YEAR",
+    "ea-spf-hicp-target-2026": "SPF_HICP_TARGET_2026",
+    "ea-spf-hicp-target-2027": "SPF_HICP_TARGET_2027",
+    "ea-spf-hicp-target-2028": "SPF_HICP_TARGET_2028",
     "ea-spf-hicp-1y": "SPF_HICP_P12M",
     "ea-wage-tracker": "EWT.M.U2.N.WT.INWS._T.4F0.GY",
     "ea-wage-tracker-ex-oneoff": "EWT.M.U2.N.WT.INWX._T.4F0.GY",
@@ -63,7 +66,7 @@ ECB_METRICS = {
     "ea-safe-inflation-exp-3y": None,
     "ea-safe-inflation-exp-5y": None,
     "ea-spf-hicp-2y": None,
-    "ea-spf-hicp-lt": None,
+    "ea-spf-hicp-lt": "SPF_HICP_TARGET_LT",
     "ea-spf-hicpx-1y": None,
     "ea-inflation-comp-1y": None,
     "ea-inflation-comp-2y": None,
@@ -72,9 +75,22 @@ ECB_METRICS = {
     "ea-inflation-comp-5y5y": None,
 }
 
+for metric_component, series_component in (
+    ("core", "CORE"),
+    ("gdp", "GDP"),
+    ("unemployment", "UNEMP"),
+    ("wage", "WAGE"),
+):
+    for target in ("2026", "2027", "2028", "lt"):
+        metric_id = f"ea-spf-{metric_component}-target-{target}"
+        ECB_METRICS[metric_id] = f"SPF_{series_component}_TARGET_{target.upper()}"
+
 
 # ============================================================
 # RELEASE FAMILIES
+for component, code in (("hicp", "HICP"), ("core", "CORE"), ("gdp", "GDP"), ("unemployment", "UNEMP"), ("wage", "WAGE")):
+    for horizon, horizon_code in (("current", "CURRENT"), ("next", "NEXT"), ("two-years", "TWO_YEARS"), ("lt", "LT")):
+        ECB_METRICS[f"ea-spf-{component}-rolling-{horizon}"] = f"SPF_{code}_ROLLING_{horizon_code}"
 #
 # SPF:
 #   all SPF horizons / inflation / core / wage assumptions
@@ -156,6 +172,9 @@ add_family(
     "SPF",
     [
         "ea-spf-current-year",
+        "ea-spf-hicp-target-2026",
+        "ea-spf-hicp-target-2027",
+        "ea-spf-hicp-target-2028",
         "ea-spf-hicp-1y",
         "ea-inflation-exp-1y",
         "ea-core-inflation-exp-1y",
@@ -164,6 +183,16 @@ add_family(
         "ea-spf-hicp-2y",
         "ea-spf-hicp-lt",
         "ea-spf-hicpx-1y",
+        *[
+            f"ea-spf-{component}-target-{target}"
+            for component in ("core", "gdp", "unemployment", "wage")
+            for target in ("2026", "2027", "2028", "lt")
+        ],
+        *[
+            f"ea-spf-{component}-rolling-{horizon}"
+            for component in ("hicp", "core", "gdp", "unemployment", "wage")
+            for horizon in ("current", "next", "two-years", "lt")
+        ],
     ],
 )
 
@@ -322,6 +351,28 @@ def fetch_spf():
                 "Could not find SPF next-release date on official page."
             )
 
+        # The ECB statistical calendar publishes the exact time and date;
+        # only attach a timestamp when its SPF event agrees with the SPF page.
+        next_release_at = None
+        try:
+            calendar_text = fetch_text(ECB_STATS_CALENDAR_URL)
+            event_pattern = re.compile(
+                r"(\d{2}/\d{2}/\d{4})\s+(\d{2}:\d{2})"
+                r"(?:(?!\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}).){0,500}?"
+                r"(?:Survey of Professional Forecasters|\bSPF\b)",
+                flags=re.IGNORECASE | re.DOTALL,
+            )
+            expected = datetime.strptime(date_value, "%Y-%m-%d").date()
+            for event in event_pattern.finditer(calendar_text):
+                event_date = datetime.strptime(event.group(1), "%d/%m/%Y").date()
+                if event_date == expected:
+                    next_release_at = combine_date_time(
+                        date_value, event.group(2), "Europe/Brussels"
+                    )
+                    break
+        except Exception as timing_error:
+            print(f"   ℹ️ Exact SPF release time unavailable: {timing_error}")
+
         print(
             f"   ✅ {date_value} | "
             f"{RELEASE_FAMILIES['SPF']['release_title']}"
@@ -330,7 +381,13 @@ def fetch_spf():
         return {
             "success": True,
             "next_release": date_value,
-            "next_release_at": None,
+            "next_release_at": next_release_at,
+            "release_time_kind": "official_exact" if next_release_at else "date_only",
+            "official_evidence": (
+                "ECB statistical calendar event matches this SPF release date."
+                if next_release_at
+                else "ECB SPF page lists a provisional next-release date but does not publish a release time."
+            ),
             "release_title": RELEASE_FAMILIES["SPF"]["release_title"],
             "update_type": "scheduled_survey_release",
             "source_url": ECB_SPF_URL,
@@ -595,6 +652,8 @@ def build_metric_results(family_results):
             "release_family": family,
             "next_release": family_result.get("next_release"),
             "next_release_at": family_result.get("next_release_at"),
+            "release_time_kind": family_result.get("release_time_kind"),
+            "official_evidence": family_result.get("official_evidence"),
             "release_title": family_result.get("release_title"),
             "update_type": family_result.get("update_type"),
             "status": family_result.get("status"),

@@ -91,7 +91,9 @@ export function isOnScheduledReleaseDay(metricId: string, scheduledAt: string, n
   const scheduledMs = Date.parse(scheduledAt);
   if (!dateOnly && !Number.isFinite(scheduledMs)) return false;
   const scheduledDate = dateOnly ?? dateInTimeZone(new Date(scheduledMs), timeZone);
-  return dateInTimeZone(now, timeZone) === scheduledDate;
+  const today = dateInTimeZone(now, timeZone);
+  const age = (Date.parse(today) - Date.parse(scheduledDate)) / 86_400_000;
+  return isRecoverableFedMetric(metricId) ? age >= 0 && age <= 7 : today === scheduledDate;
 }
 
 /** Give separately published measure series the same official release schedule as their paired YoY series. */
@@ -117,11 +119,19 @@ export function retryableHistoricalSchedules(
   return historyRows.filter(row => {
     if (!row.metricId || !row.nextReleaseDate) return false;
     if (activeKeys.has(scheduleKey(row))) return false;
+    // Calendar history may contain an earlier date-only copy of today's row.
+    // It must not bypass a newer exact publication time on the active row and
+    // start polling before that time.
+    const activeTimedSchedule = currentRows.some(active =>
+      active.metricId === row.metricId &&
+      active.nextReleaseDate?.slice(0, 10) === row.nextReleaseDate?.slice(0, 10) &&
+      Boolean(active.nextReleaseAt && Number.isFinite(Date.parse(active.nextReleaseAt)))
+    );
+    if (activeTimedSchedule) return false;
     const scheduledAt = row.nextReleaseAt && Number.isFinite(Date.parse(row.nextReleaseAt))
-      ? Date.parse(row.nextReleaseAt)
-      : Date.parse(`${row.nextReleaseDate.slice(0, 10)}T23:59:59.999Z`);
-    const ageMs = now.getTime() - scheduledAt;
-    return Number.isFinite(scheduledAt) && ageMs >= 0 && ageMs <= 3 * 86_400_000;
+      ? row.nextReleaseAt
+      : row.nextReleaseDate.slice(0, 10);
+    return isOnScheduledReleaseDay(row.metricId, scheduledAt, now);
   });
 }
 
@@ -134,4 +144,8 @@ export function wasRecordedAfterSchedule(releasedAt: string, scheduledAt: string
 function scheduleKey(row: ScheduledCalendarRow) {
   const date = row.nextReleaseDate?.slice(0, 10) ?? "";
   return `${row.metricId}:${row.nextReleaseAt || date}`;
+}
+
+export function isRecoverableFedMetric(id: string) {
+  return /^us-(?:(?:core-)?sticky-cpi|flexible-cpi|cleveland-(?:median-cpi|trimmed-cpi|exp-inf-)|atlanta-bie)/.test(id);
 }

@@ -12,6 +12,7 @@ export function HistoryChartViewport({
   compact = false,
   fullHistoryByDefault = false,
   shortYearLabels = false,
+  hideNavigation = false,
   onRangeChange,
 }: {
   dates: string[];
@@ -22,6 +23,7 @@ export function HistoryChartViewport({
   compact?: boolean;
   fullHistoryByDefault?: boolean;
   shortYearLabels?: boolean;
+  hideNavigation?: boolean;
   onRangeChange?: (range: HistoryYearRange, isDefaultWindow: boolean) => void;
 }) {
   const [plotWidth, setPlotWidth] = useState(0);
@@ -69,7 +71,7 @@ export function HistoryChartViewport({
     return () => observer.disconnect();
   }, []);
 
-  const showNavigation = !compact && years.length > 1;
+  const showNavigation = !compact && !hideNavigation && years.length > 1;
   const pickHandle = (handle: "from" | "to", index: number) => {
     const year = years[Math.max(0, Math.min(years.length - 1, index))];
     if (year == null) return;

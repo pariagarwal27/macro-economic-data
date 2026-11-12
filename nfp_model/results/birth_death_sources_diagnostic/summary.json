@@ -1,0 +1,51 @@
+{
+  "baseline": {
+    "months": 33,
+    "mae": 66.79490081637857,
+    "rmse": 78.21855830162342,
+    "bias": 10.447401025723183,
+    "max_abs_error": 175.99878920761864,
+    "direction_accuracy_pct": 93.93939393939394,
+    "interval_months": 21,
+    "interval_coverage": 0.7619047619047619,
+    "interval_mean_width_thousands": 170.52571635124576
+  },
+  "enhanced": {
+    "months": 33,
+    "mae": 68.31838925661467,
+    "rmse": 80.62293564310491,
+    "bias": 13.010607949609128,
+    "max_abs_error": 159.25967522059932,
+    "direction_accuracy_pct": 90.9090909090909,
+    "interval_months": 21,
+    "interval_coverage": 0.8095238095238095,
+    "interval_mean_width_thousands": 183.35253734225557
+  },
+  "with_birth_death": {
+    "months": 33,
+    "mae": 68.28461983516065,
+    "rmse": 80.66419699580224,
+    "bias": 13.077666816205381,
+    "max_abs_error": 159.25967522059932,
+    "direction_accuracy_pct": 90.9090909090909,
+    "interval_months": 21,
+    "interval_coverage": 0.8095238095238095,
+    "interval_mean_width_thousands": 183.35253734225557
+  },
+  "consensus": {
+    "months": 33,
+    "mae": 65.24242424242425,
+    "rmse": 75.9718847517111,
+    "bias": -14.93939393939394,
+    "max_abs_error": 168.0,
+    "direction_accuracy_pct": 93.93939393939394
+  },
+  "first_month": "2024-01",
+  "last_month": "2026-09",
+  "bfs_months": 33,
+  "ces_months": 25,
+  "birth_death_months": 32,
+  "birth_death_selected_months": 32,
+  "added_selected_months": 33,
+  "caveat": "Research diagnostic; earlier test period has been examined and provenance of other inputs remains conditional. The 2026 birth-death current table has not been independently archived by release. Intervals use prior diagnostic errors only."
+}

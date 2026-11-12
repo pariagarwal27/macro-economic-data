@@ -50,6 +50,13 @@ class SourceRegressionTests(unittest.TestCase):
             with self.assertRaises(OSError):
                 special.sofie_result()
 
+    def test_sofie_reads_cleveland_next_update_without_colon(self):
+        html = '<h2>Update Schedule</h2><p><strong>Next update</strong><br> November 16, 2026</p>'
+        with patch.object(special, 'fetch', return_value=html):
+            value = special.sofie_result()
+        self.assertEqual(value['date'], '2026-11-16')
+        self.assertEqual(value['status'], 'official_date')
+
     def test_sofie_url_slug_is_not_an_announced_publication_date(self):
         with patch.object(special, 'fetch', side_effect=[
             'Survey of Firms Inflation Expectations. Quarterly survey.',

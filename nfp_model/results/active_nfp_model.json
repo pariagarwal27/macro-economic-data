@@ -1,0 +1,8 @@
+{
+  "active_model": "revised_no_indeed_pruned",
+  "activated_from": "results/lightgbm_failure_fixes_2026-11-06",
+  "candidate_promoted": false,
+  "live_forecasts_require_evidence": true,
+  "performance_scope": "Historical diagnostic only; no future accuracy guarantee",
+  "forecast_allowed": false
+}

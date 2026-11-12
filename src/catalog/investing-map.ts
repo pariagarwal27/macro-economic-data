@@ -102,7 +102,7 @@ export const INVESTING_EVENT_RULES: InvestingEventRule[] = [
     reject: MOM,
   },
   {
-    metricId: "us-core-pce",
+    metricId: "us-core-pce-yoy",
     currencies: ["USD"],
     pattern: /\bcore\b.*\bpce\b.*\byoy\b|\bpce\b.*\bcore\b.*\byoy\b|core pce price.*yoy/,
     reject: /\bmom\b/,
@@ -114,10 +114,16 @@ export const INVESTING_EVENT_RULES: InvestingEventRule[] = [
     reject: /\byoy\b/,
   },
   {
-    metricId: "us-pce",
+    metricId: "us-pce-yoy",
     currencies: ["USD"],
     pattern: /\bpce\b.*\byoy\b|personal consumption.*\byoy\b/,
     reject: /\bcore\b/,
+  },
+  {
+    metricId: "us-pce-mom",
+    currencies: ["USD"],
+    pattern: /\bpce\b.*\bmom\b|personal consumption.*\bmom\b/,
+    reject: /\bcore\b|\byoy\b/,
   },
   {
     metricId: "us-ppi-core",

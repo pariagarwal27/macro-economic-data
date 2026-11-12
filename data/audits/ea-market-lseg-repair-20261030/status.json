@@ -1,0 +1,27 @@
+{
+  "status": "code-repair-tested; real-data-fetch-blocked-by-missing-LSEG-desktop-connection",
+  "metrics": [
+    "ea-inflation-comp-1y",
+    "ea-inflation-comp-2y",
+    "ea-inflation-comp-5y",
+    "ea-inflation-comp-10y",
+    "ea-inflation-comp-5y5y"
+  ],
+  "realObservationCounts": [],
+  "installedRuntime": "tmp/lseg-venv (Python 3.11, lseg-data 2.1.1)",
+  "liveConnectionAttempt": "LSEG SDK could not connect to localhost:9000 or localhost:9060 and reported that Desktop was not running. No bridge available at configured localhost:8765.",
+  "backfillPreflight": "Failed before ingestion: fetch failed",
+  "tests": {
+    "pythonCalendarAndBridge": {
+      "passed": 93,
+      "command": "python -X utf8 -m unittest discover -s Economic_calendar -p test_*.py"
+    },
+    "typescriptFocused": {
+      "passed": 6
+    },
+    "endToEnd": "Five routes passed against a local test server and isolated temporary database, including negative values, merge preservation, missed daily observations and chart-history payload."
+  },
+  "typecheck": "Repository-wide tsc remains failing on errors observed before this repair. See tmp/ea-market-typecheck.txt. No errors remain in new EA-market files.",
+  "activation": "Sign in to entitled LSEG Workspace; npm run release:lseg; npm run backfill:ea-market; restart local release worker to activate weekday polling.",
+  "schedule": "No official discrete release date/time. Application checks every 15 minutes on Brussels weekdays while local release worker is running. Cloud routing remains unchanged."
+}

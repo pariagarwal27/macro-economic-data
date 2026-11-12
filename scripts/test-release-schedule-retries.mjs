@@ -16,6 +16,15 @@ assert.deepEqual(
   "the currently active release schedule is not duplicated from history",
 );
 assert.deepEqual(retryableHistoricalSchedules([nextRelease], [{ ...oldRelease, nextReleaseDate: "2026-10-15" }], now).map(row => row.nextReleaseDate), ["2026-10-15"], "a historical release is retryable on its own local release day");
+assert.deepEqual(
+  retryableHistoricalSchedules(
+    [{ metricId: "uk-dmp-wage-exp-1y", nextReleaseDate: "2026-10-30", nextReleaseAt: "2026-10-30T09:30:00+00:00" }],
+    [{ metricId: "uk-dmp-wage-exp-1y", nextReleaseDate: "2026-10-30", nextReleaseAt: null }],
+    new Date("2026-10-30T08:20:00Z"),
+  ),
+  [],
+  "a historical date-only DMP row must not make a newer timed release poll early",
+);
 assert.equal(isOnScheduledReleaseDay("us-cpi", "2026-10-14T12:30:00.000Z", now), false, "the retry loop must stop after the US release day ends");
 assert.equal(isOnScheduledReleaseDay("us-cpi", "2026-10-15T08:30:00-04:00", new Date("2026-10-15T13:00:00Z")), true, "scheduled retries continue during the release's local calendar day");
 assert.equal(wasRecordedAfterSchedule("2026-10-15T07:47:03Z", "2026-10-14"), true);

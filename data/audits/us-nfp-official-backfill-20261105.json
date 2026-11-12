@@ -1,0 +1,100 @@
+{
+  "backfilled_at_utc": "2026-11-05T13:25:43.799Z",
+  "database": "data\\macro.db",
+  "backup": "data\\backups\\macro-before-us-nfp-official-backfill-20261105.db",
+  "official_sources": {
+    "release": "https://www.bls.gov/news.release/empsit.t17.htm",
+    "current_levels": "https://www.bls.gov/ces/data/employment-and-earnings/2026/table1a_202609.htm"
+  },
+  "changes": {
+    "2026-07-01": {
+      "before": {
+        "us-nfp": {
+          "id": 1008479,
+          "value": 21.0,
+          "raw_value": 158913.0
+        },
+        "us-payrolls-level": {
+          "id": 1008559,
+          "value": 158913.0,
+          "raw_value": 158913.0
+        }
+      },
+      "after": {
+        "us-nfp": {
+          "id": 1008479,
+          "value": -10.0,
+          "raw_value": 158882.0
+        },
+        "us-payrolls-level": {
+          "id": 1008559,
+          "value": 158882.0,
+          "raw_value": 158882.0
+        }
+      }
+    },
+    "2026-08-01": {
+      "before": {
+        "us-nfp": {
+          "id": 1008480,
+          "value": 162.0,
+          "raw_value": 159075.0
+        },
+        "us-payrolls-level": {
+          "id": 1008560,
+          "value": 159075.0,
+          "raw_value": 159075.0
+        }
+      },
+      "after": {
+        "us-nfp": {
+          "id": 1008480,
+          "value": 133.0,
+          "raw_value": 159015.0
+        },
+        "us-payrolls-level": {
+          "id": 1008560,
+          "value": 159015.0,
+          "raw_value": 159015.0
+        }
+      }
+    }
+  },
+  "september_release_context": [
+    {
+      "id": 4737,
+      "metric_id": "us-nfp",
+      "period_date": "SEPTEMBER-2026-01",
+      "value": 29.0,
+      "prior_period_value": 133.0,
+      "prior_period_date": "2026-08-01",
+      "change_vs_prior_period": -104.0,
+      "supporting_doc_url": "https://www.bls.gov/news.release/empsit.t17.htm",
+      "notes": "September 2026 BLS release: September +29K; August revised from +162K to +133K; July revised from +21K to -10K."
+    },
+    {
+      "id": 4739,
+      "metric_id": "us-nfp",
+      "period_date": "2026-09-01",
+      "value": 29.0,
+      "prior_period_value": 133.0,
+      "prior_period_date": "2026-08-01",
+      "change_vs_prior_period": -104.0,
+      "supporting_doc_url": "https://www.bls.gov/news.release/empsit.t17.htm",
+      "notes": "September 2026 BLS release: September +29K; August revised from +162K to +133K; July revised from +21K to -10K."
+    },
+    {
+      "id": 4423,
+      "metric_id": "us-payrolls-level",
+      "period_date": "2026-09-01",
+      "value": 159044.0,
+      "prior_period_value": 159015.0,
+      "prior_period_date": "2026-08-01",
+      "change_vs_prior_period": 29.0,
+      "supporting_doc_url": "https://www.bls.gov/ces/data/employment-and-earnings/2026/table1a_202609.htm",
+      "notes": "BLS Table B-1a September 2026: August 159,015K; September 159,044K (+29K). July 158,882K and August 159,015K reflect September release revisions."
+    }
+  ],
+  "method": "Apply BLS September 2026 revisions to the latest CES0000000001 observations. Preserve release-day history for the August first print; update September release prior-period context to the revised values.",
+  "metrics_last_ingested_at_utc": "2026-11-05T13:25:43.799Z"
+}

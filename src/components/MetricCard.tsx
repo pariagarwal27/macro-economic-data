@@ -5,7 +5,7 @@ import { formatDelta, formatObsDate, formatValue } from "@/lib/format";
 import clsx from "clsx";
 import { surpriseTone } from "@/lib/surprise";
 import { formatLiveSourceLabel } from "@/lib/live-source-label";
-import { displayReleaseStage, type ReleaseStage } from "@/ingest/release-stages";
+import { displayReleaseStage, isPreliminaryReleaseStage, type ReleaseStage } from "@/ingest/release-stages";
 
 export interface MetricCardData {
   id: string;
@@ -107,9 +107,9 @@ export function MetricCard({ metric }: { metric: MetricCardData }) {
           <div className="font-[family-name:var(--font-mono)] text-3xl font-semibold tracking-tight text-[var(--ink)]">
             {formatValue(metric.latest?.value, metric.unit)}
           </div>
-          {displayReleaseStage(metric.releaseStage) && (
+          {isPreliminaryReleaseStage(metric.releaseStage) && (
             <span className="mt-1 inline-flex rounded-full border border-[var(--accent)]/30 bg-[var(--accent-soft)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-ink)]">
-              {displayReleaseStage(metric.releaseStage)}
+              {`(${displayReleaseStage(metric.releaseStage)})`}
             </span>
           )}
           {hasConsensus && (

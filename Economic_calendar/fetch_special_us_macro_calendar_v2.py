@@ -37,6 +37,7 @@ from __future__ import annotations
 import calendar
 import json
 import re
+import time
 from datetime import date, datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
@@ -278,10 +279,11 @@ def result(
 
 
 def parse_explicit_next_update(text: str, label: str) -> date | None:
-    # "Next update: September 30, 2026"
+    # Cleveland Fed's page uses "Next update" without a colon, while other
+    # publishers commonly use "Next release: ..." or "Next data release: ...".
     m = re.search(
-        r"Next\s+(?:update|release|data release)\s*:\s*"
-        r"([A-Za-z]+\s+\d{1,2},\s+\d{4})",
+        r"Next\s+(?:update|release|data\s+release)\s*:?\s*"
+        r"(?:\w+,\s*)?([A-Za-z]+\s+\d{1,2},?\s+\d{4})",
         text,
         re.I,
     )
@@ -694,9 +696,21 @@ def weekly_claims_result() -> dict:
     today = date.today()
     for year in (today.year, today.year + 1):
         source = f"{URLS['CLAIMS_CALENDAR']}&vs={year}-01-01&ve={year}-12-31&ob=rd&od=asc"
-        value = parse_claims_calendar(fetch(source), source=source)
-        if value:
-            return value
+        last_error = None
+        for attempt in range(2):
+            try:
+                value = parse_claims_calendar(fetch(source), source=source)
+                if value:
+                    return value
+                break
+            except Exception as exc:
+                last_error = exc
+                if attempt == 0:
+                    # A transient FRED timeout on release morning must not
+                    # leave the claims schedule pinned to last week's date.
+                    time.sleep(1)
+        if last_error:
+            raise RuntimeError(f"Claims calendar fetch failed for {year} after retry: {last_error}")
     raise RuntimeError("No published future DOL claims date was found in the Federal Reserve calendar.")
 
 
@@ -817,7 +831,7 @@ def main():
                 "DALLAS_BUSINESS_ACTIVITY": URLS["DALLAS"],
                 "CHICAGO_CFNAI": URLS["CHICAGO"],
                 "ADP_NER": URLS["ADP"],
-                "JOBLESS_CLAIMS": URLS["DOL_CLAIMS"],
+                "JOBLESS_CLAIMS": URLS["CLAIMS_CALENDAR"],
                 "OECD_CLI_BCI": URLS["OECD_CLI"],
                 "OECD_UNEMPLOYMENT": URLS["OECD_RELEASES"],
             }

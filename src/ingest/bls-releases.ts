@@ -18,11 +18,15 @@ export async function fetchBlsEmpsitRelease(): Promise<{
   });
   if (!res.ok) throw new Error(`BLS empsit HTML ${res.status}`);
   const html = await res.text();
+  return parseBlsEmpsitRelease(html);
+}
+
+export function parseBlsEmpsitRelease(html: string) {
   const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
 
   const codedPeriod = text.match(/Results\s*-\s*(\d{4})\s*M(\d{2})/i);
   const namedPeriod = text.match(
-    /\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+(20\d{2})\b/i
+    /THE EMPLOYMENT SITUATION\s*[-–—]\s*(January|February|March|April|May|June|July|August|September|October|November|December)\s+(20\d{2})\b/i
   );
   const date = codedPeriod
     ? `${codedPeriod[1]}-${codedPeriod[2]}-01`
@@ -30,7 +34,12 @@ export async function fetchBlsEmpsitRelease(): Promise<{
       ? monthYearToDate(namedPeriod[1], namedPeriod[2])
       : null;
 
-  const nfpMatch =
+  const headlineNfpMatch = text.match(
+    /\btotal nonfarm payroll employment\s+(rose|increased|grew|declined|fell|decreased)\s+(?:by\s+)?([+-]?[\d,]+)\s+in\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\b/i
+  );
+  const nfpMatch = headlineNfpMatch
+    ? [headlineNfpMatch[0], headlineNfpMatch[1], headlineNfpMatch[2]]
+    :
     text.match(
       /nonfarm payroll employment[^.]*?\(([+-]?[\d,]+)\)/i
     ) ??
@@ -49,7 +58,9 @@ export async function fetchBlsEmpsitRelease(): Promise<{
         ? {
             date,
             // BLS text uses "(-23,000)" meaning -23 thousand jobs
-            value: Number(nfpMatch[1].replace(/,/g, "")) / 1000,
+            value: (/declined|fell|decreased/i.test(nfpMatch[1])
+              ? -1
+              : 1) * Number((headlineNfpMatch ? nfpMatch[2] : nfpMatch[1]).replace(/,/g, "")) / 1000,
           }
         : null,
     unemployment:

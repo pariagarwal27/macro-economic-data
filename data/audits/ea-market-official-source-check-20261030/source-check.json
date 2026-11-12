@@ -1,0 +1,130 @@
+{
+  "checkedAtUtc": "2026-10-30T12:20:03.341346+00:00",
+  "scope": "Five euro-area HICP inflation-swap metrics in the market-based expectations section",
+  "status": "blocked_pending_verified_equivalent_source_or_user_choice_of_different_measures",
+  "checks": [
+    {
+      "metricId": "ea-inflation-comp-1y",
+      "currentProvider": "lseg",
+      "currentSeriesId": "EUHICP1Y=",
+      "candidatePublisher": "ECB",
+      "candidateInstrumentCode": "EUSWI1",
+      "url": "https://data-api.ecb.europa.eu/service/data/FM/.....EUSWI1.?detail=serieskeysonly&format=csvdata",
+      "httpStatus": 404,
+      "response": {
+        "type": "/service/data/FM/.....EUSWI1.",
+        "title": "Not Found",
+        "status": 404,
+        "detail": "No Series was returned for the query: <?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><DataQuery dataflowId=\"FM\" detail=\"SERIESKEYSONLY\" type=\"WILDCARDED_QUERY\" includeHistory=\"false\"><SeriesKeys><SeriesKey>%.%.%.%.%.EUSWI1.%</SeriesKey></SeriesKeys></DataQuery>",
+        "instance": "/service/data/FM/.....EUSWI1."
+      },
+      "routeChanged": false,
+      "backfillPerformed": false,
+      "scheduleChanged": false
+    },
+    {
+      "metricId": "ea-inflation-comp-2y",
+      "currentProvider": "lseg",
+      "currentSeriesId": "EUHICP2Y=",
+      "candidatePublisher": "ECB",
+      "candidateInstrumentCode": "EUSWI2",
+      "url": "https://data-api.ecb.europa.eu/service/data/FM/.....EUSWI2.?detail=serieskeysonly&format=csvdata",
+      "httpStatus": 404,
+      "response": {
+        "type": "/service/data/FM/.....EUSWI2.",
+        "title": "Not Found",
+        "status": 404,
+        "detail": "No Series was returned for the query: <?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><DataQuery dataflowId=\"FM\" detail=\"SERIESKEYSONLY\" type=\"WILDCARDED_QUERY\" includeHistory=\"false\"><SeriesKeys><SeriesKey>%.%.%.%.%.EUSWI2.%</SeriesKey></SeriesKeys></DataQuery>",
+        "instance": "/service/data/FM/.....EUSWI2."
+      },
+      "routeChanged": false,
+      "backfillPerformed": false,
+      "scheduleChanged": false
+    },
+    {
+      "metricId": "ea-inflation-comp-5y",
+      "currentProvider": "lseg",
+      "currentSeriesId": "EUHICP5Y=",
+      "candidatePublisher": "ECB",
+      "candidateInstrumentCode": "EUSWI5",
+      "url": "https://data-api.ecb.europa.eu/service/data/FM/.....EUSWI5.?detail=serieskeysonly&format=csvdata",
+      "httpStatus": 404,
+      "response": {
+        "type": "/service/data/FM/.....EUSWI5.",
+        "title": "Not Found",
+        "status": 404,
+        "detail": "No Series was returned for the query: <?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><DataQuery dataflowId=\"FM\" detail=\"SERIESKEYSONLY\" type=\"WILDCARDED_QUERY\" includeHistory=\"false\"><SeriesKeys><SeriesKey>%.%.%.%.%.EUSWI5.%</SeriesKey></SeriesKeys></DataQuery>",
+        "instance": "/service/data/FM/.....EUSWI5."
+      },
+      "routeChanged": false,
+      "backfillPerformed": false,
+      "scheduleChanged": false
+    },
+    {
+      "metricId": "ea-inflation-comp-10y",
+      "currentProvider": "lseg",
+      "currentSeriesId": "EUHICP10Y=",
+      "candidatePublisher": "ECB",
+      "candidateInstrumentCode": "EUSWI10",
+      "url": "https://data-api.ecb.europa.eu/service/data/FM/.....EUSWI10.?detail=serieskeysonly&format=csvdata",
+      "httpStatus": 404,
+      "response": {
+        "type": "/service/data/FM/.....EUSWI10.",
+        "title": "Not Found",
+        "status": 404,
+        "detail": "No Series was returned for the query: <?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><DataQuery dataflowId=\"FM\" detail=\"SERIESKEYSONLY\" type=\"WILDCARDED_QUERY\" includeHistory=\"false\"><SeriesKeys><SeriesKey>%.%.%.%.%.EUSWI10.%</SeriesKey></SeriesKeys></DataQuery>",
+        "instance": "/service/data/FM/.....EUSWI10."
+      },
+      "routeChanged": false,
+      "backfillPerformed": false,
+      "scheduleChanged": false
+    },
+    {
+      "metricId": "ea-inflation-comp-5y5y",
+      "currentProvider": "lseg",
+      "currentSeriesId": "EUIL5Y5Y=R",
+      "candidatePublisher": "ECB",
+      "candidateInstrumentCode": "FWISEU55",
+      "url": "https://data-api.ecb.europa.eu/service/data/FM/.....FWISEU55.?detail=serieskeysonly&format=csvdata",
+      "httpStatus": 404,
+      "response": {
+        "type": "/service/data/FM/.....FWISEU55.",
+        "title": "Not Found",
+        "status": 404,
+        "detail": "No Series was returned for the query: <?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><DataQuery dataflowId=\"FM\" detail=\"SERIESKEYSONLY\" type=\"WILDCARDED_QUERY\" includeHistory=\"false\"><SeriesKeys><SeriesKey>%.%.%.%.%.FWISEU55.%</SeriesKey></SeriesKeys></DataQuery>",
+        "instance": "/service/data/FM/.....FWISEU55."
+      },
+      "routeChanged": false,
+      "backfillPerformed": false,
+      "scheduleChanged": false
+    }
+  ],
+  "publicEurFmInventory": {
+    "url": "https://data-api.ecb.europa.eu/service/data/FM/..EUR....?detail=serieskeysonly&format=csvdata",
+    "seriesCount": 79,
+    "instrumentCodes": [
+      "BB",
+      "CY",
+      "EI",
+      "KR",
+      "MM"
+    ],
+    "matchingSwapSeriesFound": false
+  },
+  "ecbAnnualReport": {
+    "url": "https://www.ecb.europa.eu/press/annual-reports-financial-statements/annual/html/ecb.ar2025~b7f898b33d.en.html",
+    "finding": "The inflation-expectations chart credits LSEG among its sources and describes 5y5y ILS observations at monthly frequency. No independent daily swap feed was verified from this page."
+  },
+  "releaseCalendar": {
+    "existingFunction": "Economic_calendar/fetch_ecb_calendar.py:fetch_inflation_compensation",
+    "nextRelease": null,
+    "nextReleaseAt": null,
+    "updateType": "daily_business_day",
+    "finding": "Existing implementation has no announced discrete release event. Do not invent an official release time."
+  },
+  "limitations": [
+    "This audit does not prove that no official institution publishes any related market series.",
+    "ECB survey expectations and national bond breakevens are not equivalent to the five existing swap measures.",
+    "No production routes, stored observations, charts or schedules were changed."
+  ]
+}

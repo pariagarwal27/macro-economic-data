@@ -1,8 +1,10 @@
 import type { MetricDef } from "@/catalog/metrics";
 import type { ScheduledCalendarRow } from "./economic-calendar-db";
+import { expectedPcePeriod, PCE_RATE_SOURCES } from "./pce-release";
+import { eurostatScheduledReleaseStage, releaseStageFromNote } from "@/ingest/release-stages";
 
 export const CALENDAR_TIME_ZONE = "Europe/London";
-export type CalendarActual = { id?: number; metricId: string; periodDate?: string | null; releasedAt: string; value: number | null; expectedValue: number | null; priorPeriodValue: number | null };
+export type CalendarActual = { id?: number; metricId: string; periodDate?: string | null; releasedAt: string; value: number | null; expectedValue: number | null; priorPeriodValue: number | null; releaseStage?: ReturnType<typeof releaseStageFromNote> };
 export type CalendarCompletion = { metricId: string; scheduledAt: string; processedAt: string; releaseId: number | null };
 export type CalendarReleaseHistory = ReadonlyMap<string, readonly { periodDate: string; value: number | null }[]>;
 export type CalendarRegionFilter = "ALL" | "US" | "UK" | "EA";
@@ -38,8 +40,10 @@ const EA_HICP_DISPLAY: Readonly<Record<string, { name: string; order: number }>>
   "ea-services-hicp-yoy": { name: "Services HICP YoY", order: 5 },
 };
 export function calendarMetricDisplayName(metric: Pick<MetricDef, "id" | "name" | "category" | "subcategory" | "source" | "shortName" | "releaseName">) {
+  if (/^ea-spf-(hicp|gdp|unemployment|wage)-(?:target-2026|rolling-current)$/.test(metric.id)) return metric.name;
   if (metric.id === "us-umich-inflation-exp-1y") return "UMich Inflation Expectations 1Y";
   if (metric.id === "us-umich-inflation-exp-5y") return "UMich Inflation Expectations 5Y";
+  if (metric.id.startsWith("us-nyfed-sce-")) return metric.shortName || metric.name;
   const specialName = EA_HICP_DISPLAY[metric.id]?.name;
   if (specialName) return specialName;
   const expectationCategory = metric.category === "inflation" ? INFLATION_EXPECTATION_LABELS[metric.subcategory] : null;
@@ -89,9 +93,17 @@ export function inheritSharedReleaseSchedules<T extends { metricId: string; next
   const scheduledMetricIds = new Set(datedRows.map(row => row.metricId));
   const inherited = catalog.flatMap(metric => {
     if (scheduledMetricIds.has(metric.id) || metric.frequency === "daily" || metric.frequency === "hourly") return [];
+    // Cleveland Fed Median PCE is published with the BEA Personal Income and
+    // Outlays release. It has a different data source, so source/release-name
+    // matching alone cannot inherit BEA's official date and timestamp.
+    const pceReleaseParent = metric.id.startsWith("us-cleveland-median-pce") || metric.id.startsWith("us-dallas-trimmed-mean-pce") ? "us-pce" : null;
+    const sharedParentRows = pceReleaseParent
+      ? datedRows.filter(row => row.metricId === pceReleaseParent)
+      : [];
     const peer = catalog.find(candidate => candidate.id !== metric.id && candidate.region === metric.region &&
       candidate.source === metric.source && candidate.releaseName === metric.releaseName && scheduledMetricIds.has(candidate.id));
-    return peer ? datedRows.filter(row => row.metricId === peer.id).map(row => ({ ...row, metricId: metric.id, metricName: metric.name })) : [];
+    const peerRows = sharedParentRows.length ? sharedParentRows : peer ? datedRows.filter(row => row.metricId === peer.id) : [];
+    return peerRows.map(row => ({ ...row, metricId: metric.id, metricName: metric.name }));
   });
   const inheritedIds = new Set(inherited.map(row => row.metricId));
   return [...rows.filter(row => !inheritedIds.has(row.metricId)), ...inherited].filter(row => metricsById.has(row.metricId));
@@ -119,7 +131,7 @@ export function isWithinPastAndNextSevenCalendarDays(scheduledDate: string | nul
   return scheduleType === "scheduled" && !!scheduledDate && scheduledDate >= addDays(today, -6) && scheduledDate <= addDays(today, 7);
 }
 
-export function buildEconomicCalendar(schedule: ScheduledCalendarRow[], actuals: CalendarActual[], catalog: (MetricDef & { liveSource?: string | null })[], now = new Date(), options: { history?: ScheduledCalendarRow[]; completions?: CalendarCompletion[]; latestValues?: ReadonlyMap<string, number | null>; releaseHistory?: CalendarReleaseHistory } = {}) {
+export function buildEconomicCalendar(schedule: ScheduledCalendarRow[], actuals: CalendarActual[], catalog: (MetricDef & { liveSource?: string | null })[], now = new Date(), options: { history?: ScheduledCalendarRow[]; completions?: CalendarCompletion[]; latestValues?: ReadonlyMap<string, number | null>; releaseHistory?: CalendarReleaseHistory; forecasts?: ReadonlyMap<string, number> } = {}) {
   const today = dayKey(now);
   const weekday = new Date(`${today}T12:00:00Z`).getUTCDay();
   const weekStart = addDays(today, -((weekday + 6) % 7));
@@ -144,7 +156,7 @@ export function buildEconomicCalendar(schedule: ScheduledCalendarRow[], actuals:
     const deadline = row?.releaseDeadlineAt && /(?:Z|[+-]\d{2}:\d{2})$/i.test(row.releaseDeadlineAt) ? new Date(row.releaseDeadlineAt) : null;
     const deadlineAt = deadline && Number.isFinite(deadline.getTime()) ? deadline.toISOString() : null;
     const deadlineTime = deadlineAt ? new Intl.DateTimeFormat('en-GB', {timeZone: CALENDAR_TIME_ZONE, hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(deadlineAt)) : null;
-    const scheduledTimeLabel = scheduledTime ?? (deadlineTime ? `${row?.releaseTimeKind === 'before' ? 'Before' : 'By'} ${deadlineTime}` : 'Time unavailable');
+    const scheduledTimeLabel = scheduledTime ? `${row?.releaseTimeKind === 'expected' ? 'Expected ' : ''}${scheduledTime}` : (deadlineTime ? `${row?.releaseTimeKind === 'before' ? 'Before' : 'By'} ${deadlineTime}` : 'Time unavailable');
     const scheduleType = continuous ? (metric.frequency === "hourly" ? "hourly" as const : "daily" as const) : scheduledDate ? "scheduled" as const : row?.status === "source_error" ? "source-error" as const : "unannounced" as const;
     const startMs = scheduledAt ? Date.parse(scheduledAt) : scheduledDate ? Date.parse(`${scheduledDate}T00:00:00Z`) : Infinity;
     const nextMs = Math.min(Infinity, ...knownSchedules.filter(candidate=>candidate.metricId===metric.id).map(candidate=>Date.parse(candidate.nextReleaseAt ?? `${candidate.nextReleaseDate}T00:00:00Z`)).filter(value=>value>startMs));
@@ -153,24 +165,31 @@ export function buildEconomicCalendar(schedule: ScheduledCalendarRow[], actuals:
     // a provider timestamps its data earlier than our eventual ingestion.
     const actual = scheduledDate ? actuals.filter(item => {
       if (item.metricId !== metric.id) return false;
+      const pcePeriod = PCE_RATE_SOURCES[metric.id] ? expectedPcePeriod(row?.nextReleaseAt ?? row?.nextReleaseDate ?? "") : null;
+      if (pcePeriod && (!item.periodDate || item.periodDate < pcePeriod)) return false;
       if (!Number.isFinite(Date.parse(item.releasedAt))) return false;
       if (completion?.releaseId != null) return item.id === completion.releaseId;
       const actualMs = Date.parse(item.releasedAt);
       return actualMs >= startMs && actualMs < nextMs && actualMs <= now.getTime() && actualMs-startMs<=8*86_400_000;
     }).sort((a, b) => Date.parse(b.releasedAt) - Date.parse(a.releasedAt))[0] : undefined;
+    const releaseStage = actual?.releaseStage ?? eurostatScheduledReleaseStage(metric.id, row?.officialEvidence);
+    const metricName = calendarMetricDisplayName(metric);
+    const stagedMetricName = releaseStage === "flash" || releaseStage === "estimate"
+      ? `${metricName} (${releaseStage === "flash" ? "Flash estimate" : "Estimate"})`
+      : metricName;
     const scheduledTimeHasPassed = scheduledAt ? Date.parse(scheduledAt) <= now.getTime() : false;
     const isScheduledInFuture = Boolean(scheduledDate && (scheduledDate > today || (scheduledAt && !scheduledTimeHasPassed)));
     const status = actual ? "released" as const : !scheduledDate ? "unscheduled" as const : isScheduledInFuture ? "upcoming" as const : "pending" as const;
     const scheduleNote = continuous ? `${metric.frequency === "hourly" ? "Hourly" : "Daily"}-frequency series; no discrete announced release time.` : row?.status === "source_error" ? "Source fetch or parsing failed; an official schedule could not be confirmed." : !row ? "No release schedule has been fetched for this catalog metric." : !scheduledDate ? `No confirmed next release date was fetched.${row.officialEvidence ? ` ${row.officialEvidence}` : ""}` : row.nextReleaseAt && !hasZone && !atlantaBieTime ? "The source timestamp has no confirmed timezone; no exact time is shown." : atlantaBieTime ? `10:00 ET is the recurring calendar time for Atlanta Fed BIE; the official source confirms the release date but does not state an hour. ${row.officialEvidence ?? ""}`.trim() : !scheduledAt ? `An official date is available, but no confirmed exact time was fetched.${row.officialEvidence ? ` ${row.officialEvidence}` : ""}` : row.officialEvidence;
     return {
-      metricId: metric.id, metricName: calendarMetricDisplayName(metric), region: metric.region as "US" | "UK" | "EA",
+      metricId: metric.id, metricName: stagedMetricName, region: metric.region as "US" | "UK" | "EA",
       unit: metric.unit,
       source: metric.id.startsWith("us-umich-inflation-exp-")
         ? "University of Michigan"
         : metric.id === "us-adp-change" ? "ADP" : row?.source ?? metric.source,
       liveSource: metric.liveSource ?? null, family: row?.family ?? null,
       scheduledDate, scheduledTime, scheduledTimeLabel, scheduledAt, deadlineAt, scheduleType, scheduleNote,
-      status, actual: actual?.value ?? null, forecast: actual?.expectedValue ?? null,
+      status, actual: actual?.value ?? null, forecast: options.forecasts ? (scheduledDate ? options.forecasts.get(`${metric.id}:${scheduledDate}`) ?? null : null) : actual?.expectedValue ?? null,
       previous: actual
         ? actual.priorPeriodValue ?? (actual.periodDate
           ? options.releaseHistory?.get(metric.id)?.find(item => item.periodDate < actual.periodDate!)?.value ?? null

@@ -8,7 +8,9 @@ import { formatDelta, formatObsDate, formatValue } from "@/lib/format";
 import { surpriseTone, computeSurprise } from "@/lib/surprise";
 import { INFLATION_TREES, US_PCE_TREE, type Node } from "@/catalog/hierarchy";
 import { formatLiveSourceLabel } from "@/lib/live-source-label";
-import { displayReleaseStage, type ReleaseStage } from "@/ingest/release-stages";
+import { displayReleaseStage, isPreliminaryReleaseStage, type ReleaseStage } from "@/ingest/release-stages";
+import { releaseCardTarget } from "@/lib/release-card-targets";
+import { MetricReleaseDetail } from "./MetricReleaseDetail";
 
 type SeriesPayload = {
   meta: {
@@ -70,6 +72,10 @@ function findPath(nodes: Node[], id: string, path: string[] = []): string[] | nu
 }
 
 export function MetricDetail({ id }: { id: string }) {
+  return releaseCardTarget(id) ? <MetricReleaseDetail id={id} /> : <StandardMetricDetail id={id} />;
+}
+
+function StandardMetricDetail({ id }: { id: string }) {
   const [data, setData] = useState<SeriesPayload | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedThreeMonth, setSelectedThreeMonth] = useState(false);
@@ -156,9 +162,9 @@ export function MetricDetail({ id }: { id: string }) {
                   ? `${formatObsDate(latest.date)} period`
                   : "—"}
             </div>
-            {displayReleaseStage(releaseStage) && (
+            {isPreliminaryReleaseStage(releaseStage) && (
               <span className="mt-2 inline-flex rounded-full border border-[var(--accent)]/30 bg-[var(--accent-soft)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-ink)]">
-                {displayReleaseStage(releaseStage)}
+                {`(${displayReleaseStage(releaseStage)})`}
               </span>
             )}
           </div>
@@ -324,7 +330,7 @@ export function MetricDetail({ id }: { id: string }) {
                   <td className="py-2.5 pr-3">
                     {displayReleaseStage(r.releaseStage) ? (
                       <span className="inline-flex rounded-full border border-[var(--accent)]/30 bg-[var(--accent-soft)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-ink)]">
-                        {displayReleaseStage(r.releaseStage)}
+                        {`(${displayReleaseStage(r.releaseStage)})`}
                       </span>
                     ) : "—"}
                   </td>

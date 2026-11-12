@@ -19,3 +19,12 @@ test('component YoY uses underlying index levels, not a change in monthly rates'
   assert.ok(Math.abs(retailDriverRate(metrics,'uk-retail-food-stores','yoy','2026-09')! - 4)<1e-10);
   assert.equal(retailDriverRate({'x':{history:[{date:'2026-09-01',value:0.3}]}},'x','yoy','2026-09'),null);
 });
+test('control-group YoY is derived from levels, never copied from the MoM reading', () => {
+  const metrics = {'us-retail-sales-control-group': {history: [
+    {date:'2025-09-01',value:0.2,rawValue:100},
+    {date:'2026-09-01',value:1.82,rawValue:112},
+  ]}};
+  assert.equal(retailDriverRate(metrics,'us-retail-sales-control-group','mom','2026-09'),1.82);
+  assert.ok(Math.abs(retailDriverRate(metrics,'us-retail-sales-control-group','yoy','2026-09')! - 12) < 1e-10);
+  assert.equal(retailDriverRate({'us-retail-sales-control-group':{history:[{date:'2026-09-01',value:1.82}]}},'us-retail-sales-control-group','yoy','2026-09'),null);
+});

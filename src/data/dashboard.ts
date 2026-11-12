@@ -53,8 +53,9 @@ import {
   releaseTapeWindow,
 } from "@/lib/calendar-tape";
 import { round } from "@/ingest/transforms";
-import { releaseStageFromNote, VINTAGE_TRACKED_METRICS } from "@/ingest/release-stages";
+import { eurostatScheduledReleaseStage, releaseStageFromNote, VINTAGE_TRACKED_METRICS } from "@/ingest/release-stages";
 import { investingToCatalogScale } from "@/catalog/investing-map";
+import { forecastForNfpReleaseDate, selectUpcomingNfpForecast } from "@/lib/nfp-forecast";
 import { getEconomicCalendarRows } from "@/lib/economic-calendar-db";
 import { getDashboardCalendarMetrics } from "@/lib/dashboard-calendar-metrics";
 
@@ -90,6 +91,18 @@ function pickDisplayRelease(
   if (investing) return investing;
 
   return rows[0] ?? null;
+}
+
+async function getNfpCalendarForecastCandidates(db = getDb()) {
+  return db
+    .select({ releasedAt: calendarEvents.releasedAt, forecast: calendarEvents.forecast, importedAt: calendarEvents.importedAt })
+    .from(calendarEvents)
+    .where(and(
+      eq(calendarEvents.source, "investing"),
+      eq(calendarEvents.metricId, "us-nfp"),
+    ))
+    .orderBy(desc(calendarEvents.importedAt), desc(calendarEvents.releasedAt))
+    .limit(96);
 }
 export async function getReleaseTape(opts?: {
   days?: number;
@@ -164,6 +177,7 @@ export async function getReleaseTape(opts?: {
           value: releases.value,
           expectedValue: releases.expectedValue,
           priorPeriodValue: releases.priorPeriodValue,
+          notes: releases.notes,
         })
         .from(releases)
         .where(inArray(releases.metricId, metricIds))
@@ -198,6 +212,10 @@ export async function getReleaseTape(opts?: {
     const actual = scaleVal(scheduledRelease?.value ?? r.actual);
     const previous = scaleVal(scheduledRelease?.priorPeriodValue ?? r.previous);
     const status = r.metricId ? (scheduledRelease ? "released" : "upcoming") : (actual != null ? "released" : "upcoming");
+    const stage = releaseStageFromNote(scheduledRelease?.notes);
+    const displayShortName = stage === "flash" || stage === "estimate"
+      ? `${r.shortName ?? r.eventName} (${stage === "flash" ? "Flash estimate" : "Estimate"})`
+      : r.shortName;
 
     return {
       releasedAt: r.releasedAt,
@@ -208,7 +226,7 @@ export async function getReleaseTape(opts?: {
       country: r.country,
       currency: r.currency,
       metricId: r.metricId,
-      shortName: r.shortName,
+      shortName: displayShortName,
       unit: r.unit,
       region: r.region ?? tapeRegion,
       tapeRegion,
@@ -242,6 +260,10 @@ export async function getReleaseTape(opts?: {
       if (!metric || !date || !windowDaySet.has(date)) return [];
       if (regionFilter !== "ALL" && metric.region !== regionFilter) return [];
       const eventName = metric.name;
+      const scheduledStage = eurostatScheduledReleaseStage(row.metricId, row.officialEvidence);
+      const shortName = scheduledStage === "flash" || scheduledStage === "estimate"
+        ? `${metric.shortName} (${scheduledStage === "flash" ? "Flash estimate" : "Estimate"})`
+        : metric.shortName;
       const eventKind = classifyCalendarEvent(eventName);
       if (kindFilter === "data" && eventKind !== "data") return [];
       if (kindFilter === "speakers" && eventKind !== "speaker") return [];
@@ -259,7 +281,7 @@ export async function getReleaseTape(opts?: {
         country: metric.region,
         currency: metric.region === "US" ? "USD" : metric.region === "UK" ? "GBP" : "EUR",
         metricId: metric.id,
-        shortName: metric.shortName,
+        shortName,
         unit: metric.unit,
         region: metric.region,
         tapeRegion: metric.region,
@@ -432,6 +454,7 @@ export async function getSeriesHistory(metricId: string, limit = 240) {
     .where(eq(releases.metricId, metricId))
     .orderBy(desc(releases.releasedAt))
     .limit(48);
+  const nfpCalendarCandidates = metricId === "us-nfp" ? await getNfpCalendarForecastCandidates(db) : [];
 
   const byPeriod = new Map<string, (typeof releaseRows)[number]>();
   for (const row of releaseRows) {
@@ -452,13 +475,15 @@ export async function getSeriesHistory(metricId: string, limit = 240) {
   const releaseStage = releaseStageFromNote(releasesDeduped.find(row => row.periodDate === latestPeriod)?.notes);
   const releasesWithStages = releasesDeduped.map(row => ({
     ...row,
+    expectedValue: row.expectedValue ?? (metricId === "us-nfp" ? forecastForNfpReleaseDate(row.releasedAt, nfpCalendarCandidates) : null),
     releaseStage: releaseStageFromNote(row.notes),
   }));
-  const expectedValue = displayRelease?.expectedValue ?? null;
+  const expectedValue = displayRelease?.expectedValue ?? (metricId === "us-nfp" && displayRelease ? forecastForNfpReleaseDate(displayRelease.releasedAt, nfpCalendarCandidates) : null);
   const actualValue = latestPeriod
     ? (history[history.length - 1]?.value ?? displayRelease?.value ?? null)
     : null;
   const surprise = computeSurprise(actualValue, expectedValue, meta.unit);
+  const upcomingForecast = metricId === "us-nfp" ? selectUpcomingNfpForecast(nfpCalendarCandidates) : null;
 
   return {
     meta: {
@@ -473,6 +498,7 @@ export async function getSeriesHistory(metricId: string, limit = 240) {
     displayReleasedAt: displayRelease?.releasedAt ?? null,
     expectedValue,
     surprise,
+    upcomingForecast,
     priorPeriodValue: displayRelease?.priorPeriodValue ?? null,
     priorPeriodDate: displayRelease?.priorPeriodDate ?? null,
   };
@@ -669,6 +695,8 @@ export async function getSeriesHistories(
   >;
 
   const result: Record<string, SeriesHistoryResult> = {};
+  const nfpCalendarCandidates = ids.includes("us-nfp") ? await getNfpCalendarForecastCandidates(db) : [];
+  const upcomingNfpForecast = ids.includes("us-nfp") ? selectUpcomingNfpForecast(nfpCalendarCandidates) : null;
 
   for (const metricId of ids) {
     const meta = metricMap.get(metricId);
@@ -760,11 +788,11 @@ const latestPeriod =
     const releaseStage = releaseStageFromNote(releasesDeduped.find(row => row.periodDate === latestPeriod)?.notes);
     const releasesWithStages = releasesDeduped.map(row => ({
       ...row,
+      expectedValue: row.expectedValue ?? (metricId === "us-nfp" ? forecastForNfpReleaseDate(row.releasedAt, nfpCalendarCandidates) : null),
       releaseStage: releaseStageFromNote(row.notes),
     }));
 
-    const expectedValue =
-      displayRelease?.expectedValue ?? null;
+    const expectedValue = displayRelease?.expectedValue ?? (metricId === "us-nfp" && displayRelease ? forecastForNfpReleaseDate(displayRelease.releasedAt, nfpCalendarCandidates) : null);
 
     const actualValue = latestPeriod
   ? (
@@ -797,6 +825,7 @@ const latestPeriod =
         displayRelease?.releasedAt ?? null,
       expectedValue,
       surprise,
+      upcomingForecast: metricId === "us-nfp" ? upcomingNfpForecast : null,
       priorPeriodValue:
         displayRelease?.priorPeriodValue ?? null,
       priorPeriodDate:

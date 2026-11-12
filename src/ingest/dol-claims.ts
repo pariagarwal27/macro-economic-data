@@ -1,4 +1,4 @@
-import { getD1Database } from "@/db";
+import { fetchFredSeries } from "./fred";
 import type { RawPoint } from "./transforms";
 
 
@@ -13,14 +13,49 @@ export async function fetchDolClaims(): Promise<{
   initialAverage: RawPoint[];
   continuingAverage: RawPoint[];
 }> {
-  if (getD1Database()) return fromHtml();
   try {
     return await fromPdf();
   } catch (pdfErr) {
     console.warn("[dol] PDF parse failed:", pdfErr);
   }
 
+  // The DOL HTML landing page contains a form, not the released observations.
+  // Cloudflare's D1 runtime cannot always load pdf-parse's worker, so use the
+  // matching FRED weekly series as a live fallback there (and anywhere else
+  // PDF parsing is unavailable).
+  try {
+    return await fromFred();
+  } catch (fredErr) {
+    console.warn("[dol] FRED fallback failed:", fredErr);
+  }
+
+  // Keep the legacy parser as a last resort for environments where DOL adds
+  // the current print to the landing page itself.
   return fromHtml();
+}
+
+async function fromFred(): Promise<{
+  initial: RawPoint[];
+  continuing: RawPoint[];
+  initialAverage: RawPoint[];
+  continuingAverage: RawPoint[];
+}> {
+  const [initial, continuing, initialAverage, continuingAverage] = await Promise.all([
+    fetchFredSeries("ICSA"),
+    fetchFredSeries("CCSA"),
+    fetchFredSeries("IC4WSA"),
+    fetchFredSeries("CCSA4WK"),
+  ]);
+  const latest = (points: RawPoint[]) => points.at(-1);
+  if (!latest(initial.points) || !latest(continuing.points)) {
+    throw new Error("FRED claims series are missing their latest observations");
+  }
+  return {
+    initial: [latest(initial.points)!],
+    continuing: [latest(continuing.points)!],
+    initialAverage: initialAverage.points,
+    continuingAverage: continuingAverage.points,
+  };
 }
 
 async function fromPdf(): Promise<{

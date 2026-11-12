@@ -108,6 +108,10 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
     provider: "bls",
     seriesId: "CES0500000003",
   },
+  "us-ahe-mom": {
+    provider: "bls",
+    seriesId: "CES0500000003",
+  },
   "us-avg-workweek": {
     provider: "bls",
     seriesId: "CES0500000002",
@@ -417,6 +421,11 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
     seriesId: "T20804:25",
     note: "PCE ex food and energy",
   },
+  "us-core-pce-ex-housing": {
+    provider: "bea",
+    seriesId: "T20804:26",
+    note: "PCE ex food, energy, and housing",
+  },
   "us-pce-goods": {
     provider: "bea",
     seriesId: "T20804:2",
@@ -427,11 +436,15 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
     seriesId: "T20804:3",
     note: "PCE durable goods",
   },
+  "us-pce-motor-vehicles": { provider: "bea", seriesId: "T20804:4", note: "Motor vehicles and parts" },
   "us-pce-furnishings": {
     provider: "bea",
     seriesId: "T20804:5",
     note: "PCE furnishings",
   },
+  "us-pce-recreational-goods": { provider: "bea", seriesId: "T20804:6", note: "Recreational goods and vehicles" },
+  "us-pce-other-durable-goods": { provider: "bea", seriesId: "T20804:7", note: "Other durable goods" },
+  "us-pce-other-nondurable-goods": { provider: "bea", seriesId: "T20804:12", note: "Other nondurable goods" },
   "us-pce-clothing": {
     provider: "bea",
     seriesId: "T20804:10",
@@ -462,6 +475,8 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
     seriesId: "T20804:16",
     note: "PCE health care",
   },
+  "us-pce-transport-services": { provider: "bea", seriesId: "T20804:17", note: "Transportation services" },
+  "us-pce-recreation-services": { provider: "bea", seriesId: "T20804:18", note: "Recreation services" },
   "us-pce-food-services": {
     provider: "bea",
     seriesId: "T20804:19",
@@ -472,6 +487,9 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
     seriesId: "T20804:29",
     note: "PCE housing",
   },
+  "us-pce-financial-services": { provider: "bea", seriesId: "T20804:20", note: "Financial services and insurance" },
+  "us-pce-other-services": { provider: "bea", seriesId: "T20804:21", note: "Other services" },
+  "us-pce-housing-utilities": { provider: "bea", seriesId: "T20804:15", note: "Housing and utilities" },
 
   // ---------------------------------------------------------------------------
   // BEA — GDP / PCE / Personal Spending
@@ -615,6 +633,8 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
     provider: "ons",
     seriesId: "AP2Y",
   },
+  "uk-payrolled-employees-level": { provider: "ons", seriesId: "PAYE_EMP_LEVEL" },
+  "uk-payrolled-employees-annual-change": { provider: "ons", seriesId: "PAYE_EMP_LEVEL" },
   "uk-gdp-yoy": {
     provider: "ons",
     seriesId: "IHYR",
@@ -737,8 +757,10 @@ export const LIVE_MAP: Record<string, LiveSeriesRef> = {
   },
   "ea-employment-yoy": {
     provider: "eurostat",
-    seriesId: "ei_lmhu_m",
+    seriesId: "lfsi_emp_q_ea",
   },
+  "ea-employment-qoq": { provider: "eurostat", seriesId: "lfsi_emp_q_ea" },
+  "ea-employment-change": { provider: "eurostat", seriesId: "lfsi_emp_q_ea" },
   "ea-ppi-yoy": {
     provider: "eurostat",
     seriesId: "ea-ppi:B-E36:PCH_SM",

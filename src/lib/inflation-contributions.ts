@@ -1,10 +1,10 @@
 import { getOfficialComponentWeight } from "./official-component-weights";
 
-export type ContributionMetric = { meta: { unit?: string; transform?: string }; history: Array<{ date: string; value: number }> };
+export type ContributionMetric = { meta: { unit?: string; transform?: string }; history: Array<{ date: string; value: number }>; weightHistory?: Array<{ date: string; value: number }> };
 export type ContributionMetrics = Record<string, ContributionMetric | undefined>;
 export type ContributionMode = "yoy" | "mom";
 type Component = { id: string; label: string; momId?: string; children?: Component[] };
-export type ContributionConfig = { title: string; headline: string; core?: string; headlineYoy?: string; headlineMom?: string; coreYoy?: string; coreMom?: string; components: Component[]; coreComponents?: Component[] };
+export type ContributionConfig = { title: string; headline: string; core?: string; headlineName?: string; coreName?: string; displayRatesOnly?: boolean; note?: string; noteSource?: { label: string; url: string }; headlineYoy?: string; headlineMom?: string; coreYoy?: string; coreMom?: string; components: Component[]; coreComponents?: Component[] };
 const usCore: Component[] = [
   { id: "us-core-goods-cpi-yoy", label: "Core goods", momId: "us-core-goods-cpi-mom", children: [
     { id: "us-cpi-apparel", label: "Apparel" },
@@ -34,6 +34,21 @@ export const CONTRIBUTION_CONFIGS: Record<string, ContributionConfig> = {
   "us-cpi": us, "us-cpi-core": us,
   "uk-cpi-yoy": { title: "CPI", headline: "uk-cpi-yoy", headlineMom: "uk-cpi-mom", components: ukComponents("cpi") },
   "uk-cpih-yoy": { title: "CPIH", headline: "uk-cpih-yoy", headlineMom: "uk-cpih-mom", components: ukComponents("cpih") },
+  "uk-core-cpi-yoy": {
+    title: "Core inflation", headline: "uk-core-cpi-yoy", core: "uk-core-cpih-yoy",
+    headlineName: "Core CPI", coreName: "Core CPIH", displayRatesOnly: true,
+    headlineMom: "uk-core-cpi-mom",
+    components: ["clothing", "furniture", "health", "communication", "recreation", "education", "restaurants-hotels", "miscellaneous"].map((division) => ({
+      id: `uk-${division}-cpi-yoy`, momId: `uk-${division}-cpi-mom`,
+      label: ukLabels[ukDivisions.indexOf(division)],
+    })),
+    coreComponents: ["clothing", "furniture", "health", "communication", "recreation", "education", "restaurants-hotels", "miscellaneous"].map((division) => ({
+      id: `uk-${division}-cpih-yoy`, momId: `uk-${division}-cpih-mom`,
+      label: ukLabels[ukDivisions.indexOf(division)],
+    })),
+    note: "ONS core excludes energy, food, alcohol and tobacco. This table shows CPI/CPIH divisions fully within that definition; housing and transport are omitted because their published division rates also include excluded direct energy items. Weights are published shares of the full basket, and rates are not additive contributions. Core CPIH MoM is not mapped, so that KPI remains blank rather than substituting YoY.",
+    noteSource: { label: "ONS explanation of energy exclusions", url: "https://www.ons.gov.uk/aboutus/transparencyandgovernance/freedomofinformationfoi/energycostsandthecomputationofcoreinflation" },
+  },
   "ea-hicp-yoy": ea, "ea-core-hicp-yoy": ea,
 };
 export function contributionMetricIds() {
@@ -66,17 +81,34 @@ export function contributionRate(metric: ContributionMetric | undefined, period:
 }
 export function buildInflationContributions(config: ContributionConfig, metrics: ContributionMetrics, period: string, core: boolean, mode: ContributionMode) {
   const components = core ? config.coreComponents ?? [] : config.components;
-  const denominator = core ? components.reduce((sum, item) => sum + (getOfficialComponentWeight(item.id)?.value ?? 0), 0) : 100;
   const priorPeriod = previousContributionMonth(period);
+  const basePeriod = (month: string) => mode === "mom" ? previousContributionMonth(month) : `${Number(month.slice(0, 4)) - 1}${month.slice(4)}`;
+  const weightAt = (id: string, comparisonPeriod: string, displayedPeriod: string) => {
+    const observed = metrics[id]?.weightHistory?.find(point => point.date === comparisonPeriod)?.value;
+    if (observed != null && Number.isFinite(observed)) return {
+      value: observed, year: Number(comparisonPeriod.slice(0, 4)), validFrom: comparisonPeriod,
+      basis: `BLS CPI-U monthly relative importance for ${comparisonPeriod}; comparison-base-period weight`,
+      source: "https://www.bls.gov/cpi/factsheets/using-cpi-metadata-aspect-files.htm",
+    };
+    // Preserve the published annual-reference fallback for recent periods if
+    // the official monthly aspect feed is temporarily unavailable.
+    return getOfficialComponentWeight(id, displayedPeriod);
+  };
+  const denominatorAt = (month: string) => core && !config.displayRatesOnly ? components.reduce((sum, item) => sum + (weightAt(item.id, basePeriod(month), month)?.value ?? 0), 0) : 100;
+  const denominator = denominatorAt(period);
+  const priorDenominator = denominatorAt(priorPeriod);
   const buildRow = (item: Component, parent: string | null = null) => {
-    const weight = getOfficialComponentWeight(item.id);
-    const share = weight && denominator > 0 ? weight.value / denominator * 100 : null;
-    const rateAt = (month: string) => (mode === "mom" ? contributionRate(metrics[item.momId ?? ""], month, mode, "mom") : null)
-      ?? contributionRate(metrics[item.id], month, mode, "yoy");
+    const weight = weightAt(item.id, basePeriod(period), period);
+    const priorWeight = weightAt(item.id, basePeriod(priorPeriod), priorPeriod);
+    const share = weight && denominator > 0 ? config.displayRatesOnly ? weight.value : weight.value / denominator * 100 : null;
+    const rateAt = (month: string) => mode === "mom"
+      ? item.momId ? contributionRate(metrics[item.momId], month, mode, "mom") : contributionRate(metrics[item.id], month, mode)
+      : contributionRate(metrics[item.id], month, mode, "yoy");
     const currentRate = rateAt(period);
     const priorRate = rateAt(priorPeriod);
-    const current = weight?.year === Number(period.slice(0, 4)) && period >= weight.validFrom && share != null && currentRate != null ? share * currentRate / 100 : null;
-    const previous = weight?.year === Number(priorPeriod.slice(0, 4)) && priorPeriod >= weight.validFrom && share != null && priorRate != null ? share * priorRate / 100 : null;
+    const current = !config.displayRatesOnly && weight != null && share != null && currentRate != null ? share * currentRate / 100 : null;
+    const priorShare = priorWeight && priorDenominator > 0 ? priorWeight.value / priorDenominator * 100 : null;
+    const previous = !config.displayRatesOnly && priorShare != null && priorRate != null ? priorShare * priorRate / 100 : null;
     return { ...item, parent, subtotal: Boolean(item.children?.length), countInTotal: parent === null, weight, share, currentRate, current, previous, change: current != null && previous != null ? current - previous : null };
   };
   // Sort each level by its official basket weight, keeping subdivisions grouped

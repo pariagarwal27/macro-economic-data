@@ -137,7 +137,10 @@ function parseEurostat(json: EurostatResponse): RawPoint[] {
     points.push({
       date,
       value,
-      releaseStage: status === "e" ? "flash" : status === "p" ? "estimate" : undefined,
+      // Eurostat's `e` means estimated and `p` means provisional. The
+      // publication schedule, rather than these generic flags, distinguishes
+      // flash releases from regular/final releases.
+      releaseStage: status === "e" || status === "p" ? "estimate" : undefined,
     });
   }
 

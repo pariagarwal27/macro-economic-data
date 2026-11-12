@@ -1,10 +1,12 @@
 import { spawn } from 'node:child_process';
 import { CalendarRefreshScheduler } from './calendar-refresh-scheduler.mjs';
 import dotenv from 'dotenv';
+import path from 'node:path';
 
 dotenv.config({path:['.env.local','.env'],quiet:true});
 
 let child;
+let consensusChild;
 let stopping = false;
 const scheduler = new CalendarRefreshScheduler({
   run: () => new Promise((resolve, reject) => {
@@ -17,13 +19,29 @@ const scheduler = new CalendarRefreshScheduler({
   }),
   onError: error => console.error('[calendar-worker]', error.message),
 });
-for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => { stopping = true; child?.kill(signal); });
+const consensusScheduler = new CalendarRefreshScheduler({
+  statePath: process.env.FREE_CONSENSUS_REFRESH_STATE_PATH ?? path.join(process.cwd(), 'data', 'free-consensus-refresh-state.json'),
+  isReleaseDue: async () => false,
+  run: () => new Promise((resolve, reject) => {
+    consensusChild = spawn(process.execPath, ['node_modules/tsx/dist/cli.mjs', 'scripts/refresh-free-consensus.ts'], { stdio: 'inherit', windowsHide: true, env: { ...process.env } });
+    consensusChild.once('error', reject);
+    consensusChild.once('exit', code => { consensusChild = null; code === 0 ? resolve() : reject(Error(`Free consensus refresh exited ${code}`)); });
+  }),
+  onError: error => console.error('[free-consensus-worker]', error.message),
+});
+for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => { stopping = true; child?.kill(signal); consensusChild?.kill(signal); });
 console.log('[calendar-worker] Daily and post-release schedule refresh enabled; checks every minute, with one-hour retry backoff.');
 do {
   try {
     const outcome = await scheduler.tick();
     if (outcome !== 'not-due') console.log(`[calendar-worker] ${outcome}`);
   } catch (error) { console.error('[calendar-worker]', error.message); }
+  if (!stopping) {
+    try {
+      const outcome = await consensusScheduler.tick();
+      if (outcome !== 'not-due') console.log(`[free-consensus-worker] ${outcome}`);
+    } catch (error) { console.error('[free-consensus-worker]', error.message); }
+  }
   if (!stopping && process.env.CALENDAR_RUN_ONCE !== '1') await new Promise(resolve => {
     const stop = () => { clearTimeout(timer); process.off('SIGTERM', stop); process.off('SIGINT', stop); resolve(); };
     const timer = setTimeout(stop, 60_000);

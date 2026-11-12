@@ -49,6 +49,7 @@ next-env.d.ts
 /data/calendar-refresh-state.json.lock
 /data/calendar-refresh-state.json.lock.db*
 /data/calendar-refresh-state.json.*.tmp
+/data/fetch-logs.md
 # Track the pre-populated database files
 !data/macro.db
 !Economic_calendar/economic_calendar.db
@@ -59,3 +60,6 @@ next-env.d.ts
 
 # investing.com browser profile (Cloudflare cookies)
 .playwright-investing-profile/
+
+# Isolated local LSEG Python runtime
+/tmp/lseg-venv/

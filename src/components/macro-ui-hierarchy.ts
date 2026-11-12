@@ -16,6 +16,7 @@ export type UiNode = {
 
 export type IndicatorSpec = {
   groupOnly?: boolean;
+  spfForecastComponent?: "hicp" | "gdp" | "unemployment" | "wage";
   id: string;
   title?: string;
   metricId: string;
@@ -106,27 +107,27 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
       components: [
         n("goods", "Goods", "us-pce-goods", [
           n("durable", "Durable goods", "us-pce-durable-goods", [
-            n("motor-vehicles", "Motor vehicles and parts"),
+            n("motor-vehicles", "Motor vehicles and parts", "us-pce-motor-vehicles"),
             n("furnishings", "Furnishings and durable household equipment", "us-pce-furnishings"),
-            n("recreational-goods", "Recreational goods and vehicles"),
-            n("other-durable", "Other durable goods"),
+            n("recreational-goods", "Recreational goods and vehicles", "us-pce-recreational-goods"),
+            n("other-durable", "Other durable goods", "us-pce-other-durable-goods"),
           ]),
           n("nondurable", "Nondurable goods", undefined, [
             n("food", "Food and beverages purchased for off-premises consumption", "us-pce-food"),
             n("clothing", "Clothing and footwear", "us-pce-clothing"),
             n("energy-goods", "Gasoline and other energy goods", "us-pce-energy"),
-            n("other-nondurable", "Other nondurable goods"),
+            n("other-nondurable", "Other nondurable goods", "us-pce-other-nondurable-goods"),
           ]),
         ]),
         n("services", "Services", "us-pce-services", [
           n("household-services", "Household consumption expenditures for services", "us-pce-household-services", [
-            n("housing", "Housing", "us-pce-housing"),
+            n("housing", "Housing and utilities", "us-pce-housing-utilities"),
             n("healthcare", "Health care", "us-pce-healthcare"),
-            n("transportation-services", "Transportation services"),
-            n("recreation-services", "Recreation services"),
+            n("transportation-services", "Transportation services", "us-pce-transport-services"),
+            n("recreation-services", "Recreation services", "us-pce-recreation-services"),
             n("food-services", "Food services and accommodations", "us-pce-food-services"),
-            n("financial-services", "Financial services and insurance"),
-            n("other-services", "Other services"),
+            n("financial-services", "Financial services and insurance", "us-pce-financial-services"),
+            n("other-services", "Other services", "us-pce-other-services"),
           ]),
         ]),
       ],
@@ -876,11 +877,6 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
             n("non-durable-consumer-goods", "Non-durable consumer goods", "ea-ppi-non-durable-consumer-goods-yoy", undefined, "ea-ppi-non-durable-consumer-goods-mom"),
             n("energy", "Energy", "ea-ppi-energy-yoy", undefined, "ea-ppi-energy-mom"),
           ], "ea-ppi-mom"),
-          n("capital-goods", "Capital goods", "ea-ppi-capital-goods-yoy", undefined, "ea-ppi-capital-goods-mom"),
-          n("intermediate-goods", "Intermediate goods", "ea-ppi-intermediate-goods-yoy", undefined, "ea-ppi-intermediate-goods-mom"),
-          n("durable-consumer-goods", "Durable consumer goods", "ea-ppi-durable-consumer-goods-yoy", undefined, "ea-ppi-durable-consumer-goods-mom"),
-          n("non-durable-consumer-goods", "Non-durable consumer goods", "ea-ppi-non-durable-consumer-goods-yoy", undefined, "ea-ppi-non-durable-consumer-goods-mom"),
-          n("energy", "Energy", "ea-ppi-energy-yoy", undefined, "ea-ppi-energy-mom"),
         ],
       },
       // ----------------------------------------------------
@@ -912,12 +908,10 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
   components: [
     n("wage-tracker", "ECB Wage Tracker", "ea-wage-tracker"),
     n("wage-tracker-ex-oneoff", "ECB Wage Tracker — Excluding One-Off Payments", "ea-wage-tracker-ex-oneoff"),
-    n("spf-wage-1y", "ECB SPF — Wage / Labour-Cost Assumption 1-Year", "ea-spf-wage-exp-1y"),
   ],
   chartMetricIds: [
     "ea-wage-tracker",
     "ea-wage-tracker-ex-oneoff",
-    "ea-spf-wage-exp-1y",
   ],
 },
 
@@ -936,6 +930,23 @@ const SOURCE_DASHBOARD: Record<Region, Record<SourceMacroCategory, IndicatorSpec
     "ea-safe-input-cost-exp-1y",
     "ea-safe-wage-exp-1y",
   ],
+},
+
+{
+  id: "ea-inflation-expectations-professional",
+  metricId: "ea-spf-hicp-rolling-current",
+  title: "Professional Expectations",
+  expectationGroup: "professional",
+  components: [
+    n("spf-hicp", "ECB SPF — HICP Current-Year Forecast", "ea-spf-hicp-rolling-current"),
+    n("spf-core-hicp", "ECB SPF — Core HICP Current-Year Forecast", "ea-spf-core-rolling-current"),
+    n("spf-gdp", "ECB SPF — Real GDP Growth Current-Year Forecast", "ea-spf-gdp-rolling-current"),
+    n("spf-unemployment", "ECB SPF — Unemployment Current-Year Forecast", "ea-spf-unemployment-rolling-current"),
+    n("spf-wages", "ECB SPF — Wage Growth Current-Year Forecast", "ea-spf-wage-rolling-current"),
+  ],
+  chartMetricIds: (["hicp", "core", "gdp", "unemployment", "wage"] as const).flatMap(component =>
+    ["current", "next", "two-years", "lt"].map(horizon => `ea-spf-${component}-rolling-${horizon}`)
+  ),
 },
 
 {
@@ -1111,7 +1122,7 @@ const CATEGORY_SPEC_IDS: Record<Region, Record<MacroCategory, string[]>> = {
     activity: ["ea-gdp-card", "ea-retail-sales-card", "ea-pmi-card", "ea-household-card", "ea-capital-card", "ea-government-card", "ea-exports-card", "ea-imports-card"],
     labour: ["ea-unemployment-card", "ea-youth-card", "ea-employment-card", "ea-inactivity-card", "ea-vacancies-card", "ea-wages-card"],
     monetary: [],
-    expectations: ["ea-inflation-expectations-consumer", "ea-inflation-expectations-wage", "ea-inflation-expectations-business", "ea-inflation-expectations-market"],
+    expectations: ["ea-inflation-expectations-consumer", "ea-inflation-expectations-wage", "ea-inflation-expectations-business", "ea-inflation-expectations-market", "ea-inflation-expectations-professional"],
     external: [],
   },
 };

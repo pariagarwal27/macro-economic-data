@@ -36,13 +36,20 @@ export async function fetchBlsSeries(
   // into one family batch per minute, with a separate cache for release-time
   // requests so a pre-release response cannot satisfy the first release poll.
   if (requestedIds.every(id => PPI_SERIES_SET.has(id))) {
-    const key = `${opts.startYear ?? new Date().getFullYear() - 2}:${opts.endYear ?? new Date().getFullYear()}:${isFreshReleaseFetch() ? 'release' : 'normal'}`;
+    const releaseFetch = isFreshReleaseFetch();
+    const key = `${opts.startYear ?? new Date().getFullYear() - 2}:${opts.endYear ?? new Date().getFullYear()}:${releaseFetch ? 'release' : 'normal'}`;
     let entry = ppiBatches.get(key);
     if (!entry || entry.expiresAt <= Date.now()) {
       const promise = fetchBlsSeriesUncached(PPI_SERIES_IDS, opts);
       entry = { expiresAt: Date.now() + 60_000, promise };
       ppiBatches.set(key, entry);
-      promise.catch(() => { if (ppiBatches.get(key)?.promise === promise) ppiBatches.delete(key); });
+      // Coalesce simultaneous release requests, but do not reuse a completed
+      // pre-publication response on a later retry.
+      if (releaseFetch) void promise.then(
+        () => { if (ppiBatches.get(key)?.promise === promise) ppiBatches.delete(key); },
+        () => { if (ppiBatches.get(key)?.promise === promise) ppiBatches.delete(key); },
+      );
+      else promise.catch(() => { if (ppiBatches.get(key)?.promise === promise) ppiBatches.delete(key); });
     }
     const batch = await entry.promise;
     return new Map(requestedIds.map(id => [id, batch.get(id) ?? []]));

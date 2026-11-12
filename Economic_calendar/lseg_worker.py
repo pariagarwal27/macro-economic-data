@@ -16,7 +16,7 @@ from __future__ import annotations
 import json
 import math
 import os
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, unquote, urlparse
 
@@ -26,6 +26,9 @@ HOST = os.getenv("LSEG_HOST", "127.0.0.1")
 PORT = int(os.getenv("LSEG_PORT", "8765"))
 
 _session_open = False
+
+# These are daily market quotes, not monthly =ECI economic indicators.
+MARKET_RICS = {"EUHICP1Y=", "EUHICP2Y=", "EUHICP5Y=", "EUHICP10Y=", "EUIL5Y5Y=R"}
 
 
 def ensure_session():
@@ -50,6 +53,20 @@ def _numeric_columns(df):
 
 def fetch_latest_from_lseg(ric: str):
     ensure_session()
+
+    if ric in MARKET_RICS:
+        today = datetime.now(timezone.utc).date()
+        points = fetch_history_from_lseg(ric, (today - timedelta(days=14)).isoformat(), today.isoformat())
+        if not points:
+            return None
+        latest = points[-1]
+        return {
+            "periodDate": latest["date"],
+            "value": latest["value"],
+            "rawValue": str(latest["value"]),
+            # Retrieval timestamp; these market quotes have no scheduled release instant.
+            "releasedAt": datetime.now(timezone.utc).isoformat(),
+        }
 
     # LSEG's cross-economic-data field set defines ECON_ACT as the actual,
     # FCAST_PRD as the observation period, and ECI_ACT_DT as the GMT release
@@ -109,6 +126,8 @@ def fetch_latest_from_lseg(ric: str):
 
 def fetch_history_from_lseg(ric: str, start: str, end: str):
     ensure_session()
+    if ric in MARKET_RICS:
+        return fetch_market_history(ric, start, end)
     # LSEG's history endpoint returns the economic series as Date/Value. ECI
     # history does not accept the snapshot field ECON_ACT in a fields list.
     df = ld.get_history(
@@ -149,6 +168,48 @@ def fetch_history_from_lseg(ric: str, start: str, end: str):
     # Keep one published observation per period and return chronological data.
     by_period = {point["date"]: point for point in points}
     return [by_period[key] for key in sorted(by_period)]
+
+
+def fetch_market_history(ric: str, start: str, end: str):
+    cursor, last = date.fromisoformat(start), date.fromisoformat(end)
+    if cursor > last:
+        raise ValueError("start must not be after end")
+    points = {}
+    while cursor <= last:
+        # Bounded windows avoid truncating a multi-decade daily backfill at
+        # the historical-pricing response limit. Failed windows propagate.
+        window_end = min(cursor + timedelta(days=365), last)
+        frame = ld.get_history(
+            universe=[ric], fields=["BID", "ASK", "TRDPRC_1"],
+            start=cursor.isoformat(), end=window_end.isoformat(), interval="daily",
+            header_type=ld.HeaderType.NAME,
+        )
+        if frame is not None and not frame.empty:
+            columns = {}
+            for column in frame.columns:
+                labels = column if isinstance(column, tuple) else (column,)
+                for label in labels:
+                    if str(label).upper() in {"MID_PRICE", "BID", "ASK", "TRDPRC_1"}:
+                        columns[str(label).upper()] = column
+            for index, row in frame.iterrows():
+                values = {}
+                for field, column in columns.items():
+                    try:
+                        value = float(row[column])
+                        if math.isfinite(value):
+                            values[field] = value
+                    except (TypeError, ValueError):
+                        continue
+                value = values.get("MID_PRICE")
+                if value is None and "BID" in values and "ASK" in values:
+                    value = (values["BID"] + values["ASK"]) / 2
+                if value is None:
+                    value = values.get("TRDPRC_1")
+                period = normalize_period(str(index))
+                if period and value is not None:
+                    points[period] = {"date": period, "value": value}
+        cursor = window_end + timedelta(days=1)
+    return [points[key] for key in sorted(points)]
 
 
 def normalize_period(value: str):
@@ -201,6 +262,9 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         parsed = urlparse(self.path)
+        if parsed.path == "/health":
+            self.send_json(200, {"ok": True, "sessionOpen": _session_open})
+            return
         if parsed.path not in {"/latest", "/history"}:
             self.send_json(404, {"ok": False, "error": "Not found"})
             return

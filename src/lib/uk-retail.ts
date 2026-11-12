@@ -22,8 +22,13 @@ export function retailReleaseCandidates(rows: { metricId: string; nextReleaseDat
   const candidates = events.flatMap(row => {
     const scheduledAt = row.nextReleaseAt ?? row.nextReleaseDate;
     if (!scheduledAt) return [];
-    const elapsed = now.getTime() - Date.parse(scheduledAt);
-    if (!Number.isFinite(elapsed) || elapsed < 0 || elapsed > 3 * 86400000) return [];
+    const releaseTime = Date.parse(scheduledAt);
+    if (!Number.isFinite(releaseTime)) return [];
+    if (scheduledAt.includes('T') && releaseTime > now.getTime()) return [];
+    const londonDate = (date: Date) => new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit',
+    }).format(date);
+    if (londonDate(now) !== londonDate(new Date(releaseTime))) return [];
     return UK_RETAIL_RELEASE_IDS.map(metricId => ({ metricId, scheduledAt, mode: 'scheduled' as const }));
   });
   return candidates.filter((candidate, index) => candidates.findIndex(other => other.metricId === candidate.metricId) === index);

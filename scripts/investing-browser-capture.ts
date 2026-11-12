@@ -166,9 +166,9 @@ async function __invCaptureMonth(dateFromPicker, dateToPicker, rangeFrom, rangeT
 
   const dump = {
     source: "investing",
-    timezone: "BST",
+    timezone: "Europe/London",
     range: { from: rangeFrom, to: rangeTo },
-    note: "Human-like browser Load more; UI GMT+1/BST; countries US/UK/EA/DE/FR/IT/ES/AU",
+    note: "Calendar display must be set to UK time (Europe/London); countries US/UK/EA/DE/FR/IT/ES/AU",
     rows,
   };
   window.__invLastDump = dump;

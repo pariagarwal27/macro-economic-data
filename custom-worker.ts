@@ -11,7 +11,7 @@ export default {
     const key = new Request(request.url);
     // The release diary changes as ingestion completes and must bypass both
     // reads and writes in edge cache, including entries created by older code.
-    const bypassEdgeCache = url.pathname === "/api/economic-calendar";
+    const bypassEdgeCache = url.pathname === "/api/economic-calendar" || url.pathname === "/api/releases/stream";
     const cached = bypassEdgeCache ? null : await cache.match(key);
     if (cached) return cached;
     let response: Response;
@@ -48,16 +48,25 @@ export default {
     }
     return response;
   },
-  async scheduled(_event: ScheduledController, env: CloudflareEnv, ctx: ExecutionContext) {
+  async scheduled(event: ScheduledController, env: CloudflareEnv, ctx: ExecutionContext) {
     if (!env.CRON_SECRET) throw new Error("CRON_SECRET is required for scheduled ingestion");
+    const job = event.cron === "23 5 * * *"
+      ? "free-consensus"
+      : event.cron === "17 12 * * *"
+      ? "dmp-history"
+      : event.cron === "17 22 * * 1-5"
+        ? "fred-daily"
+        : event.cron === "30 12 * * 1-5"
+          ? "boe-daily-yield-curves"
+          : "releases";
     // Use the generated handler directly: no public self-fetch or local PC needed.
-    const request = new Request("https://macro-economy-tracker.macro-economy-tracker.workers.dev/api/cron/releases", {
+    const request = new Request(`https://macro-economy-tracker.macro-economy-tracker.workers.dev/api/cron/${job}`, {
       headers: { authorization: `Bearer ${env.CRON_SECRET}` },
     });
     const response = await handler.fetch(request, env, ctx);
     const result = await response.json();
-    console.log("[scheduled/releases]", JSON.stringify(result));
-    if (!response.ok) throw new Error(`Release refresh returned HTTP ${response.status}`);
+    console.log(`[scheduled/${job}]`, JSON.stringify(result));
+    if (!response.ok) throw new Error(`${job} returned HTTP ${response.status}`);
   },
 } satisfies ExportedHandler<CloudflareEnv>;
 

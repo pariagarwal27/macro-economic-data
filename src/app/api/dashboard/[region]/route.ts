@@ -10,6 +10,8 @@ import { METRICS } from "@/catalog/metrics";
 import { contributionMetricIds } from "@/lib/inflation-contributions";
 import { buildThreeMonthMethodMap, buildThreeMonthTrend } from "@/lib/three-month-trend";
 import { compactDashboardPayload } from "@/lib/dashboard-payload";
+import { PCE_EXPENDITURE_LINES } from "@/lib/pce-expenditure";
+import { getBlsCpiRelativeImportance } from "@/lib/bls-cpi-relative-importance";
 
 const THREE_MONTH_METHODS = buildThreeMonthMethodMap(METRICS);
 
@@ -53,7 +55,7 @@ export async function GET(
     // The headline and core CPI charts/cards derive rates from these source
     // series so an empty standalone rate metric does not erase the display.
     const inflationRateFallbackIds = r === "US"
-      ? ["us-cpi-nsa", "us-cpi-core-nsa"]
+      ? ["us-cpi-nsa", "us-cpi-core-nsa", "us-pce-mom", "us-pce-yoy", "us-core-pce-mom", "us-core-pce-yoy", "us-core-pce-ex-housing", ...Object.keys(PCE_EXPENDITURE_LINES)]
       : [];
     const underlyingInflationIds = r === "US"
       ? [
@@ -72,12 +74,23 @@ export async function GET(
     const driverIds = contributionMetricIds().filter(id => METRICS.some(metric => metric.id === id && metric.region === r));
     const threeMonthSourceIds = [...rootIds, ...componentIds, ...chartIds]
       .flatMap((id) => THREE_MONTH_METHODS.get(id)?.sourceMetricIds ?? []);
-    const ids = [...new Set([...rootIds, ...componentIds, ...chartIds, ...inflationRateFallbackIds, ...underlyingInflationIds, ...continuousIds, ...driverIds, ...threeMonthSourceIds])];
+    const corePceHousingId = r === "US" && allSpecs.some(spec => spec.id === "us-pce-card") ? ["us-pce-housing"] : [];
+    const ids = [...new Set([...rootIds, ...componentIds, ...chartIds, ...inflationRateFallbackIds, ...underlyingInflationIds, ...continuousIds, ...driverIds, ...threeMonthSourceIds, ...corePceHousingId])];
 
     // Include the prior year so 2026 charts can calculate YoY values from
     // the underlying published levels while the visible chart stays scoped
     // to the current year in the client.
     const result = await getSeriesHistories(ids, 240);
+    if (r === "US") {
+      const cpiWeightIds = contributionMetricIds().filter(id =>
+        id === "us-cpi" || id === "us-cpi-core" || id.startsWith("us-cpi-") ||
+        id === "us-core-goods-cpi-yoy" || id === "us-services-cpi-yoy"
+      );
+      const weightHistories = await getBlsCpiRelativeImportance(cpiWeightIds);
+      for (const [metricId, weightHistory] of Object.entries(weightHistories)) {
+        if (result[metricId]) Object.assign(result[metricId], { weightHistory });
+      }
+    }
     if (r === "US" || r === "UK" || r === "EA") {
       for (const metricId of ids) {
         const metric = METRICS.find((candidate) => candidate.id === metricId && candidate.region === r);

@@ -19,7 +19,7 @@ export function CountryDashboardPanels({ children }: { children: React.ReactNode
 
   return <>
     {regions.map(region => <div key={region} aria-hidden={region !== current} inert={region !== current}
-      style={region === current ? undefined : { position: "fixed", inset: 0, visibility: "hidden", pointerEvents: "none", zIndex: -1, overflow: "hidden" }}>
+      style={region === current ? undefined : { display: "none" }}>
       <CountryPanel region={region} active={region === current} />
     </div>)}
     {children}

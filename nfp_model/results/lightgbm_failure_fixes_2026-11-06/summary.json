@@ -1,0 +1,210 @@
+{
+  "database": "C:\\Users\\pari.agarwal\\Desktop\\nfp forecast\\data\\databases\\nfp_new.sqlite3",
+  "source_sha256": "eef1b5959e08c0f64d51c3c24dc92476eab9fad4248f099eaf61d222e7b8af23",
+  "rows": 321,
+  "columns": 96,
+  "validation_months": 36,
+  "test_months": 33,
+  "splits": {
+    "training": 252,
+    "validation": 36,
+    "test": 33
+  },
+  "legacy_feature_count": 83,
+  "indeed_columns_excluded_from_revised_models": [
+    "indeed_reference_week_avg_revised",
+    "indeed_previous_reference_week_avg_revised",
+    "indeed_reference_week_change_revised",
+    "indeed_latest_index_revised",
+    "indeed_latest_28d_change_revised",
+    "indeed_target_month_avg_revised",
+    "indeed_previous_month_avg_revised",
+    "indeed_month_avg_change_revised"
+  ],
+  "revised_feature_selection": {
+    "method": "Within each forecast-origin training window, rank features by absolute Spearman association with training-only first-release surprise; retain the stronger representative when two features have absolute Spearman correlation at or above the configured threshold.",
+    "correlation_limit": 0.9,
+    "minimum_pair_observations": "max(12, ceil(20% of that origin training rows))",
+    "calendar_features": [
+      "calendar_month_sin",
+      "calendar_month_cos"
+    ],
+    "calendar_encoding": "Cyclic sine/cosine calculated from target_month; no hand-entered month labels."
+  },
+  "shrink_selection": "For the selected validation LightGBM configuration, choose the MAE-minimizing surprise multiplier in [0,1] from exact absolute-loss breakpoints in validation predictions; no test labels are used.",
+  "models": {
+    "legacy_all_features_raw": {
+      "selected_lightgbm": {
+        "window": "expanding",
+        "max_depth": 3,
+        "num_leaves": 7,
+        "min_child_samples": 20,
+        "n_estimators": 200,
+        "learning_rate": 0.02
+      },
+      "selected_validation_shrink": 0.948932347097291,
+      "validation_raw": {
+        "months": 36,
+        "mae": 142.45346617573844,
+        "rmse": 212.40298714108357,
+        "bias": -6.685301308686812,
+        "max_abs_error": 721.1713895059527,
+        "direction_accuracy_pct": 100.0
+      },
+      "validation_after_shrink": {
+        "months": 36,
+        "mae": 142.377822523656,
+        "rmse": 212.4225892905181,
+        "bias": -6.969477409962953,
+        "max_abs_error": 721.8265165338867,
+        "direction_accuracy_pct": 100.0
+      },
+      "test_metrics": {
+        "months": 33,
+        "mae": 68.22148252018104,
+        "rmse": 79.13360231597736,
+        "bias": 6.016077737654056,
+        "max_abs_error": 151.60755058347894,
+        "direction_accuracy_pct": 90.9090909090909
+      },
+      "test_raw_metrics": {
+        "months": 33,
+        "mae": 68.57749743646953,
+        "rmse": 79.56474481876602,
+        "bias": 7.143815407562275,
+        "max_abs_error": 151.85551008728186,
+        "direction_accuracy_pct": 90.9090909090909
+      },
+      "mean_features_used": 78.51515151515152,
+      "min_features_used": 77,
+      "max_features_used": 82
+    },
+    "revised_no_indeed_pruned": {
+      "selected_lightgbm": {
+        "window": "rolling120",
+        "max_depth": 2,
+        "num_leaves": 4,
+        "min_child_samples": 20,
+        "n_estimators": 100,
+        "learning_rate": 0.03
+      },
+      "selected_validation_shrink": 1.0,
+      "validation_raw": {
+        "months": 36,
+        "mae": 143.18029839656535,
+        "rmse": 216.0627918653677,
+        "bias": 3.284534532961262,
+        "max_abs_error": 745.8418733522786,
+        "direction_accuracy_pct": 100.0
+      },
+      "validation_after_shrink": {
+        "months": 36,
+        "mae": 143.18029839656535,
+        "rmse": 216.0627918653677,
+        "bias": 3.284534532961262,
+        "max_abs_error": 745.8418733522786,
+        "direction_accuracy_pct": 100.0
+      },
+      "test_metrics": {
+        "months": 33,
+        "mae": 66.79490081637857,
+        "rmse": 78.21855830162342,
+        "bias": 10.447401025723183,
+        "max_abs_error": 175.99878920761864,
+        "direction_accuracy_pct": 93.93939393939394
+      },
+      "test_raw_metrics": {
+        "months": 33,
+        "mae": 66.79490081637857,
+        "rmse": 78.21855830162342,
+        "bias": 10.447401025723183,
+        "max_abs_error": 175.99878920761864,
+        "direction_accuracy_pct": 93.93939393939394
+      },
+      "mean_features_used": 48.484848484848484,
+      "min_features_used": 41,
+      "max_features_used": 52
+    },
+    "revised_no_indeed_pruned_seasonal": {
+      "selected_lightgbm": {
+        "window": "expanding",
+        "max_depth": 3,
+        "num_leaves": 7,
+        "min_child_samples": 20,
+        "n_estimators": 200,
+        "learning_rate": 0.02
+      },
+      "selected_validation_shrink": 1.0,
+      "validation_raw": {
+        "months": 36,
+        "mae": 142.6484611280718,
+        "rmse": 213.90672815322893,
+        "bias": -4.575731025028473,
+        "max_abs_error": 747.2382264446072,
+        "direction_accuracy_pct": 100.0
+      },
+      "validation_after_shrink": {
+        "months": 36,
+        "mae": 142.6484611280718,
+        "rmse": 213.90672815322893,
+        "bias": -4.575731025028473,
+        "max_abs_error": 747.2382264446072,
+        "direction_accuracy_pct": 100.0
+      },
+      "test_metrics": {
+        "months": 33,
+        "mae": 69.01158358507497,
+        "rmse": 80.4802332370123,
+        "bias": 4.679590938289926,
+        "max_abs_error": 168.79522829398326,
+        "direction_accuracy_pct": 93.93939393939394
+      },
+      "test_raw_metrics": {
+        "months": 33,
+        "mae": 69.01158358507497,
+        "rmse": 80.4802332370123,
+        "bias": 4.679590938289926,
+        "max_abs_error": 168.79522829398326,
+        "direction_accuracy_pct": 93.93939393939394
+      },
+      "mean_features_used": 43.18181818181818,
+      "min_features_used": 43,
+      "max_features_used": 44
+    }
+  },
+  "consensus_validation_metrics": {
+    "months": 36,
+    "mae": 146.91666666666666,
+    "rmse": 215.0274530276438,
+    "bias": -12.25,
+    "max_abs_error": 734.0,
+    "direction_accuracy_pct": 100.0
+  },
+  "consensus_test_metrics": {
+    "months": 33,
+    "mae": 65.24242424242425,
+    "rmse": 75.9718847517111,
+    "bias": -14.93939393939394,
+    "max_abs_error": 168.0,
+    "direction_accuracy_pct": 93.93939393939394
+  },
+  "event_feature_audit": {
+    "direct_event_or_collection_columns_found_by_name": [],
+    "existing_labor_event_proxy_columns": [
+      "jolts_separations_latest",
+      "jolts_layoffs_latest",
+      "jolts_layoffs_rate"
+    ],
+    "decision": "No strike, shutdown, weather, federal-layoff, school-calendar or survey-collection history was added because the database has no corresponding timestamped point-in-time feature table. Existing numeric source columns remain eligible when they pass the release-date/audit masking already used by the project."
+  },
+  "vintage_and_evaluation_caveats": [
+    "Revised Indeed fields are excluded from both revised variants. Other source-vintage limitations reported by the existing build_inputs audit remain.",
+    "Consensus timing is accepted as supplied by the user; this script does not independently recertify it.",
+    "The 2024\u20132026 test period has already been examined in earlier project work. This is a diagnostic re-evaluation, not an untouched final holdout.",
+    "Historical October 2025 is an unusual combined initial-estimate release; its outcome remains in the historical test as stored."
+  ],
+  "source_audit_hashes": {
+    "C:\\Users\\pari.agarwal\\Desktop\\nfp forecast\\data\\databases\\ces_hours_backfill_audit.csv": "35c5727880f8ef8ea5757451804edb7fd542bfd066b426c5e207d9b469d5919b"
+  },
+  "masked_cells": 0
+}

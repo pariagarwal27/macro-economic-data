@@ -1,9 +1,12 @@
 
 import json
 import re
+import xml.etree.ElementTree as ET
 from datetime import date, datetime, timezone
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
+from zoneinfo import ZoneInfo
 
 import requests
 from html.parser import HTMLParser
@@ -22,9 +25,11 @@ BOE_LATEST_URL = BOE_BASE + "/news/latest-and-upcoming"
 BOE_IAS_SITEMAP = BOE_BASE + "/sitemap/inflation-attitudes-survey"
 BOE_MARKETS_SITEMAP = BOE_BASE + "/sitemap/markets"
 YOUGOV_ECONOMY_URL = "https://yougov.com/en-gb/content/economy"
+YOUGOV_CITI_SEARCH_URL = "https://yougov.com/en-gb/search?q_term=Citigroup%20inflation&q_type=all"
 CITI_INSIGHTS_URL = "https://www.citigroup.com/global/insights/citi-institute"
 BOE_AGENTS_SITEMAP = BOE_BASE + "/sitemap/agents-summary"
 BOE_RELEASE_TIMEZONE = "Europe/London"
+BOE_PUBLICATIONS_RSS = BOE_BASE + "/rss/publications"
 
 # Survey publication pages can announce a date without a time.
 # Do not apply the statistical-release convention to these publications.
@@ -603,6 +608,56 @@ def fetch_monthly_boE_page_date(path_prefix, title_prefix, months_ahead=4, famil
     return future[0]
 
 
+def apply_dmp_release_time(result):
+    """Enrich date-only DMP announcements with an auditable expected time.
+
+    Do not apply the Bank's statistical-release convention to all surveys.
+    The DMP-specific fallback was verified against official RSS pubDates:
+    24 July, 4 September and 2 October 2026, all 09:30 Europe/London.
+    A fresh DMP RSS entry updates this expectation on every schedule refresh.
+    """
+    if not result or not result.get("date") or result.get("release_at"):
+        return result
+
+    release_time = "09:30"
+    basis = "DMP publications on 24 July, 4 September and 2 October 2026 at 09:30 Europe/London"
+    kind = "expected"
+    try:
+        items = []
+        for item in ET.fromstring(fetch_html(BOE_PUBLICATIONS_RSS)).iter("item"):
+            link = (item.findtext("link") or "").strip()
+            parsed_url = urlparse(link)
+            if parsed_url.hostname != "www.bankofengland.co.uk" or not parsed_url.path.startswith("/decision-maker-panel/"):
+                continue
+            try:
+                stamp = parsedate_to_datetime(item.findtext("pubDate") or "")
+            except (ValueError, TypeError, OverflowError):
+                continue
+            if stamp.tzinfo is None:
+                continue
+            local = stamp.astimezone(ZoneInfo(BOE_RELEASE_TIMEZONE))
+            if local.date() <= result["date"]:
+                items.append((local, link))
+        if items:
+            local, link = max(items)
+            release_time = local.strftime("%H:%M")
+            basis = f"DMP pubDate {local.isoformat()} ({link})"
+            if local.date() == result["date"] and link == result.get("source_url"):
+                kind = "exact"
+    except (requests.RequestException, ET.ParseError):
+        # Keep the verified DMP-specific expectation when the feed is offline.
+        pass
+
+    return {
+        **result,
+        "release_time": release_time,
+        "release_at": combine_date_time(result["date"], release_time, BOE_RELEASE_TIMEZONE),
+        "release_time_kind": kind,
+        "evidence": " ".join(filter(None, [result.get("evidence"),
+            f"{'Expected release time based on' if kind == 'expected' else 'Release time confirmed by'} official RSS {BOE_PUBLICATIONS_RSS}: {basis}."])),
+    }
+
+
 def fetch_dmp_date():
     """
     DMP:
@@ -611,12 +666,12 @@ def fetch_dmp_date():
     The page itself explicitly states the publication date.
     """
 
-    return fetch_monthly_boE_page_date(
+    return apply_dmp_release_time(fetch_monthly_boE_page_date(
         "/decision-maker-panel",
         "Monthly Decision Maker Panel data",
         months_ahead=4,
         family="DMP",
-    )
+    ))
 
 
 def fetch_agents_date():
@@ -666,13 +721,15 @@ def fetch_citi_yougov_date():
     # than proof that the publisher has not announced a date.
     errors = []
     candidates = []
-    for source_url in (YOUGOV_ECONOMY_URL, CITI_INSIGHTS_URL):
+    for source_url in (YOUGOV_CITI_SEARCH_URL, YOUGOV_ECONOMY_URL, CITI_INSIGHTS_URL):
         try:
             html = fetch_html(source_url)
             inspected = 0
             for item in extract_links(html, source_url):
                 title = item["title"].lower()
-                if "inflation" in title and ("citi" in title or "yougov" in title):
+                # YouGov also publishes unrelated inflation polls. Only the
+                # Citi/Citigroup survey can supply this family's schedule.
+                if "inflation" in title and re.search(r"\bciti(?:group)?\b", title):
                     if inspected >= MAX_LATEST_CANDIDATES:
                         break
                     inspected += 1
@@ -686,7 +743,7 @@ def fetch_citi_yougov_date():
     return missing_release(
         "fetch_failed" if errors else "source_unavailable", YOUGOV_ECONOMY_URL,
         "; ".join(errors) if errors else
-        "No public Citi/YouGov survey calendar or dated future publication was located on the publisher discovery pages; next release remains unverified.",
+        "No public Citi/YouGov survey calendar or dated future publication was located on the official publisher search and discovery pages. Citi Research access or a public publisher release is required; next release remains unverified. BoE MPR publication dates are not Citi/YouGov survey dates.",
     )
 
 
@@ -783,6 +840,7 @@ def build_results(family_dates):
                     else None
                 ),
                 "status": status,
+                "release_time_kind": family_result.get("release_time_kind") if family_result else None,
                 "official_source": source_url,
                 "official_evidence": evidence,
                 "error": family_result.get("error") if family_result else None,

@@ -1,10 +1,13 @@
 import { spawn } from "node:child_process";
+import { pipeChildOutput, startFetchLogRetention } from "./fetch-log-file";
+
+startFetchLogRetention();
 
 const isWindows = process.platform === "win32";
 const npm = isWindows ? "npm.cmd" : "npm";
 
 const spawnOptions = {
-  stdio: "inherit" as const,
+  stdio: ["inherit", "pipe", "pipe"] as ["inherit", "pipe", "pipe"],
   env: { ...process.env },
   shell: isWindows,
 };
@@ -48,15 +51,18 @@ async function main() {
     await runIngest("backfill", { metricIds: missing });
   }
 
-  children.push(
-    spawn(npm, ["run", "dev:next"], spawnOptions),
-    spawn(npm, ["run", "release:worker"], spawnOptions),
-    spawn(npm, ["run", "calendar:worker"], spawnOptions),
-  );
+  const next = spawn(npm, ["run", "dev:next"], spawnOptions);
+  const releases = spawn(npm, ["run", "release:worker"], spawnOptions);
+  const calendar = spawn(npm, ["run", "calendar:worker"], spawnOptions);
+  children.push(next, releases, calendar);
+  pipeChildOutput(next, "next");
+  pipeChildOutput(releases, "release-worker");
+  pipeChildOutput(calendar, "calendar-worker");
 
   if (process.env.LSEG_WORKER_AUTOSTART === "1") {
-    const python = isWindows ? "python" : "python3";
-    children.push(spawn(python, ["Economic_calendar/lseg_worker.py"], spawnOptions));
+    const lseg = spawn(npm, ["run", "release:lseg"], spawnOptions);
+    children.push(lseg);
+    pipeChildOutput(lseg, "lseg-worker");
   }
 
   for (const child of children) {

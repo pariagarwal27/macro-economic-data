@@ -1,0 +1,31 @@
+{
+  "baseline": {
+    "months": 33,
+    "mae": 66.79490081637857,
+    "rmse": 78.21855830162342,
+    "bias": 10.447401025723183,
+    "max_abs_error": 175.99878920761864,
+    "direction_accuracy_pct": 93.93939393939394
+  },
+  "industries": {
+    "months": 33,
+    "mae": 66.85981808299685,
+    "rmse": 78.25903796098757,
+    "bias": 10.547936355511125,
+    "max_abs_error": 175.99878920761864,
+    "direction_accuracy_pct": 93.93939393939394
+  },
+  "consensus": {
+    "months": 33,
+    "mae": 65.24242424242425,
+    "rmse": 75.9718847517111,
+    "bias": -14.93939393939394,
+    "max_abs_error": 168.0,
+    "direction_accuracy_pct": 93.93939393939394
+  },
+  "first_month": "2024-01",
+  "last_month": "2026-09",
+  "months": 33,
+  "months_with_selected_sectors": 26,
+  "caveat": "Diagnostic only; historical availability of other inputs is not fully certified. No new untouched holdout."
+}

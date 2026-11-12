@@ -10,7 +10,7 @@ assert.equal(getActiveLiveSource("us-cpi", false), "LSEG");
 assert.equal(getActiveLiveSource("uk-unemployment", true), "ons");
 assert.equal(getActiveLiveSource("uk-unemployment", false), "LSEG");
 assert.equal(getActiveLiveSource("ea-unemployment", true), "eurostat");
-assert.equal(getActiveLiveSource("ea-unemployment", false), "LSEG");
+assert.equal(getActiveLiveSource("ea-unemployment", false), "eurostat");
 assert.equal(getActiveLiveSource("ea-inflation-comp-5y5y", true), null);
 assert.equal(formatLiveSourceLabel(getActiveLiveSource("us-initial-claims", true)), "DOL");
 assert.equal(formatLiveSourceLabel(null), "Not configured");

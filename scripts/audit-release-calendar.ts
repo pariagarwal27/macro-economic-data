@@ -5,9 +5,9 @@ import { getDashboardCalendarMetrics } from "../src/lib/dashboard-calendar-metri
 async function main() {
 const response = await GET();
 if (!response.ok) throw new Error(`Calendar API returned ${response.status}: ${await response.text()}`);
-const payload = await response.json();
+const payload = await response.json() as { nextReleaseEvents: Array<{ metricId: string; metricName: string; region: string; scheduledDate: string | null; scheduleType: string; family: string | null }>; today: string; lastUpdated: string | null };
 const metrics = new Map(getDashboardCalendarMetrics().map(metric => [metric.id, metric]));
-const events = payload.nextReleaseEvents.map((event: { metricId: string }) => ({
+const events = payload.nextReleaseEvents.map(event => ({
   ...event,
   releaseName: metrics.get(event.metricId)?.releaseName,
   officialUrl: metrics.get(event.metricId)?.officialUrl,

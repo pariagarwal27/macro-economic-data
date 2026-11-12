@@ -11,6 +11,7 @@ import {
   formatDayHeader,
   formatRawCalendarValue,
   formatUtcTime,
+  formatUkTime,
   importanceStars,
 } from "@/lib/calendar-tape";
 
@@ -162,7 +163,7 @@ function MatrixCell({ events }: { events: TapeEvent[] }) {
         >
           <div className="flex items-center justify-between gap-1">
             <span className="font-[family-name:var(--font-mono)] text-[10px] text-[var(--muted)]">
-              {formatUtcTime(ev.releasedAt)}
+              {formatUkTime(ev.releasedAt)}
             </span>
             <RegionBadge region={ev.tapeRegion} />
           </div>
@@ -357,7 +358,7 @@ export function ReleaseCalendar() {
               <thead>
                 <tr className="border-b border-[var(--line)] bg-[var(--paper)]/80 text-left text-[10px] uppercase tracking-wider text-[var(--muted)]">
                   <th className="px-3 py-3 font-semibold">Date</th>
-                  <th className="px-3 py-3 font-semibold">UTC</th>
+                  <th className="px-3 py-3 font-semibold">Time (GMT/BST)</th>
                   <th className="px-3 py-3 font-semibold">Reg</th>
                   <th className="px-3 py-3 font-semibold">Imp</th>
                   <th className="px-3 py-3 font-semibold">Event</th>
@@ -382,7 +383,7 @@ export function ReleaseCalendar() {
                       {formatDayHeader(dayKey(ev.releasedAt))}
                     </td>
                     <td className="whitespace-nowrap px-3 py-2.5 font-[family-name:var(--font-mono)] text-xs">
-                      {formatUtcTime(ev.releasedAt)}
+                      {formatUkTime(ev.releasedAt)}
                     </td>
                     <td className="px-3 py-2.5">
                       <RegionBadge region={ev.tapeRegion} />

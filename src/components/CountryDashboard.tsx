@@ -22,6 +22,7 @@ import { CalendarDays, ChevronDown, ChevronRight, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
+import { SPF_HORIZONS } from "@/lib/spf-horizons";
 import {
   DASHBOARD,
   REGION_FLAG,
@@ -32,18 +33,20 @@ import {
   type UiNode,
 } from "./macro-ui-hierarchy";
 import { formatEconomicLevel, formatObsDate } from "@/lib/format";
+import { matchNfpReleaseToObservation } from "@/lib/nfp-forecast";
 import { formatLiveSourceLabel } from "@/lib/live-source-label";
-import { displayReleaseStage, type ReleaseStage } from "@/ingest/release-stages";
+import { displayReleaseStage, isPreliminaryReleaseStage, type ReleaseStage } from "@/ingest/release-stages";
 import { latestQuarterPair, quarterlyGrowthPoints } from "@/lib/quarterly-gdp";
+import { inventoryRates } from "@/lib/inventory-rates";
 import { claimsChartPoints, formatClaimsCount } from "@/lib/claims-display";
 import { mergeClaimsChartData } from "@/lib/claims-chart";
 import { selectComponentMiniSeries } from "@/lib/component-mini-series";
 import { RefreshDataButton } from "@/components/RefreshDataButton";
 import { ExpectationComparisonChart } from "@/components/ExpectationComparisonChart";
-import { InflationContributions } from "@/components/InflationContributions";
+import { InflationReleaseCard as InflationContributions } from "@/components/InflationReleaseCard";
 import { PpiDrivers } from "@/components/PpiDrivers";
-import { PceDrivers } from "@/components/PceDrivers";
-import { RetailDrivers } from "@/components/RetailDrivers";
+import { PceReleaseCard as PceDrivers } from "@/components/PceReleaseCard";
+import { RetailReleaseCard as RetailDrivers } from "@/components/RetailReleaseCard";
 import { CONTRIBUTION_CONFIGS } from "@/lib/inflation-contributions";
 import { EXPECTATION_CHART_GROUPS, EXPANDED_EXPECTATION_GROUP_IDS, MARKERLESS_EXPECTATION_GROUP_IDS, NYFED_EXPECTATION_AXIS_BY_METRIC_ID, NYFED_OVERVIEW_CHART_GROUPS } from "@/lib/expectation-chart-groups";
 import { createExpectationMetricSelection } from "@/lib/expectation-selection";
@@ -53,6 +56,7 @@ import { filterHistoryByYearRange, filterHistoryToTrailing12Months, retainHistor
 import { EconomicCalendarSidebar } from "@/components/EconomicCalendarSidebar";
 import { GlobalMetricSearch } from "@/components/GlobalMetricSearch";
 import { getClientJsonCache, persistClientJsonCache, refreshClientJson } from "@/lib/client-json-cache";
+import { dashboardReleaseTarget, mergeReleaseUpdates, type ReleaseUpdate, type ReleaseOpening } from "@/lib/release-notifications";
 import { resolveStudioSelection } from "@/lib/chart-studio";
 import { getExpectationAxisTicks, getNiceTickDomain, getNiceTicks, getPairedAxisTicks, getTickPrecision } from "@/lib/chart-axis";
 import { LaborChangeChart } from "@/components/LaborChangeChart";
@@ -108,10 +112,12 @@ type DetailPayload = {
   history: Array<{ date: string; value: number }>;
   threeMonth?: { label: string; note: string; frequency?: string; history: Array<{ date: string; value: number }> };
   displayReleasedAt?: string | null;
+  upcomingForecast?: { releasedAt: string; value: number } | null;
   releases?: Array<{
     periodDate: string;
     releasedAt: string;
     value: number;
+    expectedValue?: number | null;
     periodLabel?: string | null;
   }>;
 };
@@ -2594,7 +2600,7 @@ if (UK_GROWTH_NET_TRADE_PP_IDS.has(id ?? "")) {
   }
 
   if (mode === "level") {
-    if (["usd_billions", "gbp_millions", "eur_millions"].includes(unit)) {
+    if (["usd_billions", "usd_millions", "gbp_millions", "eur_millions"].includes(unit)) {
       return formatEconomicLevel(value, unit);
     }
 
@@ -2625,7 +2631,7 @@ if (UK_GROWTH_NET_TRADE_PP_IDS.has(id ?? "")) {
     return `$${value.toLocaleString("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}`;
   }
 
-  if (["usd_billions", "gbp_millions", "eur_millions"].includes(unit)) {
+  if (["usd_billions", "usd_millions", "gbp_millions", "eur_millions"].includes(unit)) {
     return formatEconomicLevel(value, unit);
   }
 
@@ -2995,14 +3001,8 @@ function calculateRates(
     };
   }
 
-  // Change in Private Inventories is not a normal level series.
-  // Do not calculate ratio-based percentage changes.
   if (metricId === "us-real-inventories") {
-    return {
-      yoy: null,
-      mom: null,
-      secondLabel,
-    };
+    return inventoryRates(history);
   }
 
   const latest = history[history.length - 1];
@@ -3937,9 +3937,9 @@ function IndicatorCard({
             : "—"}
         </span>
 
-        {displayReleaseStage(metric?.meta.releaseStage) && (
+        {isPreliminaryReleaseStage(metric?.meta.releaseStage) && (
           <span className="rounded-full border border-[var(--accent)]/30 bg-[var(--accent-soft)] px-2 py-0.5 text-[10px] font-semibold text-[var(--accent-ink)]">
-            {displayReleaseStage(metric?.meta.releaseStage)}
+            {`(${displayReleaseStage(metric?.meta.releaseStage)})`}
           </span>
         )}
 
@@ -3979,8 +3979,21 @@ function LabourChartStudio({ category, specs, metrics, onOpen, highlightedMetric
     useEffect(() => { const selectedMetric = metrics[active?.metricId ?? ""]; const canPair = Boolean(selectedMetric?.threeMonth?.history?.length && ["US", "EA"].includes(selectedMetric.meta.region)); setRetailMeasure(canPair ? "paired" : "mom"); setShowThreeMonth(false); }, [active?.id]);
   if (!active) return null;
   const metric = metrics[active.metricId];
+  const nfpMetric = metrics["us-nfp"];
+  const showNfpForecast = active.id === "us-payrolls-card" || metric?.meta.id === "us-nfp";
+  const nfpLatest = normalizeHistory(nfpMetric?.history ?? []).at(-1);
+  const nfpPublishedRelease = matchNfpReleaseToObservation(nfpLatest?.date, nfpMetric?.releases ?? []);
+  const nfpPublishedActual = nfpPublishedRelease?.actual ?? nfpLatest?.value;
+  const nfpPublishedForecast = nfpPublishedRelease?.forecast ?? null;
+  const nfpPublishedDifference = nfpPublishedRelease?.difference ?? null;
+  const nfpFormat = (value: number | null | undefined) => formatLaborChange(value, nfpMetric?.meta ?? { id: "us-nfp", unit: "thousands" });
   const hasThreeMonth = (metric?.meta.id === "us-adp-change" || !isLaborChangeMetric(metric?.meta.id)) && Boolean(metric?.threeMonth?.history?.length);
   const readings = getCardKpis(active, metric, metrics, "detail");
+  const eurostatGdpStageSuffix = (metricId: string | undefined) => {
+    if (active.id !== "ea-gdp-card" || !metricId) return "";
+    const stage = metrics[metricId]?.meta.releaseStage;
+    return isPreliminaryReleaseStage(stage) ? ` (${displayReleaseStage(stage)})` : "";
+  };
   const isUsRetailSales = category === "activity" && active.id === "us-retail-sales-card";
   const isUkRetailSales = category === "activity" && active.id === "uk-retail-sales-card";
   const isUkWageGrowth = category === "labour" && active.id === "uk-wages-card";
@@ -4169,9 +4182,9 @@ function LabourChartStudio({ category, specs, metrics, onOpen, highlightedMetric
             trendValue={hasThreeMonth && ["US", "UK"].includes(metric?.meta.region ?? "") ? metric?.threeMonth?.history.at(-1)?.value : undefined}
             formatTrend={value => formatMetricValue(value, metric)}
           /> : <>
-            <span>{readings.leftLabel}</span><strong>{isLaborChangeMetric(metric?.meta.id) ? formatMetricValue(readings.leftValue, metric) : formatReading(readings.leftValue, active, metric)}</strong>
+            <span>{readings.leftLabel}{eurostatGdpStageSuffix(active.yoyMetricId)}</span><strong>{isLaborChangeMetric(metric?.meta.id) ? formatMetricValue(readings.leftValue, metric) : formatReading(readings.leftValue, active, metric)}</strong>
             {hasThreeMonth && ["US", "UK"].includes(metric?.meta.region ?? "") && <><span>{metric?.threeMonth?.label}</span><strong>{metric?.threeMonth?.history.at(-1) ? formatMetricValue(metric.threeMonth.history.at(-1)!.value, metric) : "—"}</strong></>}
-            {readings.showRight && <><span>{readings.rightLabel}</span><strong className="labour-studio-secondary">{isLaborChangeMetric(metric?.meta.id) ? formatMetricValue(readings.rightValue, metric) : formatReading(readings.rightValue, active, metric)}</strong></>}
+            {readings.showRight && <><span>{readings.rightLabel}{eurostatGdpStageSuffix(active.metricId)}</span><strong className="labour-studio-secondary">{isLaborChangeMetric(metric?.meta.id) ? formatMetricValue(readings.rightValue, metric) : formatReading(readings.rightValue, active, metric)}</strong></>}
           </>}
 
           {!isRetailSales && <dl>
@@ -4180,6 +4193,17 @@ function LabourChartStudio({ category, specs, metrics, onOpen, highlightedMetric
           <div><dt>Updated</dt><dd>{metric?.displayReleasedAt ? formatObsDate(metric.displayReleasedAt) : "—"}</dd></div>
           </dl>}
           </>}
+        {showNfpForecast && <section aria-label="NFP forecast and actual" style={{ display: "grid", gridTemplateColumns: "1fr auto", alignItems: "baseline", columnGap: 12, rowGap: 8, paddingTop: 12, borderTop: "1px solid var(--line)" }}>
+          <h5 style={{ gridColumn: "1 / -1", margin: 0, fontSize: 14 }}>Nonfarm payrolls change (NFP)</h5>
+          {active.id === "us-payrolls-card" && <><span>Latest actual{nfpLatest ? ` · ${formatObsDate(nfpLatest.date)}` : ""}</span><strong>{nfpFormat(nfpPublishedActual)}</strong></>}
+          {nfpPublishedForecast != null && nfpLatest && <>
+            <span>Consensus forecast · {formatObsDate(nfpLatest.date)}</span><strong>{nfpFormat(nfpPublishedForecast)}</strong>
+            <span>Actual − forecast · {formatObsDate(nfpLatest.date)}</span><strong style={{ color: (nfpPublishedDifference ?? 0) > 0 ? "var(--up)" : (nfpPublishedDifference ?? 0) < 0 ? "var(--down)" : undefined }}>{nfpFormat(nfpPublishedDifference)}</strong>
+          </>}
+          {nfpMetric?.upcomingForecast && <><span>Next release forecast · {formatObsDate(nfpMetric.upcomingForecast.releasedAt)}</span><strong>{nfpFormat(nfpMetric.upcomingForecast.value)}</strong></>}
+          {!nfpMetric?.upcomingForecast && nfpPublishedForecast == null && <><span>Forecast</span><strong>—</strong></>}
+          <small style={{ gridColumn: "1 / -1", color: "var(--muted)" }}>Forecast and difference are in thousands of jobs.</small>
+        </section>}
         <button type="button" className="detail-button" onClick={() => onOpen(active)}>{actionLabel} <ChevronRight size={15} /></button>
       </aside>
     </div>
@@ -4429,16 +4453,56 @@ function ExpectationGroupStudio({ region, specs, metrics, onMetricOpen, highligh
   const [group, setGroup] = useState<string>(groups[0] ?? "consumer");
   const active = visibleSpecs.find(spec => spec.expectationGroup === group) ?? visibleSpecs[0];
   if (!active) return null;
-  const candidateIds = active.chartMetricIds?.length ? active.chartMetricIds : collectMetricIds(active.components);
+  const professionalReadingIds = [
+    "ea-spf-hicp-rolling-current",
+    "ea-spf-gdp-rolling-current",
+    "ea-spf-unemployment-rolling-current",
+    "ea-spf-wage-rolling-current",
+  ];
+  const candidateIds = active.id === "ea-inflation-expectations-professional"
+    ? professionalReadingIds
+    : active.chartMetricIds?.length ? active.chartMetricIds : collectMetricIds(active.components);
   const entries = candidateIds.map(id => metrics[id]).filter((item): item is DetailPayload => Boolean(item));
+  const professionalLabels: Record<string, string> = {
+    "ea-spf-hicp-rolling-current": "SPF HICP",
+    "ea-spf-gdp-rolling-current": "SPF Real GDP",
+    "ea-spf-unemployment-rolling-current": "SPF Unemployment rate",
+    "ea-spf-wage-rolling-current": "SPF Wage growth",
+  };
   const orderedEntries = active.id === "us-inflation-expectations-wage"
     ? [...entries].sort((a, b) => Number(b.meta.id === "us-atlanta-wage") - Number(a.meta.id === "us-atlanta-wage"))
     : entries;
   return <div className="expectation-studio">
     <div className="expectation-group-tabs" role="tablist" aria-label="Expectation groups">{groups.map(item => <button key={item} type="button" role="tab" aria-selected={group === item} onClick={() => setGroup(item)}>{item === "consumer" ? "Consumer" : item === "wage" ? "Household & wage" : item === "business" ? "Business" : item === "market" ? "Market-based" : item === "professional" ? (region === "UK" ? "Professional" : "Professional") : "Model-based"}</button>)}</div>
-    <div className={clsx("expectation-studio-panel", active.id === "us-inflation-expectations-wage" && "expectation-studio-panel--nyfed-wide")}><div className="expectation-studio-chart"><ExpectationCharts key={active.id} spec={active} allMetrics={metrics} /></div><aside><h3>Latest published readings</h3>{orderedEntries.map(metric => { const latest = expectationSeries(metrics, metric.meta.id).data.at(-1); return <button key={metric.meta.id} type="button" className={clsx("expectation-reading", highlightedMetricId === metric.meta.id && "is-release-highlighted")} aria-label={`Open chart for ${metric.meta.shortName || metric.meta.name}`} onClick={() => onMetricOpen(metric.meta.id)}><div><strong>{metric.meta.shortName || metric.meta.name}</strong><span>{metric.displayReleasedAt ? formatObsDate(metric.displayReleasedAt) : "—"} · {formatLiveSourceLabel(metric.meta.liveSource)}</span></div><b>{formatExpectationValue(metric, latest?.value)}</b><ChevronRight size={15} aria-hidden="true" /></button>; })}{entries.length === 0 && <p>No published readings are available for this group.</p>}</aside></div><p className="expectation-studio-note">Historical published expectations by source and horizon.</p>
+    <div className={clsx("expectation-studio-panel", active.id === "us-inflation-expectations-wage" && "expectation-studio-panel--nyfed-wide")}><div className="expectation-studio-chart"><ExpectationCharts key={active.id} spec={active} allMetrics={metrics} /></div><aside><h3>Latest published readings</h3>{orderedEntries.map(metric => { const latest = expectationSeries(metrics, metric.meta.id).data.at(-1); const readingDate = metric.meta.frequency === "daily" ? latest?.date : metric.displayReleasedAt; const title = professionalLabels[metric.meta.id] ?? metric.meta.shortName ?? metric.meta.name; return <button key={metric.meta.id} type="button" className={clsx("expectation-reading", highlightedMetricId && metric.meta.id === highlightedMetricId && "is-release-highlighted")} aria-label={`Open chart for ${title}`} onClick={() => onMetricOpen(metric.meta.id)}><div><strong>{title}</strong><span>{readingDate ? formatObsDate(readingDate) : "—"} · {formatLiveSourceLabel(metric.meta.liveSource)}</span></div><b>{formatExpectationValue(metric, latest?.value)}</b><ChevronRight size={15} aria-hidden="true" /></button>; })}{entries.length === 0 && <p>No published readings are available for this group.</p>}</aside></div><p className="expectation-studio-note">Historical published expectations by source and horizon.</p>
   </div>;
 }
+
+function createEcbSpfDetailSpec(metricId: string): IndicatorSpec | null {
+  const match = metricId.match(/^ea-spf-(hicp|gdp|unemployment|wage)-(?:rolling-current|target-2026)$/);
+  if (!match) return null;
+  const component = match[1] as NonNullable<IndicatorSpec["spfForecastComponent"]>;
+  const titles = {
+    hicp: "ECB SPF · HICP inflation forecast",
+    gdp: "ECB SPF · Real GDP growth forecast",
+    unemployment: "ECB SPF · Unemployment rate forecast",
+    wage: "ECB SPF · Wage growth forecast",
+  };
+  const metricIds = component === "hicp"
+    ? [metricId, "ea-spf-core-rolling-current"]
+    : [metricId];
+  const labels = component === "hicp" ? ["Headline HICP", "Core HICP"] : [titles[component]];
+  return {
+    id: `ea-spf-${component}-detail`,
+    title: titles[component],
+    metricId,
+    expectationGroup: "professional",
+    spfForecastComponent: component,
+    components: metricIds.map((id, index) => ({ id, label: labels[index]!, metricId: id })),
+    chartMetricIds: metricIds,
+  };
+}
+
 function expectationHorizon(metricId: string, label: string) {
   const text = `${metricId} ${label}`.toLowerCase();
 
@@ -4488,21 +4552,12 @@ function expectationSeries(
 
   const data = getPublishedExpectationReadingsAsOf(allMetrics[id]?.history ?? []);
 
-  const displayData = id === "uk-inflation-comp-5y5y" && data.length
-    ? (() => {
-        const latest = new Date(`${data[data.length - 1]!.date}T00:00:00Z`);
-        latest.setUTCDate(latest.getUTCDate() - 29);
-        const cutoff = latest.toISOString().slice(0, 10);
-        return data.filter((point) => point.date >= cutoff);
-      })()
-    : data;
-
   return {
     id,
     label: componentLabel,
     horizon: expectationHorizon(id, componentLabel),
     frequency: metric?.frequency,
-    data: displayData,
+    data,
   };
 }
 
@@ -4510,8 +4565,8 @@ function expectationChartNote(
   horizon: string,
   series: ReturnType<typeof expectationSeries>[] = []
 ) {
-  if (series.some((item) => item.id === "uk-inflation-comp-5y5y")) {
-    return "Bank of England implied inflation curve · daily · last 30 days.";
+  if (series.some((item) => item.id === "uk-inflation-comp-5y" || item.id === "uk-inflation-comp-5y5y")) {
+    return "Bank of England implied inflation curve · daily · latest 45 days. Drag the slider to view history.";
   }
   return `${horizon} expectation${horizon === "1Y" ? "" : "s"} — each line is a component/source.`;
 }
@@ -4523,7 +4578,36 @@ function ExpectationCharts({
   spec: IndicatorSpec;
   allMetrics: Record<string, DetailPayload | undefined>;
 }) {
+  const [spfTarget, setSpfTarget] = useState("current");
   if (!spec.expectationGroup) return null;
+
+  if (spec.spfForecastComponent || spec.id === "ea-inflation-expectations-professional") {
+    const selected = SPF_HORIZONS.find(item => item.id === spfTarget) ?? SPF_HORIZONS[0];
+    const seriesFor = (component: string) => expectationSeries(allMetrics, `ea-spf-${component}-rolling-${selected.id}`);
+    const titles = { hicp: "Headline and Core HICP", gdp: "Real GDP growth", unemployment: "Unemployment rate", wage: "Wage growth" };
+    const chartFor = (component: keyof typeof titles) => {
+      const series = component === "hicp"
+        ? [
+            { ...seriesFor("hicp"), label: `Headline HICP · ${selected.label} (left axis)`, horizon: "Headline HICP · left axis", axis: "left" as const },
+            { ...seriesFor("core"), label: `Core HICP · ${selected.label} (right axis)`, horizon: "Core HICP · right axis", axis: "right" as const },
+          ]
+        : [{ ...seriesFor(component), label: `${titles[component]} · ${selected.label}` }];
+      return <ExpectationComparisonChart
+        key={`${component}-${selected.id}`}
+        title={`ECB SPF · ${titles[component]} · ${selected.label}`}
+        note={`Quarterly ${selected.label.toLowerCase()} forecasts. Hover over a point to see its survey quarter and forecast target year.${component === "wage" ? " ECB labour-cost growth assumptions (compensation per employee)." : ""}`}
+        series={series}
+        forecastTargetOffset={selected.offset}
+        fullHistoryByDefault
+      />;
+    };
+    return <div className={spec.spfForecastComponent ? "spf-forecast-detail" : "spf-forecast-overview"}>
+      <div className="expectation-target-tabs" role="tablist" aria-label="SPF forecast horizon">
+        {SPF_HORIZONS.map(horizon => <button key={horizon.id} type="button" role="tab" aria-selected={selected.id === horizon.id} onClick={() => setSpfTarget(horizon.id)} className="expectation-target-tab">{horizon.label}</button>)}
+      </div>
+      {spec.spfForecastComponent ? chartFor(spec.spfForecastComponent) : <div className="grid gap-4 xl:grid-cols-2">{(["hicp", "gdp", "unemployment", "wage"] as const).map(chartFor)}</div>}
+    </div>;
+  }
 
   const configuredGroups = EXPECTATION_CHART_GROUPS[spec.id];
   if (configuredGroups) {
@@ -4767,12 +4851,6 @@ const isUsBusinessExpectations =
         title: "ECB Wage Tracker",
         note: "Agreed wage growth, including and excluding one-off payments.",
         ids: ["ea-wage-tracker", "ea-wage-tracker-ex-oneoff"],
-      },
-      {
-        key: "spf-wages",
-        title: "ECB SPF · Wage Expectations",
-        note: "Professional forecasters’ wage and labour-cost outlook.",
-        ids: ["ea-spf-wage-exp-1y"],
       },
     ],
   };
@@ -5320,7 +5398,7 @@ function ComponentDetailDrawer({
           <span>Latest period: <b>{latestPeriodDate ? formatObsDate(latestPeriodDate) : "—"}</b></span>
           <span>Live source: <b>{formatLiveSourceLabel(metric.meta.liveSource)}</b></span>
           <span>Frequency: <b>{metric.meta.frequency ?? "—"}</b></span>
-          {displayReleaseStage(metric.meta.releaseStage) && <span>Data type: <b>{displayReleaseStage(metric.meta.releaseStage)}</b></span>}
+          {isPreliminaryReleaseStage(metric.meta.releaseStage) && <span>Data type: <b>({displayReleaseStage(metric.meta.releaseStage)})</b></span>}
         </div>
 
         <div
@@ -5440,6 +5518,10 @@ function ComponentDetailDrawer({
                 </span>
               </div>
 
+              {metric.meta.id === "us-real-inventories" && <p style={{ margin: "0 0 12px", color: "var(--muted)", fontSize: 12 }}>
+                Real inventory investment: {formatEconomicLevel(normalizeHistory(metric.history).at(-1)?.value, metric.meta.unit)} at an annual rate. YoY and QoQ compare this flow with the same quarter last year and the prior quarter, using the absolute comparison value when it is negative.
+              </p>}
+
               <div
   style={{
     width: "100%",
@@ -5477,6 +5559,7 @@ function DetailDrawer({
   spec,
   root,
   allMetrics,
+  releasePeriod,
   onClose,
   onComponentOpen,
 }: {
@@ -5484,10 +5567,12 @@ function DetailDrawer({
   spec: IndicatorSpec;
   root: DetailPayload | undefined;
   allMetrics: Record<string, DetailPayload | undefined>;
+  releasePeriod?: string | null;
   onClose: () => void;
   onComponentOpen: (metricId: string, children?: UiNode[]) => void;
 }) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
+  const [releaseDisplayTitle, setReleaseDisplayTitle] = useState<string | null>(null);
   const [selectedSeriesId, setSelectedSeriesId] = useState(spec.metricId);
   const [driverTab, setDriverTab] = useState<"history" | "drivers">(
     (region === "EA" && spec.metricId.startsWith("ea-ppi-") && spec.id !== "ea-ppi-card") || ["us-retail-sales-card", "us-retail-sales-control-card", "uk-retail-sales-card", "ea-retail-sales-card"].includes(spec.id) ? "drivers" : "history"
@@ -5499,6 +5584,7 @@ function DetailDrawer({
   const isUsCpiDriverCard = region === "US" && ["us-cpi", "us-cpi-core"].includes(spec.metricId);
   const isUsPpiDriverCard = region === "US" && (spec.metricId === "us-ppi-final-demand" || spec.metricId.startsWith("us-ppi-intermediate-"));
   const isUkInflationDriverCard = region === "UK" && ["uk-cpi-yoy", "uk-cpih-yoy"].includes(spec.metricId);
+  const isUkCoreInflationCard = region === "UK" && spec.id === "uk-core-card";
   const isUkPpiDriverCard = region === "UK" && spec.metricId.startsWith("uk-ppi-");
   const isEaHicpDriverCard = region === "EA" && ["ea-hicp-yoy", "ea-core-hicp-yoy", "ea-food-hicp-yoy", "ea-energy-hicp-yoy", "ea-goods-hicp-yoy", "ea-services-hicp-yoy"].includes(spec.metricId);
   const isEaPpiDriverCard = region === "EA" && spec.metricId.startsWith("ea-ppi-");
@@ -5510,8 +5596,9 @@ function DetailDrawer({
     || (region === "UK" && ["uk-retail-sales-total-ex-fuel", "uk-retail-sales-ex-fuel"].includes(spec.metricId))
     || (region === "US" && ["us-retail-sales-total", "us-retail-sales-control-group"].includes(spec.metricId))
     || (region === "EA" && ["ea-retail-sales-total-ex-motor-vehicles", "ea-retail-sales-ex-fuel"].includes(spec.metricId));
-  const showDriversOnly = isUsCpiDriverCard || isUsPpiDriverCard || isUkInflationDriverCard || isUkPpiDriverCard || isEaHicpDriverCard || isEaPpiOverviewCard || isUsPceDriverCard;
+  const showDriversOnly = isUsCpiDriverCard || isUkCoreInflationCard || isUsPpiDriverCard || isUkInflationDriverCard || isUkPpiDriverCard || isEaHicpDriverCard || isEaPpiOverviewCard || isUsPceDriverCard;
   const hasDriverView = hasContributions || isUsPpiDriverCard || isUkPpiDriverCard || isEaHicpDriverCard || isEaPpiDriverCard || isRetailDriverCard || isUsPceDriverCard;
+  const usesReleaseDesign = hasContributions || isUsPceDriverCard || isRetailDriverCard;
 
   const rateSpec = normalizeUnderlyingInflationDetailSpec(spec);
   const rateRoot = allMetrics[rateSpec.metricId] ?? root;
@@ -5536,7 +5623,9 @@ function DetailDrawer({
   const corePceExcludedIds = new Set(["us-pce-food", "us-pce-energy"]);
   const withoutCorePceExclusions = (nodes: UiNode[]): UiNode[] => nodes
     .filter((node) => !node.metricId || !corePceExcludedIds.has(node.metricId))
-    .map((node) => ({ ...node, children: node.children ? withoutCorePceExclusions(node.children) : undefined }));
+    .map((node) => node.metricId === "us-pce-housing-utilities"
+      ? { ...node, label: "Housing", metricId: "us-pce-housing", children: node.children ? withoutCorePceExclusions(node.children) : undefined }
+      : { ...node, children: node.children ? withoutCorePceExclusions(node.children) : undefined });
   const corePceComponents: UiNode[] = isCorePceDriverCard
     ? withoutCorePceExclusions(pceHeadlineComponents)
     : [];
@@ -5553,6 +5642,10 @@ function DetailDrawer({
   };
   collectFlightDeckRows(allNodes);
   const latestPeriodDate = getLatestPeriodDate(root);
+  const latestCardRelease = Object.entries(allMetrics)
+    .filter(([id]) => dashboardReleaseTarget(id)?.metricId === spec.metricId)
+    .flatMap(([, payload]) => payload?.displayReleasedAt ? [payload.displayReleasedAt] : [])
+    .sort().at(-1) ?? root?.displayReleasedAt;
   const expectationMetricIds = [...new Set([
     ...collectMetricIds(allNodes),
     ...(spec.chartMetricIds ?? []),
@@ -5821,7 +5914,7 @@ function DetailDrawer({
       }}
     >
       <aside
-        className={clsx("detail-drawer", "flight-deck-drawer", allNodes.length > 0 && "has-component-field", isExpectation && "flight-deck-expectations", isUsPpiDriverCard && "us-ppi-demand-card", (isUkPpiDriverCard || isEaPpiDriverCard || isEaHicpDriverCard) && "ppi-drivers-card")}
+        className={clsx("detail-drawer", "flight-deck-drawer", usesReleaseDesign && "release-driver-dialog", allNodes.length > 0 && "has-component-field", isExpectation && "flight-deck-expectations", isUsPpiDriverCard && "us-ppi-demand-card", (isUkPpiDriverCard || isEaPpiDriverCard || isEaHicpDriverCard) && "ppi-drivers-card")}
         role="dialog"
         aria-modal="true"
         style={{
@@ -5878,7 +5971,7 @@ function DetailDrawer({
                   letterSpacing: "-0.02em",
                 }}
               >
-                {displayMetricTitle(spec, root)}
+                {releaseDisplayTitle ?? displayMetricTitle(spec, root)}
               </h2>
 
               <MetricBadge importance={root?.meta.importance} />
@@ -5920,9 +6013,13 @@ function DetailDrawer({
                             ? "BoE DMP"
                               : "New York Fed SCE + Atlanta Fed Wage Growth Tracker"
                           : "Inflation expectations"
-                : `${root?.meta.releaseName ?? "Official data series"} · Live source: ${formatLiveSourceLabel(root?.meta.liveSource)}${root?.meta.frequency ? ` · ${root.meta.frequency}` : ""}`}
+                : usesReleaseDesign
+                  ? `Source: ${formatLiveSourceLabel(root?.meta.liveSource)} · ${root?.meta.frequency ?? "Monthly"} · Last updated: ${latestCardRelease ? formatObsDate(latestCardRelease) : "—"}`
+                  : `${root?.meta.releaseName ?? "Official data series"} · Live source: ${formatLiveSourceLabel(root?.meta.liveSource)}${root?.meta.frequency ? ` · ${root.meta.frequency}` : ""}`}
             </p>
           </div>
+
+          {usesReleaseDesign && <div className="release-card-summary-slot" aria-label="Release readings and controls" />}
 
           <button
             className="drawer-close"
@@ -5942,7 +6039,7 @@ function DetailDrawer({
           </button>
         </div>
 
-        <div
+        {!usesReleaseDesign && <div
           className={clsx("drawer-release", isExpectation && "expectation-release-meta")}
           style={{
             flex: "0 0 auto",
@@ -5975,9 +6072,9 @@ function DetailDrawer({
               <span>Frequency: <b>{root?.meta.frequency ?? "—"}</b></span>
             </>
           )}
-        </div>
+        </div>}
 
-        {!isRetailDriverCard && <div
+        {!isRetailDriverCard && !usesReleaseDesign && <div
           className="drawer-kpis"
           style={{
             flex: "0 0 auto",
@@ -6072,7 +6169,7 @@ function DetailDrawer({
               <button type="button" aria-pressed={spec.metricId === "uk-cpih-yoy"} onClick={() => onComponentOpen("uk-cpih-yoy")}>CPIH</button>
             </div>}
             {hasDriverView && !isEaPpiComponentCard && !isRetailDriverCard && !showDriversOnly && <div className="component-card-tabs" role="tablist" aria-label="Component card view"><button type="button" role="tab" aria-selected={driverTab === "history"} onClick={() => setDriverTab("history")}>History &amp; components</button><button type="button" role="tab" aria-selected={driverTab === "drivers"} onClick={() => setDriverTab("drivers")}>What’s driving it?</button></div>}
-            {isRetailDriverCard ? <RetailDrivers region={region} components={retailComponentNodes} metrics={allMetrics} onComponentOpen={onComponentOpen} rootMetricId={spec.metricId} /> : showDriversOnly || (hasContributions && driverTab === "drivers") ? (isUsPceDriverCard ? <PceDrivers components={isCorePceDriverCard ? corePceComponents : allNodes} metrics={allMetrics} rootMetricId={spec.metricId} core={isCorePceDriverCard} onComponentOpen={onComponentOpen} /> : isUsPpiDriverCard || isUkPpiDriverCard || isEaPpiDriverCard || (isEaHicpDriverCard && !hasContributions) ? <PpiDrivers components={isEaHicpDriverCard ? [{ id: spec.metricId, label: spec.title ?? "HICP component", metricId: spec.metricId, momMetricId: spec.momMetricId }] : allNodes.length ? allNodes : [{ id: spec.metricId, label: spec.title ?? "PPI component", metricId: spec.metricId, momMetricId: spec.momMetricId }]} metrics={allMetrics} onComponentOpen={onComponentOpen} rootMetricId={spec.metricId} subtitle={isEaHicpDriverCard ? "Published Eurostat HICP component rates" : undefined} /> : <InflationContributions metricId={spec.metricId} metrics={allMetrics} onComponentOpen={(metricId) => onComponentOpen(metricId)} />) : <>
+            {isRetailDriverCard ? <RetailDrivers key={spec.metricId} region={region} components={retailComponentNodes} metrics={allMetrics} onComponentOpen={onComponentOpen} rootMetricId={spec.metricId} onDisplayTitleChange={setReleaseDisplayTitle} initialPeriod={releasePeriod} /> : showDriversOnly || (hasContributions && driverTab === "drivers") ? (isUsPceDriverCard ? <PceDrivers key={spec.metricId} components={isCorePceDriverCard ? corePceComponents : allNodes} metrics={allMetrics} rootMetricId={spec.metricId} core={isCorePceDriverCard} onComponentOpen={onComponentOpen} onDisplayTitleChange={setReleaseDisplayTitle} initialPeriod={releasePeriod} /> : isUsPpiDriverCard || isUkPpiDriverCard || isEaPpiDriverCard || (isEaHicpDriverCard && !hasContributions) ? <PpiDrivers components={isEaHicpDriverCard ? [{ id: spec.metricId, label: spec.title ?? "HICP component", metricId: spec.metricId, momMetricId: spec.momMetricId }] : allNodes.length ? allNodes : [{ id: spec.metricId, label: spec.title ?? "PPI component", metricId: spec.metricId, momMetricId: spec.momMetricId }]} metrics={allMetrics} onComponentOpen={onComponentOpen} rootMetricId={spec.metricId} subtitle={isEaHicpDriverCard ? "Published Eurostat HICP component rates" : undefined} /> : <InflationContributions key={spec.metricId} metricId={spec.metricId} metrics={allMetrics} onComponentOpen={(metricId) => onComponentOpen(metricId)} onDisplayTitleChange={setReleaseDisplayTitle} initialPeriod={releasePeriod} />) : <>
             <section
   className="drawer-chart"
   style={{
@@ -6105,6 +6202,10 @@ function DetailDrawer({
                 </span>
               </div>
 
+              {root?.meta.id === "us-real-inventories" && <p style={{ margin: "0 0 12px", color: "var(--muted)", fontSize: 12 }}>
+                Real inventory investment: {formatEconomicLevel(normalizeHistory(root.history).at(-1)?.value, root.meta.unit)} at an annual rate. YoY and QoQ compare this flow with the same quarter last year and the prior quarter, using the absolute comparison value when it is negative.
+              </p>}
+
               <div
   className={isExpectation ? "drawer-chart-content expectation-chart-content" : "drawer-chart-content"}
   style={{
@@ -6115,7 +6216,7 @@ function DetailDrawer({
   }}
 >
   {isExpectation ? (
-  <div className="expectation-chart-scroll">
+  <div className={clsx("expectation-chart-scroll", spec.spfForecastComponent && "spf-forecast-detail-scroll")}>
     <div className="expectation-chart-content">
       <ExpectationCharts
         spec={spec}
@@ -6150,7 +6251,7 @@ function DetailDrawer({
             }} />}
             {isEaWageCard && <EaWageComponentTable allMetrics={allMetrics} onOpen={(metricId) => onComponentOpen(metricId)} />}
             {isUsJoltsCard && <UsJoltsRateComponentTable allMetrics={allMetrics} onOpen={(metricId) => onComponentOpen(metricId)} />}
-            {!isUkWageCard && !isEaWageCard && !isUsJoltsCard && !isEaPpiComponentCard && !isRetailDriverCard && flightDeckRows.length > 0 && (
+            {!isUkWageCard && !isEaWageCard && !isUsJoltsCard && !isEaPpiComponentCard && !isRetailDriverCard && !spec.spfForecastComponent && flightDeckRows.length > 0 && (
               <section className={clsx("flight-deck-field", ["us-retail-sales-card", "uk-retail-sales-card", "ea-retail-sales-card"].includes(spec.id) && "retail-weight-field")}>
                 {(() => {
                   const isRetailWeightField = ["us-retail-sales-card", "uk-retail-sales-card", "ea-retail-sales-card"].includes(spec.id);
@@ -6273,6 +6374,10 @@ useEffect(() => {
   const [highlightedMetricId, setHighlightedMetricId] = useState<string | null>(null);
   const [releaseToasts, setReleaseToasts] = useState<DashboardToast[]>([]);
   const highlightTimer = useRef<number | null>(null);
+  const autoReleaseKey = useRef<string | null>(null);
+  const releaseUpdates = useRef(new Map<string, ReleaseUpdate>());
+  const [releaseGeneration, setReleaseGeneration] = useState(0);
+  const [releasePeriod, setReleasePeriod] = useState<string | null>(null);
 
   const specsByCategory = DASHBOARD[r];
 
@@ -6280,9 +6385,13 @@ useEffect(() => {
     let foundSpec = preferredSpec;
     let foundCategory = preferredCategory;
     if (!foundSpec) {
-      for (const [category, specs] of Object.entries(specsByCategory ?? {}) as [MacroCategory, IndicatorSpec[]][]) {
-        foundSpec = specs.find(spec => specContainsMetric(spec, metricId));
-        if (foundSpec) { foundCategory = category; break; }
+      const categories = Object.entries(specsByCategory ?? {}) as [MacroCategory, IndicatorSpec[]][];
+      for (const matches of [(spec: IndicatorSpec) => spec.metricId === metricId, (spec: IndicatorSpec) => spec.yoyMetricId === metricId || spec.momMetricId === metricId, (spec: IndicatorSpec) => specContainsMetric(spec, metricId)]) {
+        for (const [category, specs] of categories) {
+          foundSpec = specs.find(matches);
+          if (foundSpec) { foundCategory = category; break; }
+        }
+        if (foundSpec) break;
       }
     }
     if (!foundSpec || !foundCategory) return;
@@ -6292,14 +6401,46 @@ useEffect(() => {
     const findNode = (nodes: UiNode[] = []): UiNode | undefined => {
       for (const node of nodes) { if (node.metricId === metricId || node.momMetricId === metricId) return node; const child = findNode(node.children); if (child) return child; }
     };
-    const isPrimary = actualSpec.metricId === metricId;
+    const isPrimary = [actualSpec.metricId, actualSpec.yoyMetricId, actualSpec.momMetricId].includes(metricId);
     const componentNode = findNode(actualSpec.components);
     if (showDetails) {
       if (!isPrimary) setSelectedComponent({ metricId: componentNode?.metricId ?? metricId, children: componentNode?.children ?? [] });
-      else setSelected(actualSpec);
+      else { setSelectedComponent(null); setSelected(actualSpec); }
     }
     window.setTimeout(() => document.getElementById(`economic-${r.toLowerCase()}-${foundCategory}`)?.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
   }, [r, specsByCategory]);
+
+  const finishAutoRelease = () => {
+    const key = autoReleaseKey.current;
+    autoReleaseKey.current = null;
+    setReleasePeriod(null);
+    if (key) window.dispatchEvent(new CustomEvent("macrohub:release-card-closed", { detail: { key } }));
+  };
+
+  useEffect(() => {
+    if (!active) return;
+    const onUpdates = (event: Event) => {
+      const updates = (event as CustomEvent<ReleaseUpdate[]>).detail;
+      if (!Array.isArray(updates)) return;
+      const relevant = updates.filter(update => dashboardReleaseTarget(update.metricId)?.region === r);
+      if (!relevant.length) return;
+      for (const update of relevant) releaseUpdates.current.set(`${update.metricId}:${update.periodDate}`, update);
+      setMetrics(current => mergeReleaseUpdates(current, relevant));
+    };
+    const onAutoOpen = (event: Event) => {
+      const opening = (event as CustomEvent<ReleaseOpening>).detail;
+      if (!opening || opening.region !== r) return;
+      autoReleaseKey.current = opening.key;
+      setReleasePeriod(opening.periodDate.slice(0, 7));
+      setReleaseGeneration(value => value + 1);
+      setRecentReleaseMetricId(opening.metricId);
+      setHighlightedMetricId(opening.metricId);
+      openMetric(opening.metricId);
+    };
+    window.addEventListener("macrohub:release-updates", onUpdates);
+    window.addEventListener("macrohub:auto-release-open", onAutoOpen);
+    return () => { window.removeEventListener("macrohub:release-updates", onUpdates); window.removeEventListener("macrohub:auto-release-open", onAutoOpen); };
+  }, [active, openMetric, r]);
 
   useEffect(() => {
     const onOpenMetric = (event: Event) => {
@@ -6317,16 +6458,16 @@ useEffect(() => {
     const metricId = params.get("openMetric");
     if (!metricId) return;
 
-    for (const [category, specs] of Object.entries(specsByCategory ?? {}) as [MacroCategory, IndicatorSpec[]][]) {
-      const matchingSpec = specs.find((spec) => specContainsMetric(spec, metricId));
-      if (!matchingSpec) continue;
-
-      params.delete("openMetric");
-      const query = params.toString();
-      window.history.replaceState({}, "", `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`);
-      openMetric(metricId, matchingSpec, category);
-      return;
-    }
+    const matchingSpec = Object.values(specsByCategory ?? {}).flat().some(spec => specContainsMetric(spec, metricId));
+    if (!matchingSpec) return;
+    const releaseKey = params.get("releaseKey");
+    if (releaseKey) { autoReleaseKey.current = releaseKey; setReleasePeriod(params.get("releasePeriod")); setReleaseGeneration(value => value + 1); }
+    params.delete("openMetric");
+    params.delete("releaseKey");
+    params.delete("releasePeriod");
+    const query = params.toString();
+    window.history.replaceState({}, "", `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`);
+    openMetric(metricId);
   }, [active, loading, openMetric, r, specsByCategory]);
 
   useEffect(() => {
@@ -6357,7 +6498,7 @@ useEffect(() => {
         `/api/dashboard/${r}`,
         "Dashboard request failed"
       ).then((payload) => {
-        setMetrics(payload);
+        setMetrics(mergeReleaseUpdates(payload, [...releaseUpdates.current.values()]));
         setSavedSnapshot(false);
         openMetric(notice.metricId);
       }).catch(() => {
@@ -6398,7 +6539,7 @@ useEffect(() => {
 
       if (dead) return;
 
-      setMetrics(payload);
+      setMetrics(mergeReleaseUpdates(payload, [...releaseUpdates.current.values()]));
       setSavedSnapshot(false);
       setLoading(false);
       setError("");
@@ -6429,15 +6570,21 @@ useEffect(() => {
   loadDashboard(cachedPayload == null);
 
   // Background refresh every 10 seconds.
-  // This allows the UI to pick up a newly
-  // ingested JOLTS value automatically.
+  // This allows release cards to pick up newly ingested observations promptly.
   const refreshTimer = window.setInterval(() => {
     loadDashboard(false);
   }, 10_000);
+  const refreshWhenVisible = () => {
+    if (document.visibilityState === "visible") loadDashboard(false);
+  };
+  window.addEventListener("focus", refreshWhenVisible);
+  document.addEventListener("visibilitychange", refreshWhenVisible);
 
   return () => {
     dead = true;
     window.clearInterval(refreshTimer);
+    window.removeEventListener("focus", refreshWhenVisible);
+    document.removeEventListener("visibilitychange", refreshWhenVisible);
   };
 }, [active, r, specsByCategory]);
   if (!specsByCategory) {
@@ -6749,7 +6896,7 @@ const specs = categorySpecs;
               </div>
 
               <div className="macro-band-content">
-  {category === "prices" ? <InflationComparisonStudio key={r} region={r} specs={orderedSpecs} metrics={metrics} highlightedMetricId={highlightedMetricId} onOpen={setSelected} /> : category === "labour" || category === "activity" ? <LabourChartStudio key={`${r}-${category}`} category={category} specs={orderedSpecs} metrics={metrics} highlightedMetricId={highlightedMetricId} selectedId={studioSelections[category] ?? null} onSelectionChange={(id) => setStudioSelections(current => ({ ...current, [category]: id }))} onOpen={setSelected} /> : category === "expectations" ? <ExpectationGroupStudio key={r} region={r} specs={orderedSpecs.filter(spec => spec.expectationGroup)} metrics={metrics} onMetricOpen={(metricId) => { setSelected(null); setSelectedComponent(createExpectationMetricSelection(metricId)); }} highlightedMetricId={highlightedMetricId} /> :
+  {category === "prices" ? <InflationComparisonStudio key={r} region={r} specs={orderedSpecs} metrics={metrics} highlightedMetricId={highlightedMetricId} onOpen={setSelected} /> : category === "labour" || category === "activity" ? <LabourChartStudio key={`${r}-${category}`} category={category} specs={orderedSpecs} metrics={metrics} highlightedMetricId={highlightedMetricId} selectedId={studioSelections[category] ?? null} onSelectionChange={(id) => setStudioSelections(current => ({ ...current, [category]: id }))} onOpen={setSelected} /> : category === "expectations" ? <ExpectationGroupStudio key={r} region={r} specs={orderedSpecs.filter(spec => spec.expectationGroup)} metrics={metrics} onMetricOpen={(metricId) => { const spfSpec = r === "EA" ? createEcbSpfDetailSpec(metricId) : null; if (spfSpec) { setSelectedComponent(null); setSelected(spfSpec); } else { setSelected(null); setSelectedComponent(createExpectationMetricSelection(metricId)); } }} highlightedMetricId={highlightedMetricId} /> :
   <div
     className="cards-grid"
   >
@@ -6836,6 +6983,7 @@ const specs = categorySpecs;
 
       {selected && (
   <DetailDrawer
+  key={`${selected.id}:${releaseGeneration}`}
   region={r}
   spec={selected}
   root={
@@ -6843,10 +6991,9 @@ const specs = categorySpecs;
       selected.metricId
     ]
   }
+  releasePeriod={releasePeriod}
   allMetrics={metrics}
-  onClose={() =>
-    setSelected(null)
-  }
+  onClose={() => { setSelected(null); finishAutoRelease(); }}
   onComponentOpen={(metricId, children = []) => {
     if (metricId === 'us-pce' || metricId === 'us-core-pce') {
       const pceCard = DASHBOARD.US.prices.find((item) => item.metricId === metricId);
@@ -6876,9 +7023,7 @@ const specs = categorySpecs;
     metricId={selectedComponent.metricId}
     components={selectedComponent.children}
     allMetrics={metrics}
-    onClose={() =>
-      setSelectedComponent(null)
-    }
+    onClose={() => { setSelectedComponent(null); if (!selected) finishAutoRelease(); }}
   />
 )}
     </div>

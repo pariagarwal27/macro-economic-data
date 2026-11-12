@@ -1,6 +1,8 @@
 import { METRICS } from "@/catalog/metrics";
 import { LIVE_MAP } from "@/catalog/live-map";
 import { UK_RETAIL_RELEASE_IDS } from "@/lib/uk-retail";
+import { PCE_EXPENDITURE_LINES } from "@/lib/pce-expenditure";
+import { EA_MARKET_METRIC_IDS } from "./ea-market-refresh";
 
 export type AdapterName =
   | "lseg"
@@ -17,10 +19,33 @@ export type MetricSourceConfig = {
   notes?: string;
 };
 
+// These LSEG series are not displayed on the main dashboard, so do not arm
+// background release polling for them. Their catalog metadata and stored
+// history remain available for references and existing data.
+const EXCLUDED_FROM_DASHBOARD_RELEASE_POLLING = new Set([
+  "us-cfnai",
+  "us-dallas-fed-activity",
+  "us-building-permits",
+  "us-durable-goods",
+  "us-housing-starts",
+  "ea-esi",
+  "us-gdp-now",
+]);
+
 // Authoritative LSEG routes supplied for the project. The 15 PCE-family
 // routes are deliberately excluded from this array and are routed to BEA.
 // PMI series use LSEG Economic Indicators locally; cloud configuration keeps
 // all Workspace-only data excluded from D1 runtimes.
+const OFFICIAL_US_LABOR_METRICS = new Set(METRICS.filter(metric =>
+  metric.id.startsWith("us-jolts-") || ["us-unemployment", "us-ahe", "us-ahe-mom"].includes(metric.id)
+).map(metric => metric.id));
+
+const OFFICIAL_UK_ONS_METRICS = new Set([
+  "uk-vacancies", "uk-unemployment", "uk-payrolled-employees-level",
+  "uk-payrolled-employees-annual-change", "uk-cpi-yoy", "uk-cpi-mom",
+  "uk-core-cpi-yoy", "uk-core-cpi-mom", "uk-services-cpi-yoy", "uk-services-cpi-mom",
+]);
+
 const LSEG: MetricSourceConfig[] = [
   ["us-ism-manufacturing-pmi","USPMI=ECI"],["us-ism-services-pmi","USNPMI=ECI"],
   ["us-sp-global-manufacturing-pmi","USMPMF=ECI"],["us-sp-global-services-pmi","USMPSF=ECI"],
@@ -73,21 +98,24 @@ const LSEG: MetricSourceConfig[] = [
   // Euro area national HICP metrics use the official Eurostat API mapping in
   // LIVE_MAP. Do not route them through the optional LSEG desktop worker.
   ["ea-industrial-production","EUIPY=ECI"],["ea-retail-sales","EURSLY=ECI"],
-  ["ea-esi","EUCONS=ECI"],["ea-unemployment","EUUNR=ECI"],["de-unemployment","DEUNR=ECI"],
-  ["ea-employment-yoy","EUEMPY=ECI"],["ea-employment-qoq","EUEMPQ=ECI"],
+  // Euro-area unemployment uses the official Eurostat une_rt_m mapping.
+  ["ea-esi","EUCONS=ECI"],["de-unemployment","DEUNR=ECI"],
+  // Euro area employment uses the official Eurostat LFS employment series.
   ["ea-retail-sales-mom","EURSL=ECI"],
-].map(([metricId, sourceId]) => ({
+].filter(([metricId]) => !OFFICIAL_US_LABOR_METRICS.has(metricId) && !OFFICIAL_UK_ONS_METRICS.has(metricId)).map(([metricId, sourceId]) => ({
   metricId, source: "LSEG", sourceId, adapter: "lseg",
   releaseStrategy: "scheduled-poll", pollSeconds: 5
 }));
 
 const PCE_FAMILY = new Set([
-  "us-pce", "us-core-pce", "us-pce-goods", "us-pce-durable-goods",
+  "us-pce", "us-core-pce", "us-pce-yoy", "us-pce-mom", "us-core-pce-yoy", "us-pce-goods", "us-pce-durable-goods",
+  "us-pce-motor-vehicles", "us-pce-recreational-goods", "us-pce-other-durable-goods", "us-pce-other-nondurable-goods",
   "us-pce-furnishings", "us-pce-clothing", "us-pce-food", "us-pce-energy",
   "us-pce-services", "us-pce-household-services", "us-pce-healthcare",
-  "us-pce-food-services", "us-pce-housing", "us-core-pce-mom",
+  "us-pce-transport-services", "us-pce-recreation-services", "us-pce-food-services", "us-pce-financial-services", "us-pce-other-services", "us-pce-housing", "us-pce-housing-utilities", "us-core-pce-mom", "us-core-pce-ex-housing",
   "us-real-pce-growth", "us-real-pce-goods", "us-real-pce-durable-goods",
   "us-real-pce-nondurable-goods", "us-real-pce-services",
+  ...Object.keys(PCE_EXPENDITURE_LINES),
 ]);
 
 // Route the entire catalogued US consumer-price index family through its
@@ -116,8 +144,8 @@ const CATALOG_FALLBACK: MetricSourceConfig[] = METRICS
   .map((m) => ({
     metricId: m.id,
     adapter: m.source === "philadelphia" ? "philadelphia" : "pipeline",
-    source: CLEVELAND_EXPECTATION_METRICS.has(m.id) ? "cleveland" : m.source,
-    sourceId: m.seriesId,
+    source: OFFICIAL_UK_ONS_METRICS.has(m.id) ? "ons" : OFFICIAL_US_LABOR_METRICS.has(m.id) ? "bls" : CLEVELAND_EXPECTATION_METRICS.has(m.id) ? "cleveland" : m.source,
+    sourceId: OFFICIAL_US_LABOR_METRICS.has(m.id) || OFFICIAL_UK_ONS_METRICS.has(m.id) ? (LIVE_MAP[m.id]?.seriesId ?? m.seriesId) : m.seriesId,
     releaseStrategy: "release-day-poll",
     pollSeconds: m.id.startsWith('us-ppi-') ? 60 : m.source === "fred" ? 30 : 15,
   }));
@@ -148,7 +176,7 @@ const UMICH_EXPECTATIONS: MetricSourceConfig[] = [
 }));
 
 export const SOURCE_REGISTRY: MetricSourceConfig[] = [
-  ...LSEG.map((x) => ({
+  ...LSEG.filter((x) => !EXCLUDED_FROM_DASHBOARD_RELEASE_POLLING.has(x.metricId)).map((x) => ({
     ...x,
     releaseStrategy: "scheduled-poll" as const,
     pollSeconds: 5,
@@ -163,6 +191,7 @@ export const SOURCE_REGISTRY_MAP = new Map(
 );
 
 export function getSourceConfig(metricId: string) {
+  if (EXCLUDED_FROM_DASHBOARD_RELEASE_POLLING.has(metricId)) return null;
   // These chart measures are one ONS release family, including the legacy
   // headline MoM alias that otherwise routes to a separate LSEG feed.
   if (UK_RETAIL_RELEASE_IDS.includes(metricId)) {
@@ -210,7 +239,7 @@ export function isUsCpiLsegOnlyMetric(metricId: string) {
 
 /** CPI backfills may return a shorter LSEG history than the database already has. */
 export function shouldMergeHistoricalBackfill(metricId: string) {
-  return isUsCpiLsegOnlyMetric(metricId);
+  return isUsCpiLsegOnlyMetric(metricId) || EA_MARKET_METRIC_IDS.includes(metricId);
 }
 
 // Catalogued CPI indexes and rates use the BLS API in local and hosted paths.
@@ -280,7 +309,7 @@ export function assertRegistryIsValid() {
     seen.add(x.metricId);
     if (!catalogIds.has(x.metricId)) extras.push(x.metricId);
   }
-  const missing = [...catalogIds].filter((id) => !seen.has(id) && !isUsCpiMetric(id));
+  const missing = [...catalogIds].filter((id) => !seen.has(id) && !isUsCpiMetric(id) && !EXCLUDED_FROM_DASHBOARD_RELEASE_POLLING.has(id));
   if (duplicates.length || extras.length || missing.length) {
     throw new Error(
       `Source registry invalid. duplicates=${duplicates.join(",")} extras=${extras.join(",")} missing=${missing.join(",")}`

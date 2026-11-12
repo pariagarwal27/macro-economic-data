@@ -1,4 +1,5 @@
 import type { ScheduledCalendarRow } from "@/lib/economic-calendar-db";
+import { CPI_COMPONENTS } from "./us-inflation";
 
 export type CpiReleaseCandidate = {
   metricId: string;
@@ -8,8 +9,12 @@ export type CpiReleaseCandidate = {
 
 const BLS_CPI_DEPENDENTS = [
   "us-cpi-yoy",
+  "us-cpi-nsa",
+  "us-cpi-core",
+  "us-cpi-core-nsa",
   "us-core-cpi-mom",
   "us-core-cpi-yoy",
+  ...CPI_COMPONENTS.map(([metricId]) => metricId),
 ];
 
 const CLEVELAND_CPI_METRICS = [

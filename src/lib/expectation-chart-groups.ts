@@ -8,6 +8,7 @@ export type ExpectationChartGroup = {
 };
 
 export const EXPANDED_EXPECTATION_GROUP_IDS = new Set([
+  "ea-inflation-expectations-professional",
   "us-inflation-expectations-market",
   "us-inflation-expectations-model",
 ]);
@@ -136,5 +137,11 @@ export const EXPECTATION_CHART_GROUPS: Record<string, ExpectationChartGroup[]> =
         { id: "uk-maps-inflation-5y", axis: "right" },
       ],
     },
+  ],
+  "ea-inflation-expectations-professional": [
+    { key: "spf-inflation", title: "ECB SPF · Inflation expectations", note: "Headline and core HICP forecasts from the quarterly Survey of Professional Forecasters.", series: [{ id: "ea-spf-hicp-1y" }, { id: "ea-spf-hicpx-1y" }] },
+    { key: "spf-gdp", title: "ECB SPF · Real GDP growth", note: "Quarterly professional forecaster survey.", series: [{ id: "ea-gdp-yoy" }] },
+    { key: "spf-unemployment", title: "ECB SPF · Unemployment rate", note: "Quarterly professional forecaster survey.", series: [{ id: "ea-unemployment" }] },
+    { key: "spf-wages", title: "ECB SPF · Wage growth", note: "Quarterly wage and labour-cost expectations.", series: [{ id: "ea-spf-wage-exp-1y" }] },
   ],
 };

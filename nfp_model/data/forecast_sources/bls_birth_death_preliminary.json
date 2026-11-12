@@ -1,0 +1,77 @@
+{
+  "source_history": "https://www.bls.gov/web/empsit/cesbdhst.htm",
+  "source_current": "https://www.bls.gov/web/empsit/cesbd.htm",
+  "additional_release_dates": {"2026-10": "2026-11-06"},
+  "additional_release_dates_source": "https://www.bls.gov/news.release/archives/empsit_11062026.htm",
+  "description": "BLS annual preliminary estimates, total nonfarm net birth-death, not seasonally adjusted, thousands. 2026 current table, benchmark vintage not independently archived.",
+  "values": {
+    "2022": [
+      -114,
+      156,
+      23,
+      340,
+      213,
+      64,
+      309,
+      109,
+      -172,
+      455,
+      14,
+      -56
+    ],
+    "2023": [
+      -144,
+      176,
+      -29,
+      378,
+      231,
+      26,
+      280,
+      103,
+      -119,
+      412,
+      4,
+      -52
+    ],
+    "2024": [
+      -121,
+      151,
+      -21,
+      363,
+      231,
+      59,
+      246,
+      100,
+      -128,
+      368,
+      5,
+      -52
+    ],
+    "2025": [
+      -105,
+      136,
+      -33,
+      393,
+      199,
+      24,
+      257,
+      90,
+      -144,
+      413,
+      -5,
+      -67
+    ],
+    "2026": [
+      -61,
+      90,
+      -47,
+      391,
+      158,
+      8,
+      235,
+      74,
+      -190,
+      412
+    ]
+  }
+}
