@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  CalendarDays,
-  RefreshCw,
-} from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { compareCalendarMetricEvents, filterReleaseDiaryEvents, type CalendarRegionFilter } from "@/lib/economic-calendar-view";
 import { formatLiveSourceLabel } from "@/lib/live-source-label";
@@ -271,15 +268,6 @@ export function EconomicCalendarSidebar({ onReleaseSelect, active = true }: { ac
           <p className="economic-calendar-subtitle">Official data. At a glance.</p>
         </div>
 
-        <button
-          type="button"
-          className="economic-calendar-refresh"
-          onClick={() => void load()}
-          aria-label="Refresh economic calendar"
-          title="Refresh economic calendar"
-        >
-          <RefreshCw size={14} />
-        </button>
       </div>
 
       <div className="economic-calendar-country-filter">

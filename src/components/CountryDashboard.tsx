@@ -41,7 +41,6 @@ import { inventoryRates } from "@/lib/inventory-rates";
 import { claimsChartPoints, formatClaimsCount } from "@/lib/claims-display";
 import { mergeClaimsChartData } from "@/lib/claims-chart";
 import { selectComponentMiniSeries } from "@/lib/component-mini-series";
-import { RefreshDataButton } from "@/components/RefreshDataButton";
 import { ExpectationComparisonChart } from "@/components/ExpectationComparisonChart";
 import { InflationReleaseCard as InflationContributions } from "@/components/InflationReleaseCard";
 import { PpiDrivers } from "@/components/PpiDrivers";
@@ -6812,11 +6811,6 @@ useEffect(() => {
     </p>
   </div>
 
-  <RefreshDataButton
-    onComplete={() => {
-      window.location.reload();
-    }}
-  />
 </div>
         </div>
 
