@@ -70,6 +70,7 @@ next-env.d.ts
 /tmp/lseg-venv/
 
 # Local runtime state, credentials, and diagnostics
+/Economic-Dashboard/
 /tmp/
 /.wrangler/
 /data/credentials/
