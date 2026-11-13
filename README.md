@@ -17,17 +17,14 @@ The home page intentionally contains only the three country choices. Each countr
 
 ## Automatic updates
 
-`vercel.json` schedules `/api/cron/releases` every minute. The endpoint uses a durable release-dispatch state table so a large release batch is processed across successive cron invocations without repeatedly reprocessing the same release. The endpoint uses the release calendar table when a mapped release is due and performs a small safety reconciliation when no event is due. A second daily job refreshes all six DMP series from the latest Bank of England workbook and merges its complete history, so revisions to earlier months are carried into the database. The ingestion layer fetches from official providers and persists observations/releases. The main dashboard and release calendar poll the database-backed API every 10 seconds, so an open dashboard picks up newly persisted releases automatically.
+The local release and calendar workers fetch updates from official providers and persist observations and releases. The main dashboard and release calendar poll the database-backed API every 10 seconds, so an open dashboard picks up newly persisted releases automatically.
 
 For local continuous operation:
 
 ```bash
 npm install
-npm run db:push
-npm run release:worker
+npm run dev
 ```
-
-For Vercel, set `BEA_API_KEY` and `CRON_SECRET` in Project Settings. Keep secrets out of source control.
 
 ## Data model
 
@@ -50,7 +47,7 @@ npm run refresh
 npm run release:worker
 ```
 
-The supplied SQLite database is included for development continuity. Production can move the same schema to hosted libSQL/Turso.
+The supplied SQLite database is included for local use.
 
 ## Official data ingestion
 
@@ -64,8 +61,6 @@ Create `.env` from `.env.example` and set `BEA_API_KEY`. A registered `BLS_API_K
 
 ### Automatic release refresh requirements
 
-- Production must set `CRON_SECRET`; the cron endpoint fails closed when it is missing.
-- Production should use the remote LibSQL/Turso database configured by the existing `DATABASE_URL`/`DATABASE_AUTH_TOKEN` settings. A Vercel function cannot use a mutable local SQLite file as a durable production database.
 - The calendar workflow lives at `.github/workflows/weekly_calendar_refresh.yml` and refreshes `Economic_calendar/economic_calendar.db` daily. The local calendar worker also refreshes after known publication times, with a one-hour retry backoff. Optional FRED schedules use the GitHub Actions secret `FRED_API_KEY`; agency calendars are fetched independently.
 - If LSEG-backed metrics are enabled, the LSEG Desktop bridge must be reachable at `LSEG_WORKER_URL`. On a local Windows machine, run `npm run release:lseg` or set `LSEG_WORKER_AUTOSTART=1` before `npm run dev`.
 
