@@ -645,7 +645,7 @@ async function warmLiveCaches(
   const providers = new Set<string>();
 
   for (const metric of targets) {
-    const ref = getActiveLiveMapping(metric.id, false);
+    const ref = getActiveLiveMapping(metric.id);
 
     if (ref) {
       providers.add(ref.provider);
@@ -682,7 +682,7 @@ async function warmLiveCaches(
           ...new Set(
             targets
               .map((metric) => {
-                const ref = getActiveLiveMapping(metric.id, false);
+                const ref = getActiveLiveMapping(metric.id);
                 if (ref?.provider === "bls") return ref.seriesId;
                 return !isUsCpiLsegOnlyMetric(metric.id) && !ref && metric.source === "bls"
                   ? metric.seriesId
@@ -795,7 +795,7 @@ async function loadLiveRaw(
     };
   }
 
-  const ref = getActiveLiveMapping(metric.id, false);
+  const ref = getActiveLiveMapping(metric.id);
   if (!ref) {
     if (isUsCpiLsegOnlyMetric(metric.id)) return null;
     if (metric.source === "bls") {
@@ -1771,7 +1771,7 @@ export async function getDashboardData(filters?: {
     const actualValue = latest?.value ?? displayRelease?.value ?? null;
     const surprise = computeSurprise(actualValue, expectedValue, m.unit);
 
-    const live = getActiveLiveMapping(m.id, false);
+    const live = getActiveLiveMapping(m.id);
 
     cards.push({
       id: m.id,
@@ -1868,7 +1868,7 @@ export async function getSeriesHistory(metricId: string, limit = 240) {
   return {
     meta: {
       ...meta,
-      liveProvider: getActiveLiveMapping(metricId, false)?.provider ?? (isUsCpiLsegOnlyMetric(metricId) ? "unavailable" : meta.source),
+      liveProvider: getActiveLiveMapping(metricId)?.provider ?? (isUsCpiLsegOnlyMetric(metricId) ? "unavailable" : meta.source),
     },
     history,
     releases: releasesDeduped,
@@ -2156,7 +2156,7 @@ export async function getSeriesHistories(
       meta: {
         ...meta,
         liveProvider:
-          getActiveLiveMapping(metricId, false)?.provider ?? (isUsCpiLsegOnlyMetric(metricId) ? "unavailable" : meta.source),
+          getActiveLiveMapping(metricId)?.provider ?? (isUsCpiLsegOnlyMetric(metricId) ? "unavailable" : meta.source),
       },
       history,
       releases: releasesDeduped,

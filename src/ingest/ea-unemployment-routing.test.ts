@@ -1,15 +1,14 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { getSourceConfig, getCloudSourceConfig, getActiveLiveSource, SOURCE_REGISTRY } from './source-registry';
+import { getSourceConfig, getActiveLiveSource, SOURCE_REGISTRY } from './source-registry';
 import { fetchEurostatPreset } from './eurostat';
 
-test('euro-area unemployment uses official Eurostat in local and cloud release workers', () => {
-  for (const config of [getSourceConfig('ea-unemployment'),getCloudSourceConfig('ea-unemployment')]) {
-    assert.equal(config?.adapter,'pipeline');
-    assert.equal(config?.source,'eurostat');
-    assert.equal(config?.sourceId,'une_rt_m');
-  }
-  assert.equal(getActiveLiveSource('ea-unemployment',false),'eurostat');
+test('euro-area unemployment uses official Eurostat in the local release worker', () => {
+  const config = getSourceConfig('ea-unemployment');
+  assert.equal(config?.adapter,'pipeline');
+  assert.equal(config?.source,'eurostat');
+  assert.equal(config?.sourceId,'une_rt_m');
+  assert.equal(getActiveLiveSource('ea-unemployment'),'eurostat');
   assert.equal(SOURCE_REGISTRY.filter(c=>c.metricId==='ea-unemployment').length,1);
 });
 

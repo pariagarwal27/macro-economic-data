@@ -1,10 +1,9 @@
-import { getDb, getD1Database, executeSql } from "@/db";
-import { ingestRuns } from "@/db/schema";
+import { getDb, executeSql } from "@/db";
 import {
   getEconomicCalendarRows,
   type ScheduledCalendarRow,
 } from "@/lib/economic-calendar-db";
-import { getActiveLiveSource, getCloudSourceConfig, getSourceConfig } from "./source-registry";
+import { getActiveLiveSource, getSourceConfig } from "./source-registry";
 import { fetchMetricFromOfficialSource } from "./source-adapter";
 import { processFetchedRelease } from "./release-processor";
 import {
@@ -74,7 +73,7 @@ function sourceTimeZone(metricId: string) {
 }
 
 function sourceConfig(metricId: string) {
-  return getD1Database() ? getCloudSourceConfig(metricId) : getSourceConfig(metricId);
+  return getSourceConfig(metricId);
 }
 
 function localDate(date: Date, timeZone: string) {
@@ -156,6 +155,22 @@ function pceReleaseCandidates(rows: ScheduledCalendarRow[], now: Date): Candidat
     .map(metricId => ({ metricId, scheduledAt, mode: "scheduled" as const }));
 }
 
+function ismEmploymentReleaseCandidates(rows: ScheduledCalendarRow[], now: Date): Candidate[] {
+  const scheduleLinks = [
+    ["us-ism-manufacturing-pmi", "us-ism-manufacturing-employment"],
+    ["us-ism-services-pmi", "us-ism-services-employment"],
+  ] as const;
+  return scheduleLinks.flatMap(([scheduleMetricId, metricId]) => {
+    const schedule = rows.find(row => row.metricId === scheduleMetricId && row.nextReleaseDate);
+    if (!schedule || !sourceConfig(metricId)) return [];
+    // The hosted runtime intentionally skips its local-only LSEG headline PMI
+    // adapter. Check the derived official ISM input's schedule instead.
+    if (!isDue({ ...schedule, metricId }, now)) return [];
+    const scheduledAt = schedule.nextReleaseAt ?? schedule.nextReleaseDate!.slice(0, 10);
+    return [{ metricId, scheduledAt, mode: "scheduled" as const }];
+  });
+}
+
 async function buildCandidates(now: Date, prepareAheadMs = 0): Promise<Candidate[]> {
   const scanAt = new Date(now.getTime() + prepareAheadMs);
   const calendarRows = withDashboardReleaseSchedules(await getEconomicCalendarRows());
@@ -198,6 +213,7 @@ async function buildCandidates(now: Date, prepareAheadMs = 0): Promise<Candidate
 
   candidates.push(...cpiReleaseCandidates(currentAndHistoricalRows, scanAt));
   candidates.push(...pceReleaseCandidates(calendarRows, scanAt));
+  candidates.push(...ismEmploymentReleaseCandidates(calendarRows, scanAt));
   candidates.push(...inflationFamilyReleaseCandidates(calendarRows, scanAt, "UK"));
   candidates.push(...inflationFamilyReleaseCandidates(calendarRows, scanAt, "EA"));
   candidates.push(...retailReleaseCandidates(currentAndHistoricalRows, scanAt));
@@ -258,7 +274,7 @@ async function processCandidate(candidate: Candidate) {
     metricId: candidate.metricId,
     metricName: metric?.shortName ?? metric?.name ?? candidate.metricId,
     region: metric?.region,
-    source: getActiveLiveSource(candidate.metricId, Boolean(getD1Database()))?.toUpperCase()
+    source: getActiveLiveSource(candidate.metricId)?.toUpperCase()
       ?? metric?.source?.toUpperCase(),
     seriesId: metric?.seriesId,
     adapter: config?.adapter,
@@ -289,7 +305,7 @@ async function processCandidate(candidate: Candidate) {
     const fetchStartedMs = Date.now();
     const request = candidate.releaseStage === "flash" && candidate.expectedPeriodDate &&
       (candidate.metricId === "ea-gdp-qoq" || candidate.metricId === "ea-gdp-yoy")
-      ? fetchEurostatGdpFlashRelease(candidate.metricId, candidate.expectedPeriodDate)
+      ? fetchEurostatGdpFlashRelease(candidate.metricId, candidate.expectedPeriodDate, candidate.scheduledAt)
           .then(result => result ?? fetchMetricFromOfficialSource(candidate.metricId))
       : fetchMetricFromOfficialSource(candidate.metricId);
     logReleaseEvent({ event: "attempt_started", ...context, at: new Date(fetchStartedMs).toISOString(), action: "fetch_official_source",
@@ -528,18 +544,6 @@ export async function dispatchDueReleases(options?: {
       return Date.now() < retryDeadline && stillWithinWindow;
     },
   ))).filter(result => result !== null);
-
-  if (getD1Database()) {
-    const outcomes = results as { metricId: string; status: string; error?: string; processed?: { updated: boolean } }[];
-    const errors = outcomes.filter(item => item.status === "error");
-    await getDb().insert(ingestRuns).values({
-      startedAt: now.toISOString(), finishedAt: new Date().toISOString(),
-      mode: "cloud-release", status: errors.length ? "partial" : "ok",
-      metricsProcessed: outcomes.filter(item => item.status !== "skipped").length,
-      observationsUpserted: outcomes.filter(item => item.processed?.updated).length,
-      error: errors.length ? JSON.stringify(errors.map(item => ({ metricId: item.metricId, error: item.error }))).slice(0, 2000) : null,
-    });
-  }
 
   return {
     checkedAt: now.toISOString(),

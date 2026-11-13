@@ -55,9 +55,9 @@ export async function hasElapsedCalendarRelease({ since, now, databasePath = pro
 
 export class CalendarRefreshScheduler {
   running = false;
-  constructor({ statePath = refreshStatePath(), run, now = Date.now, onError = () => {}, isReleaseDue = hasElapsedCalendarRelease }) {
+  constructor({ statePath = refreshStatePath(), run, now = Date.now, onError = () => {}, isReleaseDue = hasElapsedCalendarRelease, retryIntervalMs = 3_600_000 }) {
     this.statePath = statePath; this.run = run; this.now = now; this.onError = onError;
-    this.isReleaseDue = isReleaseDue;
+    this.isReleaseDue = isReleaseDue; this.retryIntervalMs = retryIntervalMs;
   }
   async tick() {
     if (this.running) return 'busy';
@@ -69,7 +69,7 @@ export class CalendarRefreshScheduler {
       if (!unlock) return 'busy';
       // Re-read after taking the lock in case another process just finished.
       const latest = await readRefreshState(this.statePath);
-      if (latest.lastAttemptAt && now - Date.parse(latest.lastAttemptAt) < 3_600_000) return 'not-due';
+      if (latest.lastAttemptAt && now - Date.parse(latest.lastAttemptAt) < this.retryIntervalMs) return 'not-due';
       if (latest.lastSuccessAt && now - Date.parse(latest.lastSuccessAt) < DAY_MS &&
         !await this.isReleaseDue({ since: latest.lastSuccessAt, now })) return 'not-due';
       const attempt = { ...latest, lastAttemptAt: new Date(now).toISOString() };

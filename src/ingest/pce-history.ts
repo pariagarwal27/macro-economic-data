@@ -1,4 +1,4 @@
-import { executeRead, getClient, getD1Database } from "@/db";
+import { executeRead, getClient } from "@/db";
 
 export type PceHistoryPoint = { date: string; value: number; rawValue?: number };
 
@@ -21,9 +21,5 @@ export async function persistPceHistoryRevisions(metricId: string, history: PceH
         : { sql: "INSERT INTO observations(metric_id,date,value,raw_value,is_latest) VALUES(?,?,?,?,1)", args: [metricId, point.date, point.value, point.rawValue ?? point.value] },
     ];
   });
-  if (statements.length) {
-    const database = getD1Database();
-    if (database) await database.batch(statements.map(statement => database.prepare(statement.sql).bind(...statement.args)));
-    else await getClient().batch(statements, "write");
-  }
+  if (statements.length) await getClient().batch(statements, "write");
 }

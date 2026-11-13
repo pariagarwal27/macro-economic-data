@@ -41,6 +41,8 @@ const EA_HICP_DISPLAY: Readonly<Record<string, { name: string; order: number }>>
 };
 export function calendarMetricDisplayName(metric: Pick<MetricDef, "id" | "name" | "category" | "subcategory" | "source" | "shortName" | "releaseName">) {
   if (/^ea-spf-(hicp|gdp|unemployment|wage)-(?:target-2026|rolling-current)$/.test(metric.id)) return metric.name;
+  if (metric.id === "ea-gdp-yoy") return "Real GDP YoY";
+  if (metric.id === "ea-gdp-qoq") return "Real GDP QoQ";
   if (metric.id === "us-umich-inflation-exp-1y") return "UMich Inflation Expectations 1Y";
   if (metric.id === "us-umich-inflation-exp-5y") return "UMich Inflation Expectations 5Y";
   if (metric.id.startsWith("us-nyfed-sce-")) return metric.shortName || metric.name;
@@ -131,7 +133,7 @@ export function isWithinPastAndNextSevenCalendarDays(scheduledDate: string | nul
   return scheduleType === "scheduled" && !!scheduledDate && scheduledDate >= addDays(today, -6) && scheduledDate <= addDays(today, 7);
 }
 
-export function buildEconomicCalendar(schedule: ScheduledCalendarRow[], actuals: CalendarActual[], catalog: (MetricDef & { liveSource?: string | null })[], now = new Date(), options: { history?: ScheduledCalendarRow[]; completions?: CalendarCompletion[]; latestValues?: ReadonlyMap<string, number | null>; releaseHistory?: CalendarReleaseHistory; forecasts?: ReadonlyMap<string, number> } = {}) {
+export function buildEconomicCalendar(schedule: ScheduledCalendarRow[], actuals: CalendarActual[], catalog: (MetricDef & { liveSource?: string | null })[], now = new Date(), options: { history?: ScheduledCalendarRow[]; completions?: CalendarCompletion[]; latestValues?: ReadonlyMap<string, number | null>; latestPeriodChanges?: ReadonlyMap<string, number | null>; releaseHistory?: CalendarReleaseHistory; forecasts?: ReadonlyMap<string, number> } = {}) {
   const today = dayKey(now);
   const weekday = new Date(`${today}T12:00:00Z`).getUTCDay();
   const weekStart = addDays(today, -((weekday + 6) % 7));
@@ -195,6 +197,7 @@ export function buildEconomicCalendar(schedule: ScheduledCalendarRow[], actuals:
           ? options.releaseHistory?.get(metric.id)?.find(item => item.periodDate < actual.periodDate!)?.value ?? null
           : null)
         : options.latestValues?.get(metric.id) ?? null,
+      previousChange: options.latestPeriodChanges?.get(metric.id) ?? null,
       releasedAt: scheduledAt,
       actualReleasedAt: actual?.releasedAt ?? null, officialSource: row?.officialSource ?? metric.officialUrl,
       updatedAt: row?.updatedAt ?? null,

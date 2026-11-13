@@ -2,8 +2,6 @@ import type { RawPoint } from "./transforms";
 import { METRICS } from "@/catalog/metrics";
 import { LIVE_MAP } from "@/catalog/live-map";
 import { isUsCpiLsegOnlyMetric } from "./source-registry";
-import { getD1Database } from "@/db";
-import { getSourceSnapshot } from "./cloud-source-cache";
 import { isFreshReleaseFetch } from "./release-fetch-context.js";
 import { US_PPI_SERIES } from '../catalog/us-ppi.mjs';
 
@@ -54,19 +52,7 @@ export async function fetchBlsSeries(
     const batch = await entry.promise;
     return new Map(requestedIds.map(id => [id, batch.get(id) ?? []]));
   }
-  if (isFreshReleaseFetch() || !getD1Database()) return fetchBlsSeriesUncached(requestedIds, opts);
-  const allIds = [...new Set([...requestedIds, ...METRICS.flatMap(metric => {
-    if (isUsCpiLsegOnlyMetric(metric.id)) return [];
-    const live = LIVE_MAP[metric.id];
-    if (live?.provider === "bls") return [live.seriesId];
-    return metric.source === "bls" ? [metric.seriesId] : [];
-  })])];
-  const snapshot = await getSourceSnapshot(
-    `bls:${opts.startYear ?? new Date().getUTCFullYear() - 2}:${opts.endYear ?? new Date().getUTCFullYear()}`,
-    10 * 60_000,
-    async () => Object.fromEntries(await fetchBlsSeriesUncached(allIds, opts)),
-  );
-  return new Map(requestedIds.map(id => [id, snapshot[id] ?? []]));
+  return fetchBlsSeriesUncached(requestedIds, opts);
 }
 
 async function fetchBlsSeriesUncached(

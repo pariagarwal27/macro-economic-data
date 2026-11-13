@@ -13,8 +13,8 @@ test("the scheduled Q3 GDP flash is read from Eurostat's release article", async
     `);
   };
   try {
-    const qoq = await fetchEurostatGdpFlashRelease("ea-gdp-qoq", "2026-07-01");
-    const yoy = await fetchEurostatGdpFlashRelease("ea-gdp-yoy", "2026-07-01");
+    const qoq = await fetchEurostatGdpFlashRelease("ea-gdp-qoq", "2026-07-01", "2026-10-30T11:00:00+01:00");
+    const yoy = await fetchEurostatGdpFlashRelease("ea-gdp-yoy", "2026-07-01", "2026-10-30T11:00:00+01:00");
     assert.equal(qoq?.value, 0.4);
     assert.equal(yoy?.value, 1.3);
     assert.equal(qoq?.releaseStage, "flash");
@@ -30,7 +30,8 @@ test("the flash article fallback does not fabricate future-quarter values", asyn
   const original = globalThis.fetch;
   globalThis.fetch = async () => { requested = true; return new Response("{}"); };
   try {
-    assert.equal(await fetchEurostatGdpFlashRelease("ea-gdp-qoq", "2026-10-01"), null);
+    assert.equal(await fetchEurostatGdpFlashRelease("ea-gdp-qoq", "2026-10-01", "2027-01-29"), null);
+    assert.equal(await fetchEurostatGdpFlashRelease("ea-gdp-qoq", "2026-07-01", "2026-11-13"), null);
     assert.equal(requested, false);
   } finally {
     globalThis.fetch = original;

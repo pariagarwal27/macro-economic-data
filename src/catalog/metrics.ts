@@ -31,6 +31,7 @@ export type Source =
   | "philadelphia"
   | "census"
   | "pmi_scrape"
+  | "ism"
   | "lseg"
   | "dol"
   | "adp";
@@ -5462,6 +5463,44 @@ releaseName: "GDP Quarterly National Accounts",
     importance: "critical",
     officialUrl: "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
     docsUrl: "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+    releaseName: "ISM Services PMI",
+  },
+
+  {
+    id: "us-ism-manufacturing-employment",
+    region: "US",
+    category: "jobs",
+    subcategory: "survey_inputs",
+    name: "ISM Manufacturing Employment Index",
+    shortName: "ISM Manufacturing Employment",
+    description: "Employment diffusion index published in the official ISM Manufacturing PMI report.",
+    source: "ism",
+    seriesId: "manufacturing",
+    transform: "level",
+    frequency: "monthly",
+    unit: "index",
+    importance: "supporting",
+    officialUrl: "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/pmi/manufacturing/",
+    docsUrl: "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/pmi/manufacturing/",
+    releaseName: "ISM Manufacturing PMI",
+  },
+
+  {
+    id: "us-ism-services-employment",
+    region: "US",
+    category: "jobs",
+    subcategory: "survey_inputs",
+    name: "ISM Services Employment Index",
+    shortName: "ISM Services Employment",
+    description: "Employment diffusion index published in the official ISM Services PMI report.",
+    source: "ism",
+    seriesId: "services",
+    transform: "level",
+    frequency: "monthly",
+    unit: "index",
+    importance: "supporting",
+    officialUrl: "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/services/",
+    docsUrl: "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/services/",
     releaseName: "ISM Services PMI",
   },
 

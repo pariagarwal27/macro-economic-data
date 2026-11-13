@@ -56,6 +56,7 @@ export type NfpForecastSnapshot = {
 };
 
 const MODEL = modelJson as NfpModel;
+const SURPRISE_WEIGHT = 1.0;
 
 function walkTree(node: ModelNode, values: number[]): number {
   if (node.leaf_value != null) return node.leaf_value;
@@ -96,6 +97,19 @@ function monthOffset(period: string, offset: number) {
   return new Date(Date.UTC(year, monthNumber - 1 + offset, 1)).toISOString().slice(0, 7);
 }
 
+export function nfpTargetMonthFromRelease(releaseAt: string) {
+  const releaseMonth = month(releaseAt);
+  return releaseMonth ? monthOffset(releaseMonth, -1) : null;
+}
+
+export function isNfpForecastWindow(releaseAt: string, now = new Date(), leadDays = 7) {
+  const releaseTime = Date.parse(releaseAt);
+  const millisecondsUntilRelease = releaseTime - now.getTime();
+  return Number.isFinite(releaseTime)
+    && millisecondsUntilRelease >= 0
+    && millisecondsUntilRelease <= leadDays * 86_400_000;
+}
+
 function validReleases(releases: readonly NfpModelRelease[]) {
   return releases.flatMap(release => {
     const period = month(release.periodDate);
@@ -130,7 +144,7 @@ function consensusFromEvents(events: readonly NfpCalendarEvent[], releaseAt: str
     && (metricId === "us-nfp"
       ? event.releasedAt.slice(0, 10) === releaseAt.slice(0, 10)
       : releaseTimestamp - Date.parse(event.releasedAt) <= 7 * 86_400_000)
-    && (!event.source || event.source === "showmytrades" || event.source === "investing"));
+    && (!event.source || event.source === "investing"));
   const selected = matches.sort((left, right) => Date.parse(right.importedAt ?? "") - Date.parse(left.importedAt ?? ""))[0];
   return selected?.forecast == null ? null : Number((selected.forecast / 1_000).toFixed(3));
 }
@@ -196,13 +210,16 @@ function buildFeatureValues(
     const weekly = [...seriesRows(rows, metricId)].sort((left, right) => Date.parse(left.releasedAt) - Date.parse(right.releasedAt));
     const latest = weekly.at(-1);
     const previous = weekly.at(-2);
-    const latestFour = weekly.slice(-4).map(row => row.value);
-    const priorFour = weekly.slice(-8, -4).map(row => row.value);
-    const currentMonth = weekly.filter(row => row.period === targetMonth).map(row => row.value);
-    const priorMonth = weekly.filter(row => row.period === monthOffset(targetMonth, -1)).map(row => row.value);
-    setFeature(features, `${prefix}_claims_latest`, latest?.value);
-    setFeature(features, `${prefix}_claims_prev_week`, previous?.value);
-    setFeature(features, `${prefix}_claims_weekly_change`, latest && previous ? latest.value - previous.value : null);
+    // The forecast training data stores claims in thousands; the dashboard
+    // source series stores headcounts.
+    const toThousands = (value: number) => value / 1_000;
+    const latestFour = weekly.slice(-4).map(row => toThousands(row.value));
+    const priorFour = weekly.slice(-8, -4).map(row => toThousands(row.value));
+    const currentMonth = weekly.filter(row => row.period === targetMonth).map(row => toThousands(row.value));
+    const priorMonth = weekly.filter(row => row.period === monthOffset(targetMonth, -1)).map(row => toThousands(row.value));
+    setFeature(features, `${prefix}_claims_latest`, latest ? toThousands(latest.value) : null);
+    setFeature(features, `${prefix}_claims_prev_week`, previous ? toThousands(previous.value) : null);
+    setFeature(features, `${prefix}_claims_weekly_change`, latest && previous ? toThousands(latest.value - previous.value) : null);
     setFeature(features, `${prefix}_claims_4week_avg`, mean(latestFour));
     setFeature(features, `${prefix}_claims_4week_change`, latestFour.length === 4 && priorFour.length === 4 ? mean(latestFour)! - mean(priorFour)! : null);
     setFeature(features, `${prefix}_claims_month_avg`, mean(currentMonth));
@@ -281,11 +298,19 @@ function buildFeatureValues(
   setFeature(features, "ces_aggregate_weekly_hours_change_from_previous", latestHours == null || previousHours == null ? null : latestHours - previousHours);
   setFeature(features, "ces_aggregate_weekly_hours_change_3m_avg", mean(hoursValues.slice(-3).map(row => row.change)));
 
-  // ISM manufacturing and services employment sub-indexes are separate model inputs.
-  // The dashboard only has headline ISM PMI IDs, so it deliberately leaves these null.
-  for (const feature of ["ism_mfg_employment_latest", "ism_mfg_employment_previous", "ism_mfg_employment_change", "ism_mfg_employment_3m_avg", "ism_services_employment_latest", "ism_services_employment_previous", "ism_services_employment_change", "ism_services_employment_3m_avg"]) {
-    setFeature(features, feature, null);
-  }
+  const setIsmEmploymentFeatures = (metricId: string, prefix: "ism_mfg" | "ism_services") => {
+    const history = seriesRows(rows, metricId)
+      .filter(row => row.period <= targetMonth)
+      .sort((left, right) => left.period.localeCompare(right.period));
+    const latest = history.at(-1);
+    const previous = history.at(-2);
+    setFeature(features, `${prefix}_employment_latest`, latest?.value);
+    setFeature(features, `${prefix}_employment_previous`, previous?.value);
+    setFeature(features, `${prefix}_employment_change`, latest && previous ? latest.value - previous.value : null);
+    setFeature(features, `${prefix}_employment_3m_avg`, mean(history.slice(-3).map(row => row.value)));
+  };
+  setIsmEmploymentFeatures("us-ism-manufacturing-employment", "ism_mfg");
+  setIsmEmploymentFeatures("us-ism-services-employment", "ism_services");
 
   const modelReleaseAt = nfpReleaseDateForTarget(targetMonth, releaseAt);
   setFeature(features, "current_consensus", consensusFromEvents(calendarEvents, modelReleaseAt, "us-nfp"));
@@ -312,7 +337,11 @@ export function forecastNfpForRelease(input: {
   releases: readonly NfpModelRelease[];
   calendarEvents: readonly NfpCalendarEvent[];
 }): NfpForecastSnapshot {
-  const inputs = buildFeatureValues(input.targetMonth, input.releaseAt, input.releases, input.calendarEvents);
+  const asOf = Date.parse(input.asOf);
+  if (!Number.isFinite(asOf)) throw new Error("Invalid forecast timestamp");
+  const eligibleReleases = input.releases.filter(row => Date.parse(row.releasedAt) <= asOf);
+  const eligibleEvents = input.calendarEvents.filter(row => !row.importedAt || Date.parse(row.importedAt) <= asOf);
+  const inputs = buildFeatureValues(input.targetMonth, input.releaseAt, eligibleReleases, eligibleEvents);
   const result = predictNfpSurprise(inputs);
   const consensus = inputs.current_consensus;
   return {
@@ -323,12 +352,12 @@ export function forecastNfpForRelease(input: {
     model: MODEL.model,
     modelStatus: MODEL.model_status,
     consensus,
-    predictedSurprise: result.prediction * MODEL.surprise_multiplier,
-    forecast: consensus == null ? null : consensus + result.prediction * MODEL.surprise_multiplier,
+    predictedSurprise: result.prediction * SURPRISE_WEIGHT,
+    forecast: consensus == null ? null : consensus + result.prediction * SURPRISE_WEIGHT,
     featureCount: result.featureCount,
     featureTotal: result.featureTotal,
     inputs,
-    sourceReleaseCount: input.releases.length,
+    sourceReleaseCount: eligibleReleases.length,
   };
 }
 

@@ -523,6 +523,7 @@ export const INVESTING_TO_CATALOG_SCALE: Record<string, number> = {
   "us-housing-starts": 0.001,
   "us-building-permits": 0.001,
   "us-payrolls-level": 0.001,
+  "uk-employment-level": 0.001,
 };
 
 export function investingToCatalogScale(metricId: string): number {

@@ -20,9 +20,8 @@ export async function fetchDolClaims(): Promise<{
   }
 
   // The DOL HTML landing page contains a form, not the released observations.
-  // Cloudflare's D1 runtime cannot always load pdf-parse's worker, so use the
-  // matching FRED weekly series as a live fallback there (and anywhere else
-  // PDF parsing is unavailable).
+  // Use the matching FRED weekly series as a live fallback when PDF parsing
+  // is unavailable.
   try {
     return await fromFred();
   } catch (fredErr) {

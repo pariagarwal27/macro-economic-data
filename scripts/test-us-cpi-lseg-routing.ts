@@ -4,7 +4,6 @@ import { fetchBlsSeries } from "../src/ingest/bls";
 import {
   getActiveLiveSource,
   getActiveLiveMapping,
-  getCloudSourceConfig,
   getSourceConfig,
   isUsCpiMetric,
   shouldMergeHistoricalBackfill,
@@ -32,15 +31,10 @@ const expectedBlsRoutes: Record<string, string> = {
 
 for (const [metricId, ric] of Object.entries(expectedLsegRoutes)) {
   assert.equal(shouldMergeHistoricalBackfill(metricId), true, `${metricId} backfill must preserve existing observations`);
-  for (const [runtime, config] of [
-    ["local", getSourceConfig(metricId)],
-    ["hosted", getCloudSourceConfig(metricId)],
-  ] as const) {
-    assert.equal(config?.adapter, "lseg", `${runtime} ${metricId} must use LSEG`);
-    assert.equal(config?.sourceId, ric, `${runtime} ${metricId} must use ${ric}`);
-  }
-  assert.equal(getActiveLiveSource(metricId, false), "LSEG");
-  assert.equal(getActiveLiveSource(metricId, true), "LSEG");
+  const config = getSourceConfig(metricId);
+  assert.equal(config?.adapter, "lseg", `${metricId} must use LSEG`);
+  assert.equal(config?.sourceId, ric, `${metricId} must use ${ric}`);
+  assert.equal(getActiveLiveSource(metricId), "LSEG");
 }
 
 const cpiMetrics = METRICS.filter((metric) => isUsCpiMetric(metric.id));
@@ -48,19 +42,15 @@ assert.ok(cpiMetrics.length > 0, "The US CPI family should be detected");
 for (const metric of cpiMetrics) {
   const isBlsException = Object.hasOwn(expectedBlsRoutes, metric.id);
   assert.equal(shouldMergeHistoricalBackfill(metric.id), !isBlsException, `${metric.id} must merge only when routed through LSEG`);
-  for (const [runtime, config] of [
-    ["local", getSourceConfig(metric.id)],
-    ["hosted", getCloudSourceConfig(metric.id)],
-  ] as const) {
+  const config = getSourceConfig(metric.id);
     assert.ok(
       isBlsException ? config?.source === "bls" : config === null || config.adapter === "lseg",
-      `${runtime} ${metric.id} must use ${isBlsException ? "BLS" : "LSEG or unavailable"}, got ${config?.source ?? "unavailable"}`
+      `${metric.id} must use ${isBlsException ? "BLS" : "LSEG or unavailable"}, got ${config?.source ?? "unavailable"}`
     );
-    assert.equal(getActiveLiveSource(metric.id, runtime === "hosted"), isBlsException ? "bls" : (config ? "LSEG" : null));
-    const mapping = getActiveLiveMapping(metric.id, runtime === "hosted");
+    assert.equal(getActiveLiveSource(metric.id), isBlsException ? "bls" : (config ? "LSEG" : null));
+    const mapping = getActiveLiveMapping(metric.id);
     assert.equal(mapping?.provider, isBlsException ? "bls" : (config ? "lseg" : undefined));
     if (isBlsException) assert.equal(config?.sourceId, expectedBlsRoutes[metric.id]);
-  }
 }
 
 console.log(`US CPI routing verified: ${Object.keys(expectedLsegRoutes).length} primary LSEG routes; ${Object.keys(expectedBlsRoutes).length} BLS component routes`);

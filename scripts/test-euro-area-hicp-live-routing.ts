@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import {
   getActiveLiveMapping,
   getActiveLiveSource,
-  getCloudSourceConfig,
   getSourceConfig,
 } from "../src/ingest/source-registry";
 
@@ -16,17 +15,12 @@ const expected: Record<string, string> = {
 };
 
 for (const [metricId, seriesId] of Object.entries(expected)) {
-  for (const [runtime, hosted] of [["local", false], ["hosted", true]] as const) {
-    const config = hosted ? getCloudSourceConfig(metricId) : getSourceConfig(metricId);
-    assert.equal(config?.adapter, "pipeline", `${runtime} ${metricId} must use the official pipeline adapter`);
-    assert.equal(config?.source, "eurostat", `${runtime} ${metricId} must fetch from Eurostat`);
-    assert.equal(config?.sourceId, seriesId, `${runtime} ${metricId} must use ${seriesId}`);
-    assert.equal(getActiveLiveSource(metricId, hosted), "eurostat", `${runtime} active source for ${metricId}`);
-    assert.deepEqual(getActiveLiveMapping(metricId, hosted), {
-      provider: "eurostat",
-      seriesId,
-    });
-  }
+  const config = getSourceConfig(metricId);
+  assert.equal(config?.adapter, "pipeline", `${metricId} must use the official pipeline adapter`);
+  assert.equal(config?.source, "eurostat", `${metricId} must fetch from Eurostat`);
+  assert.equal(config?.sourceId, seriesId, `${metricId} must use ${seriesId}`);
+  assert.equal(getActiveLiveSource(metricId), "eurostat", `active source for ${metricId}`);
+  assert.deepEqual(getActiveLiveMapping(metricId), { provider: "eurostat", seriesId });
 }
 
-console.log("Euro Area HICP release routes use Eurostat in local and hosted workers");
+console.log("Euro Area HICP release routes use Eurostat in the local worker");

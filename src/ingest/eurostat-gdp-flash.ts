@@ -15,11 +15,13 @@ export type EurostatGdpFlashResult = {
 export async function fetchEurostatGdpFlashRelease(
   metricId: string,
   expectedPeriodDate?: string,
+  scheduledReleaseDate?: string,
 ): Promise<EurostatGdpFlashResult | null> {
   if (!expectedPeriodDate || (metricId !== "ea-gdp-qoq" && metricId !== "ea-gdp-yoy")) return null;
-  // The Eurostat Q3 2026 release page has the verified EA flash table. Later
-  // quarters continue through the API until their own article is registered.
-  if (expectedPeriodDate !== "2026-07-01") return null;
+  // This article is only the initial T+30 flash. Later releases for the same
+  // quarter (including the T+45 update) must use the live Eurostat dataset so
+  // a revised value cannot be shadowed by this earlier vintage.
+  if (expectedPeriodDate !== "2026-07-01" || scheduledReleaseDate?.slice(0, 10) !== "2026-10-30") return null;
 
   let response: Response;
   try {

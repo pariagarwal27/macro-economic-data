@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     async start(controller) {
       const stop = () => { stopped = true; };
       request.signal.addEventListener("abort", stop);
-      // Stay below the per-invocation D1 query limit even on the free plan.
+      // Keep the number of database reads bounded for the local app.
       const until = Date.now() + 22_000;
       try {
         controller.enqueue(encoder.encode("retry: 500\n\n"));

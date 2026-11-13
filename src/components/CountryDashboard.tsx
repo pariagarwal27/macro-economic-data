@@ -22,6 +22,7 @@ import { CalendarDays, ChevronDown, ChevronRight, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
+import octoberNfpForecast from "../../nfp_model/results/lightgbm_failure_fixes_2026-11-06/october_2026_revised_forecast.json";
 import { SPF_HORIZONS } from "@/lib/spf-horizons";
 import {
   DASHBOARD,
@@ -33,7 +34,6 @@ import {
   type UiNode,
 } from "./macro-ui-hierarchy";
 import { formatEconomicLevel, formatObsDate } from "@/lib/format";
-import { matchNfpReleaseToObservation } from "@/lib/nfp-forecast";
 import { formatLiveSourceLabel } from "@/lib/live-source-label";
 import { displayReleaseStage, isPreliminaryReleaseStage, type ReleaseStage } from "@/ingest/release-stages";
 import { latestQuarterPair, quarterlyGrowthPoints } from "@/lib/quarterly-gdp";
@@ -113,6 +113,20 @@ type DetailPayload = {
   threeMonth?: { label: string; note: string; frequency?: string; history: Array<{ date: string; value: number }> };
   displayReleasedAt?: string | null;
   upcomingForecast?: { releasedAt: string; value: number } | null;
+  nfpForecast?: {
+    targetMonth: string;
+    releaseAt: string;
+    asOf: string;
+    status: "awaiting-consensus" | "experimental";
+    isFinalDay: boolean;
+    modelStatus: string;
+    consensus: number | null;
+    predictedSurprise: number;
+    forecast: number | null;
+    featureCount: number;
+    featureTotal: number;
+  } | null;
+  nfpForecastWindow?: { releaseAt: string; startsAt: string; targetMonth: string } | null;
   releases?: Array<{
     periodDate: string;
     releasedAt: string;
@@ -3982,11 +3996,24 @@ function LabourChartStudio({ category, specs, metrics, onOpen, highlightedMetric
   const nfpMetric = metrics["us-nfp"];
   const showNfpForecast = active.id === "us-payrolls-card" || metric?.meta.id === "us-nfp";
   const nfpLatest = normalizeHistory(nfpMetric?.history ?? []).at(-1);
-  const nfpPublishedRelease = matchNfpReleaseToObservation(nfpLatest?.date, nfpMetric?.releases ?? []);
-  const nfpPublishedActual = nfpPublishedRelease?.actual ?? nfpLatest?.value;
-  const nfpPublishedForecast = nfpPublishedRelease?.forecast ?? null;
-  const nfpPublishedDifference = nfpPublishedRelease?.difference ?? null;
+  const nfpPrior = normalizeHistory(nfpMetric?.history ?? []).at(-2);
   const nfpFormat = (value: number | null | undefined) => formatLaborChange(value, nfpMetric?.meta ?? { id: "us-nfp", unit: "thousands" });
+  const liveNfpForecast = nfpMetric?.nfpForecast ?? null;
+  const nfpForecastWindow = nfpMetric?.nfpForecastWindow ?? null;
+  const isUpcomingNfpWindow = Boolean(liveNfpForecast || (nfpForecastWindow && Date.now() >= Date.parse(nfpForecastWindow.startsAt)));
+  const displayedForecastMonth = liveNfpForecast?.targetMonth
+    ?? (isUpcomingNfpWindow ? nfpForecastWindow?.targetMonth : null)
+    ?? octoberNfpForecast.target_month;
+  const displayedConsensus = liveNfpForecast?.consensus
+    ?? (isUpcomingNfpWindow ? nfpMetric?.upcomingForecast?.value ?? null : octoberNfpForecast.current_consensus_thousands);
+  const displayedNfpForecast = liveNfpForecast?.forecast
+    ?? (isUpcomingNfpWindow ? null : octoberNfpForecast.forecast_thousands);
+  const nfpMonthLabel = (targetMonth: string) => {
+    const [year, month] = targetMonth.split("-").map(Number);
+    return Number.isFinite(year) && Number.isFinite(month)
+      ? new Date(Date.UTC(year, month - 1, 1)).toLocaleDateString("en-US", { month: "short", year: "numeric", timeZone: "UTC" })
+      : targetMonth;
+  };
   const hasThreeMonth = (metric?.meta.id === "us-adp-change" || !isLaborChangeMetric(metric?.meta.id)) && Boolean(metric?.threeMonth?.history?.length);
   const readings = getCardKpis(active, metric, metrics, "detail");
   const eurostatGdpStageSuffix = (metricId: string | undefined) => {
@@ -4125,7 +4152,15 @@ function LabourChartStudio({ category, specs, metrics, onOpen, highlightedMetric
       </div>
       <aside className={`labour-studio-reading${isRetailSales ? " is-retail-sales-reading" : ""}`}>
         <h4>{isUkWageGrowth ? "Published wage growth" : isEaWageGrowth ? "Published wage readings" : hasThreeMonth ? "Published readings and trend" : "Published readings"}</h4>
-          {isUkWageGrowth ? <div style={{ display: "grid", gap: 12 }}>
+          {showNfpForecast ? <>
+            <span>Latest change{nfpLatest ? ` · ${formatObsDate(nfpLatest.date)}` : ""}</span><strong>{nfpFormat(nfpLatest?.value)}</strong>
+            <span>Prior change{nfpPrior ? ` · ${formatObsDate(nfpPrior.date)}` : ""}</span><strong className="labour-studio-secondary">{nfpFormat(nfpPrior?.value)}</strong>
+            <dl>
+              <div><dt>Observation</dt><dd>{observation ? formatObsDate(observation) : "—"}</dd></div>
+              <div><dt>Source</dt><dd>{formatLiveSourceLabel(metric?.meta.liveSource)}</dd></div>
+              <div><dt>Updated</dt><dd>{metric?.displayReleasedAt ? formatObsDate(metric.displayReleasedAt) : "—"}</dd></div>
+            </dl>
+          </> : isUkWageGrowth ? <div style={{ display: "grid", gap: 12 }}>
             {[{ id: "uk-awe-regular-yoy", label: "AWE Regular Pay Growth" }, { id: "uk-awe-total-yoy", label: "AWE Total Pay Growth" }].map(item => {
               const payload = metrics[item.id];
               const point = normalizeHistory(payload?.history ?? []).at(-1);
@@ -4193,16 +4228,12 @@ function LabourChartStudio({ category, specs, metrics, onOpen, highlightedMetric
           <div><dt>Updated</dt><dd>{metric?.displayReleasedAt ? formatObsDate(metric.displayReleasedAt) : "—"}</dd></div>
           </dl>}
           </>}
-        {showNfpForecast && <section aria-label="NFP forecast and actual" style={{ display: "grid", gridTemplateColumns: "1fr auto", alignItems: "baseline", columnGap: 12, rowGap: 8, paddingTop: 12, borderTop: "1px solid var(--line)" }}>
-          <h5 style={{ gridColumn: "1 / -1", margin: 0, fontSize: 14 }}>Nonfarm payrolls change (NFP)</h5>
-          {active.id === "us-payrolls-card" && <><span>Latest actual{nfpLatest ? ` · ${formatObsDate(nfpLatest.date)}` : ""}</span><strong>{nfpFormat(nfpPublishedActual)}</strong></>}
-          {nfpPublishedForecast != null && nfpLatest && <>
-            <span>Consensus forecast · {formatObsDate(nfpLatest.date)}</span><strong>{nfpFormat(nfpPublishedForecast)}</strong>
-            <span>Actual − forecast · {formatObsDate(nfpLatest.date)}</span><strong style={{ color: (nfpPublishedDifference ?? 0) > 0 ? "var(--up)" : (nfpPublishedDifference ?? 0) < 0 ? "var(--down)" : undefined }}>{nfpFormat(nfpPublishedDifference)}</strong>
-          </>}
-          {nfpMetric?.upcomingForecast && <><span>Next release forecast · {formatObsDate(nfpMetric.upcomingForecast.releasedAt)}</span><strong>{nfpFormat(nfpMetric.upcomingForecast.value)}</strong></>}
-          {!nfpMetric?.upcomingForecast && nfpPublishedForecast == null && <><span>Forecast</span><strong>—</strong></>}
-          <small style={{ gridColumn: "1 / -1", color: "var(--muted)" }}>Forecast and difference are in thousands of jobs.</small>
+        {showNfpForecast && <section className="nfp-forecast-rows" aria-label="NFP forecast" style={{ display: "grid", gridTemplateColumns: "1fr auto", alignItems: "baseline", columnGap: 12, rowGap: 8, paddingTop: 12, borderTop: "1px solid var(--line)" }}>
+          <h5 style={{ gridColumn: "1 / -1", margin: 0, fontSize: 14 }}>NFP forecast ({nfpMonthLabel(displayedForecastMonth)})</h5>
+          <span>Consensus</span>
+          <strong>{nfpFormat(displayedConsensus)}</strong>
+          <span>{liveNfpForecast?.isFinalDay ? "Final forecast" : "NFP forecast"}</span>
+          <strong>{nfpFormat(displayedNfpForecast)}</strong>
         </section>}
         <button type="button" className="detail-button" onClick={() => onOpen(active)}>{actionLabel} <ChevronRight size={15} /></button>
       </aside>

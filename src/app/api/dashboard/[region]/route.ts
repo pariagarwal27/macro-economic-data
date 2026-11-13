@@ -12,6 +12,7 @@ import { buildThreeMonthMethodMap, buildThreeMonthTrend } from "@/lib/three-mont
 import { compactDashboardPayload } from "@/lib/dashboard-payload";
 import { PCE_EXPENDITURE_LINES } from "@/lib/pce-expenditure";
 import { getBlsCpiRelativeImportance } from "@/lib/bls-cpi-relative-importance";
+import { getLatestNfpForecast, getNextNfpForecastWindow } from "@/ingest/nfp-forecast";
 
 const THREE_MONTH_METHODS = buildThreeMonthMethodMap(METRICS);
 
@@ -110,7 +111,16 @@ export async function GET(
       .map((metric) => metric.id);
     if (hourlyIds.length) Object.assign(result, await getSeriesHistories(hourlyIds, 800));
 
-    return NextResponse.json(compactDashboardPayload(result), {
+    const payload = compactDashboardPayload(result);
+    if (r === "US" && payload["us-nfp"]) {
+      const nfpForecastWindow = await getNextNfpForecastWindow();
+      Object.assign(payload["us-nfp"], {
+        nfpForecast: nfpForecastWindow ? await getLatestNfpForecast(nfpForecastWindow.targetMonth) : null,
+        nfpForecastWindow,
+      });
+    }
+
+    return NextResponse.json(payload, {
       headers: {
         "Cache-Control": "no-store",
       },

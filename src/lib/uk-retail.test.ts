@@ -28,19 +28,18 @@ test('a due headline release schedules all published retail measures with the sa
   assert.equal(retailReleaseCandidates(rows, new Date('2026-10-27T06:01:00Z')).length, 0);
 });
 
-test('local and hosted retail measures use the official ONS series', async () => {
-  const { getSourceConfig, getCloudSourceConfig } = await import('../ingest/source-registry');
+test('local retail measures use the official ONS series', async () => {
+  const { getSourceConfig } = await import('../ingest/source-registry');
   for (const [id, series] of [
     ['uk-retail-sales-total-ex-fuel', 'J5EC'], ['uk-retail-sales-mom', 'J5EC'],
     ['uk-retail-sales-ex-fuel', 'J45W'], ['uk-retail-sales-total-yoy', 'J5EB'],
     ['uk-retail-sales-ex-fuel-yoy', 'J45U'], ['uk-retail-sales-total-3m3m', 'J5EG'],
     ['uk-retail-sales-ex-fuel-3m3m', 'J45R'],
   ]) {
-    for (const config of [getSourceConfig(id), getCloudSourceConfig(id)]) {
-      assert.equal(config?.source, 'ons');
-      assert.equal(config?.sourceId, series);
-      assert.equal(config?.adapter, 'pipeline');
-    }
+    const config = getSourceConfig(id);
+    assert.equal(config?.source, 'ons');
+    assert.equal(config?.sourceId, series);
+    assert.equal(config?.adapter, 'pipeline');
   }
 });
 

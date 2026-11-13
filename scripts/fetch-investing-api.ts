@@ -229,17 +229,12 @@ async function fetchViaApplyIntercept(
 
 export async function fetchInvestingRange(dateFrom: string, dateTo: string) {
   const browser = await chromium.launch({
-    headless: process.env.INVESTING_HEADLESS === "1",
-    args: ["--disable-blink-features=AutomationControlled"],
+    headless: process.env.INVESTING_HEADLESS !== "0",
+    executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH || undefined,
   });
   const context = await browser.newContext({
-    userAgent:
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
     locale: "en-GB",
     viewport: { width: 1400, height: 900 },
-  });
-  await context.addInitScript(() => {
-    Object.defineProperty(navigator, "webdriver", { get: () => undefined });
   });
   const page = await context.newPage();
 
@@ -249,11 +244,12 @@ export async function fetchInvestingRange(dateFrom: string, dateTo: string) {
     const all: InvestingApiRow[] = [];
     const seen = new Set<string>();
     let apiStatus = 0;
+    let complete = false;
 
     for (let pageNum = 0; pageNum < 50; pageNum++) {
       const batch = await fetchApiHtmlInBrowser(page, dateFrom, dateTo, pageNum);
       apiStatus = batch.status;
-      if (batch.status !== 200 || !batch.html) break;
+      if (batch.status !== 200 || !batch.html) throw new Error(`Calendar request failed or was incomplete (HTTP ${batch.status})`);
 
       let added = 0;
       for (const row of parseCalendarHtml(batch.html)) {
@@ -263,20 +259,11 @@ export async function fetchInvestingRange(dateFrom: string, dateTo: string) {
         all.push(row);
         added++;
       }
-      if (!added || batch.events < 180) break;
+      if (!added) throw new Error("Calendar pagination returned no new parsed rows");
+      if (batch.events < 180) { complete = true; break; }
     }
 
-    if (all.length === 0) {
-      const html = await fetchViaApplyIntercept(page, dateFrom, dateTo);
-      if (html) {
-        for (const row of parseCalendarHtml(html)) {
-          const key = `${row.date}|${row.time}|${row.country}|${row.event}`;
-          if (seen.has(key)) continue;
-          seen.add(key);
-          all.push(row);
-        }
-      }
-    }
+    if (!complete) throw new Error("Calendar pagination did not complete");
 
     if (all.length === 0) {
       throw new Error(`No rows fetched (last API status ${apiStatus})`);

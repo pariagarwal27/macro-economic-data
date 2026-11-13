@@ -58,8 +58,9 @@ next-env.d.ts
 !Economic_calendar/*_fetch_results.json
 !Economic_calendar/fred_bls_release_dates.json
 
-# investing.com browser profile (Cloudflare cookies)
+# Investing.com browser profile and site-session cookies
 .playwright-investing-profile/
+.playwright-investing-consensus-profile/
 
 # Isolated local LSEG Python runtime
 /tmp/lseg-venv/

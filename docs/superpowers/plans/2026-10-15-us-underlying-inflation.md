@@ -6,7 +6,7 @@
 
 **Architecture:** Add first-party Atlanta and Cleveland fetchers and parsers, change the five catalog source declarations to their publishers, and route live refresh and historical backfill through those official adapters with no FRED fallback. Extend CPI-dependent schedule/calendar handling to make each metric a separate event, then render the group in the existing Prices & Inflation tab strip and detail cards.
 
-**Tech Stack:** TypeScript, Next.js/React, node:test, xlsx, existing release worker and SQLite/D1 calendar pipeline.
+**Tech Stack:** TypeScript, Next.js/React, node:test, xlsx, existing release worker and local SQLite calendar pipeline.
 
 **Spec:** `docs/superpowers/specs/2026-10-15-us-underlying-inflation-design.md`
 
@@ -52,7 +52,7 @@
 - Inspect backfill/refresh implementations before changing them; target only the five metric IDs.
 
 **Interfaces:**
-- Local and cloud release-worker routing for the five IDs resolves to provider `atlanta_sticky` or `cleveland_cpi`.
+- Local release-worker routing for the five IDs resolves to provider `atlanta_sticky` or `cleveland_cpi`.
 - Historical refresh uses the same official readers; FRED is not a fallback for these IDs.
 
 - [ ] Write failing tests named `routes the three Atlanta measures to Atlanta Fed`, `routes the two Cleveland measures to Cleveland Fed`, and `does not call FRED when an official underlying-inflation fetch fails`.

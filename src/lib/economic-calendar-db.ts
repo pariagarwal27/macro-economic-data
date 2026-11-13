@@ -1,8 +1,6 @@
 import { createClient } from "@libsql/client";
 import path from "path";
 import fs from "node:fs";
-import { getD1Database } from "@/db";
-import { readD1 } from "@/db/d1-read";
 
 export type ScheduledCalendarRow = {
   metricId: string;
@@ -29,18 +27,17 @@ export async function getEconomicCalendarRows(options?: { includeUnscheduled?: b
   );
   const dbPath = path.resolve(process.env.CALENDAR_DB_PATH ?? seedPath);
 
-  const database = getD1Database();
-  if (!database && dbPath !== seedPath && !fs.existsSync(dbPath)) {
+  if (dbPath !== seedPath && !fs.existsSync(dbPath)) {
     fs.mkdirSync(path.dirname(dbPath), { recursive: true });
     fs.copyFileSync(seedPath, dbPath, fs.constants.COPYFILE_EXCL);
   }
-  const client = database ? null : createClient({
+  const client = createClient({
     url: `file:${dbPath.replace(/\\/g, "/")}`,
   });
 
   try {
     const table = options?.history ? "calendar_history" : "calendar";
-    const query = async (sql: string) => database ? await readD1(database, { sql }) : await client!.execute(sql);
+    const query = async (sql: string) => await client.execute(sql);
     const columns = await query(`PRAGMA table_info(${table})`);
     if (!columns.rows.length && options?.history) return [];
     const names = new Set(columns.rows.map(row => String(row.name)));
@@ -62,7 +59,7 @@ export async function getEconomicCalendarRows(options?: { includeUnscheduled?: b
       ${options?.includeUnscheduled ? "" : "WHERE next_release_date IS NOT NULL AND TRIM(next_release_date) <> ''"}
       ORDER BY next_release_date ASC, metric ASC
     `;
-    const result = database ? await readD1(database, { sql }) : await client!.execute(sql);
+    const result = await client.execute(sql);
 
     return result.rows.map((row) => ({
       metricId: String(row.metric_id ?? ""),
@@ -111,6 +108,6 @@ export async function getEconomicCalendarRows(options?: { includeUnscheduled?: b
           : String(row.updated_at),
     }));
   } finally {
-    client?.close();
+    client.close();
   }
 }

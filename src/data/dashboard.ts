@@ -23,7 +23,7 @@ import {
   sql,
   lt,
 } from "drizzle-orm";
-import { executeRead, getD1Database, getDb } from "@/db";
+import { executeRead, getDb } from "@/db";
 import { getActiveLiveMapping, getActiveLiveSource, isUsCpiLsegOnlyMetric } from "@/ingest/source-registry";
 import {
   calendarEvents,
@@ -98,7 +98,7 @@ async function getNfpCalendarForecastCandidates(db = getDb()) {
     .select({ releasedAt: calendarEvents.releasedAt, forecast: calendarEvents.forecast, importedAt: calendarEvents.importedAt })
     .from(calendarEvents)
     .where(and(
-      eq(calendarEvents.source, "investing"),
+      inArray(calendarEvents.source, ["investing", "showmytrades"]),
       eq(calendarEvents.metricId, "us-nfp"),
     ))
     .orderBy(desc(calendarEvents.importedAt), desc(calendarEvents.releasedAt))
@@ -142,6 +142,7 @@ export async function getReleaseTape(opts?: {
     .leftJoin(metrics, eq(metrics.id, calendarEvents.metricId))
     .where(
       and(
+        inArray(calendarEvents.source, ["investing", "showmytrades"]),
         gte(calendarEvents.releasedAt, start.toISOString()),
         lt(calendarEvents.releasedAt, end.toISOString())
       )
@@ -342,7 +343,6 @@ export async function getDashboardData(filters?: {
   category?: string;
 }) {
   const db = getDb();
-  const isCloud = Boolean(getD1Database());
   const allMetrics = await db.select().from(metrics);
 
   const filtered = allMetrics.filter((m) => {
@@ -354,7 +354,7 @@ export async function getDashboardData(filters?: {
 
   const cards = [];
   // Fetch the latest records in two queries instead of two queries per metric.
-  // The free D1 tier limits database queries per Worker invocation.
+  // Fetch recent observations in one query rather than one query per metric.
   const recentObservations = await db.select().from(observations).where(sql`${observations.id} IN (
     SELECT recent.id FROM metrics catalog JOIN observations recent
       ON recent.id IN (SELECT id FROM observations WHERE metric_id = catalog.id ORDER BY date DESC, id DESC LIMIT 2)
@@ -377,7 +377,7 @@ export async function getDashboardData(filters?: {
     const actualValue = latest?.value ?? displayRelease?.value ?? null;
     const surprise = computeSurprise(actualValue, expectedValue, m.unit);
 
-    const live = getActiveLiveMapping(m.id, Boolean(getD1Database()));
+    const live = getActiveLiveMapping(m.id);
 
     cards.push({
       id: m.id,
@@ -396,7 +396,7 @@ export async function getDashboardData(filters?: {
       observationCount: m.observationCount,
       lastIngestedAt: m.lastIngestedAt,
       liveProvider: live?.provider ?? (isUsCpiLsegOnlyMetric(m.id) ? "unavailable" : m.source === "fred" ? "fred-fallback" : m.source),
-      liveSource: getActiveLiveSource(m.id, isCloud),
+      liveSource: getActiveLiveSource(m.id),
       feedNote: release?.notes ?? null,
       releaseStage: releaseStageFromNote(releaseRows.find(row => row.periodDate === (latest?.date ?? displayRelease?.periodDate))?.notes),
       latest: latest ? { date: latest.date, value: latest.value } : null,
@@ -434,7 +434,6 @@ export async function getDashboardData(filters?: {
 
 export async function getSeriesHistory(metricId: string, limit = 240) {
   const db = getDb();
-  const isCloud = Boolean(getD1Database());
   const meta = (await db.select().from(metrics).where(eq(metrics.id, metricId)))[0];
   if (!meta) return null;
 
@@ -489,8 +488,8 @@ export async function getSeriesHistory(metricId: string, limit = 240) {
     meta: {
       ...meta,
       releaseStage,
-      liveProvider: getActiveLiveMapping(metricId, isCloud)?.provider ?? (isUsCpiLsegOnlyMetric(metricId) ? "unavailable" : meta.source),
-      liveSource: getActiveLiveSource(metricId, isCloud),
+      liveProvider: getActiveLiveMapping(metricId)?.provider ?? (isUsCpiLsegOnlyMetric(metricId) ? "unavailable" : meta.source),
+      liveSource: getActiveLiveSource(metricId),
     },
     history,
     releases: releasesWithStages,
@@ -513,7 +512,7 @@ export async function getSeriesHistories(
     return {};
   }
 
-  // D1 permits at most 100 bound parameters; leave room for LIMIT arguments.
+  // Keep the batch size moderate so local SQLite queries stay manageable.
   if (ids.length > 80) {
     const combined: Record<string, Awaited<ReturnType<typeof getSeriesHistory>>> = {};
     for (let offset = 0; offset < ids.length; offset += 80) {
@@ -524,7 +523,6 @@ export async function getSeriesHistories(
 
   const safeLimit = Math.min(Math.max(limit, 24), 2000);
   const db = getDb();
-  const isCloud = Boolean(getD1Database());
 
   const metricRows = await db
     .select()
@@ -815,8 +813,8 @@ const latestPeriod =
         ...meta,
         releaseStage,
         liveProvider:
-          getActiveLiveMapping(metricId, Boolean(getD1Database()))?.provider ?? (isUsCpiLsegOnlyMetric(metricId) ? "unavailable" : meta.source),
-        liveSource: getActiveLiveSource(metricId, isCloud),
+          getActiveLiveMapping(metricId)?.provider ?? (isUsCpiLsegOnlyMetric(metricId) ? "unavailable" : meta.source),
+        liveSource: getActiveLiveSource(metricId),
       },
       history,
       releases: releasesWithStages,

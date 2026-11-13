@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { fetchEurostatPreset } from "../src/ingest/eurostat";
-import { getActiveLiveMapping, getCloudSourceConfig, getSourceConfig } from "../src/ingest/source-registry";
+import { getActiveLiveMapping, getSourceConfig } from "../src/ingest/source-registry";
 import { getSeriesHistory, runIngest } from "../src/ingest/pipeline";
 import { dispatchDueReleases, getDueReleaseCandidates } from "../src/ingest/release-dispatcher";
 import { getEconomicCalendarRows } from "../src/lib/economic-calendar-db";
@@ -19,11 +19,8 @@ async function main() {
 
   for (const [metricId, seriesId] of pairs) {
     const local = getSourceConfig(metricId);
-    const hosted = getCloudSourceConfig(metricId);
     assert.equal(local?.adapter, "pipeline", `${metricId} local path must use the release pipeline`);
-    assert.equal(hosted?.adapter, "pipeline", `${metricId} hosted path must use the release pipeline`);
-    assert.equal(getActiveLiveMapping(metricId, false)?.seriesId, seriesId, `${metricId} local mapping`);
-    assert.equal(getActiveLiveMapping(metricId, true)?.seriesId, seriesId, `${metricId} hosted mapping`);
+    assert.equal(getActiveLiveMapping(metricId)?.seriesId, seriesId, `${metricId} local mapping`);
 
     const points = await fetchEurostatPreset(seriesId);
     const latest = points.at(-1);

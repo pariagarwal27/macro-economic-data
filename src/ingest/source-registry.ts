@@ -7,7 +7,8 @@ import { EA_MARKET_METRIC_IDS } from "./ea-market-refresh";
 export type AdapterName =
   | "lseg"
   | "pipeline"
-  | "philadelphia";
+  | "philadelphia"
+  | "ism";
 
 export type MetricSourceConfig = {
   metricId: string;
@@ -34,8 +35,7 @@ const EXCLUDED_FROM_DASHBOARD_RELEASE_POLLING = new Set([
 
 // Authoritative LSEG routes supplied for the project. The 15 PCE-family
 // routes are deliberately excluded from this array and are routed to BEA.
-// PMI series use LSEG Economic Indicators locally; cloud configuration keeps
-// all Workspace-only data excluded from D1 runtimes.
+// PMI series use LSEG Economic Indicators in the local runtime.
 const OFFICIAL_US_LABOR_METRICS = new Set(METRICS.filter(metric =>
   metric.id.startsWith("us-jolts-") || ["us-unemployment", "us-ahe", "us-ahe-mom"].includes(metric.id)
 ).map(metric => metric.id));
@@ -138,6 +138,7 @@ const ATLANTA_BIE_METRICS = new Set([
 
 const CATALOG_FALLBACK: MetricSourceConfig[] = METRICS
   .filter((m) => !PCE_FAMILY.has(m.id))
+  .filter((m) => m.source !== "ism")
   .filter((m) => !isUsCpiLsegOnlyMetric(m.id))
   .filter((m) => !LSEG.some((x) => x.metricId === m.id))
   .filter((m) => !["us-umich-inflation-exp-1y", "us-umich-inflation-exp-5y"].includes(m.id))
@@ -175,6 +176,19 @@ const UMICH_EXPECTATIONS: MetricSourceConfig[] = [
   notes: "Official University of Michigan Surveys of Consumers source",
 }));
 
+const ISM_EMPLOYMENT: MetricSourceConfig[] = [
+  ["us-ism-manufacturing-employment", "manufacturing"],
+  ["us-ism-services-employment", "services"],
+].map(([metricId, sourceId]) => ({
+  metricId,
+  adapter: "ism",
+  source: "ism",
+  sourceId,
+  releaseStrategy: "release-day-poll",
+  pollSeconds: 30,
+  notes: "Official ISM PMI report employment sub-index",
+}));
+
 export const SOURCE_REGISTRY: MetricSourceConfig[] = [
   ...LSEG.filter((x) => !EXCLUDED_FROM_DASHBOARD_RELEASE_POLLING.has(x.metricId)).map((x) => ({
     ...x,
@@ -184,6 +198,7 @@ export const SOURCE_REGISTRY: MetricSourceConfig[] = [
   ...PCE_BEA,
   ...UMICH_EXPECTATIONS,
   ...CATALOG_FALLBACK,
+  ...ISM_EMPLOYMENT,
 ];
 
 export const SOURCE_REGISTRY_MAP = new Map(
@@ -242,36 +257,11 @@ export function shouldMergeHistoricalBackfill(metricId: string) {
   return isUsCpiLsegOnlyMetric(metricId) || EA_MARKET_METRIC_IDS.includes(metricId);
 }
 
-// Catalogued CPI indexes and rates use the BLS API in local and hosted paths.
-export function getCloudSourceConfig(metricId: string): MetricSourceConfig | null {
-  if (isUsCpiLsegOnlyMetric(metricId)) {
-    const config = SOURCE_REGISTRY_MAP.get(metricId);
-    return config?.adapter === "lseg"
-      ? { ...config, releaseStrategy: "scheduled-poll", pollSeconds: 60 }
-      : null;
-  }
-
-  const metric = METRICS.find(m => m.id === metricId);
-  if (!metric) return null;
-  const live = LIVE_MAP[metricId];
-  const source = live && live.provider !== "lseg" ? live.provider : metric.source;
-  if (source === "lseg" || source === "pmi_scrape" || (source === "atlanta" && !live && !ATLANTA_BIE_METRICS.has(metricId))) return null;
-  if (source === "ecb" && /^EA_INFL_COMP_/.test(metric.seriesId)) return null;
-  return {
-    metricId, source,
-    sourceId: live && live.provider !== "lseg" ? live.seriesId : metric.seriesId,
-    adapter: source === "philadelphia" ? "philadelphia" : "pipeline",
-    releaseStrategy: "scheduled-poll", pollSeconds: 60,
-  };
-}
-
 /**
- * Resolve the source that actually supplies live values in the selected runtime.
- * Pipeline adapters honor LIVE_MAP when present; dedicated adapters (for example
- * LSEG) use their registry source directly.
+ * Resolve the source that supplies live values in the local runtime.
  */
-export function getActiveLiveSource(metricId: string, isCloud: boolean): string | null {
-  const config = isCloud ? getCloudSourceConfig(metricId) : getSourceConfig(metricId);
+export function getActiveLiveSource(metricId: string): string | null {
+  const config = getSourceConfig(metricId);
   if (!config) return null;
   if (config.adapter !== "pipeline") return config.source;
 
@@ -280,15 +270,15 @@ export function getActiveLiveSource(metricId: string, isCloud: boolean): string 
 }
 
 /** Return only the live mapping active in the selected runtime. */
-export function getActiveLiveMapping(metricId: string, isCloud: boolean) {
+export function getActiveLiveMapping(metricId: string) {
   if (isUsCpiLsegOnlyMetric(metricId)) {
-    const config = isCloud ? getCloudSourceConfig(metricId) : getSourceConfig(metricId);
+    const config = getSourceConfig(metricId);
     return config?.adapter === "lseg"
       ? { provider: "lseg" as const, seriesId: config.sourceId }
       : undefined;
   }
   if (isUsCpiBlsMetric(metricId)) {
-    const config = isCloud ? getCloudSourceConfig(metricId) : getSourceConfig(metricId);
+    const config = getSourceConfig(metricId);
     return config?.source === "bls"
       ? { provider: "bls" as const, seriesId: config.sourceId }
       : undefined;
@@ -296,7 +286,7 @@ export function getActiveLiveMapping(metricId: string, isCloud: boolean) {
   const umich = SOURCE_REGISTRY_MAP.get(metricId);
   if (umich?.source === "umich") return { provider: "umich" as const, seriesId: umich.sourceId };
   const mapped = LIVE_MAP[metricId];
-  return isCloud && mapped?.provider === "lseg" ? undefined : mapped;
+  return mapped;
 }
 
 export function assertRegistryIsValid() {

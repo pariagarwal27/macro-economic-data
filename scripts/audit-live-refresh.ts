@@ -93,7 +93,7 @@ async function main() {
         regionOutcomes[index] = base;
         return;
       }
-      base.adapter = getActiveLiveSource(metric.id, false) ?? config.source;
+      base.adapter = getActiveLiveSource(metric.id) ?? config.source;
       try {
         const result = await fetchMetricFromOfficialSource(metric.id);
         if (!result || !Number.isFinite(result.value)) {

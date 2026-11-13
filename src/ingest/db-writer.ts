@@ -1,5 +1,5 @@
 import { and, desc, eq } from "drizzle-orm";
-import { getDb, getD1Database } from "@/db";
+import { getDb } from "@/db";
 import { metrics, observations, releases } from "@/db/schema";
 import { releaseStageFromNote, withReleaseStageNote, type ReleaseStage } from "./release-stages";
 
@@ -105,32 +105,6 @@ export async function persistRelease(input: PersistReleaseInput) {
     if (Number.isFinite(parsed)) {
       rawValue = parsed;
     }
-  }
-
-  const database = getD1Database();
-  if (database) {
-    // D1 batch is atomic: observations and release history succeed together.
-    const results = await database.batch([
-      database.prepare("UPDATE observations SET is_latest = 0 WHERE metric_id = ? AND date = ?").bind(input.metricId, input.periodDate),
-      database.prepare(`INSERT INTO observations(metric_id,date,value,raw_value,released_at,vintage_date,is_latest)
-        VALUES(?,?,?,?,?,?,1) RETURNING id`).bind(
-        input.metricId, input.periodDate, input.value, rawValue, input.releasedAt, input.vintageDate ?? input.releasedAt,
-      ),
-      database.prepare(`INSERT INTO releases(metric_id,period_date,released_at,value,expected_value,prior_period_value,
-          prior_period_date,prior_release_value,change_vs_prior_period,change_vs_prior_release,supporting_doc_url,notes)
-        VALUES(?,?,?,?,?,?,?,?,?,?,?,?) RETURNING id`).bind(
-        input.metricId, input.periodDate, input.releasedAt, input.value, expectedValue,
-        priorPeriodValue, priorPeriodDate, priorReleaseValue,
-        changeVsPriorPeriod, changeVsPriorRelease, input.supportingDocUrl ?? null,
-        input.releaseStage ? withReleaseStageNote(input.releaseStage, input.notes) : input.notes ?? null,
-      ),
-      database.prepare("UPDATE metrics SET last_ingested_at = ? WHERE id = ?").bind(input.releasedAt, input.metricId),
-    ]);
-    return {
-      updated: true, reason: existingRelease ? "revision-recorded" : "new-release",
-      observationId: Number((results[1].results[0] as { id: number } | undefined)?.id ?? 0) || null,
-      releaseId: Number((results[2].results[0] as { id: number } | undefined)?.id ?? 0) || null,
-    };
   }
 
   /*

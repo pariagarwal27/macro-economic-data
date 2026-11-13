@@ -9,8 +9,8 @@
       "schedule": "17 12 * * *"
     },
     {
-      "path": "/api/cron/free-consensus",
-      "schedule": "23 5 * * *"
+      "path": "/api/cron/showmytrades",
+      "schedule": "23 6 * * *"
     }
   ]
 }

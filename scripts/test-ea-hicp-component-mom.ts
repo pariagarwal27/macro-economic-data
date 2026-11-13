@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { METRICS } from "../src/catalog/metrics";
 import { LIVE_MAP } from "../src/catalog/live-map";
-import { getCloudSourceConfig, getSourceConfig } from "../src/ingest/source-registry";
+import { getSourceConfig } from "../src/ingest/source-registry";
 import { EA_HICP_COMPONENT_RELEASE_PEERS, inheritReleaseSchedules } from "../src/ingest/release-schedule-retries";
 import { DASHBOARD, flattenMetricIds } from "../src/components/macro-ui-hierarchy";
 import { getPublishedComponentMeasureIds } from "../src/lib/component-detail-measures";
@@ -20,10 +20,9 @@ for (const [yoyId, momId, seriesId] of expected) {
   assert.ok(METRICS.some(metric => metric.id === momId), `${momId} must be a catalog metric`);
   assert.equal(LIVE_MAP[momId]?.provider, "eurostat", `${momId} must use Eurostat`);
   assert.equal(LIVE_MAP[momId]?.seriesId, seriesId, `${momId} must map to ${seriesId}`);
-  for (const config of [getSourceConfig(momId), getCloudSourceConfig(momId)]) {
-    assert.equal(config?.adapter, "pipeline", `${momId} must use the official pipeline adapter`);
-    assert.equal(config?.source, "eurostat", `${momId} must use the Eurostat source`);
-  }
+  const config = getSourceConfig(momId);
+  assert.equal(config?.adapter, "pipeline", `${momId} must use the official pipeline adapter`);
+  assert.equal(config?.source, "eurostat", `${momId} must use the Eurostat source`);
   const node = visibleComponents.find(component => component.metricId === yoyId);
   assert.equal(node?.momMetricId, momId, `${yoyId} display row must pair its published MoM metric`);
   assert.ok(flattenMetricIds([node!]).includes(momId), `${momId} must be included in component fetch IDs`);

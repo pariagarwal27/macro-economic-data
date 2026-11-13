@@ -9,6 +9,7 @@ import { compareCalendarMetricEvents, filterReleaseDiaryEvents, type CalendarReg
 import { formatLiveSourceLabel } from "@/lib/live-source-label";
 import { getClientJsonCache, refreshClientJson } from "@/lib/client-json-cache";
 import { formatClaimsCount } from "@/lib/claims-display";
+import { formatLaborChange, isLaborChangeMetric } from "@/lib/labor-period-change";
 
 type CalendarEvent = {
   metricId: string;
@@ -29,6 +30,7 @@ type CalendarEvent = {
   actualReleasedAt: string | null;
   forecast: number | null;
   previous: number | null;
+  previousChange?: number | null;
   releasedAt: string | null;
   officialSource: string | null;
   updatedAt: string | null;
@@ -44,6 +46,7 @@ type CalendarPayload = {
   recentEvents: CalendarEvent[];
   week: Record<string, CalendarEvent[]>;
   lastUpdated: string | null;
+  consensusUpdatedAt: string | null;
   allEvents: CalendarEvent[];
   nextReleaseEvents: CalendarEvent[];
   coverage: { totalMetrics: number; exactTime: number; deadline: number; dateOnly: number; daily: number; hourly: number; unannounced: number; sourceErrors: number };
@@ -101,7 +104,13 @@ function formatValue(value: number | null, unit: string) {
   return `${number}${suffix[unit] ?? ""}`;
 }
 
-function formatCalendarValue(event: CalendarEvent, value: number | null) {
+function formatCalendarValue(event: CalendarEvent, value: number | null, column: "previous" | "forecast" | "actual") {
+  if (isLaborChangeMetric(event.metricId)) {
+    const change = column === "previous"
+      ? event.previousChange
+      : value != null && event.previous != null ? value - event.previous : null;
+    return formatLaborChange(change, { id: event.metricId, unit: event.unit });
+  }
   if (event.metricId === "us-initial-claims" || event.metricId === "us-continuing-claims") {
     return formatClaimsCount(value);
   }
@@ -329,11 +338,10 @@ export function EconomicCalendarSidebar({ onReleaseSelect, active = true }: { ac
         </>
       )}
 
-      {payload?.lastUpdated && (
+      {payload && (payload.lastUpdated || payload.consensusUpdatedAt) && (
         <div className="economic-calendar-footer">
-          <span className="economic-calendar-footer-label">Last synced</span>{" "}
-          {formatLastUpdated(payload.lastUpdated)}
-          <div>UK time (BST/GMT). “By” and “Before” indicate publication deadlines. Unannounced times are not estimated.</div>
+          {payload.lastUpdated && <><span className="economic-calendar-footer-label">Calendar schedule last synced</span>{" "}{formatLastUpdated(payload.lastUpdated)}</>}
+          <div>ShowMyTrades consensus last fetched {payload.consensusUpdatedAt ? formatLastUpdated(payload.consensusUpdatedAt) : "not yet synced"}.</div>
         </div>
       )}
     </section>
@@ -389,7 +397,7 @@ function CalendarDiary({ groups, onSelect, emptyText }: {
 }) {
   if (!groups.length) return <div className="economic-calendar-list release-diary"><div className="economic-calendar-empty">{emptyText}</div></div>;
   return <div className="economic-calendar-list release-diary">
-    <div className="release-diary-head" aria-hidden="true"><span>Date &amp; time</span><span>Release</span><span>Previous</span><span>Forecast</span><span>Actual</span><span>Status</span></div>
+    <div className="release-diary-head" aria-hidden="true"><span>Date &amp; time</span><span>Release</span><span>Previous / change</span><span>Forecast / change</span><span>Actual / change</span><span>Status</span></div>
     {groups.map((group, groupIndex) => <section className="release-diary-group" key={`${group.date}-${groupIndex}`}>
       <h3>{group.date}</h3>
       {group.events.map((event, index) => {
@@ -407,9 +415,9 @@ function CalendarDiary({ groups, onSelect, emptyText }: {
             {timeUnavailable ? <>Time<br />unavailable</> : timeLabel}
           </span>
           <span className="release-diary-name"><i>{FLAG[event.region]}</i><span>{event.metricName}</span></span>
-          <span className="release-diary-value">{formatCalendarValue(event, event.previous)}</span>
-          <span className="release-diary-value" title="Survey consensus from the public economic calendar feed">{formatCalendarValue(event, event.forecast)}</span>
-          <span className="release-diary-value">{formatCalendarValue(event, event.actual)}</span>
+          <span className="release-diary-value">{formatCalendarValue(event, event.previous, "previous")}</span>
+          <span className="release-diary-value" title="Survey consensus from the public economic calendar feed">{formatCalendarValue(event, event.forecast, "forecast")}</span>
+          <span className="release-diary-value">{formatCalendarValue(event, event.actual, "actual")}</span>
           <span className={`release-diary-status ${event.status}`}><i />{event.scheduleType === "hourly" ? "Hourly" : event.scheduleType === "daily" ? "Daily" : statusLabel(event.status)}</span>
         </div>;
       })}

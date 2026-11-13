@@ -1,0 +1,344 @@
+{
+  "title": "NFP Live Model Input Timing Audit",
+  "as_of": "2026-11-13",
+  "model": "revised_no_indeed_pruned",
+  "cutoff_rule": "8:00 p.m. America/New_York on day before scheduled BLS Employment Situation release",
+  "selected_feature_count": 50,
+  "verified_all_inputs_before_cutoff": false,
+  "result": "Unable to certify all 50 inputs for every historical forecast origin. Some families have partial value/date audit coverage; consensus capture timestamps and original source vintages are not complete.",
+  "official_source_checks": [
+    {
+      "family": "BLS CES Employment Situation",
+      "url": "https://www.bls.gov/ces/publications/news-release-schedule.htm",
+      "finding": "BLS schedule defines actual release dates; this alone does not timestamp historical model input observations."
+    },
+    {
+      "family": "BLS CES Strike Report",
+      "url": "https://www.bls.gov/ces/publications/strike-report.htm",
+      "finding": "Report describes strikes during CES reference pay period and is normally released Friday before Employment Situation; source states preliminary/incomplete. It is not one of this model artifact\u2019s 50 selected features."
+    },
+    {
+      "family": "ISM PMI",
+      "url": "https://www.ismworld.org/supply-management-news-and-reports/reports/rob-report-calendar/",
+      "finding": "Official calendar gives monthly release cadence; row-specific archived publication evidence still needed."
+    },
+    {
+      "family": "DOL UI claims",
+      "url": "https://www.dol.gov/newsroom/releases/eta",
+      "finding": "Official release series available; row-specific release timestamps and vintage matches still need complete audit."
+    }
+  ],
+  "features": [
+    {
+      "feature": "ces_aggregate_weekly_hours_change_3m_avg",
+      "source_family": "ces_hours",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "BLS CES hours/earnings source; local backfill audit exists, some rows may lack timezone-aware publication stamp."
+    },
+    {
+      "feature": "ism_services_pmi_latest",
+      "source_family": "ism",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "ISM official PMI reports; published first/third business day around 10:00 ET by series. Local source observations exist; stored per-row publication timestamps not comprehensively audited here."
+    },
+    {
+      "feature": "jolts_separations_latest",
+      "source_family": "jolts",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "BLS JOLTS releases/vintages; local JOLTS vintage and audit tables; target-row exact coverage needs per-feature audit."
+    },
+    {
+      "feature": "jolts_hires_change",
+      "source_family": "jolts",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "BLS JOLTS releases/vintages; local JOLTS vintage and audit tables; target-row exact coverage needs per-feature audit."
+    },
+    {
+      "feature": "ces_aggregate_weekly_hours_change_previous",
+      "source_family": "ces_hours",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "BLS CES hours/earnings source; local backfill audit exists, some rows may lack timezone-aware publication stamp."
+    },
+    {
+      "feature": "ism_mfg_pmi_latest",
+      "source_family": "ism",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "ISM official PMI reports; published first/third business day around 10:00 ET by series. Local source observations exist; stored per-row publication timestamps not comprehensively audited here."
+    },
+    {
+      "feature": "ism_mfg_employment_previous",
+      "source_family": "ism",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "ISM official PMI reports; published first/third business day around 10:00 ET by series. Local source observations exist; stored per-row publication timestamps not comprehensively audited here."
+    },
+    {
+      "feature": "continuing_claims_month_avg",
+      "source_family": "continuing_claims",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "DOL weekly UI claims; local official claims/audit tables; release dates or contributor checks exist, but complete original-vintage rows not certified in this review."
+    },
+    {
+      "feature": "ism_mfg_employment_change",
+      "source_family": "ism",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "ISM official PMI reports; published first/third business day around 10:00 ET by series. Local source observations exist; stored per-row publication timestamps not comprehensively audited here."
+    },
+    {
+      "feature": "adp_previous_change",
+      "source_family": "adp",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "ADP National Employment Report/provider archive; local source_files checks for some current ADP values, not every lag or consensus observation."
+    },
+    {
+      "feature": "nfp_2_months_ago",
+      "source_family": "nfp_lags",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "Prior BLS first-release NFP; lag values need match against release calendar and first-print archive; release dates checked by existing mask."
+    },
+    {
+      "feature": "average_previous_3_months",
+      "source_family": "nfp_lags",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "Prior BLS first-release NFP; lag values need match against release calendar and first-print archive; release dates checked by existing mask."
+    },
+    {
+      "feature": "continuing_claims_weekly_change",
+      "source_family": "continuing_claims",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "DOL weekly UI claims; local official claims/audit tables; release dates or contributor checks exist, but complete original-vintage rows not certified in this review."
+    },
+    {
+      "feature": "ces_aggregate_weekly_hours_change_latest",
+      "source_family": "ces_hours",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "BLS CES hours/earnings source; local backfill audit exists, some rows may lack timezone-aware publication stamp."
+    },
+    {
+      "feature": "jolts_openings_previous",
+      "source_family": "jolts",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "BLS JOLTS releases/vintages; local JOLTS vintage and audit tables; target-row exact coverage needs per-feature audit."
+    },
+    {
+      "feature": "adp_change_from_previous",
+      "source_family": "adp",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "ADP National Employment Report/provider archive; local source_files checks for some current ADP values, not every lag or consensus observation."
+    },
+    {
+      "feature": "adp_average_last_3_months",
+      "source_family": "adp",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "ADP National Employment Report/provider archive; local source_files checks for some current ADP values, not every lag or consensus observation."
+    },
+    {
+      "feature": "ism_services_employment_3m_avg",
+      "source_family": "ism",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "ISM official PMI reports; published first/third business day around 10:00 ET by series. Local source observations exist; stored per-row publication timestamps not comprehensively audited here."
+    },
+    {
+      "feature": "ces_temp_help_employment_change",
+      "source_family": "temp_help",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "BLS CES employment series; current database snapshots may contain revised values; original vintages not fully proven."
+    },
+    {
+      "feature": "initial_claims_prev_month_avg",
+      "source_family": "initial_claims",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "DOL weekly UI claims; local official claims/audit tables; release dates or contributor checks exist, but complete original-vintage rows not certified in this review."
+    },
+    {
+      "feature": "nfp_3_months_ago",
+      "source_family": "nfp_lags",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "Prior BLS first-release NFP; lag values need match against release calendar and first-print archive; release dates checked by existing mask."
+    },
+    {
+      "feature": "ism_mfg_employment_latest",
+      "source_family": "ism",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "ISM official PMI reports; published first/third business day around 10:00 ET by series. Local source observations exist; stored per-row publication timestamps not comprehensively audited here."
+    },
+    {
+      "feature": "adp_current_change",
+      "source_family": "adp",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "ADP National Employment Report/provider archive; local source_files checks for some current ADP values, not every lag or consensus observation."
+    },
+    {
+      "feature": "adp_current_surprise",
+      "source_family": "adp",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "ADP National Employment Report/provider archive; local source_files checks for some current ADP values, not every lag or consensus observation."
+    },
+    {
+      "feature": "previous_consensus",
+      "source_family": "consensus",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "Investing calendar forecast; consensus capture time for historical targets is not independently certified."
+    },
+    {
+      "feature": "ism_services_employment_previous",
+      "source_family": "ism",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "ISM official PMI reports; published first/third business day around 10:00 ET by series. Local source observations exist; stored per-row publication timestamps not comprehensively audited here."
+    },
+    {
+      "feature": "surprise_index_3m",
+      "source_family": "surprise_history",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "Derived from prior actual minus consensus; inherits provenance of both historical actual and consensus."
+    },
+    {
+      "feature": "jolts_quits_latest",
+      "source_family": "jolts",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "BLS JOLTS releases/vintages; local JOLTS vintage and audit tables; target-row exact coverage needs per-feature audit."
+    },
+    {
+      "feature": "adp_2_months_ago",
+      "source_family": "adp",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "ADP National Employment Report/provider archive; local source_files checks for some current ADP values, not every lag or consensus observation."
+    },
+    {
+      "feature": "initial_claims_reference_week",
+      "source_family": "initial_claims",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "DOL weekly UI claims; local official claims/audit tables; release dates or contributor checks exist, but complete original-vintage rows not certified in this review."
+    },
+    {
+      "feature": "previous_nfp",
+      "source_family": "nfp_lags",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "Prior BLS first-release NFP; lag values need match against release calendar and first-print archive; release dates checked by existing mask."
+    },
+    {
+      "feature": "regime_payroll_momentum",
+      "source_family": "regime",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "Derived from prior NFP and claims; inherits provenance of its component observations."
+    },
+    {
+      "feature": "jolts_openings_change",
+      "source_family": "jolts",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "BLS JOLTS releases/vintages; local JOLTS vintage and audit tables; target-row exact coverage needs per-feature audit."
+    },
+    {
+      "feature": "jolts_net_hires",
+      "source_family": "jolts",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "BLS JOLTS releases/vintages; local JOLTS vintage and audit tables; target-row exact coverage needs per-feature audit."
+    },
+    {
+      "feature": "jolts_hires_latest",
+      "source_family": "jolts",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "BLS JOLTS releases/vintages; local JOLTS vintage and audit tables; target-row exact coverage needs per-feature audit."
+    },
+    {
+      "feature": "regime_claims_both_rising",
+      "source_family": "regime",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "Derived from prior NFP and claims; inherits provenance of its component observations."
+    },
+    {
+      "feature": "ism_services_employment_change",
+      "source_family": "ism",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "ISM official PMI reports; published first/third business day around 10:00 ET by series. Local source observations exist; stored per-row publication timestamps not comprehensively audited here."
+    },
+    {
+      "feature": "current_consensus",
+      "source_family": "consensus",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "Investing calendar forecast; consensus capture time for historical targets is not independently certified."
+    },
+    {
+      "feature": "initial_claims_4week_change",
+      "source_family": "initial_claims",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "DOL weekly UI claims; local official claims/audit tables; release dates or contributor checks exist, but complete original-vintage rows not certified in this review."
+    },
+    {
+      "feature": "ces_temp_help_employment_latest",
+      "source_family": "temp_help",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "BLS CES employment series; current database snapshots may contain revised values; original vintages not fully proven."
+    },
+    {
+      "feature": "ces_aggregate_weekly_hours_change_from_previous",
+      "source_family": "ces_hours",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "BLS CES hours/earnings source; local backfill audit exists, some rows may lack timezone-aware publication stamp."
+    },
+    {
+      "feature": "jolts_layoffs_latest",
+      "source_family": "jolts",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "BLS JOLTS releases/vintages; local JOLTS vintage and audit tables; target-row exact coverage needs per-feature audit."
+    },
+    {
+      "feature": "continuing_claims_month_avg_change",
+      "source_family": "continuing_claims",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "DOL weekly UI claims; local official claims/audit tables; release dates or contributor checks exist, but complete original-vintage rows not certified in this review."
+    },
+    {
+      "feature": "initial_claims_weekly_change",
+      "source_family": "initial_claims",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "DOL weekly UI claims; local official claims/audit tables; release dates or contributor checks exist, but complete original-vintage rows not certified in this review."
+    },
+    {
+      "feature": "surprise_lag_1",
+      "source_family": "surprise_history",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "Derived from prior actual minus consensus; inherits provenance of both historical actual and consensus."
+    },
+    {
+      "feature": "initial_claims_latest",
+      "source_family": "initial_claims",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "DOL weekly UI claims; local official claims/audit tables; release dates or contributor checks exist, but complete original-vintage rows not certified in this review."
+    },
+    {
+      "feature": "ism_services_employment_latest",
+      "source_family": "ism",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "ISM official PMI reports; published first/third business day around 10:00 ET by series. Local source observations exist; stored per-row publication timestamps not comprehensively audited here."
+    },
+    {
+      "feature": "initial_claims_month_avg_change",
+      "source_family": "initial_claims",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "DOL weekly UI claims; local official claims/audit tables; release dates or contributor checks exist, but complete original-vintage rows not certified in this review."
+    },
+    {
+      "feature": "jolts_layoffs_rate",
+      "source_family": "jolts",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "BLS JOLTS releases/vintages; local JOLTS vintage and audit tables; target-row exact coverage needs per-feature audit."
+    },
+    {
+      "feature": "initial_claims_prev_week",
+      "source_family": "initial_claims",
+      "timing_assessment": "conditional_not_fully_certified",
+      "evidence_note": "DOL weekly UI claims; local official claims/audit tables; release dates or contributor checks exist, but complete original-vintage rows not certified in this review."
+    }
+  ],
+  "required_for_certification": [
+    "For every target month, preserve raw source response/document and SHA-256.",
+    "Record timezone-aware publication timestamp and capture timestamp separately.",
+    "Verify parsed feature values against source documents and reference periods.",
+    "Verify consensus snapshot capture time is no later than the fixed cutoff.",
+    "Exclude rows that fail any check, then rerun the comparison on the common certified sample."
+  ],
+  "limitations": [
+    "This is an audit of available project evidence and official source policies, not proof of historical availability for each feature value.",
+    "No claim is made that all features were available before cutoff."
+  ]
+}

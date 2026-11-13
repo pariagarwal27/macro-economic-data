@@ -214,7 +214,7 @@ export function ReleaseCalendar() {
     setError(null);
     const params = new URLSearchParams({
       region,
-      days: "10",
+      days: "8",
       kind,
       forwardOnly: "true",
     });
@@ -259,7 +259,7 @@ export function ReleaseCalendar() {
           Release calendar
         </h1>
         <p className="mt-2 max-w-3xl text-sm text-[var(--muted)]">
-          Upcoming macro releases with scheduled time, prior and consensus where available. Release events are stored in the application database and reconciled automatically.
+          Today and the next seven days of macro releases, with prior values and <a href="https://showmytrades.com/tools/economic-calendar" target="_blank" rel="noreferrer" className="text-[var(--accent-ink)] hover:underline">ShowMyTrades consensus</a> where available. Calendar data refreshes daily.
         </p>
 
         <div className="mt-5 flex flex-wrap gap-6 text-xs text-[var(--muted)]">
@@ -282,10 +282,7 @@ export function ReleaseCalendar() {
 
         {dataGap && (
           <div className="mt-4 rounded-lg border border-amber-300/50 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-            Calendar dumps end before the full 7-day window. Refresh the official calendar source to extend the window:
-            <code className="mx-1 rounded bg-white/80 px-1.5 py-0.5 text-xs">
-              npx tsx scripts/capture-investing-month.ts 2026-09-04 2026-09-10 2026-09
-            </code>
+            The latest calendar data does not yet cover the full today plus seven-day window. The daily ShowMyTrades refresh will update it.
           </div>
         )}
       </header>
@@ -347,7 +344,7 @@ export function ReleaseCalendar() {
 
       {!events.length && !error && (
         <p className="mt-8 text-sm text-[var(--muted)]">
-          No scheduled releases match this region and release type in the next 10 days.
+          No scheduled releases match this region and release type today or in the next 7 days.
         </p>
       )}
 

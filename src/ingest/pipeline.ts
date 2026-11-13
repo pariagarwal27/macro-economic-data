@@ -35,7 +35,7 @@ import { getActiveLiveMapping, getSourceConfig, isUsCpiLsegOnlyMetric, isUsCpiMe
 import { fetchLsegHistory, fetchLsegLatest, fetchLsegMarketRefresh } from "./adapters/lseg";
 import { EA_MARKET_METRIC_IDS } from "./ea-market-refresh";
 import { investingToCatalogScale } from "@/catalog/investing-map";
-import { getClient, getDb, getD1Database } from "@/db";
+import { getClient, getDb } from "@/db";
 import {
   calendarEvents,
   ingestRuns,
@@ -178,6 +178,24 @@ const DDL = [
     notes TEXT,
     UNIQUE(metric_id, period_date, released_at)
   )`,
+  `CREATE TABLE IF NOT EXISTS nfp_forecast_runs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    target_month TEXT NOT NULL,
+    release_at TEXT NOT NULL,
+    model_id TEXT NOT NULL,
+    status TEXT NOT NULL,
+    model_status TEXT NOT NULL,
+    consensus_value REAL,
+    predicted_surprise REAL NOT NULL,
+    forecast_value REAL,
+    feature_count INTEGER NOT NULL,
+    feature_total INTEGER NOT NULL,
+    input_hash TEXT NOT NULL,
+    inputs_json TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  )`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS nfp_forecast_input_uniq ON nfp_forecast_runs(target_month, model_id, input_hash)`,
+  `CREATE INDEX IF NOT EXISTS nfp_forecast_latest_idx ON nfp_forecast_runs(target_month, created_at)`,
   `CREATE TABLE IF NOT EXISTS calendar_events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     source TEXT NOT NULL DEFAULT 'investing',
@@ -670,7 +688,7 @@ async function warmLiveCaches(targets: MetricDef[] = METRICS, options?: { skipFe
   const providers = new Set<string>();
 
   for (const metric of targets) {
-    const ref = getActiveLiveMapping(metric.id, Boolean(getD1Database()));
+    const ref = getActiveLiveMapping(metric.id);
 
     if (ref) {
       providers.add(ref.provider);
@@ -707,7 +725,7 @@ async function warmLiveCaches(targets: MetricDef[] = METRICS, options?: { skipFe
           ...new Set(
             targets
               .map((metric) => {
-                const ref = getActiveLiveMapping(metric.id, Boolean(getD1Database()));
+                const ref = getActiveLiveMapping(metric.id);
                 if (ref?.provider === "bls") return ref.seriesId;
                 return !isUsCpiLsegOnlyMetric(metric.id) && !ref && metric.source === "bls"
                   ? metric.seriesId
@@ -738,7 +756,7 @@ async function warmLiveCaches(targets: MetricDef[] = METRICS, options?: { skipFe
   const needsEmpsitFallback = targets.some((metric) => {
     if (metric.id === "us-nfp") return true;
     if (metric.id !== "us-unemployment") return false;
-    const ref = getActiveLiveMapping(metric.id, Boolean(getD1Database()));
+    const ref = getActiveLiveMapping(metric.id);
     const seriesId = ref?.provider === "bls" ? ref.seriesId : metric.seriesId;
     return !caches.bls.get(seriesId)?.length;
   });
@@ -991,7 +1009,7 @@ async function loadLiveRaw(
   metric: MetricDef,
   caches: LiveCaches
 ): Promise<{ points: RawPoint[]; note: string } | null> {
-  const ref = getActiveLiveMapping(metric.id, Boolean(getD1Database()));
+  const ref = getActiveLiveMapping(metric.id);
   if (!ref) {
     if (isUsCpiLsegOnlyMetric(metric.id)) return null;
     // Catalog-native BLS series that do not need a special release parser.
@@ -2133,7 +2151,7 @@ export async function getDashboardData(filters?: {
     const actualValue = latest?.value ?? displayRelease?.value ?? null;
     const surprise = computeSurprise(actualValue, expectedValue, m.unit);
 
-    const live = getActiveLiveMapping(m.id, Boolean(getD1Database()));
+    const live = getActiveLiveMapping(m.id);
 
     cards.push({
       id: m.id,
@@ -2230,7 +2248,7 @@ export async function getSeriesHistory(metricId: string, limit = 240) {
   return {
     meta: {
       ...meta,
-      liveProvider: getActiveLiveMapping(metricId, Boolean(getD1Database()))?.provider ?? meta.source,
+      liveProvider: getActiveLiveMapping(metricId)?.provider ?? meta.source,
     },
     history,
     releases: releasesDeduped,
@@ -2562,7 +2580,7 @@ const latestPeriod =
       meta: {
         ...meta,
         liveProvider:
-          getActiveLiveMapping(metricId, Boolean(getD1Database()))?.provider ?? (isUsCpiLsegOnlyMetric(metricId) ? "unavailable" : meta.source),
+          getActiveLiveMapping(metricId)?.provider ?? (isUsCpiLsegOnlyMetric(metricId) ? "unavailable" : meta.source),
       },
       history,
       releases: releasesDeduped,

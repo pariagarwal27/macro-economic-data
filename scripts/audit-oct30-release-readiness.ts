@@ -11,7 +11,7 @@ async function main() {
     const row = rows.find(r => r.metricId === id);
     const target = dashboardReleaseTarget(id);
     assert.ok(row, id); assert.ok(target, id);
-    console.log(JSON.stringify({id, at:row.nextReleaseAt, date:row.nextReleaseDate, timeKind:row.releaseTimeKind, config:getSourceConfig(id), activeSource:getActiveLiveSource(id,false), target}));
+    console.log(JSON.stringify({id, at:row.nextReleaseAt, date:row.nextReleaseDate, timeKind:row.releaseTimeKind, config:getSourceConfig(id), activeSource:getActiveLiveSource(id), target}));
   }
   const now = Date.now();
   const openings = enqueueReleaseOpenings([],buildReleaseOpenings(ids.map((metricId,id)=>({id:id+1,metricId,periodDate:'2026-10-01',releasedAt:new Date(now).toISOString(),stage:null,value:3.5})),now),new Set());

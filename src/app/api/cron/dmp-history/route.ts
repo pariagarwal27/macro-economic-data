@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { runIngest } from "@/ingest/pipeline";
 
 export const dynamic = "force-dynamic";
@@ -16,8 +15,7 @@ const DMP_METRIC_IDS = [
 ];
 
 export async function GET(request: Request) {
-  let secret = process.env.CRON_SECRET;
-  try { secret = getCloudflareContext().env.CRON_SECRET ?? secret; } catch { /* Local or non-Cloudflare runtime. */ }
+  const secret = process.env.CRON_SECRET;
   if (!secret) return NextResponse.json({ ok: false, error: "CRON_SECRET is not configured" }, { status: 503 });
   if (request.headers.get("authorization") !== `Bearer ${secret}`) {
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
