@@ -1,7 +1,8 @@
 import { createHash } from "node:crypto";
 import { and, asc, desc, eq, inArray, lte } from "drizzle-orm";
 import { executeSql, getDb } from "@/db";
-import { calendarEvents, nfpForecastRuns, releases } from "@/db/schema";
+import { calendarEvents, nfpForecastRuns, observations, releases } from "@/db/schema";
+import { mergeNfpStoredHistory } from "@/lib/nfp-stored-history";
 import { getEconomicCalendarRows } from "@/lib/economic-calendar-db";
 import {
   forecastNfpForRelease,
@@ -134,7 +135,7 @@ export async function refreshNfpForecast(now = new Date()) {
   if (!targetMonth) return { active: false, reason: "Could not determine the payroll target month.", releaseAt };
 
   const db = getDb();
-  const releaseRows = await db
+  const storedReleases = await db
     .select({
       metricId: releases.metricId,
       periodDate: releases.periodDate,
@@ -148,8 +149,23 @@ export async function refreshNfpForecast(now = new Date()) {
       lte(releases.releasedAt, now.toISOString()),
       lte(releases.releasedAt, releaseAt),
     ))
-    .orderBy(asc(releases.releasedAt))
-    .limit(5_000) as NfpModelRelease[];
+    .orderBy(asc(releases.releasedAt)) as NfpModelRelease[];
+
+  // Backfills populate observations for the full history but usually create
+  // only one release row. Preserve release records when both are present.
+  const storedObservations = await db.select({
+    metricId: observations.metricId,
+    periodDate: observations.date,
+    releasedAt: observations.releasedAt,
+    value: observations.value,
+  }).from(observations).where(and(
+    inArray(observations.metricId, [...NFP_SOURCE_METRIC_IDS]),
+    eq(observations.isLatest, true),
+    lte(observations.releasedAt, now.toISOString()),
+    lte(observations.releasedAt, releaseAt),
+  )).orderBy(desc(observations.releasedAt));
+  const releaseRows = mergeNfpStoredHistory(storedReleases,
+    storedObservations.filter((row): row is typeof row & { releasedAt: string } => row.releasedAt != null), now.toISOString());
 
   const events = await db
     .select({
@@ -165,8 +181,7 @@ export async function refreshNfpForecast(now = new Date()) {
       eq(calendarEvents.source, "investing"),
       lte(calendarEvents.releasedAt, releaseAt),
     ))
-    .orderBy(asc(calendarEvents.releasedAt))
-    .limit(2_000) as NfpCalendarEvent[];
+    .orderBy(asc(calendarEvents.releasedAt)) as NfpCalendarEvent[];
 
   const snapshot = forecastNfpForRelease({
     targetMonth,
@@ -208,7 +223,7 @@ export async function refreshNfpForecast(now = new Date()) {
         sourceMetricIds: NFP_SOURCE_METRIC_IDS,
         releases: releaseRows,
         calendarEvents: eligibleEvents,
-        provenance: "conditional: source publication times and original vintages are not independently verified; release ingestion time is not stored",
+        provenance: "conditional: missing release periods use stored observations with their ingestion timestamps; historical observations may be revised and source publication times and original vintages are not independently verified; release ingestion time is not stored",
       }),
       createdAt: snapshot.asOf,
     });

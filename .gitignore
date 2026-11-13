@@ -68,3 +68,16 @@ next-env.d.ts
 
 # Isolated local LSEG Python runtime
 /tmp/lseg-venv/
+
+# Local runtime state, credentials, and diagnostics
+/tmp/
+/.wrangler/
+/data/credentials/
+/data/cache/
+/data/backups/
+/data/*.log
+/data/*.png
+/data/*consensus-refresh-state.json*
+/nfp_model/nfp_new.sqlite3
+*.sqlite-shm
+*.sqlite-wal

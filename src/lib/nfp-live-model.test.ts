@@ -60,3 +60,15 @@ test("excludes releases and consensus captured after the forecast time", () => {
   assert.equal(snapshot.consensus, null);
   assert.equal(snapshot.inputs.previous_nfp, null);
 });
+
+test('weekly claims history uses observation week rather than shared backfill timestamp', () => {
+  const result = forecastNfpForRelease({
+    targetMonth: '2026-11', releaseAt: '2026-12-04T13:30:00Z', asOf: '2026-12-03T23:00:00Z',
+    releases: [
+      {metricId:'us-initial-claims', periodDate:'2026-11-28', releasedAt:'2026-12-01T00:00:00Z', value:220000},
+      {metricId:'us-initial-claims', periodDate:'2026-11-21', releasedAt:'2026-12-01T00:00:00Z', value:200000},
+    ], calendarEvents: [],
+  });
+  assert.equal(result.inputs.initial_claims_latest, 220);
+  assert.equal(result.inputs.initial_claims_weekly_change, 20);
+});

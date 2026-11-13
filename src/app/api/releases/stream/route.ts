@@ -27,8 +27,8 @@ export async function GET(request: Request) {
           const changed = cursor == null || batch.cursor !== cursor;
           cursor = batch.cursor;
           if (changed) controller.enqueue(encoder.encode(`id: ${cursor}\ndata: ${JSON.stringify(batch)}\n\n`));
-          else if (++heartbeat >= 20) { controller.enqueue(encoder.encode(": keepalive\n\n")); heartbeat = 0; }
-          if (!batch.hasMore) await new Promise(resolve => setTimeout(resolve, 500));
+          else if (++heartbeat >= 40) { controller.enqueue(encoder.encode(": keepalive\n\n")); heartbeat = 0; }
+          if (!batch.hasMore) await new Promise(resolve => setTimeout(resolve, 250));
         }
         if (!stopped) controller.close();
       } catch (error) {

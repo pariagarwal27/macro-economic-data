@@ -40,6 +40,7 @@ import { PCE_EXPENDITURE_LINES } from "@/lib/pce-expenditure";
 import { expectedPcePeriod, isPceMonthlySeries } from "@/lib/pce-release";
 import { persistPceHistoryRevisions, type PceHistoryPoint } from "./pce-history";
 import { exactReleaseTimestamp, isWithinReleaseFetchWindow, RELEASE_PREPARE_LEAD_MS, releaseRetryDelayMs, waitForReleaseInstant } from "./release-clock";
+import { prepareDolClaimsParser } from "./dol-claims";
 
 function withinCandidateFetchWindow(metricId: string, scheduledAt: string, now = Date.now(), lead = 0, timeZone = "UTC") {
   if (!isRecoverableFedMetric(metricId)) return isWithinReleaseFetchWindow(scheduledAt, now, lead, timeZone);
@@ -293,6 +294,14 @@ async function processCandidate(candidate: Candidate) {
 
   let stage = "source_fetch";
   try {
+    if (getActiveLiveSource(candidate.metricId) === "dol") {
+      // Imports belong in the preparation window, not after the release clock.
+      // A preparation failure must still allow the existing source fallback.
+      await prepareDolClaimsParser().catch(error => {
+        logReleaseEvent({ event: "source_preparation_failed", ...context,
+          error: error instanceof Error ? error.message : String(error) });
+      });
+    }
     await waitForReleaseInstant(candidate.scheduledAt);
     const fetchTime = new Date();
     if (!isOnScheduledReleaseDay(candidate.metricId, candidate.scheduledAt, fetchTime) ||
@@ -362,6 +371,7 @@ async function processCandidate(candidate: Candidate) {
     }
 
     stage = "database_update";
+    const databaseStartedMs = Date.now();
     if (isPce) {
       const history = (result as { history?: PceHistoryPoint[] }).history;
       if (!history?.length || history.at(-1)?.date !== result.periodDate || history.at(-1)?.value !== result.value) {
@@ -442,6 +452,9 @@ async function processCandidate(candidate: Candidate) {
       previousPeriod: "latestDbPeriod" in processed ? processed.latestDbPeriod : null,
       previousValue: "latestDbValue" in processed ? processed.latestDbValue : null,
       databaseUpdated: processed.updated,
+      databaseUpdateMs: Date.now() - databaseStartedMs,
+      scheduledToCommitMs: processed.updated && exactReleaseTimestamp(candidate.scheduledAt) != null
+        ? Math.max(0, Date.now() - exactReleaseTimestamp(candidate.scheduledAt)!) : null,
       releaseId: "releaseId" in processed ? processed.releaseId ?? null : null,
       reason: processed.reason ?? null,
       retryEligibleAt: retryEligible

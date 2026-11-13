@@ -1,18 +1,46 @@
 import { fetchFredSeries } from "./fred";
 import type { RawPoint } from "./transforms";
+import { isFreshReleaseFetch } from "./release-fetch-context.js";
 
-
-/**
- * DOL ETA Unemployment Insurance Weekly Claims.
- *
- * Uses the official DOL PDF first, then the DOL claims HTML page.
- */
-export async function fetchDolClaims(): Promise<{
+type DolClaims = {
   initial: RawPoint[];
   continuing: RawPoint[];
   initialAverage: RawPoint[];
   continuingAverage: RawPoint[];
-}> {
+};
+
+// The four claims metrics come from one document. Share unfinished work, but
+// never reuse a completed snapshot on a later retry. Keep routine/pre-release
+// downloads separate so a release request cannot inherit an older response.
+const inFlight = new Map<boolean, Promise<DolClaims>>();
+
+/** Load the PDF engine during T-5s arming, without fetching publication data. */
+export async function prepareDolClaimsParser() {
+  const packageName = process.env.LOCAL_PDF_MODULE ?? "pdf-parse";
+  const [parser, { getPath }] = await Promise.all([
+    import(/* webpackIgnore: true */ packageName) as Promise<typeof import("pdf-parse")>,
+    import(/* webpackIgnore: true */ `${packageName}/worker`) as Promise<typeof import("pdf-parse/worker")>,
+  ]);
+  parser.PDFParse.setWorker(getPath());
+  return parser;
+}
+
+export async function fetchDolClaims(): Promise<DolClaims> {
+  const release = isFreshReleaseFetch();
+  let pending = inFlight.get(release);
+  if (!pending) {
+    pending = fetchDolClaimsUnshared().finally(() => { inFlight.delete(release); });
+    inFlight.set(release, pending);
+  }
+  return pending;
+}
+
+/**
+ * DOL ETA Unemployment Insurance Weekly Claims.
+ *
+ * Uses the official DOL PDF first, matching FRED series next, then DOL HTML.
+ */
+async function fetchDolClaimsUnshared(): Promise<DolClaims> {
   try {
     return await fromPdf();
   } catch (pdfErr) {
@@ -63,31 +91,34 @@ async function fromPdf(): Promise<{
   initialAverage: RawPoint[];
   continuingAverage: RawPoint[];
 }> {
-  const packageName = process.env.LOCAL_PDF_MODULE ?? "pdf-parse";
-  const { PDFParse } = await import(/* webpackIgnore: true */ packageName) as typeof import("pdf-parse");
-  const { getPath } = await import(/* webpackIgnore: true */ `${packageName}/worker`) as typeof import("pdf-parse/worker");
-  PDFParse.setWorker(getPath());
-  const res = await fetch("https://www.dol.gov/ui/data.pdf", {
+  // Start the download immediately, while the cold PDF modules load.
+  const download = fetch("https://www.dol.gov/ui/data.pdf", {
+    cache: "no-store",
     headers: {
       "User-Agent": "Mozilla/5.0 (compatible; macro-economy-tracker/1.0)",
       Accept: "application/pdf",
+      ...(isFreshReleaseFetch() ? { "Cache-Control": "no-cache", Pragma: "no-cache" } : {}),
     },
+  }).then(async res => {
+    if (!res.ok) throw new Error(`DOL PDF ${res.status}`);
+    return Buffer.from(await res.arrayBuffer());
   });
-
-  if (!res.ok) {
-    throw new Error(`DOL PDF ${res.status}`);
-  }
-
-  const buf = Buffer.from(await res.arrayBuffer());
+  const [{ PDFParse }, buf] = await Promise.all([
+    prepareDolClaimsParser(),
+    download,
+  ]);
 
   const parser = new PDFParse({
     data: buf,
   });
 
-  const result = await parser.getText();
-  const text = result.text.replace(/\s+/g, " ").trim();
-
-  await parser.destroy();
+  let text: string;
+  try {
+    const result = await parser.getText();
+    text = result.text.replace(/\s+/g, " ").trim();
+  } finally {
+    await parser.destroy();
+  }
 
   if (!text) {
     throw new Error("DOL PDF: extracted text is empty");

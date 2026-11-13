@@ -63,12 +63,10 @@ export function ReleaseAutoOpen() {
           }
         }
         window.dispatchEvent(new CustomEvent("macrohub:release-updates", { detail: payload.updates }));
-        // Several independently fetched series can commit a few hundred ms
-        // apart. Coalesce the burst so a simultaneous US CPI/PCE/NFP release
-        // can take precedence over the companion cards in later stream polls.
+        // Allow one short batch for release priority, bounded from the FIRST
+        // update. A stream of component commits must not postpone opening.
         pendingUpdates.current.push(...payload.updates);
-        if (openingTimer.current != null) window.clearTimeout(openingTimer.current);
-        openingTimer.current = window.setTimeout(() => {
+        if (openingTimer.current == null) openingTimer.current = window.setTimeout(() => {
           const batch = pendingUpdates.current;
           pendingUpdates.current = [];
           openingTimer.current = null;
@@ -76,7 +74,7 @@ export function ReleaseAutoOpen() {
           setWaiting(queue.current.length);
           save();
           openNext();
-        }, 2_000);
+        }, 250);
       }
       save();
     };

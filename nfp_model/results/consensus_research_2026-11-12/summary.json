@@ -1,0 +1,441 @@
+{
+  "source_sha256": "4ac438fd53652b170cd6870157c646a8eac70280c451f03fef54a83566f4d06b",
+  "results": {
+    "validation": {
+      "months": 36,
+      "consensus_mae": 146.91666666666666,
+      "models": {
+        "lightgbm_w0.0": {
+          "mae": 146.91666666666666,
+          "rmse": 215.0274530276438,
+          "bias": -12.25,
+          "mean_improvement": 0.0,
+          "interval_95": [
+            0.0,
+            0.0
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "lightgbm_w0.25": {
+          "mae": 145.17146221824555,
+          "rmse": 214.88727772218917,
+          "bias": -8.366366366759687,
+          "mean_improvement": 1.7452044484211038,
+          "interval_95": [
+            -0.885821664891488,
+            4.1583454629645935
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "lightgbm_w0.5": {
+          "mae": 144.14602870521003,
+          "rmse": 215.0135849881803,
+          "bias": -4.482732733519374,
+          "mean_improvement": 2.7706379614566408,
+          "interval_95": [
+            -2.235150493043575,
+            7.271861182024555
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "lightgbm_w0.75": {
+          "mae": 143.39824159352716,
+          "rmse": 215.40590605506642,
+          "bias": -0.5990991002790536,
+          "mean_improvement": 3.518425073139478,
+          "interval_95": [
+            -3.8093568331972407,
+            10.235642084617934
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "lightgbm_w1.0": {
+          "mae": 143.18029839656535,
+          "rmse": 216.0627918653677,
+          "bias": 3.284534532961262,
+          "mean_improvement": 3.7363682701013112,
+          "interval_95": [
+            -5.790408828671858,
+            12.346132618360839
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "lightgbm_rolling": {
+          "mae": 144.32828491805833,
+          "rmse": 214.4104876798159,
+          "bias": -3.2815383604171395,
+          "mean_improvement": 2.5883817486083185,
+          "interval_95": [
+            -1.7637588816293992,
+            7.181184233269111
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_lightgbm_w0.0": {
+          "mae": 146.91666666666666,
+          "rmse": 215.0274530276438,
+          "bias": -12.25,
+          "mean_improvement": 0.0,
+          "interval_95": [
+            0.0,
+            0.0
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_lightgbm_w0.25": {
+          "mae": 145.75120599922334,
+          "rmse": 215.75774894606292,
+          "bias": -6.835812071653987,
+          "mean_improvement": 1.165460667443305,
+          "interval_95": [
+            -1.2745782128237197,
+            3.439854201806262
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_lightgbm_w0.5": {
+          "mae": 145.81968236462566,
+          "rmse": 216.83276311403037,
+          "bias": -1.4216241433079755,
+          "mean_improvement": 1.0969843020409842,
+          "interval_95": [
+            -3.568443716632873,
+            5.556081858692267
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_lightgbm_w0.75": {
+          "mae": 146.43048386736274,
+          "rmse": 218.2474016883918,
+          "bias": 3.992563785038035,
+          "mean_improvement": 0.4861827993039501,
+          "interval_95": [
+            -6.5049499898992,
+            7.250318178081281
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_lightgbm_w1.0": {
+          "mae": 147.10175626759477,
+          "rmse": 219.99511308772165,
+          "bias": 9.406751713384047,
+          "mean_improvement": -0.18508960092808102,
+          "interval_95": [
+            -9.475089689262825,
+            9.001981284451753
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_lightgbm_rolling": {
+          "mae": 147.7947042764563,
+          "rmse": 215.72010286861803,
+          "bias": -3.3931033248846276,
+          "mean_improvement": -0.8780376097896317,
+          "interval_95": [
+            -5.2115652382562345,
+            3.4048789633728878
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_ridge_w0.0": {
+          "mae": 146.91666666666666,
+          "rmse": 215.0274530276438,
+          "bias": -12.25,
+          "mean_improvement": 0.0,
+          "interval_95": [
+            0.0,
+            0.0
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_ridge_w0.25": {
+          "mae": 143.4969373699569,
+          "rmse": 213.30755247054833,
+          "bias": 8.836247780885504,
+          "mean_improvement": 3.4197292967097734,
+          "interval_95": [
+            -3.3029545112913925,
+            10.193066539198142
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_ridge_w0.5": {
+          "mae": 144.67661029532997,
+          "rmse": 214.60821999836554,
+          "bias": 29.92249556177101,
+          "mean_improvement": 2.240056371336692,
+          "interval_95": [
+            -12.659465890333722,
+            16.61158594075249
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_ridge_w0.75": {
+          "mae": 151.88993126372938,
+          "rmse": 218.87561308932752,
+          "bias": 51.008743342656494,
+          "mean_improvement": -4.973264597062692,
+          "interval_95": [
+            -27.057019141842165,
+            17.13868764864247
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_ridge_w1.0": {
+          "mae": 163.60931201833466,
+          "rmse": 225.94169531996988,
+          "bias": 72.094991123542,
+          "mean_improvement": -16.692645351668016,
+          "interval_95": [
+            -44.44705151485733,
+            10.365980563051522
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_ridge_rolling": {
+          "mae": 145.78951513589217,
+          "rmse": 211.51031049768764,
+          "bias": 19.882789551859958,
+          "mean_improvement": 1.1271515307744961,
+          "interval_95": [
+            -12.960881719402169,
+            14.759673135953168
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "median_bias": {
+          "mae": 146.16666666666666,
+          "rmse": 218.6321428539017,
+          "bias": 9.11111111111111,
+          "mean_improvement": 0.75,
+          "interval_95": [
+            -14.195833333333333,
+            14.652777777777779
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        }
+      }
+    },
+    "diagnostic": {
+      "months": 33,
+      "consensus_mae": 65.24242424242425,
+      "models": {
+        "lightgbm_w0.0": {
+          "mae": 65.24242424242425,
+          "rmse": 75.9718847517111,
+          "bias": -14.93939393939394,
+          "mean_improvement": 0.0,
+          "interval_95": [
+            0.0,
+            0.0
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "lightgbm_w0.25": {
+          "mae": 65.12652671047121,
+          "rmse": 75.46898103164742,
+          "bias": -8.59269519811466,
+          "mean_improvement": 0.11589753195301776,
+          "interval_95": [
+            -1.4204207068976407,
+            1.6725840044499065
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "lightgbm_w0.5": {
+          "mae": 65.43487160276062,
+          "rmse": 75.68299878246974,
+          "bias": -2.2459964568353774,
+          "mean_improvement": -0.19244736033638896,
+          "interval_95": [
+            -3.573728266175423,
+            3.1640919964477243
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "lightgbm_w0.75": {
+          "mae": 66.08859985470818,
+          "rmse": 76.60792970041517,
+          "bias": 4.100702284443901,
+          "mean_improvement": -0.8461756122839384,
+          "interval_95": [
+            -6.073855316838428,
+            4.088570222695771
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "lightgbm_w1.0": {
+          "mae": 66.79490081637857,
+          "rmse": 78.21855830162342,
+          "bias": 10.447401025723183,
+          "mean_improvement": -1.552476573954343,
+          "interval_95": [
+            -8.569665350534628,
+            4.981278641243073
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "lightgbm_rolling": {
+          "mae": 66.5835767630256,
+          "rmse": 77.40228641624974,
+          "bias": 6.289791517470244,
+          "mean_improvement": -1.341152520601362,
+          "interval_95": [
+            -7.4709453305439695,
+            4.245430278900022
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_lightgbm_w0.0": {
+          "mae": 65.24242424242425,
+          "rmse": 75.9718847517111,
+          "bias": -14.93939393939394,
+          "mean_improvement": 0.0,
+          "interval_95": [
+            0.0,
+            0.0
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_lightgbm_w0.25": {
+          "mae": 67.54842602154447,
+          "rmse": 77.4035875305755,
+          "bias": -11.256039195179955,
+          "mean_improvement": -2.3060017791202227,
+          "interval_95": [
+            -4.024614651885878,
+            -0.5736599671398492
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_lightgbm_w0.5": {
+          "mae": 70.19206056452755,
+          "rmse": 79.33795031959349,
+          "bias": -7.572684450965968,
+          "mean_improvement": -4.949636322103326,
+          "interval_95": [
+            -8.20103066176778,
+            -1.5314031139113835
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_lightgbm_w0.75": {
+          "mae": 72.87899993770044,
+          "rmse": 81.73929451408138,
+          "bias": -3.8893297067519836,
+          "mean_improvement": -7.636575695276201,
+          "interval_95": [
+            -12.427114822541457,
+            -2.5520650992414557
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_lightgbm_w1.0": {
+          "mae": 75.56593931087332,
+          "rmse": 84.56784899026235,
+          "bias": -0.20597496253799924,
+          "mean_improvement": -10.323515068449076,
+          "interval_95": [
+            -16.710900571469413,
+            -3.5767487826145103
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_lightgbm_rolling": {
+          "mae": 66.65136948647114,
+          "rmse": 76.82473941374157,
+          "bias": -13.796341524976562,
+          "mean_improvement": -1.4089452440469032,
+          "interval_95": [
+            -2.748350911459148,
+            -0.28092704168360183
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_ridge_w0.0": {
+          "mae": 65.24242424242425,
+          "rmse": 75.9718847517111,
+          "bias": -14.93939393939394,
+          "mean_improvement": 0.0,
+          "interval_95": [
+            0.0,
+            0.0
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_ridge_w0.25": {
+          "mae": 65.82251806119999,
+          "rmse": 76.61655590228305,
+          "bias": 11.97149265069896,
+          "mean_improvement": -0.580093818775732,
+          "interval_95": [
+            -7.568508448292777,
+            6.951785959283195
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_ridge_w0.5": {
+          "mae": 71.11195733513709,
+          "rmse": 86.55415705175297,
+          "bias": 38.88237924079186,
+          "mean_improvement": -5.869533092712857,
+          "interval_95": [
+            -19.435636807652372,
+            9.144161002316004
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_ridge_w0.75": {
+          "mae": 81.19304470853321,
+          "rmse": 103.13245690161189,
+          "bias": 65.79326583088478,
+          "mean_improvement": -15.950620466108969,
+          "interval_95": [
+            -36.25700100589543,
+            6.09054487467633
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_ridge_w1.0": {
+          "mae": 99.08220568139231,
+          "rmse": 123.70990796697576,
+          "bias": 92.70415242097768,
+          "mean_improvement": -33.83978143896808,
+          "interval_95": [
+            -59.23617972270628,
+            -6.601528946320215
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "compact_ridge_rolling": {
+          "mae": 67.0359287724882,
+          "rmse": 78.8426372474169,
+          "bias": 16.088068170606668,
+          "mean_improvement": -1.793504530063952,
+          "interval_95": [
+            -10.140677463274997,
+            7.145570297453536
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        },
+        "median_bias": {
+          "mae": 67.39393939393939,
+          "rmse": 77.20191942974192,
+          "bias": 3.878787878787879,
+          "mean_improvement": -2.1515151515151514,
+          "interval_95": [
+            -6.96969696969697,
+            3.6215909090909033
+          ],
+          "method": "paired circular moving-block bootstrap; block length 3"
+        }
+      }
+    }
+  },
+  "limitations": [
+    "Historical source vintages and consensus timing remain conditional.",
+    "2024-2026 has been inspected previously and is not an untouched holdout.",
+    "No candidate is promoted; prospective point-in-time evidence is required.",
+    "Weights and candidate specifications are research comparisons, not independently validated selections."
+  ]
+}

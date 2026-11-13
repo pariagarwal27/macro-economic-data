@@ -3102,6 +3102,20 @@
       "official_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/"
     },
     {
+      "id": "us-ism-manufacturing-employment",
+      "name": "ISM Manufacturing Employment Index",
+      "source": "ism",
+      "frequency": "monthly",
+      "official_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/pmi/manufacturing/"
+    },
+    {
+      "id": "us-ism-services-employment",
+      "name": "ISM Services Employment Index",
+      "source": "ism",
+      "frequency": "monthly",
+      "official_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/services/"
+    },
+    {
       "id": "us-sp-global-manufacturing-pmi",
       "name": "US S&P Global Manufacturing PMI",
       "source": "lseg",

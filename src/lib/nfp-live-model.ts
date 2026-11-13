@@ -207,7 +207,12 @@ function buildFeatureValues(
   setFeature(features, "previous_adp_bls_gap", adpValues[1] == null || previousNfp[0] == null ? null : adpValues[1] - previousNfp[0]);
 
   const claims = (metricId: string, prefix: "initial" | "continuing") => {
-    const weekly = [...seriesRows(rows, metricId)].sort((left, right) => Date.parse(left.releasedAt) - Date.parse(right.releasedAt));
+    const byWeek = new Map<string, NfpModelRelease & { period: string }>();
+    for (const row of seriesRows(rows, metricId)) {
+      const existing = byWeek.get(row.periodDate);
+      if (!existing || Date.parse(row.releasedAt) > Date.parse(existing.releasedAt)) byWeek.set(row.periodDate, row);
+    }
+    const weekly = [...byWeek.values()].sort((left, right) => left.periodDate.localeCompare(right.periodDate));
     const latest = weekly.at(-1);
     const previous = weekly.at(-2);
     // The forecast training data stores claims in thousands; the dashboard

@@ -45,7 +45,12 @@ export async function waitForReleaseInstant(scheduledAt: string, clock = {
 
 export function releaseRetryDelayMs(adapter: string | undefined, scheduledAt: string, now = Date.now()): number {
   const instant = exactReleaseTimestamp(scheduledAt);
-  // The local desktop bridge can be checked more frequently near a release.
-  // Preserve the public-source cooldown rather than flooding agency APIs.
-  return adapter === "lseg" && instant != null && now >= instant && now - instant < 30_000 ? 1_000 : 5_000;
+  if (instant == null || now < instant) return 5_000;
+  const elapsed = now - instant;
+  // Preserve the desktop bridge cadence. Public sources need a short retry
+  // window too: a response arriving just before publication must not cost 5s.
+  // Back off after that window rather than polling rapidly all release day.
+  if (adapter === "lseg") return elapsed < 30_000 ? 1_000 : 5_000;
+  if (elapsed < 60_000) return 500;
+  return elapsed < 300_000 ? 1_000 : 5_000;
 }

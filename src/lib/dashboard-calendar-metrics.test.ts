@@ -2,6 +2,12 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { getDashboardCalendarMetrics } from "./dashboard-calendar-metrics";
 
+test("US PPI release diary labels distinguish monthly and yearly rates", () => {
+  const byId = new Map(getDashboardCalendarMetrics().map(metric => [metric.id, metric.name]));
+  assert.equal(byId.get("us-ppi-final-demand-mom"), "PPI MoM");
+  assert.equal(byId.get("us-ppi-final-demand"), "PPI YoY");
+});
+
 test("release diary includes only intended UK inflation cards and labels their YoY and MoM releases", () => {
   const ukMetrics = getDashboardCalendarMetrics().filter(metric => metric.region === "UK");
   const ukById = new Map(ukMetrics.map(metric => [metric.id, metric]));

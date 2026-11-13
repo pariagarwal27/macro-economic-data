@@ -41,6 +41,25 @@ async function main() {
   };
 
   const { dispatchDueReleases } = await import("../src/ingest/release-dispatcher");
+  const { refreshNfpForecast } = await import("../src/ingest/nfp-forecast");
+
+  // Run independently of dispatch: a source can keep retrying while other
+  // releases have already been saved and are ready for the forecast.
+  let forecastRunning = false;
+  let lastForecastAttempt = 0;
+  const pollNfpForecast = async () => {
+    if (forecastRunning || Date.now() - lastForecastAttempt < 60_000) return;
+    forecastRunning = true;
+    lastForecastAttempt = Date.now();
+    try {
+      await refreshNfpForecast();
+    } catch (error) {
+      logReleaseEvent({ event: "nfp_forecast_refresh_failed", error: error instanceof Error ? error.message : String(error) });
+      if (process.env.RUN_ONCE === "1") process.exitCode = 1;
+    } finally {
+      forecastRunning = false;
+    }
+  };
 
   const interval = Number(process.env.RELEASE_WORKER_INTERVAL_MS ?? 1000);
   if (!Number.isFinite(interval) || interval < 1000) {
@@ -51,7 +70,7 @@ async function main() {
   logReleaseEvent({
     event: "worker_started",
     discoveryIntervalMs: interval,
-    retryDelayMs: "1000 for LSEG near release, 5000 otherwise",
+    retryDelayMs: "public sources: 500 for first minute, 1000 through five minutes, 5000 thereafter; LSEG: 1000 for first 30 seconds, 5000 thereafter",
     dispatchMode: "all-eligible-metrics-concurrent",
     retryMode: "source-aware-independent-per-metric",
     runOnce,
@@ -80,6 +99,7 @@ async function main() {
 
   if (runOnce) {
     await Promise.all([dispatch(), pollEaMarket()]);
+    await pollNfpForecast();
     return;
   }
 
@@ -88,6 +108,7 @@ async function main() {
     // The dispatcher owns one independent request stream per metric.
     void dispatch();
     void pollEaMarket();
+    void pollNfpForecast();
     await new Promise((resolve) => setTimeout(resolve, interval));
   } while (true);
 }
