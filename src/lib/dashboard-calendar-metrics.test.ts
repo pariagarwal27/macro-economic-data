@@ -4,8 +4,10 @@ import { getDashboardCalendarMetrics } from "./dashboard-calendar-metrics";
 
 test("US PPI release diary labels distinguish monthly and yearly rates", () => {
   const byId = new Map(getDashboardCalendarMetrics().map(metric => [metric.id, metric.name]));
-  assert.equal(byId.get("us-ppi-final-demand-mom"), "PPI MoM");
-  assert.equal(byId.get("us-ppi-final-demand"), "PPI YoY");
+  assert.equal(byId.get("us-ppi-final-demand"), "Headline PPI YoY");
+  assert.equal(byId.get("us-ppi-final-demand-mom"), "Headline PPI MoM");
+  assert.equal(byId.get("us-ppi-core"), "Core PPI YoY");
+  assert.equal(byId.get("us-ppi-core-mom"), "Core PPI MoM");
 });
 
 test("release diary includes only intended UK inflation cards and labels their YoY and MoM releases", () => {

@@ -39,6 +39,12 @@ const EA_HICP_DISPLAY: Readonly<Record<string, { name: string; order: number }>>
   "ea-services-hicp-mom": { name: "Services HICP MoM", order: 4 },
   "ea-services-hicp-yoy": { name: "Services HICP YoY", order: 5 },
 };
+const US_PPI_DISPLAY_ORDER: Readonly<Record<string, number>> = {
+  "us-ppi-final-demand": 0,
+  "us-ppi-final-demand-mom": 1,
+  "us-ppi-core": 2,
+  "us-ppi-core-mom": 3,
+};
 export function calendarMetricDisplayName(metric: Pick<MetricDef, "id" | "name" | "category" | "subcategory" | "source" | "shortName" | "releaseName">) {
   if (/^ea-spf-(hicp|gdp|unemployment|wage)-(?:target-2026|rolling-current)$/.test(metric.id)) return metric.name;
   if (metric.id === "ea-gdp-yoy") return "Real GDP YoY";
@@ -64,6 +70,9 @@ export function compareCalendarMetricEvents(a: { metricId: string; metricName: s
   const aOrder = EA_HICP_DISPLAY[a.metricId]?.order;
   const bOrder = EA_HICP_DISPLAY[b.metricId]?.order;
   if (aOrder != null || bOrder != null) return (aOrder ?? Number.MAX_SAFE_INTEGER) - (bOrder ?? Number.MAX_SAFE_INTEGER);
+  const aPpiOrder = US_PPI_DISPLAY_ORDER[a.metricId];
+  const bPpiOrder = US_PPI_DISPLAY_ORDER[b.metricId];
+  if (aPpiOrder != null || bPpiOrder != null) return (aPpiOrder ?? Number.MAX_SAFE_INTEGER) - (bPpiOrder ?? Number.MAX_SAFE_INTEGER);
   return a.metricName.localeCompare(b.metricName);
 }
 const dayKey = (date: Date) => new Intl.DateTimeFormat("en-CA", { timeZone: CALENDAR_TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit" }).format(date);

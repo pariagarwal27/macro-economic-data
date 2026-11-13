@@ -7,6 +7,20 @@ export function priceStudioSpecs(region: Region, specs: IndicatorSpec[]): Indica
 }
 
 export function ppiComparisonSpecs(card: IndicatorSpec | undefined): IndicatorSpec[] {
+  // The US PPI release's two headline measures are Final Demand and Final
+  // Demand less foods, energy, and trade services. Keep Intermediate Demand
+  // available in the component drilldown, but do not present it as the second
+  // top-level inflation measure.
+  const usHeadline = (card?.components ?? []).find(node => node.metricId === 'us-ppi-final-demand');
+  if (usHeadline) {
+    const headline = usHeadline;
+    const core = headline.children?.find(node => node.metricId === 'us-ppi-core');
+    return [headline, ...(core ? [core] : [])].map(node => ({
+      id: node.metricId!, title: node.metricId === 'us-ppi-core' ? 'Core PPI' : 'Headline PPI',
+      metricId: node.metricId!, yoyMetricId: node.metricId!, momMetricId: node.momMetricId,
+      components: node.children,
+    }));
+  }
   return (card?.components ?? []).flatMap(node => node.metricId ? [{
     id: node.metricId, title: node.label, metricId: node.metricId, yoyMetricId: node.metricId,
     momMetricId: node.momMetricId,

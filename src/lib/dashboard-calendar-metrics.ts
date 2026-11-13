@@ -54,8 +54,15 @@ export function getDashboardCalendarMetrics() {
   }
   displayed.add('us-adp-change');
   titles.set('us-adp-change', 'ADP Nonfarm Private Employment Change');
-  titles.set('us-ppi-final-demand-mom', 'PPI MoM');
-  titles.set('us-ppi-final-demand', 'PPI YoY');
+  for (const [id, name] of [
+    ['us-ppi-final-demand', 'Headline PPI YoY'],
+    ['us-ppi-final-demand-mom', 'Headline PPI MoM'],
+    ['us-ppi-core', 'Core PPI YoY'],
+    ['us-ppi-core-mom', 'Core PPI MoM'],
+  ]) {
+    displayed.add(id);
+    titles.set(id, name);
+  }
   // One SPF row per main component, comparing successive survey vintages
   // for the same 2026 target year. Other horizons remain chart choices.
   for (const metric of METRICS) {
